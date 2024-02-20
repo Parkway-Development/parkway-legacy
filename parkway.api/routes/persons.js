@@ -28,7 +28,7 @@ router.post('/person', async (req, res) => {
         // functions: req.body.functions,
         // family: req.body.family
     })
-                
+})   
 
 //Get all Persons
 router.get('/persons', async (req, res) => {
