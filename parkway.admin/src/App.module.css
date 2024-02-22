@@ -1,0 +1,40 @@
+.mainContainer {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+
+  header {
+    padding: 1em;
+    flex: 0;
+    border-bottom: 1px solid #333;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+
+  .container {
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+
+    nav {
+      border-right: 1px solid #333;
+      flex: 0 0 200px;
+
+      ul {
+        margin: 0 1em;
+        padding: 0;
+      }
+
+      li {
+        margin: 0.5em 0;
+        list-style-type: none;
+      }
+    }
+
+    .mainContent {
+      flex: 1;
+      padding: 1em;
+    }
+  }
+}
