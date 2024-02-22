@@ -7,10 +7,6 @@
     padding: 1em;
     flex: 0;
     border-bottom: 1px solid #333;
-
-    h1 {
-      margin: 0;
-    }
   }
 
   .container {
@@ -35,6 +31,7 @@
 
     .mainContent {
       flex: 1;
+      padding: 1em;
     }
   }
 }

@@ -1,5 +1,6 @@
 import { App as AntdApp } from 'antd';
 import styles from './App.module.css';
+import { Link, Outlet } from 'react-router-dom';
 
 function App() {
   return (
@@ -12,17 +13,19 @@ function App() {
           <nav>
             <ul>
               <li>
-                <a href="/">Home</a>
+                <Link to="/">Home</Link>
               </li>
               <li>
-                <a href="/directory">Directory</a>
+                <Link to="/directory">Directory</Link>
               </li>
               <li>
-                <a href="/giving">Giving</a>
+                <Link to="/giving">Giving</Link>
               </li>
             </ul>
           </nav>
-          <div className={styles.mainContent}></div>
+          <div className={styles.mainContent}>
+            <Outlet />
+          </div>
         </div>
       </div>
     </AntdApp>
