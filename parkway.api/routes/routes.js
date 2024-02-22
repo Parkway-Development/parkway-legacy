@@ -1,10 +1,11 @@
 const express = require('express');
 const router = express.Router();
-// const Model = require('../models/model');
+const app = express();
 const Person = require('../models/person');
 const Family = require('../models/family');
 
 module.exports = router;
+app.use(express.json());
 
 //Base-Level Route Configuration
 //Post Method

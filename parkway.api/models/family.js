@@ -22,4 +22,4 @@ const familySchema = new mongoose.Schema({
     }
 })
 
-module.exports = mongoose.model('Family', familySchema)
+module.exports = mongoose.model('Family', familySchema, 'families')
