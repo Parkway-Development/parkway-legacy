@@ -20,7 +20,7 @@ const personSchema = new mongoose.Schema({
     gender: {
         required: false,
         type: String,
-        enum: ['Male','Female']
+        enum: ['male','female']
     },
     email: {
         required: false,
@@ -87,4 +87,4 @@ const personSchema = new mongoose.Schema({
     // }
 })
 
-module.exports = mongoose.model('Person', personSchema)
+module.exports = mongoose.model('Person', personSchema, 'people')
