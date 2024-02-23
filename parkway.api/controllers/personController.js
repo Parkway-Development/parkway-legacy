@@ -1,4 +1,5 @@
 const Person = require('../models/personModel')
+const mongoose = require('mongoose')
 
 //Post a person
 const addPerson = async (req, res) => {
@@ -21,7 +22,7 @@ const addPerson = async (req, res) => {
         const personToSave = await person.save();
 
         if(!personToSave){
-        res.status(404).json({mssg: "The save failed."})}
+        return res.status(404).json({mssg: "The save failed."})}
 
         res.status(200).json(personToSave)
     }   
@@ -32,94 +33,86 @@ const addPerson = async (req, res) => {
 
 //Get all persons
 const getAll = async (req, res) => {
-    try{
-        const persons = await Person.find({}).sort({lastname: 1, firstname: 1});
-        if(!persons){
-            res.status(404).json({mssg: "No people were returned."})
-        }
-        res.status(200).json(persons)
+    const persons = await Person.find({}).sort({lastname: 1, firstname: 1});
+    if(!persons){
+        return res.status(404).json({mssg: "No people were returned."})
     }
-    catch(error){
-        res.status(500).json({message: error.message})
-    }
+    res.status(200).json(persons)
 }
 
 //Get person by ID
 const getById = async (req, res) => {
-    try{
-        const { id } = req.params;
-        const person = await Person.findById(id);
 
-        if(!person){
-            res.status(404).json({mssg: "No such person found."})
-        }
+    const { id } = req.params;
+
+    if(!mongoose.Types.ObjectId.isValid(id)){
+        return res.status(404).json({error: 'No such person.'})
+    }
+    const person = await Person.findById(id);
+
+    if(!person){
+        return res.status(404).json({mssg: "No such person found."})
+    }
         
-        res.status(200).json(person)
-    }
-    catch(error){
-        res.status(500).json({message: error.message})
-    }
+    res.status(200).json(person)
 }
 
 //Get person by last name
 const getByLastName = async (req, res) => {
-    try{
-        const persons = await Person.find({lastname: req.params.lastname});
-        if(!persons){
-            res.status(404).json({mssg: "No people were returned."})
-        }
-        res.status(200).json(persons)
+    const persons = await Person.find({lastname: req.params.lastname});
+    if(!persons){
+        return res.status(404).json({mssg: "No people were returned."})
     }
-    catch(error){
-        res.status(500).json({message: error.message})
-    }
+    res.status(200).json(persons)
 }
 
 //Get person by mobile number
 const getByMobile = async (req, res) => {
-    try{
-        const persons = await Person.find({mobile: req.params.mobile});
-        if(!persons){
-            res.status(404).json({mssg: "No people were returned."})
-        }
-        res.status(200).json(persons)
+    const persons = await Person.find({mobile: req.params.mobile});
+    if(!persons){
+        return res.status(404).json({mssg: "No people were returned."})
     }
-    catch(error){
-        res.status(500).json({message: error.message})
-    }
+    res.status(200).json(persons)
 }
 
 //Update person by ID
 const updatePerson = async (req, res) => {
-    try{
-        const id = req.params.id;
-        const updatedPerson = req.body;
-        const options = {new: true};
+    const id = req.params.id;
 
-        const result = await Person.findByIdAndUpdate(
-            id, updatedPerson, options
-        )
-        if(!result){
-            res.status(404).json({mssg: "There was a problem updating the user."})
+    if(!mongoose.Types.ObjectId.isValid(id)){
+        return res.status(404).json({error: 'No such person.'})
+    }
+
+    const updatedPerson = req.body;
+    const options = {new: true};
+
+    const person = await Person.findOneAndUpdate({_id: id}, 
+        {
+            ...req.body
         }
+    )
+    if(!person){
+        return res.status(404).json({mssg: "There was a problem updating the user."})
+    }
 
-        res.status(200).json(result)
-    }
-    catch(error){
-        res.status(500).json({message: error.message})
-    }
+    res.status(200).json(person)
 }
 
 //Delete person by ID
 const deletePerson = async (req, res) => {
-    try{
-        const id = req.params.id;
-        const person = await Person.findByIdAndDelete(id);
-        res.send(`${person.firstname + " " + person.lastname} has been deleted.`)
+    const id = req.params.id;
+
+    if(!mongoose.Types.ObjectId.isValid(id)){
+        return res.status(404).json({error: 'No such person.'})
     }
-    catch(error){
-        res.status(400).json({message: error.message})
+
+    const person = await Person.findOneAndDelete({_id: id});
+
+    if(!person){
+        return res.status(500).json({mssg: "Something went wrong with the deletion."})
     }
+
+    res.status(200).json(`${person.firstname + " " + person.lastname} has been deleted.`)
 }
 
 module.exports = { 

@@ -13,25 +13,20 @@ const app = express();
 app.use((req, res, next)  => {
     console.log(req.path, req.method)
     next();
-}), 
+}) 
 
 //Routes
 app.use('/api/user', userRoutes);
 app.use('/api/people', peopleRoutes);
 
-//listen for requests
-app.listen(process.env.PORT, () => {
-    console.log('listening on port ', process.env.PORT);
-})
-
 //Database connection
-mongoose.connect(mongoString);
-const database = mongoose.connection
-
-database.on('error', (error) => {
-    console.log(error)
-})
-
-database.once('connected', () => {
-    console.log('Database Connected');
-})
+mongoose.connect(process.env.DATABASE_URL)
+    .then(() => {
+        console.log('Database connected.')
+        app.listen(process.env.PORT, () => {
+            console.log('Listening for requests on port', process.env.PORT)
+        })
+    })
+    .catch((err) => {
+        console.log(err)
+    })

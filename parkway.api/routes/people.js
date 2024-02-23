@@ -18,17 +18,18 @@ router.post('/people', addPerson)
 router.get('/people', getAll)
 
 //Get Person by ID
-router.get('/people/:id', getById)
+router.get('/people/id/:id', getById)
 
 //Get people by last name
-router.get('/people/:lastname', getByLastName)
+router.get('/people/lastname/:lastname', getByLastName)
 
 //Get people by mobile number
-router.get('/people/:mobile', getByMobile)
+router.get('/people/mobile/:mobile', getByMobile)
 
+//Update a user by id
 router.patch('/people/:id', updatePerson)
 
-//Delete by ID Method
+//Delete by id
 router.delete('/people/:id', deletePerson)
 
 module.exports = router;
