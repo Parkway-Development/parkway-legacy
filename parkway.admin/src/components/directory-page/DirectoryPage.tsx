@@ -1,6 +1,6 @@
-import useAxios from '../../hooks/useAxios.ts';
+import useAxios from '../../hooks/useAxios';
 import { Alert, Empty, Spin, Table } from 'antd';
-import { DirectoryUser } from '../../types/DirectoryUser.ts';
+import { DirectoryUser } from '../../types/DirectoryUser';
 import { ColumnsType } from 'antd/lib/table';
 import styles from './DirectoryPage.module.css';
 
@@ -16,18 +16,15 @@ const DirectoryPage = () => {
 const directoryListColumns: ColumnsType<DirectoryUser> = [
   {
     title: 'First Name',
-    dataIndex: 'firstname',
-    key: 'firstname'
+    dataIndex: 'firstname'
   },
   {
     title: 'Last Name',
-    dataIndex: 'lastname',
-    key: 'lastname'
+    dataIndex: 'lastname'
   },
   {
     title: 'Mobile',
-    dataIndex: 'mobile',
-    key: 'mobile'
+    dataIndex: 'mobile'
   }
 ];
 
@@ -49,8 +46,12 @@ const DirectoryList = () => {
 
   return (
     <div className={styles.dataContainer}>
-      <p>Total Records {data.length}</p>
-      <Table dataSource={data} columns={directoryListColumns} />
+      <p>Total Count: {data.length}</p>
+      <Table
+        dataSource={data}
+        columns={directoryListColumns}
+        rowKey={(record) => record.id}
+      />
     </div>
   );
 };
