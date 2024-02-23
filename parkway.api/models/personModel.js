@@ -83,8 +83,8 @@ const personSchema = new mongoose.Schema({
     // family: {
     //     type:mongoose.Schema.Types.ObjectId,
     //     ref: 'Family',
-    //     required: false // Set to true if it's mandatory
+    //     required: false
     // }
-})
+}, {timestamps: true})
 
 module.exports = mongoose.model('Person', personSchema, 'people')
