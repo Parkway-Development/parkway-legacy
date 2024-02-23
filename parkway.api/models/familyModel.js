@@ -20,6 +20,6 @@ const familySchema = new mongoose.Schema({
         required: true,
         enum: ['Married', 'Divorced', 'Single', 'Widowed', 'Separated', 'Other']
     }
-})
+}, {timestamps: true})
 
 module.exports = mongoose.model('Family', familySchema, 'families')
