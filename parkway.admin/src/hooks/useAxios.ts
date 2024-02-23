@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 
 type methods = 'get' | 'post' | 'put' | 'patch' | 'delete';
 
-const useAxios = <T>(
+const useAxios = <TResult>(
   url: string,
   method: methods = 'get',
-  payload: any = null
+  payload: unknown = undefined
 ) => {
-  const [data, setData] = useState<T>();
+  const [data, setData] = useState<TResult>();
   const [error, setError] = useState<string>();
   const [loading, setLoading] = useState(false);
 
@@ -19,15 +19,15 @@ const useAxios = <T>(
       try {
         let response;
         if (method === 'get') {
-          response = await axios.get<T>(url);
+          response = await axios.get<TResult>(url);
         } else if (method === 'post') {
-          response = await axios.post<T>(url, payload);
+          response = await axios.post<TResult>(url, payload);
         } else if (method === 'put') {
-          response = await axios.put<T>(url, payload);
+          response = await axios.put<TResult>(url, payload);
         } else if (method === 'patch') {
-          response = await axios.patch<T>(url, payload);
+          response = await axios.patch<TResult>(url, payload);
         } else if (method === 'delete') {
-          response = await axios.delete<T>(url, payload);
+          response = await axios.delete<TResult>(url);
         }
 
         if (response) {
@@ -35,14 +35,18 @@ const useAxios = <T>(
         }
 
         setError(undefined);
-      } catch (err: any) {
-        setError(err.message ?? err.toString());
+      } catch (err) {
+        if (err instanceof AxiosError) {
+          setError(err.message);
+        } else {
+          setError('Error processing data');
+        }
       } finally {
         setLoading(false);
       }
     };
 
-    fetchData();
+    void fetchData();
   }, [url, method, payload]);
 
   return { data, error, loading };
