@@ -10,11 +10,16 @@ import HomePage from './components/home-page/HomePage.tsx';
 import { AuthProvider } from './hooks/useAuth.tsx';
 import { ProtectedRoute } from './components/protected-route/ProtectedRoute.tsx';
 import LoginPage from './components/login-page/LoginPage.tsx';
+import SignupPage from './components/signup-page/SignupPage.tsx';
 
 const router = createBrowserRouter([
   {
     path: '/login',
     element: <LoginPage />
+  },
+  {
+    path: '/signup',
+    element: <SignupPage />
   },
   {
     path: '/',

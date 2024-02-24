@@ -1,10 +1,10 @@
 import styles from './LoginPage.module.css';
 import { Button, Card, Form, Input } from 'antd';
 import { AuthUser, useAuth } from '../../hooks/useAuth.tsx';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 interface LoginFields {
-  username: string;
+  email: string;
   password: string;
 }
 
@@ -14,7 +14,9 @@ const LoginPage = () => {
 
   const handleLogin = (formFields: LoginFields) => {
     const user: AuthUser = {
-      name: formFields.username
+      id: '1234',
+      name: 'Temp User',
+      email: formFields.email
     };
 
     login(user);
@@ -36,17 +38,21 @@ const LoginPage = () => {
           autoComplete="off"
         >
           <Form.Item<LoginFields>
-            label="Username"
-            name="username"
-            rules={[{ required: true, message: 'Please input your username!' }]}
+            label="Email"
+            name="email"
+            rules={[
+              { required: true, message: 'Required' },
+              { type: 'email', message: 'Invalid email' }
+            ]}
+            validateTrigger="onBlur"
           >
-            <Input />
+            <Input autoFocus />
           </Form.Item>
 
           <Form.Item<LoginFields>
             label="Password"
             name="password"
-            rules={[{ required: true, message: 'Please input your password!' }]}
+            rules={[{ required: true, message: 'Required' }]}
           >
             <Input.Password />
           </Form.Item>
@@ -57,6 +63,9 @@ const LoginPage = () => {
             </Button>
           </Form.Item>
         </Form>
+        <p>
+          <Link to="/signup">Signup</Link> for an account.
+        </p>
       </Card>
     </div>
   );
