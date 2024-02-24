@@ -3,6 +3,7 @@ import { useLocalStorage } from './useLocalStorage';
 
 export interface AuthUser {
   name: string;
+  email: string;
 }
 
 interface AuthContextType {

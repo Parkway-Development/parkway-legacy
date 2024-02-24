@@ -4,7 +4,7 @@ import { AuthUser, useAuth } from '../../hooks/useAuth.tsx';
 import { useNavigate } from 'react-router-dom';
 
 interface LoginFields {
-  username: string;
+  email: string;
   password: string;
 }
 
@@ -14,7 +14,8 @@ const LoginPage = () => {
 
   const handleLogin = (formFields: LoginFields) => {
     const user: AuthUser = {
-      name: formFields.username
+      name: 'Temp User',
+      email: formFields.email
     };
 
     login(user);
@@ -36,9 +37,9 @@ const LoginPage = () => {
           autoComplete="off"
         >
           <Form.Item<LoginFields>
-            label="Username"
-            name="username"
-            rules={[{ required: true, message: 'Please input your username!' }]}
+            label="Email"
+            name="email"
+            rules={[{ required: true, message: 'Please input your email!' }]}
           >
             <Input />
           </Form.Item>
