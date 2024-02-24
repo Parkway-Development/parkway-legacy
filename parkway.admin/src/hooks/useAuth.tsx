@@ -2,6 +2,7 @@ import { createContext, ReactNode, useContext, useMemo } from 'react';
 import { useLocalStorage } from './useLocalStorage';
 
 export interface AuthUser {
+  id: string;
   name: string;
   email: string;
 }

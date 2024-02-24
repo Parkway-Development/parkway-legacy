@@ -14,6 +14,7 @@ const LoginPage = () => {
 
   const handleLogin = (formFields: LoginFields) => {
     const user: AuthUser = {
+      id: '1234',
       name: 'Temp User',
       email: formFields.email
     };

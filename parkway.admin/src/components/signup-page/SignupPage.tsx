@@ -1,7 +1,9 @@
 import styles from './SignupPage.module.css';
-import { Button, Card, Form, Input } from 'antd';
+import { Alert, Button, Card, Form, Input } from 'antd';
 import { AuthUser, useAuth } from '../../hooks/useAuth.tsx';
 import { Link, useNavigate } from 'react-router-dom';
+import axios, { AxiosError } from 'axios';
+import { useState } from 'react';
 
 interface SignupFields {
   email: string;
@@ -9,18 +11,49 @@ interface SignupFields {
   confirmPassword: string;
 }
 
+interface SignupResponse {
+  email: string;
+  _id: string;
+}
+
 const SignupPage = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string>();
 
-  const handleSignup = (formFields: SignupFields) => {
-    const user: AuthUser = {
-      name: 'Test User',
-      email: formFields.email
-    };
+  const handleSignup = async ({ email, password }: SignupFields) => {
+    const payload = { email, password };
 
-    login(user);
-    navigate('/');
+    try {
+      setIsLoading(true);
+      setError(undefined);
+      const { data } = await axios.post<SignupResponse>(
+        '/api/user/connect',
+        payload
+      );
+
+      const user: AuthUser = {
+        id: data._id,
+        name: 'Test User',
+        email: data.email
+      };
+
+      login(user);
+      navigate('/');
+    } catch (err) {
+      if (err instanceof AxiosError) {
+        const message = err.response?.data?.err;
+        if (message) {
+          setError(message);
+          return;
+        }
+      }
+
+      setError('Unexpected error signing up');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -36,6 +69,7 @@ const SignupPage = () => {
           wrapperCol={{ span: 16 }}
           onFinish={handleSignup}
           autoComplete="off"
+          disabled={isLoading}
         >
           <Form.Item<SignupFields>
             label="Email"
@@ -79,11 +113,19 @@ const SignupPage = () => {
           </Form.Item>
 
           <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-            <Button type="primary" htmlType="submit">
+            <Button
+              type="primary"
+              htmlType="submit"
+              disabled={isLoading}
+              loading={isLoading}
+            >
               Signup
             </Button>
           </Form.Item>
         </Form>
+        {error && (
+          <Alert className={styles.error} message={error} type="error" />
+        )}
         <p>
           Already have an account? <Link to="/login">Login</Link>
         </p>
