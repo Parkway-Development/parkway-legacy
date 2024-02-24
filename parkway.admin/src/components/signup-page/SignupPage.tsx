@@ -2,8 +2,7 @@ import styles from './SignupPage.module.css';
 import { Alert, Button, Card, Form, Input } from 'antd';
 import { AuthUser, useAuth } from '../../hooks/useAuth.tsx';
 import { Link, useNavigate } from 'react-router-dom';
-import axios, { AxiosError } from 'axios';
-import { useState } from 'react';
+import { useMutation } from '../../hooks/useAxios';
 
 interface SignupFields {
   email: string;
@@ -19,20 +18,14 @@ interface SignupResponse {
 const SignupPage = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string>();
+  const { loading, error, post } =
+    useMutation<SignupResponse>('/api/user/connect');
 
   const handleSignup = async ({ email, password }: SignupFields) => {
-    const payload = { email, password };
+    const response = await post({ email, password });
 
-    try {
-      setIsLoading(true);
-      setError(undefined);
-      const { data } = await axios.post<SignupResponse>(
-        '/api/user/connect',
-        payload
-      );
-
+    if (response) {
+      const { data } = response;
       const user: AuthUser = {
         id: data._id,
         name: 'Test User',
@@ -41,18 +34,6 @@ const SignupPage = () => {
 
       login(user);
       navigate('/');
-    } catch (err) {
-      if (err instanceof AxiosError) {
-        const message = err.response?.data?.err;
-        if (message) {
-          setError(message);
-          return;
-        }
-      }
-
-      setError('Unexpected error signing up');
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -69,7 +50,7 @@ const SignupPage = () => {
           wrapperCol={{ span: 16 }}
           onFinish={handleSignup}
           autoComplete="off"
-          disabled={isLoading}
+          disabled={loading}
         >
           <Form.Item<SignupFields>
             label="Email"
@@ -116,8 +97,8 @@ const SignupPage = () => {
             <Button
               type="primary"
               htmlType="submit"
-              disabled={isLoading}
-              loading={isLoading}
+              disabled={loading}
+              loading={loading}
             >
               Signup
             </Button>

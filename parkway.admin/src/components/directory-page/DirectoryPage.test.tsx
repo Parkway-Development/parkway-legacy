@@ -1,7 +1,7 @@
 import { expect, test, describe, vi } from 'vitest';
 import DirectoryPage from './DirectoryPage';
 import { AxiosOverrides, mockAxios, render, screen } from '../../test/utils';
-import useAxios from '../../hooks/useAxios';
+import { useGet } from '../../hooks/useAxios';
 import { DirectoryUser } from '../../types/DirectoryUser.ts';
 
 vi.mock('../../hooks/useAxios');
@@ -12,7 +12,7 @@ describe('Directory Page', () => {
   });
 
   const setup = (overrides: AxiosOverrides = {}) => {
-    vi.mocked(useAxios).mockReturnValue(mockAxios(overrides));
+    vi.mocked(useGet).mockReturnValue(mockAxios(overrides));
     return render(<DirectoryPage />);
   };
 

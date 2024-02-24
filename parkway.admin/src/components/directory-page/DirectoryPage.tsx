@@ -1,4 +1,4 @@
-import useAxios from '../../hooks/useAxios';
+import { useGet } from '../../hooks/useAxios';
 import { Alert, Empty, Spin, Table } from 'antd';
 import { DirectoryUser } from '../../types/DirectoryUser';
 import { ColumnsType } from 'antd/lib/table';
@@ -30,7 +30,7 @@ const directoryListColumns: ColumnsType<DirectoryUser> = [
 
 const DirectoryList = () => {
   const { loading, error, data } =
-    useAxios<DirectoryUser[]>('/api/people/getall');
+    useGet<DirectoryUser[]>('/api/people/getall');
 
   if (error) {
     return <Alert type="error" message={error} />;
