@@ -1,6 +1,6 @@
 import styles from './SignupPage.module.css';
 import { Alert, Button, Card, Form, Input } from 'antd';
-import { AuthUser, useAuth } from '../../hooks/useAuth.tsx';
+import { AuthUser, useAuth } from '../../hooks/useAuth';
 import { Link, useNavigate } from 'react-router-dom';
 import { useMutation } from '../../hooks/useAxios';
 
