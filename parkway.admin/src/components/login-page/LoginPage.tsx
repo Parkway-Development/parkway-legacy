@@ -1,7 +1,7 @@
 import styles from './LoginPage.module.css';
 import { Button, Card, Form, Input } from 'antd';
 import { AuthUser, useAuth } from '../../hooks/useAuth.tsx';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 interface LoginFields {
   email: string;
@@ -39,15 +39,19 @@ const LoginPage = () => {
           <Form.Item<LoginFields>
             label="Email"
             name="email"
-            rules={[{ required: true, message: 'Please input your email!' }]}
+            rules={[
+              { required: true, message: 'Required' },
+              { type: 'email', message: 'Invalid email' }
+            ]}
+            validateTrigger="onBlur"
           >
-            <Input />
+            <Input autoFocus />
           </Form.Item>
 
           <Form.Item<LoginFields>
             label="Password"
             name="password"
-            rules={[{ required: true, message: 'Please input your password!' }]}
+            rules={[{ required: true, message: 'Required' }]}
           >
             <Input.Password />
           </Form.Item>
@@ -58,6 +62,9 @@ const LoginPage = () => {
             </Button>
           </Form.Item>
         </Form>
+        <p>
+          <Link to="/signup">Signup</Link> for an account.
+        </p>
       </Card>
     </div>
   );
