@@ -9,8 +9,10 @@ const loginUser = async (req, res) => {
 const signupUser = async (req, res) => {
     const {email, password} = req.body
     try {
-        const user = await User.signup(email, password)
-        res.status(201).json({email, user})
+        console.log(email);
+        console.log(password);
+        const user = await User.signup(email, password);
+        res.status(201).json({email, user});
     } catch (err) {
         res.status(400).json({err: err.message})
     }
