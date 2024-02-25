@@ -15,6 +15,10 @@ interface SignupResponse {
   _id: string;
 }
 
+const passwordRegex = new RegExp(
+  '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[-#!$@£%^&*()_+|~=`{}\\[\\]:";\'<>?,.\\/ ])[A-Za-z\\d-#!$@£%^&*()_+|~=`{}\\[\\]:";\'<>?,.\\/ ]{12,}$'
+);
+
 const SignupPage = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -69,8 +73,13 @@ const SignupPage = () => {
             name="password"
             rules={[
               { required: true, message: 'Required' },
-              { min: 8, message: 'Password must be at least 8 characters.' }
+              {
+                pattern: passwordRegex,
+                message:
+                  'Password must be at least 12 characters with 1 lowercase, 1 uppercase, 1 number, and 1 special character.'
+              }
             ]}
+            validateTrigger="onBlur"
           >
             <Input.Password />
           </Form.Item>
