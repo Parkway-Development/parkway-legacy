@@ -1,22 +1,12 @@
 import styles from './LoginPage.module.css';
 import { Alert, Button, Card, Form, Input } from 'antd';
-import { AuthUser, useAuth } from '../../hooks/useAuth.tsx';
+import { LoginResponse, useAuth } from '../../hooks/useAuth.tsx';
 import { Link, useNavigate } from 'react-router-dom';
 import { useMutation } from '../../hooks/useAxios.ts';
-import { jwtDecode } from 'jwt-decode';
 
 interface LoginFields {
   email: string;
   password: string;
-}
-
-interface LoginResponse {
-  email: string;
-  token: string;
-}
-
-interface TokenPayload {
-  _id: string;
 }
 
 const LoginPage = () => {
@@ -29,15 +19,7 @@ const LoginPage = () => {
     const response = await post(formFields);
 
     if (response) {
-      const { data } = response;
-      const tokenData = jwtDecode<TokenPayload>(data.token);
-      const user: AuthUser = {
-        id: tokenData._id,
-        name: `User Id ${tokenData._id}`,
-        email: data.email
-      };
-
-      login(user);
+      login(response.data);
       navigate('/');
     }
   };

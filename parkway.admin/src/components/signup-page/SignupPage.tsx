@@ -1,6 +1,6 @@
 import styles from './SignupPage.module.css';
 import { Alert, Button, Card, Form, Input } from 'antd';
-import { AuthUser, useAuth } from '../../hooks/useAuth';
+import { LoginResponse, useAuth } from '../../hooks/useAuth';
 import { Link, useNavigate } from 'react-router-dom';
 import { useMutation } from '../../hooks/useAxios';
 
@@ -8,11 +8,6 @@ interface SignupFields {
   email: string;
   password: string;
   confirmPassword: string;
-}
-
-interface SignupResponse {
-  email: string;
-  _id: string;
 }
 
 const passwordRegex = new RegExp(
@@ -23,20 +18,13 @@ const SignupPage = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
   const { loading, error, post } =
-    useMutation<SignupResponse>('/api/user/connect');
+    useMutation<LoginResponse>('/api/user/connect');
 
   const handleSignup = async ({ email, password }: SignupFields) => {
     const response = await post({ email, password });
 
     if (response) {
-      const { data } = response;
-      const user: AuthUser = {
-        id: data._id,
-        name: 'Test User',
-        email: data.email
-      };
-
-      login(user);
+      login(response.data);
       navigate('/');
     }
   };
