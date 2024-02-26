@@ -2,6 +2,11 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const validator = require('validator');
 const { log } = require('console');
+const jwt = require('jsonwebtoken');
+
+const createToken = (_id) => {
+    return jwt.sign({_id}, process.env.JWT_SECRET, {expiresIn: process.env.JWT_EXPIRES_IN})    
+}
 
 const userSchema = new mongoose.Schema({
     email: {
@@ -23,17 +28,22 @@ const userSchema = new mongoose.Schema({
 //static signup method
 userSchema.statics.signup = async function(email, password) {
 
-    //validation
     if(!email || !password) {
-        throw Error('Right.  Like you are gonna get away with that!  I need a real email and a strong password!')
+        throw Error('All fields are required.')
     }
 
     if(!validator.isEmail(email)) {
-        throw Error('Yo!....how about a good email?')
+        throw Error('Invalid email')
     }
 
-    if(!validator.isStrongPassword(password, [{minlength: 12, minLowercase: 1, minUppercase: 1, minNumbers: 1, minSymbols: 1}])) {
-        throw Error('It aint strong enough!  It has to be at least 12 characters long, and have at least 1 each of lowercase, uppercase, number, and symbol (like an * or something).  You can do it!  I believe in you!')
+    const length = process.env.MINIMUM_PASSWORD_LENGTH;
+    const lowercase = process.env.MINIMUM_PASSWORD_LOWERCASE;
+    const uppercase = process.env.MINIMUM_PASSWORD_UPPERCASE;
+    const numbers = process.env.MINIMUM_PASSWORD_NUMBERS;
+    const symbols = process.env.MINIMUM_PASSWORD_SYMBOLS;
+
+    if(!validator.isStrongPassword(password, [{minlength: length, minLowercase: lowercase, minUppercase: uppercase, minNumbers: numbers, minSymbols: symbols}])) {
+        throw Error('Password is not strong enough')
     }
 
     const exists = await this.findOne({email})
@@ -48,6 +58,26 @@ userSchema.statics.signup = async function(email, password) {
     const result = user.toObject();
     delete result.password;
     return result;
+}
+
+userSchema.statics.login = async function(email, password) {
+
+    if(!email || !password) {
+        throw Error('All fields are required.')
+    }
+
+    const user = await this.findOne({email})
+    if(!user) {
+        throw Error('Invalid credentials.')
+    }
+
+    const authenticate = await bcrypt.compare(password, user.password)
+
+    if(!authenticate) {
+        throw Error('Invalid credentials.')
+    }
+
+    return user;
 }
 
 module.exports = mongoose.model('User', userSchema, 'users')
