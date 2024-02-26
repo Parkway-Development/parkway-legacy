@@ -112,7 +112,7 @@ const deleteProfile = async (req, res) => {
 }
 
 //Join a profile to a user
-const connectUserToProfile = async (req, res) => {
+const connectUserAndProfile = async (req, res) => {
 
     const { userId } = req.body;
     const { profileId } = req.params;
@@ -141,15 +141,17 @@ const connectUserToProfile = async (req, res) => {
     }
 
     //Update the profile with the user account
-    const profile = await Profile.findByIdAndUpdate({_id: profileId}, {
-        userId: userId
-    },
-    {
-        new: true
-    })
+    const profile = await Profile.findByIdAndUpdate({_id: profileId}, {userId: userId},{new: true})
 
     if(!profile){
         return res.status(404).json({error: "There was a problem updating the profile."})
+    }
+
+    //Update the profile with user account
+    const newUser = await User.findByIdAndUpdate({_id: userId}, { profileId: profileId}, {new: true})
+
+    if(!newUser){
+        return res.status(404).json({error: "There was a problem updating the user account."})
     }
 
     res.status(200).json(profile)
@@ -163,5 +165,5 @@ module.exports = {
     getByMobile, 
     updateProfile, 
     deleteProfile,
-    connectUserToProfile 
+    connectUserAndProfile 
 }

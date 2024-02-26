@@ -5,8 +5,7 @@ const router = express.Router();
 const {
     signupUser, 
     loginUser, 
-    getAll,
-    connectProfileToUser} = require('../controllers/userController');
+    getAll} = require('../controllers/userController');
 
 //login route
 router.post('/login', loginUser)
@@ -16,8 +15,5 @@ router.post('/connect', signupUser)
 
 //get all users
 router.get('/', getAll)
-
-//connect a profile to a user
-router.post('/connect/:userId', connectProfileToUser)
 
 module.exports = router;

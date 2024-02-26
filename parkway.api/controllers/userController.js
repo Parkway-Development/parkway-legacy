@@ -1,6 +1,5 @@
 const User = require('../models/userModel')
 const jwt = require('jsonwebtoken');
-const Profile = require('../models/profileModel')
 
 const createToken = (_id) => {
     return jwt.sign({_id}, process.env.JWT_SECRET, {expiresIn: process.env.JWT_EXPIRATION})    
@@ -39,52 +38,7 @@ const getAll = async (req, res) => {
     res.status(200).json(users)
 }
 
-//Join a profile to a user
-const connectProfileToUser = async (req, res) => {
-
-    const { userId } = req.params;
-    const { profileId } = req.body;
-
-    if(!userId){
-        return res.status(400).json({error: 'No such user.'})
-    }
-
-    if(!profileId){
-        return res.status(400).json({error: 'Required parameters not supplied in body.'})
-    }
-
-    if(!mongoose.Types.ObjectId.isValid(profileId)){
-        return res.status(404).json({error: 'No such profile.'})
-    }
-
-    if(!mongoose.Types.ObjectId.isValid(userId)){
-        return res.status(404).json({error: 'No such user.'})
-    }
-
-    //Make sure the user account exists
-    const profile = await Profile.findById(profileId);
-
-    if(!profile){
-        return res.status(404).json({error: 'No such user account.'})
-    }
-
-    //Update the profile with the user account
-    const user = await User.findByIdAndUpdate({_id: userId}, {
-        profileId: profileId
-    },
-    {
-        new: true
-    })
-
-    if(!user){
-        return res.status(404).json({error: "There was a problem updating the user."})
-    }
-
-    res.status(200).json(profile)
-}
-
 module.exports = { 
     signupUser, 
     loginUser,
-    getAll,
-    connectProfileToUser}
+    getAll}
