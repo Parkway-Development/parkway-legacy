@@ -3,6 +3,7 @@ import { Alert, Button, Card, Form, Input } from 'antd';
 import { AuthUser, useAuth } from '../../hooks/useAuth.tsx';
 import { Link, useNavigate } from 'react-router-dom';
 import { useMutation } from '../../hooks/useAxios.ts';
+import { jwtDecode } from 'jwt-decode';
 
 interface LoginFields {
   email: string;
@@ -11,6 +12,10 @@ interface LoginFields {
 
 interface LoginResponse {
   email: string;
+  token: string;
+}
+
+interface TokenPayload {
   _id: string;
 }
 
@@ -25,9 +30,10 @@ const LoginPage = () => {
 
     if (response) {
       const { data } = response;
+      const tokenData = jwtDecode<TokenPayload>(data.token);
       const user: AuthUser = {
-        id: data._id,
-        name: 'Test User',
+        id: tokenData._id,
+        name: `User Id ${tokenData._id}`,
         email: data.email
       };
 
