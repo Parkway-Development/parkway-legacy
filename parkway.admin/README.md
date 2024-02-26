@@ -4,6 +4,12 @@
 
 Run `npm install` to get depedencies installed.
 
+Add the following `env.local` file. Note, leaving the URL empty will allow the vite dev proxy to forward requests to `http://localhost:3000` as configured in `vite.config.js` for requests starting with `/api`.
+```text
+VITE_API_URL=
+
+```
+
 ## Development
 
 Run `npm run dev` to launch dev mode.

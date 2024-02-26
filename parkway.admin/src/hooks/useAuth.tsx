@@ -13,6 +13,7 @@ interface AuthContextType {
   login: (data: LoginResponse) => void;
   logout: () => void;
   isLoggedIn: boolean;
+  token: string | undefined;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -51,7 +52,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       user,
       login,
       logout,
-      isLoggedIn: user !== undefined && token !== undefined && !isExpired
+      isLoggedIn: user !== undefined && token !== undefined && !isExpired,
+      token
     };
   }, [user, setUser, token]);
 

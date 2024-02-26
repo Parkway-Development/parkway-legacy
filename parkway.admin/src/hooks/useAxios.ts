@@ -1,7 +1,17 @@
 import { useEffect, useState } from 'react';
 import axios, { AxiosError, AxiosResponse } from 'axios';
+import { useAuth } from './useAuth.tsx';
+
+const createInstance = (token: string | undefined) =>
+  axios.create({
+    headers: {
+      Authorization: token ? `Bearer ${token}` : undefined
+    },
+    baseURL: import.meta.env.VITE_API_URL
+  });
 
 export const useGet = <TResult>(url: string) => {
+  const { token } = useAuth();
   const [data, setData] = useState<TResult>();
   const [error, setError] = useState<string>();
   const [loading, setLoading] = useState(false);
@@ -12,7 +22,8 @@ export const useGet = <TResult>(url: string) => {
       setError(undefined);
 
       try {
-        const { data } = await axios.get<TResult>(url);
+        const instance = createInstance(token);
+        const { data } = await instance.get<TResult>(url);
         setData(data);
       } catch (err) {
         if (err instanceof AxiosError) {
@@ -38,6 +49,7 @@ export const useGet = <TResult>(url: string) => {
 type mutationMethods = 'post' | 'put' | 'patch' | 'delete';
 
 export const useMutation = <TResult>(url: string) => {
+  const { token } = useAuth();
   const [error, setError] = useState<string>();
   const [loading, setLoading] = useState(false);
 
@@ -49,16 +61,19 @@ export const useMutation = <TResult>(url: string) => {
     setError(undefined);
 
     let response: AxiosResponse<TResult> | undefined = undefined;
+    const instance = createInstance(token);
+    console.log('instance', instance.defaults.baseURL);
+    console.log('base url', import.meta.env.VITE_API_URL);
 
     try {
       if (method === 'post') {
-        response = await axios.post<TResult>(url, payload);
+        response = await instance.post<TResult>(url, payload);
       } else if (method === 'put') {
-        response = await axios.put<TResult>(url, payload);
+        response = await instance.put<TResult>(url, payload);
       } else if (method === 'patch') {
-        response = await axios.patch<TResult>(url, payload);
+        response = await instance.patch<TResult>(url, payload);
       } else if (method === 'delete') {
-        response = await axios.delete<TResult>(url);
+        response = await instance.delete<TResult>(url);
       }
 
       return response;
