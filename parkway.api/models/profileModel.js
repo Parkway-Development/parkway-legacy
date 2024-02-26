@@ -50,6 +50,11 @@ const profileSchema = new mongoose.Schema({
         required: false,
         type: String
     },
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: false
+    },
     // member:{
     //     required: true,
     //     default: false,
