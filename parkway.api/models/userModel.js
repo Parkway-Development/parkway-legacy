@@ -2,11 +2,6 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const validator = require('validator');
 const { log } = require('console');
-const jwt = require('jsonwebtoken');
-
-const createToken = (_id) => {
-    return jwt.sign({_id}, process.env.JWT_SECRET, {expiresIn: process.env.JWT_EXPIRES_IN})    
-}
 
 const userSchema = new mongoose.Schema({
     email: {
