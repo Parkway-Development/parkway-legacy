@@ -1,26 +1,39 @@
 import styles from './LoginPage.module.css';
-import { Button, Card, Form, Input } from 'antd';
+import { Alert, Button, Card, Form, Input } from 'antd';
 import { AuthUser, useAuth } from '../../hooks/useAuth.tsx';
 import { Link, useNavigate } from 'react-router-dom';
+import { useMutation } from '../../hooks/useAxios.ts';
 
 interface LoginFields {
   email: string;
   password: string;
 }
 
+interface LoginResponse {
+  email: string;
+  _id: string;
+}
+
 const LoginPage = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
+  const { loading, error, post } =
+    useMutation<LoginResponse>('/api/user/login');
 
-  const handleLogin = (formFields: LoginFields) => {
-    const user: AuthUser = {
-      id: '1234',
-      name: 'Temp User',
-      email: formFields.email
-    };
+  const handleLogin = async (formFields: LoginFields) => {
+    const response = await post(formFields);
 
-    login(user);
-    navigate('/');
+    if (response) {
+      const { data } = response;
+      const user: AuthUser = {
+        id: data._id,
+        name: 'Test User',
+        email: data.email
+      };
+
+      login(user);
+      navigate('/');
+    }
   };
 
   return (
@@ -36,6 +49,7 @@ const LoginPage = () => {
           wrapperCol={{ span: 16 }}
           onFinish={handleLogin}
           autoComplete="off"
+          disabled={loading}
         >
           <Form.Item<LoginFields>
             label="Email"
@@ -58,11 +72,19 @@ const LoginPage = () => {
           </Form.Item>
 
           <Form.Item wrapperCol={{ offset: 6, span: 16 }}>
-            <Button type="primary" htmlType="submit">
+            <Button
+              type="primary"
+              htmlType="submit"
+              disabled={loading}
+              loading={loading}
+            >
               Submit
             </Button>
           </Form.Item>
         </Form>
+        {error && (
+          <Alert className={styles.error} message={error} type="error" />
+        )}
         <p>
           <Link to="/signup">Signup</Link> for an account.
         </p>
