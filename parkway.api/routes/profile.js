@@ -6,7 +6,8 @@ const {
     getByLastName,
     getByMobile,
     updateProfile,
-    deleteProfile
+    deleteProfile,
+    connectUserToProfile
 } = require('../controllers/profileController')
 
 const router = express.Router();
@@ -31,5 +32,8 @@ router.patch('/:id', updateProfile)
 
 //Delete profile by id
 router.delete('/:id', deleteProfile)
+
+//Join a profile with a user
+router.post('/join/:profileId', connectUserToProfile)
 
 module.exports = router;

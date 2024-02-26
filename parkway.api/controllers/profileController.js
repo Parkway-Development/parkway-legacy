@@ -1,5 +1,6 @@
 const Profile = require('../models/profileModel')
 const mongoose = require('mongoose')
+const User = require('../models/userModel')
 
 //Post a profile
 const addProfile = async (req, res) => {
@@ -15,7 +16,8 @@ const addProfile = async (req, res) => {
         streetaddress2: req.body.streetaddress2,
         city: req.body.city,
         state: req.body.state,
-        zip: req.body.zip
+        zip: req.body.zip,
+        user: req.body.user
     })
 
     const profileToSave = await profile.save();
@@ -109,6 +111,50 @@ const deleteProfile = async (req, res) => {
     res.status(200).json(`The profile for ${profile.firstname + " " + profile.lastname} has been deleted.`)
 }
 
+//Join a profile to a user
+const connectUserToProfile = async (req, res) => {
+
+    const { userId } = req.body;
+    const { profileId } = req.params;
+
+    if(!profileId){
+        return res.status(400).json({error: 'No such profile for: ' + profileId})
+    }
+
+    if(!userId){
+        return res.status(400).json({error: 'Required parameters not supplied in body.'})
+    }
+
+    if(!mongoose.Types.ObjectId.isValid(userId)){
+        return res.status(404).json({error: 'No such user account.'})
+    }
+
+    if(!mongoose.Types.ObjectId.isValid(profileId)){
+        return res.status(404).json({error: 'No such profile.'})
+    }
+
+    //Make sure the user account exists
+    const user = await User.findById(userId);
+
+    if(!user){
+        return res.status(404).json({error: 'No such user account.'})
+    }
+
+    //Update the profile with the user account
+    const profile = await Profile.findByIdAndUpdate({_id: profileId}, {
+        userId: userId
+    },
+    {
+        new: true
+    })
+
+    if(!profile){
+        return res.status(404).json({error: "There was a problem updating the profile."})
+    }
+
+    res.status(200).json(profile)
+}
+
 module.exports = { 
     addProfile, 
     getAll, 
@@ -116,5 +162,6 @@ module.exports = {
     getByLastName, 
     getByMobile, 
     updateProfile, 
-    deleteProfile 
+    deleteProfile,
+    connectUserToProfile 
 }
