@@ -13,6 +13,10 @@ const profileSchema = new mongoose.Schema({
         required: false,
         type: String
     },
+    nickname: {
+        required: false,
+        type: String
+    },
     dateofbirth: {
         required: false,
         type: Date
