@@ -29,6 +29,16 @@ const signupUser = async (req, res) => {
     }
 }
 
-//profile
+//Get All Users
+const getAll = async (req, res) => {
+    const users = await User.find({}).sort({email: 1});
+    if(!users){
+        return res.status(404).json({mssg: "No users were returned."})
+    }
+    res.status(200).json(users)
+}
 
-module.exports = { signupUser, loginUser }
+module.exports = { 
+    signupUser, 
+    loginUser,
+    getAll}
