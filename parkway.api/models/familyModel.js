@@ -4,16 +4,16 @@ const familySchema = new mongoose.Schema({
     fatherId: {
         required: false,
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Person'
+        ref: 'Profile'
     },
     motherId: {
         required: false,
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Person'
+        ref: 'Profile'
     },
     children: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Person'
+        ref: 'Profile'
     }],
     status: {
         type: String,
