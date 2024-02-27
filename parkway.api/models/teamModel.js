@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const shortProfileSchema = require('./profileModel').schema;
 
 const teamSchema = new mongoose.Schema({
     name: {
@@ -6,32 +7,20 @@ const teamSchema = new mongoose.Schema({
         type: String
     },
     description: {
-        required: true,
+        required: false,
         type: String
     },
-    leader: {
-        required: true,
+    leaderId: {
+        required: false,
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     },
-    members: {
-        type: [teamMemberSchema], // Array of teamMember documents
-        required: false // Not required by default, but you can remove this if unnecessary
-    }
+    members: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'}
+    ]
 });
 
-const teamMemberSchema = new mongoose.Schema({
-    userId: {
-        type: mongoose.Schema.Types.ObjectId, 
-        ref: 'User',
-        required: true
-    },
-    role: {
-        type: String,
-        required: true,
-        default: 'member'
-    }
-});
 
 // teams: [{
 //     type: String,
