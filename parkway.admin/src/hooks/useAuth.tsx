@@ -1,6 +1,13 @@
-import { createContext, ReactNode, useContext, useMemo } from 'react';
+import {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useMemo
+} from 'react';
 import { useLocalStorage } from './useLocalStorage';
 import { jwtDecode } from 'jwt-decode';
+import { useNavigate } from 'react-router-dom';
 
 export interface AuthUser {
   id: string;
@@ -21,6 +28,15 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useLocalStorage<AuthUser>('user', undefined);
   const [token, setToken] = useLocalStorage<string>('token', undefined);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (token) {
+      navigate('/');
+    } else {
+      navigate('/login');
+    }
+  }, [token]);
 
   const value = useMemo(() => {
     const login = (data: LoginResponse) => {

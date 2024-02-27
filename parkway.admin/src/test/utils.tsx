@@ -1,6 +1,7 @@
 import { cleanup, render } from '@testing-library/react';
 import { afterEach } from 'vitest';
 import { AxiosResponse } from 'axios';
+import { MemoryRouter } from 'react-router-dom';
 
 afterEach(() => {
   cleanup();
@@ -9,7 +10,7 @@ afterEach(() => {
 const customRender = (ui: React.ReactElement, options = {}) =>
   render(ui, {
     // wrap provider(s) here if needed
-    wrapper: ({ children }) => children,
+    wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter>,
     ...options
   });
 
