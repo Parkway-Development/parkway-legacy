@@ -1,5 +1,5 @@
-const Profile = require('../models/profileModel')
 const mongoose = require('mongoose')
+const Profile = require('../models/profileModel')
 const User = require('../models/userModel')
 
 //Post a profile
