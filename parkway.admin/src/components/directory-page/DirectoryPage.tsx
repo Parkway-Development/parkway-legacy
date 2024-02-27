@@ -29,8 +29,7 @@ const directoryListColumns: ColumnsType<DirectoryUser> = [
 ];
 
 const DirectoryList = () => {
-  const { loading, error, data } =
-    useGet<DirectoryUser[]>('/api/people/getall');
+  const { loading, error, data } = useGet<DirectoryUser[]>('/api/profile');
 
   if (error) {
     return <Alert type="error" message={error} />;
