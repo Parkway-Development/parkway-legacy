@@ -63,7 +63,7 @@ const profileSchema = new mongoose.Schema({
     status:{
         type: String,
         required: true,
-        default: 'Active',
+        default: 'active',
         enum: ['active', 'inactive', 'deceased','visitor']
     },
     applicationrole: {
