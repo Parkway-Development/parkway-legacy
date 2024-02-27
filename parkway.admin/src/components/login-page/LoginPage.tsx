@@ -1,7 +1,7 @@
 import styles from './LoginPage.module.css';
 import { Alert, Button, Card, Form, Input } from 'antd';
 import { LoginResponse, useAuth } from '../../hooks/useAuth.tsx';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useMutation } from '../../hooks/useAxios.ts';
 
 interface LoginFields {
@@ -11,7 +11,6 @@ interface LoginFields {
 
 const LoginPage = () => {
   const { login } = useAuth();
-  const navigate = useNavigate();
   const { loading, error, post } =
     useMutation<LoginResponse>('/api/user/login');
 
@@ -20,7 +19,6 @@ const LoginPage = () => {
 
     if (response) {
       login(response.data);
-      navigate('/');
     }
   };
 

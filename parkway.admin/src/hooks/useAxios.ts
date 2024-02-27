@@ -10,8 +10,29 @@ const createInstance = (token: string | undefined) =>
     baseURL: import.meta.env.VITE_API_URL
   });
 
+const handleError = (
+  err: unknown,
+  logout: () => void,
+  setError: (errorMessage: string | undefined) => void
+) => {
+  if (err instanceof AxiosError) {
+    if (err.response?.status === 401 || err.response?.status === 403) {
+      logout();
+      return;
+    }
+
+    const message = err.response?.data?.err;
+    if (message) {
+      setError(message);
+      return;
+    }
+  }
+
+  setError('Unexpected error');
+};
+
 export const useGet = <TResult>(url: string) => {
-  const { token } = useAuth();
+  const { token, logout } = useAuth();
   const [data, setData] = useState<TResult>();
   const [error, setError] = useState<string>();
   const [loading, setLoading] = useState(false);
@@ -26,15 +47,7 @@ export const useGet = <TResult>(url: string) => {
         const { data } = await instance.get<TResult>(url);
         setData(data);
       } catch (err) {
-        if (err instanceof AxiosError) {
-          const message = err.response?.data?.err;
-          if (message) {
-            setError(message);
-            return;
-          }
-        }
-
-        setError('Unexpected error fetching data');
+        handleError(err, logout, setError);
       } finally {
         setLoading(false);
       }
@@ -49,7 +62,7 @@ export const useGet = <TResult>(url: string) => {
 type mutationMethods = 'post' | 'put' | 'patch' | 'delete';
 
 export const useMutation = <TResult>(url: string) => {
-  const { token } = useAuth();
+  const { token, logout } = useAuth();
   const [error, setError] = useState<string>();
   const [loading, setLoading] = useState(false);
 
@@ -62,8 +75,6 @@ export const useMutation = <TResult>(url: string) => {
 
     let response: AxiosResponse<TResult> | undefined = undefined;
     const instance = createInstance(token);
-    console.log('instance', instance.defaults.baseURL);
-    console.log('base url', import.meta.env.VITE_API_URL);
 
     try {
       if (method === 'post') {
@@ -78,15 +89,7 @@ export const useMutation = <TResult>(url: string) => {
 
       return response;
     } catch (err) {
-      if (err instanceof AxiosError) {
-        const message = err.response?.data?.err;
-        if (message) {
-          setError(message);
-          return;
-        }
-      }
-
-      setError('Unexpected error');
+      handleError(err, logout, setError);
     } finally {
       setLoading(false);
     }

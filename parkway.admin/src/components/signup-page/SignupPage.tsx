@@ -1,7 +1,7 @@
 import styles from './SignupPage.module.css';
 import { Alert, Button, Card, Form, Input } from 'antd';
 import { LoginResponse, useAuth } from '../../hooks/useAuth';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useGet, useMutation } from '../../hooks/useAxios';
 
 interface SignupFields {
@@ -42,7 +42,6 @@ const PasswordRequirement = ({ count, display }: PasswordRequirementProps) => {
 
 const SignupPage = () => {
   const { login } = useAuth();
-  const navigate = useNavigate();
   const { data: passwordSettings, loading: passwordSettingsLoading } =
     useGet<PasswordSettings>('/api/setting/password');
   const { loading, error, post } =
@@ -53,7 +52,6 @@ const SignupPage = () => {
 
     if (response) {
       login(response.data);
-      navigate('/');
     }
   };
 
