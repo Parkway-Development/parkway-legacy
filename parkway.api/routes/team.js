@@ -6,7 +6,11 @@ const {
     getById,
     getByName,
     updateTeam,
-    deleteTeam
+    deleteTeam,
+    addLeader,
+    removeLeader,
+    addMembers,
+    removeMembers
 } = require('../controllers/teamController')
 
 //Post a team
@@ -26,5 +30,17 @@ router.patch('/:id', updateTeam)
 
 //Delete team by id
 router.delete('/:id', deleteTeam)
+
+//Add a leader
+router.post('/addleader/:id', addLeader)
+
+//Add a member
+router.post('/removeleader/:id', removeLeader)
+
+//add multiple members
+router.post('/addmembers/:id', addMembers)
+
+//remove multiple members
+router.post('/removemembers/:id', removeMembers)
 
 module.exports = router;

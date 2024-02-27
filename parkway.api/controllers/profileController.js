@@ -8,6 +8,7 @@ const addProfile = async (req, res) => {
         firstname: req.body.firstname,
         lastname: req.body.lastname,
         middleinitial: req.body.middleinitial,
+        nickname: req.body.nickname,
         dateofbirth: req.body.dateofbirth,
         gender: req.body.gender,
         email: req.body.email,
@@ -17,7 +18,11 @@ const addProfile = async (req, res) => {
         city: req.body.city,
         state: req.body.state,
         zip: req.body.zip,
-        user: req.body.user
+        userId: req.body.userId,
+        member: req.body.member,
+        status: req.body.status,
+        applicationrole: req.body.applicationrole,
+        
     })
 
     const profileToSave = await profile.save();
