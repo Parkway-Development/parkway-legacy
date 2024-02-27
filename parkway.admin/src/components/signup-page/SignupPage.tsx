@@ -18,6 +18,14 @@ interface PasswordSettings {
   minimumSymbols: number;
 }
 
+export const DefaultPasswordSettings: PasswordSettings = {
+  minimumLength: 12,
+  minimumLowercase: 1,
+  minimumUppercase: 1,
+  minimumNumbers: 1,
+  minimumSymbols: 1
+};
+
 interface PasswordRequirementProps {
   count: number;
   display: string;
@@ -51,13 +59,7 @@ const SignupPage = () => {
 
   const settings = passwordSettings
     ? passwordSettings
-    : {
-        minimumLength: 12,
-        minimumLowercase: 1,
-        minimumUppercase: 1,
-        minimumNumbers: 1,
-        minimumSymbols: 1
-      };
+    : DefaultPasswordSettings;
 
   const passwordRegex = new RegExp(
     `^(?=.*[a-z]){${settings.minimumLowercase},}(?=.*[A-Z]){${settings.minimumUppercase},}(?=.*\\d){${settings.minimumNumbers},}(?=.*[-#!$@£%^&*()_+|~=\`{}\\[\\]:";'<>?,.\\/ ]){${settings.minimumSymbols},}[A-Za-z\\d-#!$@£%^&*()_+|~=\`{}\\[\\]:";'<>?,.\\/ ]{${settings.minimumLength},}$`
