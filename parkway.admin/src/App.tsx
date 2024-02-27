@@ -5,10 +5,10 @@ import { useAuth } from './hooks/useAuth.tsx';
 import { SyntheticEvent } from 'react';
 
 function App() {
-  const { user, logout } = useAuth();
+  const { isLoggedIn, logout, user } = useAuth();
   const navigate = useNavigate();
 
-  if (!user) navigate('/login');
+  if (!isLoggedIn) navigate('/login');
 
   const handleLogout = (e: SyntheticEvent) => {
     e.preventDefault();

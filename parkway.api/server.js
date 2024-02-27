@@ -22,6 +22,7 @@ app.use('/api/user', userRoutes);
 app.use('/api/profile', profileRoutes);
 app.use('/api/team', teamRoutes);
 
+
 //Database connection
 mongoose.connect(process.env.DATABASE_URL)
     .then(() => {

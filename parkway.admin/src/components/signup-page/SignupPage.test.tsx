@@ -1,19 +1,15 @@
 import { expect, test, describe, vi } from 'vitest';
-import SignupPage from './SignupPage';
+import SignupPage, { DefaultPasswordSettings } from './SignupPage';
 import {
+  mockGet,
   mockMutation,
   MutationOverrides,
   render,
   screen,
   userEvent
 } from '../../test/utils';
-import { useMutation } from '../../hooks/useAxios';
+import { useGet, useMutation } from '../../hooks/useAxios';
 
-const mockedUsedNavigate = vi.fn();
-vi.mock('react-router-dom', () => ({
-  Link: () => <></>,
-  useNavigate: () => mockedUsedNavigate
-}));
 vi.mock('../../hooks/useAuth', () => ({
   useAuth: () => ({
     login: vi.fn()
@@ -28,6 +24,9 @@ describe('Signup Page', () => {
 
   const setup = (overrides: MutationOverrides = {}) => {
     vi.mocked(useMutation).mockReturnValue(mockMutation(overrides));
+    vi.mocked(useGet).mockReturnValue(
+      mockGet({ data: DefaultPasswordSettings })
+    );
     return render(<SignupPage />);
   };
 
@@ -54,13 +53,15 @@ describe('Signup Page', () => {
     expect(await screen.findByText(/invalid email/i)).toBeVisible();
   });
 
-  test('Require password of at least 8 characters', async () => {
+  test('Requires strong password', async () => {
     setup();
     await userEvent.type(screen.getByLabelText(/^password/i), 'abc');
     await userEvent.click(screen.getByRole('button', { name: /signup/i }));
-    expect(
-      await screen.findByText(/must be at least 8 characters/i)
-    ).toBeVisible();
+    expect(await screen.findByText(/minimum length: 12/i)).toBeVisible();
+    expect(screen.getByText(/minimum uppercase: 1/i)).toBeVisible();
+    expect(screen.getByText(/minimum lowercase: 1/i)).toBeVisible();
+    expect(screen.getByText(/minimum numbers: 1/i)).toBeVisible();
+    expect(screen.getByText(/minimum symbols: 1/i)).toBeVisible();
   });
 
   test('Require passwords to match', async () => {
@@ -83,10 +84,10 @@ describe('Signup Page', () => {
     const mockPost = vi.fn();
     setup({ post: mockPost });
     await userEvent.type(screen.getByLabelText(/email/i), 'test@test.com');
-    await userEvent.type(screen.getByLabelText(/^password/i), 'abcd1234');
+    await userEvent.type(screen.getByLabelText(/^password/i), 'abcd1234#ABC');
     await userEvent.type(
       screen.getByLabelText(/^confirm password/i),
-      'abcd1234'
+      'abcd1234#ABC'
     );
 
     expect(mockPost).not.toHaveBeenCalled();
