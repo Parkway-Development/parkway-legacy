@@ -10,11 +10,6 @@ import {
 } from '../../test/utils';
 import { useGet, useMutation } from '../../hooks/useAxios';
 
-const mockedUsedNavigate = vi.fn();
-vi.mock('react-router-dom', () => ({
-  Link: () => <></>,
-  useNavigate: () => mockedUsedNavigate
-}));
 vi.mock('../../hooks/useAuth', () => ({
   useAuth: () => ({
     login: vi.fn()
