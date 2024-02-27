@@ -2,7 +2,7 @@ import styles from './SignupPage.module.css';
 import { Alert, Button, Card, Form, Input } from 'antd';
 import { LoginResponse, useAuth } from '../../hooks/useAuth';
 import { Link, useNavigate } from 'react-router-dom';
-import { useMutation } from '../../hooks/useAxios';
+import { useGet, useMutation } from '../../hooks/useAxios';
 
 interface SignupFields {
   email: string;
@@ -10,13 +10,33 @@ interface SignupFields {
   confirmPassword: string;
 }
 
-const passwordRegex = new RegExp(
-  '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[-#!$@£%^&*()_+|~=`{}\\[\\]:";\'<>?,.\\/ ])[A-Za-z\\d-#!$@£%^&*()_+|~=`{}\\[\\]:";\'<>?,.\\/ ]{12,}$'
-);
+interface PasswordSettings {
+  minimumLength: number;
+  minimumLowercase: number;
+  minimumUppercase: number;
+  minimumNumbers: number;
+  minimumSymbols: number;
+}
+
+interface PasswordRequirementProps {
+  count: number;
+  display: string;
+}
+
+const PasswordRequirement = ({ count, display }: PasswordRequirementProps) => {
+  if (count <= 0) return null;
+  return (
+    <li>
+      {display}: {count}
+    </li>
+  );
+};
 
 const SignupPage = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
+  const { data: passwordSettings, loading: passwordSettingsLoading } =
+    useGet<PasswordSettings>('/api/setting/password');
   const { loading, error, post } =
     useMutation<LoginResponse>('/api/user/connect');
 
@@ -28,6 +48,20 @@ const SignupPage = () => {
       navigate('/');
     }
   };
+
+  const settings = passwordSettings
+    ? passwordSettings
+    : {
+        minimumLength: 12,
+        minimumLowercase: 1,
+        minimumUppercase: 1,
+        minimumNumbers: 1,
+        minimumSymbols: 1
+      };
+
+  const passwordRegex = new RegExp(
+    `^(?=.*[a-z]){${settings.minimumLowercase},}(?=.*[A-Z]){${settings.minimumUppercase},}(?=.*\\d){${settings.minimumNumbers},}(?=.*[-#!$@£%^&*()_+|~=\`{}\\[\\]:";'<>?,.\\/ ]){${settings.minimumSymbols},}[A-Za-z\\d-#!$@£%^&*()_+|~=\`{}\\[\\]:";'<>?,.\\/ ]{${settings.minimumLength},}$`
+  );
 
   return (
     <div className={styles.page}>
@@ -42,7 +76,7 @@ const SignupPage = () => {
           wrapperCol={{ span: 16 }}
           onFinish={handleSignup}
           autoComplete="off"
-          disabled={loading}
+          disabled={loading || passwordSettingsLoading}
         >
           <Form.Item<SignupFields>
             label="Email"
@@ -63,8 +97,31 @@ const SignupPage = () => {
               { required: true, message: 'Required' },
               {
                 pattern: passwordRegex,
-                message:
-                  'Password must be at least 12 characters with 1 lowercase, 1 uppercase, 1 number, and 1 special character.'
+                message: (
+                  <ul>
+                    Password Not Strong Enough
+                    <PasswordRequirement
+                      count={settings.minimumLength}
+                      display="Minimum Length"
+                    />
+                    <PasswordRequirement
+                      count={settings.minimumUppercase}
+                      display="Minimum Uppercase"
+                    />
+                    <PasswordRequirement
+                      count={settings.minimumLowercase}
+                      display="Minimum Lowercase"
+                    />
+                    <PasswordRequirement
+                      count={settings.minimumNumbers}
+                      display="Minimum Numbers"
+                    />
+                    <PasswordRequirement
+                      count={settings.minimumSymbols}
+                      display="Minimum Symbols"
+                    />
+                  </ul>
+                )
               }
             ]}
             validateTrigger="onBlur"
