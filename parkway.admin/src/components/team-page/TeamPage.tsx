@@ -3,7 +3,7 @@ import { Button, Form, Input, notification } from 'antd';
 import { useEffect } from 'react';
 import { Team } from '../../types/Team.ts';
 import styles from './TeamPage.module.css';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 interface TeamFields {
   name: string;
@@ -15,6 +15,7 @@ interface TeamFields {
 const TeamPage = () => {
   const { loading, error, post } = useMutation<Team>('/api/team');
   const [api, contextHolder] = notification.useNotification();
+  const navigate = useNavigate();
 
   const handleLogin = async (fields: TeamFields) => {
     const payload: Omit<Team, '_id'> = {
@@ -24,11 +25,10 @@ const TeamPage = () => {
     };
 
     const result = await post(payload);
-    console.log('result', result);
 
-    api.success({
-      message: `Team ${fields.name} added!`
-    });
+    if (result) {
+      navigate('/teams');
+    }
   };
 
   useEffect(() => {

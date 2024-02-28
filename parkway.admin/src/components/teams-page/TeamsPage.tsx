@@ -4,6 +4,7 @@ import { ColumnsType } from 'antd/lib/table';
 import styles from './TeamsPage.module.css';
 import { Team } from '../../types/Team.ts';
 import { Link } from 'react-router-dom';
+import DeleteButton from '../delete-button/DeleteButton.tsx';
 
 const TeamsPage = () => {
   return (
@@ -19,19 +20,8 @@ const TeamsPage = () => {
   );
 };
 
-const directoryListColumns: ColumnsType<Team> = [
-  {
-    title: 'Name',
-    dataIndex: 'name'
-  },
-  {
-    title: 'Description',
-    dataIndex: 'description'
-  }
-];
-
 const TeamsList = () => {
-  const { loading, error, data } = useGet<Team[]>('/api/team');
+  const { loading, error, data, setData } = useGet<Team[]>('/api/team');
 
   if (error) {
     return <Alert type="error" message={error} />;
@@ -44,6 +34,32 @@ const TeamsList = () => {
   if (!data?.length) {
     return <Empty />;
   }
+
+  const handleDelete = (team: Team) => {
+    setData((prev) => prev?.filter((x) => x !== team));
+  };
+
+  const directoryListColumns: ColumnsType<Team> = [
+    {
+      title: 'Name',
+      dataIndex: 'name'
+    },
+    {
+      title: 'Description',
+      dataIndex: 'description'
+    },
+    {
+      title: 'Delete',
+      render: (value) => (
+        <DeleteButton
+          url={`/api/team/${value._id}`}
+          onSuccess={() => handleDelete(value)}
+        />
+      ),
+      width: 50,
+      align: 'center'
+    }
+  ];
 
   return (
     <div className={styles.dataContainer}>

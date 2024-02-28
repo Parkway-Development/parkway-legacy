@@ -56,7 +56,7 @@ export const useGet = <TResult>(url: string) => {
     void fetchData();
   }, [url]);
 
-  return { data, error, loading };
+  return { data, error, loading, setData };
 };
 
 type mutationMethods = 'post' | 'put' | 'patch' | 'delete';
@@ -104,7 +104,7 @@ export const useMutation = <TResult>(url: string) => {
       fetchData('put', payload),
     patch: (payload: unknown): Promise<AxiosResponse<TResult> | undefined> =>
       fetchData('patch', payload),
-    delete: (): Promise<AxiosResponse<TResult> | undefined> =>
+    deleteCall: (): Promise<AxiosResponse<TResult> | undefined> =>
       fetchData('delete')
   };
 };
