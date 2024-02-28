@@ -1,4 +1,3 @@
-import { useGet } from '../../hooks/useAxios';
 import { Alert, Button, Empty, Spin, Table } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import styles from './TeamsPage.module.css';
@@ -6,6 +5,7 @@ import { Team } from '../../types/Team.ts';
 import { Link } from 'react-router-dom';
 import DeleteButton from '../delete-button/DeleteButton.tsx';
 import useApi from '../../hooks/useApi.ts';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 const TeamsPage = () => {
   return (
@@ -21,24 +21,38 @@ const TeamsPage = () => {
   );
 };
 
+const TeamsQueryKey = 'teams';
+
 const TeamsList = () => {
-  const { deleteTeam } = useApi();
-  const { loading, error, data, setData } = useGet<Team[]>('/api/team');
+  const queryClient = useQueryClient();
+  const { deleteTeam, formatError, getTeams } = useApi();
+  const {
+    isPending,
+    error,
+    data: response
+  } = useQuery({
+    queryFn: getTeams,
+    queryKey: [TeamsQueryKey]
+  });
 
   if (error) {
-    return <Alert type="error" message={error} />;
+    return <Alert type="error" message={formatError(error)} />;
   }
 
-  if (loading) {
+  if (isPending) {
     return <Spin />;
   }
 
-  if (!data?.length) {
+  if (!response?.data?.length) {
     return <Empty />;
   }
 
-  const handleDelete = (team: Team) => {
-    setData((prev) => prev?.filter((x) => x !== team));
+  const { data } = response;
+
+  const handleDelete = () => {
+    queryClient.invalidateQueries({
+      queryKey: [TeamsQueryKey]
+    });
   };
 
   const directoryListColumns: ColumnsType<Team> = [
@@ -56,7 +70,7 @@ const TeamsList = () => {
         <DeleteButton
           id={value._id}
           deleteFn={deleteTeam}
-          onSuccess={() => handleDelete(value)}
+          onSuccess={handleDelete}
         />
       ),
       width: 50,

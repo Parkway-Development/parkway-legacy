@@ -1,9 +1,9 @@
-import { useMutation } from '../../hooks/useAxios';
 import { Button, Form, Input, notification } from 'antd';
-import { useEffect } from 'react';
 import { Team } from '../../types/Team.ts';
 import styles from './TeamPage.module.css';
 import { Link, useNavigate } from 'react-router-dom';
+import { useMutation } from '@tanstack/react-query';
+import useApi from '../../hooks/useApi.ts';
 
 interface TeamFields {
   name: string;
@@ -13,31 +13,26 @@ interface TeamFields {
 }
 
 const TeamPage = () => {
-  const { loading, error, post } = useMutation<Team>('/api/team');
+  const { createTeam, formatError } = useApi();
+  const { isPending, mutate } = useMutation({ mutationFn: createTeam });
   const [api, contextHolder] = notification.useNotification();
   const navigate = useNavigate();
 
-  const handleLogin = async (fields: TeamFields) => {
+  const handleLogin = (fields: TeamFields) => {
     const payload: Omit<Team, '_id'> = {
       name: fields.name.trim(),
       description: fields.description?.trim(),
       members: []
     };
 
-    const result = await post(payload);
-
-    if (result) {
-      navigate('/teams');
-    }
+    mutate(payload, {
+      onSuccess: () => navigate('/teams'),
+      onError: (error) =>
+        api.error({
+          message: formatError(error)
+        })
+    });
   };
-
-  useEffect(() => {
-    if (error) {
-      api.error({
-        message: error
-      });
-    }
-  }, [error]);
 
   return (
     <>
@@ -49,7 +44,7 @@ const TeamPage = () => {
         wrapperCol={{ span: 12 }}
         onFinish={handleLogin}
         autoComplete="off"
-        disabled={loading}
+        disabled={isPending}
       >
         <Form.Item<TeamFields>
           label="Name"
@@ -68,8 +63,8 @@ const TeamPage = () => {
             <Button
               type="primary"
               htmlType="submit"
-              disabled={loading}
-              loading={loading}
+              disabled={isPending}
+              loading={isPending}
             >
               Submit
             </Button>

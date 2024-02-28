@@ -2,7 +2,7 @@ import { expect, test, describe, vi } from 'vitest';
 import DirectoryPage from './DirectoryPage';
 import { AxiosOverrides, mockGet, render, screen } from '../../test/utils';
 import { useGet } from '../../hooks/useAxios';
-import { DirectoryUser } from '../../types/DirectoryUser.ts';
+import { UserProfile } from '../../types/UserProfile.ts';
 
 vi.mock('../../hooks/useAxios');
 
@@ -39,7 +39,7 @@ describe('Directory Page', () => {
   });
 
   test('Renders user table', () => {
-    const data: DirectoryUser[] = [
+    const data: UserProfile[] = [
       { id: '1', firstname: 'John', lastname: 'Doe', mobile: '123-456-7890' },
       { id: '2', firstname: 'Jane', lastname: 'Smith', mobile: '444-456-7890' }
     ];

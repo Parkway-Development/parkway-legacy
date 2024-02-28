@@ -13,7 +13,6 @@ function App() {
   const handleLogout = (e: SyntheticEvent) => {
     e.preventDefault();
     logout();
-    navigate('/login');
   };
 
   return (
