@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const shortProfileSchema = require('./profileModel').schema;
 
 const teamSchema = new mongoose.Schema({
     name: {
@@ -13,11 +12,11 @@ const teamSchema = new mongoose.Schema({
     leaderId: {
         required: false,
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
+        ref: 'Profile'
     },
     members: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'}
+        ref: 'Profile'}
     ]
 });
 
