@@ -5,6 +5,7 @@ import styles from './TeamsPage.module.css';
 import { Team } from '../../types/Team.ts';
 import { Link } from 'react-router-dom';
 import DeleteButton from '../delete-button/DeleteButton.tsx';
+import useApi from '../../hooks/useApi.ts';
 
 const TeamsPage = () => {
   return (
@@ -21,6 +22,7 @@ const TeamsPage = () => {
 };
 
 const TeamsList = () => {
+  const { deleteTeam } = useApi();
   const { loading, error, data, setData } = useGet<Team[]>('/api/team');
 
   if (error) {
@@ -52,7 +54,8 @@ const TeamsList = () => {
       title: 'Delete',
       render: (value) => (
         <DeleteButton
-          url={`/api/team/${value._id}`}
+          id={value._id}
+          deleteFn={deleteTeam}
           onSuccess={() => handleDelete(value)}
         />
       ),

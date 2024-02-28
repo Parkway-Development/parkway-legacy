@@ -1,38 +1,39 @@
-import { useMutation } from '../../hooks/useAxios.ts';
 import { Button, notification } from 'antd';
-import { useEffect } from 'react';
 import { CloseOutlined } from '@ant-design/icons';
+import { GenericResponse } from '../../hooks/useApi.ts';
+import { useMutation } from '@tanstack/react-query';
 
 interface DeleteButtonProps {
-  url: string;
+  id: string;
+  deleteFn: (id: string) => GenericResponse;
   onSuccess?: () => void;
 }
 
-const DeleteButton = ({ url, onSuccess }: DeleteButtonProps) => {
-  const { loading, error, deleteCall } = useMutation(url);
+const DeleteButton = ({ id, deleteFn, onSuccess }: DeleteButtonProps) => {
+  const { mutate, isPending } = useMutation({ mutationFn: deleteFn });
   const [api, contextHolder] = notification.useNotification();
 
-  const handleClick = async () => {
-    const result = await deleteCall();
-
-    if (result && onSuccess) {
-      onSuccess();
-    }
+  const handleClick = () => {
+    mutate(id, {
+      onSuccess: () => {
+        if (onSuccess) {
+          onSuccess();
+        }
+      },
+      onError: (error) => {
+        console.log(error);
+        api.error({
+          message: error?.message
+        });
+      }
+    });
   };
-
-  useEffect(() => {
-    if (error) {
-      api.error({
-        message: error
-      });
-    }
-  }, [error]);
 
   return (
     <>
       {contextHolder}
-      <Button type="primary" danger onClick={handleClick} disabled={loading}>
-        <CloseOutlined spin={loading} />
+      <Button type="primary" danger onClick={handleClick} disabled={isPending}>
+        <CloseOutlined spin={isPending} />
       </Button>
     </>
   );
