@@ -13,6 +13,9 @@ const {
     removeMembers
 } = require('../controllers/teamController')
 
+const { requireAuthorization} = require("../auth");
+requireAuthorization(router);
+
 //Post a team
 router.post('/', addTeam)
 

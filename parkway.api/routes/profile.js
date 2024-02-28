@@ -9,6 +9,7 @@ const {
     deleteProfile,
     connectUserAndProfile
 } = require('../controllers/profileController')
+
 const { requireAuthorization} = require("../auth");
 
 const router = express.Router();
