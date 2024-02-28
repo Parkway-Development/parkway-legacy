@@ -50,6 +50,8 @@ const DirectoryList = () => {
         dataSource={data}
         columns={directoryListColumns}
         rowKey={(record) => record.id}
+        size="small"
+        bordered
       />
     </div>
   );

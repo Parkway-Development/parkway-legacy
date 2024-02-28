@@ -40,6 +40,9 @@ function App() {
               <li>
                 <Link to="/giving">Giving</Link>
               </li>
+              <li>
+                <Link to="/teams">Teams</Link>
+              </li>
             </ul>
           </nav>
           <div className={styles.mainContent}>

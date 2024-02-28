@@ -11,6 +11,8 @@ import { AuthProvider } from './hooks/useAuth.tsx';
 import { ProtectedRoute } from './components/protected-route/ProtectedRoute.tsx';
 import LoginPage from './components/login-page/LoginPage.tsx';
 import SignupPage from './components/signup-page/SignupPage.tsx';
+import TeamsPage from './components/teams-page/TeamsPage.tsx';
+import TeamPage from './components/team-page/TeamPage.tsx';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -30,6 +32,8 @@ createRoot(document.getElementById('root')!).render(
           >
             <Route path="directory" element={<DirectoryPage />} />
             <Route path="giving" element={<GivingPage />} />
+            <Route path="teams/add" element={<TeamPage />} />
+            <Route path="teams" element={<TeamsPage />} />
             <Route index element={<HomePage />} />
           </Route>
         </Routes>
