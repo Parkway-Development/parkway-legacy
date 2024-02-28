@@ -3,19 +3,23 @@ const mongoose = require('mongoose');
 const profileSchema = new mongoose.Schema({
     firstname: {
         required: true,
-        type: String
+        type: String,
+        lowercase: true
     },
     lastname: {
         required: true,
-        type: String
+        type: String,
+        lowercase: true
     },
     middleinitial: {
         required: false,
-        type: String
+        type: String,
+        lowercase: true
     },
     nickname: {
         required: false,
-        type: String
+        type: String,
+        lowercase: true
     },
     dateofbirth: {
         required: false,
@@ -24,11 +28,13 @@ const profileSchema = new mongoose.Schema({
     gender: {
         required: false,
         type: String,
-        enum: ['male','female']
+        enum: ['male','female'],
+        lowercase: true
     },
     email: {
         required: false,
-        type: String
+        type: String,
+        lowercase: true
     },
     mobile: {
         required: false,
@@ -36,19 +42,23 @@ const profileSchema = new mongoose.Schema({
     },
     streetaddress1: {
         required: false,
-        type: String
+        type: String,
+        lowercase: true
     },
     streetaddress2: {
         required: false,
-        type: String
+        type: String,
+        lowercase: true
     },
     city: {
         required: false,
-        type: String
+        type: String,
+        lowercase: true
     },
     state: {
         required: false,
-        type: String
+        type: String,
+        lowercase: true
     },
     zip: {
         required: false,
@@ -68,13 +78,15 @@ const profileSchema = new mongoose.Schema({
         type: String,
         required: true,
         default: 'active',
-        enum: ['active', 'inactive', 'deceased','visitor']
+        enum: ['active', 'inactive', 'deceased','visitor'],
+        lowercase: true
     },
     applicationrole: {
         type: String,
         required: true,
         default: 'none',
-        enum: ['super','owner','admin', 'lead', 'contributor', 'viewer','none']
+        enum: ['super','owner','admin', 'lead', 'contributor', 'viewer','none'],
+        lowercase: true
     },
     teams: [{
         type: mongoose.Schema.Types.ObjectId,
