@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const userRoutes = require('./routes/user');
 const profileRoutes = require('./routes/profile');
 const teamRoutes = require('./routes/team');
+const accountingRoutes = require('./routes/accounting');
 
 //express app
 const app = express();
@@ -21,6 +22,7 @@ app.use(express.json());
 app.use('/api/user', userRoutes);
 app.use('/api/profile', profileRoutes);
 app.use('/api/team', teamRoutes);
+app.use('/api/accounting', accountingRoutes);
 
 
 //Database connection
