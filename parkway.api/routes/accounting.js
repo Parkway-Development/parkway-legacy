@@ -20,7 +20,14 @@ const{
     getAllVendors,
     getVendorById,
     updateVendor,
-    deleteVendor
+    deleteVendor,
+    addExpense,
+    getAllExpenses,
+    getExpenseById,
+    getExpensesByVendor,
+    getExpensesByFund,
+    updateExpense,
+    deleteExpense
 } = require('../controllers/accountingController')
 
 //Donations
@@ -76,5 +83,27 @@ router.patch('/vendors/:id', updateVendor)
 
 //Delete a vendor by ID
 router.delete('/vendors/:id', deleteVendor)
+
+//Expenses
+//Post an expense
+router.post('/expenses', addExpense)
+
+//Get all expenses
+router.get('/expenses', getAllExpenses)
+
+//Get expense by ID
+router.get('/expenses/:id', getExpenseById)
+
+//Get expenses by vendor
+router.get('/expenses/vendor/:id', getExpensesByVendor)
+
+//Get expenses by fund
+router.get('/expenses/fund/:id', getExpensesByFund)
+
+//Update an expense by ID
+router.patch('/expenses/:id', updateExpense)
+
+//Delete an expense by ID
+
 
 module.exports = router;
