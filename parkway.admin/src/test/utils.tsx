@@ -1,8 +1,8 @@
 import { cleanup, render } from '@testing-library/react';
-import { afterEach, vi } from 'vitest';
+import { afterEach, Mock, vi } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ApiType } from '../hooks/useApi.ts';
+import { ApiType, TypedResponse } from '../hooks/useApi.ts';
 
 afterEach(() => {
   cleanup();
@@ -49,4 +49,40 @@ export const mockApi = (
     signup: vi.fn(),
     ...overrides
   });
+};
+
+type ExtractDataType<T> =
+  T extends TypedResponse<infer TValue> ? TValue : never;
+
+const buildResolvedMock = <K extends keyof ApiType>(
+  _: K,
+  resolvedValue: ExtractDataType<ReturnType<ApiType[K]>>
+): Mock => {
+  const mock = vi.fn<
+    any,
+    TypedResponse<ExtractDataType<ReturnType<ApiType[K]>>>
+  >();
+  mock.mockResolvedValue({
+    data: resolvedValue,
+    status: 200,
+    statusText: 'OK',
+    headers: {}
+  });
+  return mock;
+};
+
+export const buildMocks = <K extends keyof ApiType>(
+  ...mocks: [K, ExtractDataType<ReturnType<ApiType[K]>> | string][]
+): Partial<ApiType> => {
+  const overrides: Partial<ApiType> = {};
+
+  mocks.forEach(([key, data]) => {
+    if (typeof data === 'string') {
+      overrides[key] = vi.fn().mockRejectedValue({ message: data });
+    } else {
+      overrides[key] = buildResolvedMock(key, data);
+    }
+  });
+
+  return overrides;
 };

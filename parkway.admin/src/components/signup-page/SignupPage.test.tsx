@@ -1,6 +1,12 @@
 import { expect, test, describe, vi } from 'vitest';
 import SignupPage, { DefaultPasswordSettings } from './SignupPage';
-import { mockApi, render, screen, userEvent } from '../../test/utils';
+import {
+  buildMocks,
+  mockApi,
+  render,
+  screen,
+  userEvent
+} from '../../test/utils';
 import useApi, { ApiType } from '../../hooks/useApi';
 
 vi.mock('../../hooks/useAuth', () => ({
@@ -17,7 +23,7 @@ describe('Signup Page', () => {
 
   const setup = (overrides: Partial<ApiType> = {}) => {
     mockApi(useApi, {
-      getPasswordSettings: vi.fn().mockResolvedValue(DefaultPasswordSettings),
+      ...buildMocks(['getPasswordSettings', DefaultPasswordSettings]),
       ...overrides
     });
 
@@ -70,10 +76,9 @@ describe('Signup Page', () => {
   });
 
   test('Display email already exists error', async () => {
-    const signup: ApiType['signup'] = vi
-      .fn()
-      .mockRejectedValue({ message: 'Email already exists' });
-    setup({ signup });
+    const error = 'Email already exists';
+    const overrides = buildMocks(['signup', error]);
+    setup(overrides);
 
     await userEvent.type(screen.getByLabelText(/email/i), 'test@test.com');
     await userEvent.type(screen.getByLabelText(/^password/i), 'abcd1234#ABC');
@@ -82,19 +87,19 @@ describe('Signup Page', () => {
       'abcd1234#ABC'
     );
 
-    expect(signup).not.toHaveBeenCalled();
+    expect(overrides.signup).not.toHaveBeenCalled();
     expect(screen.getByRole('button', { name: /signup/i })).toBeEnabled();
     await userEvent.click(screen.getByRole('button', { name: /signup/i }));
     expect(await screen.findByText(/email already exists/i)).toBeVisible();
-    expect(signup).toHaveBeenCalledOnce();
+    expect(overrides.signup).toHaveBeenCalledOnce();
   });
 
   test('Can submit form', async () => {
-    const signup: ApiType['signup'] = vi
-      .fn()
-      .mockResolvedValue({ email: 'test@test.com', token: '1234' });
-
-    setup({ signup });
+    const overrides = buildMocks([
+      'signup',
+      { email: 'test@test.com', token: '1234' }
+    ]);
+    setup(overrides);
 
     await userEvent.type(screen.getByLabelText(/email/i), 'test@test.com');
     await userEvent.type(screen.getByLabelText(/^password/i), 'abcd1234#ABC');
@@ -103,8 +108,8 @@ describe('Signup Page', () => {
       'abcd1234#ABC'
     );
 
-    expect(signup).not.toHaveBeenCalled();
+    expect(overrides.signup).not.toHaveBeenCalled();
     await userEvent.click(screen.getByRole('button', { name: /signup/i }));
-    expect(signup).toHaveBeenCalledOnce();
+    expect(overrides.signup).toHaveBeenCalledOnce();
   });
 });

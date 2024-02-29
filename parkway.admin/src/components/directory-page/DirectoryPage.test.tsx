@@ -1,6 +1,6 @@
 import { expect, test, describe, vi } from 'vitest';
 import DirectoryPage from './DirectoryPage';
-import { mockApi, render, screen } from '../../test/utils';
+import { buildMocks, mockApi, render, screen } from '../../test/utils';
 import useApi, { ApiType } from '../../hooks/useApi';
 import { UserProfile } from '../../types/UserProfile';
 
@@ -32,11 +32,7 @@ describe('Directory Page', () => {
   test('Shows error message', async () => {
     const error = 'unknown error message to display';
 
-    const getProfiles: ApiType['getProfiles'] = vi
-      .fn()
-      .mockRejectedValue({ message: error });
-
-    setup({ getProfiles });
+    setup(buildMocks(['getProfiles', error]));
 
     expect(await screen.findByText(error)).toBeVisible();
   });
@@ -47,11 +43,9 @@ describe('Directory Page', () => {
       { id: '2', firstname: 'Jane', lastname: 'Smith', mobile: '444-456-7890' }
     ];
 
-    const getProfiles: ApiType['getProfiles'] = vi
-      .fn()
-      .mockResolvedValue({ data });
+    const overrides = buildMocks(['getProfiles', data]);
 
-    setup({ getProfiles });
+    setup(overrides);
 
     expect(await screen.findByText('Total Count: 2')).toBeVisible();
 
