@@ -2,8 +2,9 @@ import styles from './SignupPage.module.css';
 import { Alert, Button, Card, Form, Input } from 'antd';
 import { useAuth } from '../../hooks/useAuth';
 import { Link } from 'react-router-dom';
-import useApi, { PasswordSettings } from '../../hooks/useApi';
+import useApi from '../../hooks/useApi';
 import { useMutation, useQuery } from '@tanstack/react-query';
+import { PasswordSettings } from '../../api/generalApi.ts';
 
 interface SignupFields {
   email: string;

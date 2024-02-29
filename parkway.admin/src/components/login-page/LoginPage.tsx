@@ -2,8 +2,9 @@ import styles from './LoginPage.module.css';
 import { Alert, Button, Card, Form, Input } from 'antd';
 import { useAuth } from '../../hooks/useAuth.tsx';
 import { Link } from 'react-router-dom';
-import useApi, { LoginFields } from '../../hooks/useApi.ts';
+import useApi from '../../hooks/useApi.ts';
 import { useMutation } from '@tanstack/react-query';
+import { LoginFields } from '../../api/userApi.ts';
 
 const LoginPage = () => {
   const { login } = useAuth();
