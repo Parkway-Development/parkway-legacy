@@ -27,7 +27,13 @@ const{
     getExpensesByVendor,
     getExpensesByFund,
     updateExpense,
-    deleteExpense
+    deleteExpense,
+    addPayroll,
+    getAllPayrolls,
+    getPayrollById,
+    getPayrollsByEmployee,
+    updatePayroll,
+    deletePayroll
 } = require('../controllers/accountingController')
 
 //Donations
@@ -104,6 +110,27 @@ router.get('/expenses/fund/:id', getExpensesByFund)
 router.patch('/expenses/:id', updateExpense)
 
 //Delete an expense by ID
+router.delete('/expenses/:id', deleteExpense)
+
+//Payroll
+//Post a payroll
+router.post('/payrolls', addPayroll)
+
+//Get all payrolls
+router.get('/payrolls', getAllPayrolls)
+
+//Get payroll by ID
+router.get('/payrolls/:id', getPayrollById)
+
+//Get payrolls by employee
+router.get('/payrolls/employee/:id', getPayrollsByEmployee)
+
+//Update a payroll by ID
+router.patch('/payrolls/:id', updatePayroll)
+
+//Delete a payroll by ID
+router.delete('/payrolls/:id', deletePayroll)
+
 
 
 module.exports = router;
