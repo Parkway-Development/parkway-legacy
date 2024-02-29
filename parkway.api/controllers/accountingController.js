@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 const Donation = require('../models/donationModel');
+const Pledge = require('../models/pledgeModel');
+const Vendor = require('../models/vendorModel');
 
 //Donations
 //Post a donation
@@ -197,6 +199,100 @@ const deletePledge = async (req, res) => {
     res.status(200).json(deletedPledge)
 }
 
+//Vendors
+//Post a vendor
+const addVendor = async (req, res) => {
+    const vendor = new Vendor({
+        name: req.body.name,
+        type: req.body.type,
+        streetaddress1: req.body.streetaddress1,
+        streetaddress2: req.body.streetaddress2,
+        city: req.body.city,
+        state: req.body.state,
+        zip: req.body.zip,
+        phone: req.body.phone,
+        email: req.body.email
+    })
+
+    const vendorToSave = await vendor.save();
+
+    if(!vendorToSave){
+    return res.status(404).json({mssg: "The save failed."})}
+
+    res.status(200).json(vendorToSave)
+}
+
+//Get all vendors
+const getAllVendors = async (req, res) => {
+    const vendors = await Vendor.find({}).sort({name: 1});
+    if(!vendors){
+        return res.status(404).json({mssg: "No vendors were returned."})
+    }
+    res.status(200).json(vendors)
+}
+
+//Get vendor by ID
+const getVendorById = async (req, res) => {
+
+    const { id } = req.params;
+
+    if(!mongoose.Types.ObjectId.isValid(id)){
+        return res.status(404).json({error: 'No such vendor.'})
+    }
+    const vendor = await Vendor.findById(id);
+
+    if(!vendor){
+        return res.status(404).json({mssg: "No such vendor found."})
+    }
+        
+    res.status(200).json(vendor)
+}
+
+//Update a vendor by ID
+const updateVendor = async (req, res) => {
+    const { id } = req.params;
+
+    if(!mongoose.Types.ObjectId.isValid(id)){
+        return res.status(404).json({error: 'No such vendor.'})
+    }
+
+    const vendor = await Vendor.findById(id);
+
+    if(!vendor){
+        return res.status(404).json({mssg: "No such vendor found."})
+    }
+
+    const updatedVendor = await Vendor.findByIdAndUpdate(id, req.body, {new: true});
+
+    if(!updatedVendor){
+        return res.status(404).json({mssg: "The update failed."})
+    }
+    res.status(200).json(updatedVendor)
+}
+
+//Delete a vendor by ID
+const deleteVendor = async (req, res) => {
+    const { id } = req.params;
+
+    if(!mongoose.Types.ObjectId.isValid(id)){
+        return res.status(404).json({error: 'No such vendor.'})
+    }
+
+    const vendor = await Vendor.findById(id);
+
+    if(!vendor){
+        return res.status(404).json({mssg: "No such vendor found."})
+    }
+
+    const deletedVendor = await Vendor.findByIdAndDelete(id);
+
+    if(!deletedVendor){
+        return res.status(404).json({mssg: "The delete failed."})
+    }
+    res.status(200).json(deletedVendor)
+}
+
+
 
 
 module.exports = {
@@ -211,5 +307,10 @@ module.exports = {
     getPledgeById,
     getPledgesByProfile,
     updatePledge,
-    deletePledge
+    deletePledge,
+    addVendor,
+    getAllVendors,
+    getVendorById,
+    updateVendor,
+    deleteVendor
 }

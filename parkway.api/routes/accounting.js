@@ -15,7 +15,12 @@ const{
     getPledgeById,
     getPledgesByProfile,
     updatePledge,
-    deletePledge
+    deletePledge,
+    addVendor,
+    getAllVendors,
+    getVendorById,
+    updateVendor,
+    deleteVendor
 } = require('../controllers/accountingController')
 
 //Donations
@@ -55,5 +60,21 @@ router.patch('/pledges/:id', updatePledge)
 
 //Delete a pledge by ID
 router.delete('/pledges/:id', deletePledge)
+
+//Vendors
+//Post a vendor
+router.post('/vendors', addVendor)
+
+//Get all vendors
+router.get('/vendors', getAllVendors)
+
+//Get vendor by ID
+router.get('/vendors/:id', getVendorById)
+
+//Update a vendor by ID
+router.patch('/vendors/:id', updateVendor)
+
+//Delete a vendor by ID
+router.delete('/vendors/:id', deleteVendor)
 
 module.exports = router;
