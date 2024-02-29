@@ -39,7 +39,14 @@ const{
     getFundById,
     getFundsByName,
     updateFund,
-    deleteFund
+    deleteFund,
+    addBudget,
+    getAllBudgets,
+    getBudgetById,
+    getBudgetsByYear,
+    getBudgetsByFund,
+    updateBudget,
+    deleteBudget
 } = require('../controllers/accountingController')
 
 //Donations
@@ -155,5 +162,27 @@ router.patch('/funds/:id', updateFund)
 
 //Delete a fund by ID
 router.delete('/funds/:id', deleteFund)
+
+//Budgets
+//Post a budget
+router.post('/budgets', addBudget)
+
+//Get all budgets
+router.get('/budgets', getAllBudgets)
+
+//Get budget by ID
+router.get('/budgets/:id', getBudgetById)
+
+//Get budgets by year
+router.get('/budgets/year/:year', getBudgetsByYear)
+
+//Get budgets by fund
+router.get('/budgets/fund/:id', getBudgetsByFund)
+
+//Update a budget by ID
+router.patch('/budgets/:id', updateBudget)
+
+//Delete a budget by ID
+router.delete('/budgets/:id', deleteBudget)
 
 module.exports = router;
