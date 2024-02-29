@@ -1,32 +1,32 @@
 import { expect, test, describe, vi } from 'vitest';
 import SignupPage, { DefaultPasswordSettings } from './SignupPage';
 import {
-  mockGet,
-  mockMutation,
-  MutationOverrides,
+  buildMocks,
+  mockApi,
   render,
   screen,
   userEvent
 } from '../../test/utils';
-import { useGet, useMutation } from '../../hooks/useAxios';
+import useApi, { ApiType } from '../../hooks/useApi';
 
 vi.mock('../../hooks/useAuth', () => ({
   useAuth: () => ({
     login: vi.fn()
   })
 }));
-vi.mock('../../hooks/useAxios');
+vi.mock('../../hooks/useApi');
 
 describe('Signup Page', () => {
   beforeEach(() => {
     vi.resetAllMocks();
   });
 
-  const setup = (overrides: MutationOverrides = {}) => {
-    vi.mocked(useMutation).mockReturnValue(mockMutation(overrides));
-    vi.mocked(useGet).mockReturnValue(
-      mockGet({ data: DefaultPasswordSettings })
-    );
+  const setup = (overrides: Partial<ApiType> = {}) => {
+    mockApi(useApi, {
+      ...buildMocks(['getPasswordSettings', DefaultPasswordSettings]),
+      ...overrides
+    });
+
     return render(<SignupPage />);
   };
 
@@ -76,13 +76,10 @@ describe('Signup Page', () => {
   });
 
   test('Display email already exists error', async () => {
-    setup({ error: 'Email already exists ' });
-    expect(await screen.findByText(/email already exists/i)).toBeVisible();
-  });
+    const error = 'Email already exists';
+    const overrides = buildMocks(['signup', error]);
+    setup(overrides);
 
-  test('Can submit form', async () => {
-    const mockPost = vi.fn();
-    setup({ post: mockPost });
     await userEvent.type(screen.getByLabelText(/email/i), 'test@test.com');
     await userEvent.type(screen.getByLabelText(/^password/i), 'abcd1234#ABC');
     await userEvent.type(
@@ -90,8 +87,29 @@ describe('Signup Page', () => {
       'abcd1234#ABC'
     );
 
-    expect(mockPost).not.toHaveBeenCalled();
+    expect(overrides.signup).not.toHaveBeenCalled();
+    expect(screen.getByRole('button', { name: /signup/i })).toBeEnabled();
     await userEvent.click(screen.getByRole('button', { name: /signup/i }));
-    expect(mockPost).toHaveBeenCalledOnce();
+    expect(await screen.findByText(/email already exists/i)).toBeVisible();
+    expect(overrides.signup).toHaveBeenCalledOnce();
+  });
+
+  test('Can submit form', async () => {
+    const overrides = buildMocks([
+      'signup',
+      { email: 'test@test.com', token: '1234' }
+    ]);
+    setup(overrides);
+
+    await userEvent.type(screen.getByLabelText(/email/i), 'test@test.com');
+    await userEvent.type(screen.getByLabelText(/^password/i), 'abcd1234#ABC');
+    await userEvent.type(
+      screen.getByLabelText(/^confirm password/i),
+      'abcd1234#ABC'
+    );
+
+    expect(overrides.signup).not.toHaveBeenCalled();
+    await userEvent.click(screen.getByRole('button', { name: /signup/i }));
+    expect(overrides.signup).toHaveBeenCalledOnce();
   });
 });

@@ -13,7 +13,6 @@ function App() {
   const handleLogout = (e: SyntheticEvent) => {
     e.preventDefault();
     logout();
-    navigate('/login');
   };
 
   return (
@@ -39,6 +38,9 @@ function App() {
               </li>
               <li>
                 <Link to="/giving">Giving</Link>
+              </li>
+              <li>
+                <Link to="/teams">Teams</Link>
               </li>
             </ul>
           </nav>

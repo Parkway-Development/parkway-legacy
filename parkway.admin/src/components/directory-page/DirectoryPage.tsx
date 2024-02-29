@@ -1,8 +1,9 @@
-import { useGet } from '../../hooks/useAxios';
 import { Alert, Empty, Spin, Table } from 'antd';
-import { DirectoryUser } from '../../types/DirectoryUser';
+import { UserProfile } from '../../types/UserProfile.ts';
 import { ColumnsType } from 'antd/lib/table';
 import styles from './DirectoryPage.module.css';
+import { useQuery } from '@tanstack/react-query';
+import useApi from '../../hooks/useApi.ts';
 
 const DirectoryPage = () => {
   return (
@@ -13,7 +14,7 @@ const DirectoryPage = () => {
   );
 };
 
-const directoryListColumns: ColumnsType<DirectoryUser> = [
+const directoryListColumns: ColumnsType<UserProfile> = [
   {
     title: 'First Name',
     dataIndex: 'firstname'
@@ -29,19 +30,26 @@ const directoryListColumns: ColumnsType<DirectoryUser> = [
 ];
 
 const DirectoryList = () => {
-  const { loading, error, data } = useGet<DirectoryUser[]>('/api/profile');
+  const { getProfiles, formatError } = useApi();
+  const {
+    isPending,
+    error,
+    data: response
+  } = useQuery({ queryFn: getProfiles, queryKey: ['userProfiles'] });
 
   if (error) {
-    return <Alert type="error" message={error} />;
+    return <Alert type="error" message={formatError(error)} />;
   }
 
-  if (loading) {
+  if (isPending) {
     return <Spin />;
   }
 
-  if (!data?.length) {
+  if (!response?.data?.length) {
     return <Empty />;
   }
+
+  const { data } = response;
 
   return (
     <div className={styles.dataContainer}>
@@ -50,6 +58,8 @@ const DirectoryList = () => {
         dataSource={data}
         columns={directoryListColumns}
         rowKey={(record) => record.id}
+        size="small"
+        bordered
       />
     </div>
   );

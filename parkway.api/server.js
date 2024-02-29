@@ -4,6 +4,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const userRoutes = require('./routes/user');
 const profileRoutes = require('./routes/profile');
+const settingRoutes = require('./routes/setting');
 const teamRoutes = require('./routes/team');
 const accountingRoutes = require('./routes/accounting');
 
@@ -21,6 +22,7 @@ app.use(express.json());
 //Routes
 app.use('/api/user', userRoutes);
 app.use('/api/profile', profileRoutes);
+app.use('/api/setting', settingRoutes);
 app.use('/api/team', teamRoutes);
 app.use('/api/accounting', accountingRoutes);
 

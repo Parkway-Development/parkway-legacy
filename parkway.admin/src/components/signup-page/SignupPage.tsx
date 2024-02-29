@@ -1,21 +1,15 @@
 import styles from './SignupPage.module.css';
 import { Alert, Button, Card, Form, Input } from 'antd';
-import { LoginResponse, useAuth } from '../../hooks/useAuth';
+import { useAuth } from '../../hooks/useAuth';
 import { Link } from 'react-router-dom';
-import { useGet, useMutation } from '../../hooks/useAxios';
+import useApi from '../../hooks/useApi';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { PasswordSettings } from '../../api/generalApi.ts';
 
 interface SignupFields {
   email: string;
   password: string;
   confirmPassword: string;
-}
-
-interface PasswordSettings {
-  minimumLength: number;
-  minimumLowercase: number;
-  minimumUppercase: number;
-  minimumNumbers: number;
-  minimumSymbols: number;
 }
 
 export const DefaultPasswordSettings: PasswordSettings = {
@@ -42,21 +36,26 @@ const PasswordRequirement = ({ count, display }: PasswordRequirementProps) => {
 
 const SignupPage = () => {
   const { login } = useAuth();
-  const { data: passwordSettings, loading: passwordSettingsLoading } =
-    useGet<PasswordSettings>('/api/setting/password');
-  const { loading, error, post } =
-    useMutation<LoginResponse>('/api/user/connect');
+  const { getPasswordSettings, signup, formatError } = useApi();
+  const { data: passwordSettings, isPending: passwordSettingsLoading } =
+    useQuery({
+      queryFn: getPasswordSettings,
+      queryKey: ['passwordSettings']
+    });
+  const { isPending, error, mutate } = useMutation({
+    mutationFn: signup
+  });
 
-  const handleSignup = async ({ email, password }: SignupFields) => {
-    const response = await post({ email, password });
+  const handleSignup = ({ email, password }: SignupFields) =>
+    mutate(
+      { email, password },
+      {
+        onSuccess: ({ data }) => login(data)
+      }
+    );
 
-    if (response) {
-      login(response.data);
-    }
-  };
-
-  const settings = passwordSettings
-    ? passwordSettings
+  const settings = passwordSettings?.data
+    ? passwordSettings?.data
     : DefaultPasswordSettings;
 
   const passwordRegex = new RegExp(
@@ -76,7 +75,7 @@ const SignupPage = () => {
           wrapperCol={{ span: 16 }}
           onFinish={handleSignup}
           autoComplete="off"
-          disabled={loading || passwordSettingsLoading}
+          disabled={isPending}
         >
           <Form.Item<SignupFields>
             label="Email"
@@ -151,15 +150,19 @@ const SignupPage = () => {
             <Button
               type="primary"
               htmlType="submit"
-              disabled={loading}
-              loading={loading}
+              disabled={isPending || passwordSettingsLoading}
+              loading={isPending}
             >
               Signup
             </Button>
           </Form.Item>
         </Form>
         {error && (
-          <Alert className={styles.error} message={error} type="error" />
+          <Alert
+            className={styles.error}
+            message={formatError(error)}
+            type="error"
+          />
         )}
         <p>
           Already have an account? <Link to="/login">Login</Link>

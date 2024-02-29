@@ -1,26 +1,20 @@
 import styles from './LoginPage.module.css';
 import { Alert, Button, Card, Form, Input } from 'antd';
-import { LoginResponse, useAuth } from '../../hooks/useAuth.tsx';
+import { useAuth } from '../../hooks/useAuth.tsx';
 import { Link } from 'react-router-dom';
-import { useMutation } from '../../hooks/useAxios.ts';
-
-interface LoginFields {
-  email: string;
-  password: string;
-}
+import useApi from '../../hooks/useApi.ts';
+import { useMutation } from '@tanstack/react-query';
+import { LoginFields } from '../../api/userApi.ts';
 
 const LoginPage = () => {
   const { login } = useAuth();
-  const { loading, error, post } =
-    useMutation<LoginResponse>('/api/user/login');
+  const { login: loginFn, formatError } = useApi();
+  const { mutate, error, isPending } = useMutation({ mutationFn: loginFn });
 
-  const handleLogin = async (formFields: LoginFields) => {
-    const response = await post(formFields);
-
-    if (response) {
-      login(response.data);
-    }
-  };
+  const handleLogin = (formFields: LoginFields) =>
+    mutate(formFields, {
+      onSuccess: ({ data }) => login(data)
+    });
 
   return (
     <div className={styles.page}>
@@ -35,7 +29,7 @@ const LoginPage = () => {
           wrapperCol={{ span: 16 }}
           onFinish={handleLogin}
           autoComplete="off"
-          disabled={loading}
+          disabled={isPending}
         >
           <Form.Item<LoginFields>
             label="Email"
@@ -61,15 +55,19 @@ const LoginPage = () => {
             <Button
               type="primary"
               htmlType="submit"
-              disabled={loading}
-              loading={loading}
+              disabled={isPending}
+              loading={isPending}
             >
               Submit
             </Button>
           </Form.Item>
         </Form>
         {error && (
-          <Alert className={styles.error} message={error} type="error" />
+          <Alert
+            className={styles.error}
+            message={formatError(error)}
+            type="error"
+          />
         )}
         <p>
           <Link to="/signup">Signup</Link> for an account.
