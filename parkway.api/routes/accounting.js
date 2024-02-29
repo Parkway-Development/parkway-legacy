@@ -46,7 +46,15 @@ const{
     getBudgetsByYear,
     getBudgetsByFund,
     updateBudget,
-    deleteBudget
+    deleteBudget,
+    addAsset,
+    getAllAssets,
+    getAssetById,
+    getAssetsByType,
+    getAssetsByCategory,
+    getAssetsByLocation,
+    updateAsset,
+    deleteAsset,
 } = require('../controllers/accountingController')
 
 //Donations
@@ -184,5 +192,30 @@ router.patch('/budgets/:id', updateBudget)
 
 //Delete a budget by ID
 router.delete('/budgets/:id', deleteBudget)
+
+//Assets
+//Post an asset
+router.post('/assets', addAsset)
+
+//Get all assets
+router.get('/assets', getAllAssets)
+
+//Get asset by ID
+router.get('/assets/:id', getAssetById)
+
+//Get assets by type
+router.get('/assets/type/:type', getAssetsByType)
+
+//Get assets by category
+router.get('/assets/category/:category', getAssetsByCategory)
+
+//Get assets by location
+router.get('/assets/location/:location', getAssetsByLocation)
+
+//Update an asset by ID
+router.patch('/assets/:id', updateAsset)
+
+//Delete an asset by ID
+router.delete('/assets/:id', deleteAsset)
 
 module.exports = router;
