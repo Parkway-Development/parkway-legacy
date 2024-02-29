@@ -9,7 +9,13 @@ const{
     getDonationById,
     getDonationsByProfile,
     updateDonation,
-    deleteDonation
+    deleteDonation,
+    addPledge,
+    getAllPledges,
+    getPledgeById,
+    getPledgesByProfile,
+    updatePledge,
+    deletePledge
 } = require('../controllers/accountingController')
 
 //Donations
@@ -30,5 +36,24 @@ router.patch('/donations/:id', updateDonation)
 
 //Delete a donation by ID
 router.delete('/donations/:id', deleteDonation)
+
+//Pledges
+//Post a pledge
+router.post('/pledges', addPledge)
+
+//Get all pledges
+router.get('/pledges', getAllPledges)
+
+//Get pledge by ID
+router.get('/pledges/:id', getPledgeById)
+
+//Get pledges by profile
+router.get('/pledges/profile/:id', getPledgesByProfile)
+
+//Update a pledge by ID
+router.patch('/pledges/:id', updatePledge)
+
+//Delete a pledge by ID
+router.delete('/pledges/:id', deletePledge)
 
 module.exports = router;
