@@ -1,14 +1,20 @@
 import { cleanup, render } from '@testing-library/react';
-import { afterEach } from 'vitest';
+import { afterEach, vi } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { TypedResponse } from '../hooks/useApi.ts';
+import { ApiType } from '../hooks/useApi.ts';
 
 afterEach(() => {
   cleanup();
 });
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false
+    }
+  }
+});
 
 const customRender = (ui: React.ReactElement, options = {}) =>
   render(ui, {
@@ -23,26 +29,24 @@ const customRender = (ui: React.ReactElement, options = {}) =>
     ...options
   });
 
-export type AxiosOverrides = Partial<{
-  loading: boolean;
-  data: unknown;
-  error: string;
-}>;
-
-export const mockSuccess = <T,>(data: T): TypedResponse<T> =>
-  new Promise((resolve, _) => {
-    resolve({
-      data,
-      status: 200,
-      statusText: 'success',
-      headers: {}
-    });
-  });
-
-export const mockError = <T,>(error: string): TypedResponse<T> =>
-  Promise.reject({ message: error });
-
 export * from '@testing-library/react';
 export { default as userEvent } from '@testing-library/user-event';
 // override render export
 export { customRender as render };
+
+export const mockApi = (
+  useApiFn: () => ApiType,
+  overrides: Partial<ApiType> = {}
+) => {
+  vi.mocked(useApiFn).mockReturnValue({
+    formatError: (error) => error?.message ?? 'unknown error',
+    createTeam: vi.fn(),
+    deleteTeam: vi.fn(),
+    getPasswordSettings: vi.fn(),
+    getProfiles: vi.fn(),
+    getTeams: vi.fn(),
+    login: vi.fn(),
+    signup: vi.fn(),
+    ...overrides
+  });
+};

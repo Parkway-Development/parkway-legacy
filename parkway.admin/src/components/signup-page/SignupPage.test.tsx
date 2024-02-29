@@ -1,6 +1,6 @@
 import { expect, test, describe, vi } from 'vitest';
 import SignupPage, { DefaultPasswordSettings } from './SignupPage';
-import { mockSuccess, render, screen, userEvent } from '../../test/utils';
+import { mockApi, render, screen, userEvent } from '../../test/utils';
 import useApi, { ApiType } from '../../hooks/useApi';
 
 vi.mock('../../hooks/useAuth', () => ({
@@ -16,17 +16,11 @@ describe('Signup Page', () => {
   });
 
   const setup = (overrides: Partial<ApiType> = {}) => {
-    vi.mocked(useApi).mockReturnValue({
-      formatError: (error) => error?.message ?? 'unknown error',
-      createTeam: vi.fn(),
-      deleteTeam: vi.fn(),
-      getPasswordSettings: () => mockSuccess(DefaultPasswordSettings),
-      getProfiles: vi.fn(),
-      getTeams: vi.fn(),
-      login: vi.fn(),
-      signup: vi.fn(),
+    mockApi(useApi, {
+      getPasswordSettings: vi.fn().mockResolvedValue(DefaultPasswordSettings),
       ...overrides
     });
+
     return render(<SignupPage />);
   };
 
