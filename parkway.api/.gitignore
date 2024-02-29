@@ -19,6 +19,8 @@
 .env.production
 .env.production.local
 .env
+models/.modelScaffold.js
+controllers/.controllerScaffold.js
 
 npm-debug.log*
 yarn-debug.log*
