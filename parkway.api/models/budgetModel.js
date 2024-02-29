@@ -7,25 +7,50 @@ const budgetModel = new mongoose.Schema({
     },
     fundId: {
         type: mongoose.Schema.Types.ObjectId,
+        ref: 'Fund',
         required: true
     },
-    plannedIncome: {
-        type: Number,
-        required: true
-    },
+    budgetedIncome: [{
+        incomeSource: {
+            type: String,
+            required: true
+        },
+        amount: {
+            type: Number,
+            required: true
+        }
+    }],
     plannedExpenses: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Expense',
+        expenseReason: {
+            type: String,
+            required: true
+        },
+        amount: {
+            type: Number,
+            required: true
+        }
     }],
     actualIncome: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Donation',
-        required: false
+        incomeRecord:{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Donation',
+            required: false
+        },
+        amount: {
+            type: Number,
+            required: false
+        }
     }],
     actualExpenses: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Expense',
-        required: false
+        expenseRecord:{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Expense',
+            required: false
+        },
+        amount: {
+            type: Number,
+            required: false
+        }
     }],
     notes: {
         type: String,
