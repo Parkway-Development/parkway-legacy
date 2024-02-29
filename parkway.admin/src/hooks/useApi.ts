@@ -4,9 +4,9 @@ import { Team } from '../types/Team.ts';
 import { UserProfile } from '../types/UserProfile.ts';
 
 export type GenericResponse = Promise<AxiosResponse<any, any>>;
-export type TypedResponse<T> = Promise<AxiosResponse<T>>;
+export type TypedResponse<T> = Promise<Omit<AxiosResponse<T>, 'config'>>;
 
-type ApiType = {
+export type ApiType = {
   createTeam: (payload: Omit<Team, '_id'>) => TypedResponse<Team>;
   deleteTeam: (id: string) => GenericResponse;
   getPasswordSettings: () => TypedResponse<PasswordSettings>;
