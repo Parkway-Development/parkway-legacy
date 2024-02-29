@@ -19,7 +19,7 @@ const donationSchema = new mongoose.Schema({
         required: true,
         type: String,
         lowercase: true,
-        enum: ['general','building','mens ministry','womens ministry','youth','missions','music','media','oasis','other'],
+        enum: ['unassigned','general','building','mens ministry','womens ministry','youth','missions','music','media','oasis','other'],
         default: 'unassigned'
     },
     profileId: {
@@ -29,4 +29,4 @@ const donationSchema = new mongoose.Schema({
     }
 }, {timestamps: true})
 
-module.exports = mongoose.model('Donation', donationSchema);
+module.exports = mongoose.model('Donation', donationSchema,'donations');
