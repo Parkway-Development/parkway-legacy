@@ -17,6 +17,16 @@ const budgetModel = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Expense',
     }],
+    actualIncome: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Donation',
+        required: false
+    }],
+    actualExpenses: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Expense',
+        required: false
+    }],
     notes: {
         type: String,
         required: false
