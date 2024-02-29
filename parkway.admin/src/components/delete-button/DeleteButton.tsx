@@ -1,6 +1,6 @@
 import { Button, notification } from 'antd';
 import { CloseOutlined } from '@ant-design/icons';
-import { GenericResponse } from '../../hooks/useApi.ts';
+import useApi, { GenericResponse } from '../../hooks/useApi.ts';
 import { useMutation } from '@tanstack/react-query';
 
 interface DeleteButtonProps {
@@ -10,6 +10,7 @@ interface DeleteButtonProps {
 }
 
 const DeleteButton = ({ id, deleteFn, onSuccess }: DeleteButtonProps) => {
+  const { formatError } = useApi();
   const { mutate, isPending } = useMutation({ mutationFn: deleteFn });
   const [api, contextHolder] = notification.useNotification();
 
@@ -21,9 +22,8 @@ const DeleteButton = ({ id, deleteFn, onSuccess }: DeleteButtonProps) => {
         }
       },
       onError: (error) => {
-        console.log(error);
         api.error({
-          message: error?.message
+          message: formatError(error)
         });
       }
     });
