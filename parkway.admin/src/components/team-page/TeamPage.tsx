@@ -1,8 +1,16 @@
-import { Breadcrumb, Button, Form, Input, notification } from 'antd';
+import {
+  Alert,
+  Breadcrumb,
+  Button,
+  Form,
+  Input,
+  notification,
+  Spin
+} from 'antd';
 import { Team } from '../../types/Team.ts';
 import styles from './TeamPage.module.css';
-import { Link, useNavigate } from 'react-router-dom';
-import { useMutation } from '@tanstack/react-query';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import useApi from '../../hooks/useApi.ts';
 import UserProfileSelect from '../user-profile-select/UserProfileSelect.tsx';
 
@@ -14,8 +22,25 @@ interface TeamFields {
 }
 
 const TeamPage = () => {
-  const { createTeam, formatError } = useApi();
-  const { isPending, mutate } = useMutation({ mutationFn: createTeam });
+  const queryClient = useQueryClient();
+  const params = useParams();
+  const id = params.id;
+  const { createTeam, getTeamById, formatError, updateTeam } = useApi();
+  const { isPending: isUpdating, mutate: update } = useMutation({
+    mutationFn: updateTeam
+  });
+  const { isPending: isCreating, mutate: create } = useMutation({
+    mutationFn: createTeam
+  });
+  const {
+    isPending: isLoading,
+    data: response,
+    error
+  } = useQuery({
+    enabled: id !== undefined,
+    queryFn: getTeamById(id!),
+    queryKey: ['team', { id }]
+  });
   const [api, contextHolder] = notification.useNotification();
   const navigate = useNavigate();
   const [form] = Form.useForm<TeamFields>();
@@ -29,13 +54,26 @@ const TeamPage = () => {
       members: fields.members ?? []
     };
 
-    mutate(payload, {
-      onSuccess: () => navigate('/teams'),
-      onError: (error) =>
+    const options = {
+      onSuccess: () => {
+        navigate('/teams');
+        if (id) {
+          queryClient.invalidateQueries({
+            queryKey: ['team', { id }]
+          });
+        }
+      },
+      onError: (error: Error | null) =>
         api.error({
           message: formatError(error)
         })
-    });
+    };
+
+    if (id) {
+      update({ ...payload, _id: id }, options);
+    } else {
+      create(payload, options);
+    }
   };
 
   const handleLeaderIdChange = (value: string | undefined) =>
@@ -48,6 +86,23 @@ const TeamPage = () => {
       members: value
     });
 
+  const isPending = isCreating || isUpdating || (id !== undefined && isLoading);
+
+  if (id) {
+    if (error) {
+      return <Alert type="error" message={formatError(error)} />;
+    }
+
+    if (isLoading) {
+      return <Spin />;
+    }
+  }
+
+  const initialValues: TeamFields =
+    id && response?.data ? { ...response.data } : { name: '', members: [] };
+
+  console.log('initial values', initialValues);
+
   return (
     <>
       {contextHolder}
@@ -57,7 +112,7 @@ const TeamPage = () => {
             title: <Link to="/teams">Teams</Link>
           },
           {
-            title: 'Add Team'
+            title: id ? 'Edit Team' : 'Add Team'
           }
         ]}
       />
@@ -69,6 +124,7 @@ const TeamPage = () => {
         onFinish={handleLogin}
         autoComplete="off"
         disabled={isPending}
+        initialValues={initialValues}
       >
         <Form.Item<TeamFields>
           label="Name"
@@ -83,7 +139,10 @@ const TeamPage = () => {
         </Form.Item>
 
         <Form.Item<TeamFields> label="Leader" name="leaderId">
-          <UserProfileSelect onChange={handleLeaderIdChange} />
+          <UserProfileSelect
+            onChange={handleLeaderIdChange}
+            initialValue={initialValues.leaderId}
+          />
         </Form.Item>
 
         <Form.Item<TeamFields> label="Members" name="members">
@@ -91,6 +150,7 @@ const TeamPage = () => {
             isMultiSelect
             onChange={handleMembersChange}
             excludedUserId={leaderId}
+            initialValue={initialValues.members}
           />
         </Form.Item>
 

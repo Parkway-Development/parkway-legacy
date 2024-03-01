@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 
 type BaseSelection<T> = {
   onChange: (values: T | undefined) => void;
+  initialValue?: T;
 };
 
 type SingleSelection = BaseSelection<string> & {
@@ -24,9 +25,12 @@ type UserProfileSelectProps = SelectionProps & {
 const UserProfileSelect = ({
   isMultiSelect = false,
   onChange,
-  excludedUserId
+  excludedUserId,
+  initialValue
 }: UserProfileSelectProps) => {
-  const [value, setValue] = useState<string | string[]>();
+  const [value, setValue] = useState<string | string[] | undefined>(
+    initialValue
+  );
   const { getProfiles } = useApi();
   const { isPending, data: response } = useQuery({
     queryFn: getProfiles,
@@ -76,7 +80,7 @@ const UserProfileSelect = ({
       mode={isMultiSelect ? 'multiple' : undefined}
       onChange={handleOnChange}
       options={options}
-      value={value}
+      value={isPending ? undefined : value}
       loading={isPending}
       optionFilterProp="label"
       allowClear

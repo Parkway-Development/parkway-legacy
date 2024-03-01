@@ -37,6 +37,7 @@ createRoot(document.getElementById('root')!).render(
               <Route path="directory" element={<DirectoryPage />} />
               <Route path="giving" element={<GivingPage />} />
               <Route path="teams/add" element={<TeamPage />} />
+              <Route path="teams/:id" element={<TeamPage />} />
               <Route path="teams" element={<TeamsPage />} />
               <Route index element={<HomePage />} />
             </Route>

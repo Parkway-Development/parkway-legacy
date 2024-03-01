@@ -59,8 +59,8 @@ const TeamsList = () => {
   const directoryListColumns: ColumnsType<Team> = [
     {
       title: 'Name',
-      dataIndex: 'name',
-      width: 100
+      width: 100,
+      render: ({ _id, name }: Team) => <Link to={`/teams/${_id}`}>{name}</Link>
     },
     {
       title: 'Description',
