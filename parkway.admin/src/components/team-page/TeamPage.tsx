@@ -11,7 +11,7 @@ import { Team } from '../../types/Team.ts';
 import styles from './TeamPage.module.css';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import useApi from '../../hooks/useApi.ts';
+import useApi, { buildQueryKey } from '../../hooks/useApi.ts';
 import UserProfileSelect from '../user-profile-select/UserProfileSelect.tsx';
 
 interface TeamFields {
@@ -39,7 +39,7 @@ const TeamPage = () => {
   } = useQuery({
     enabled: id !== undefined,
     queryFn: getTeamById(id!),
-    queryKey: ['team', { id }]
+    queryKey: buildQueryKey('teams', id ?? '')
   });
   const [api, contextHolder] = notification.useNotification();
   const navigate = useNavigate();
@@ -55,13 +55,9 @@ const TeamPage = () => {
     };
 
     const options = {
-      onSuccess: () => {
+      onSuccess: ({ data }: { data: Team }) => {
+        queryClient.setQueryData(buildQueryKey('teams', data._id), data);
         navigate('/teams');
-        if (id) {
-          queryClient.invalidateQueries({
-            queryKey: ['team', { id }]
-          });
-        }
       },
       onError: (error: Error | null) =>
         api.error({
@@ -93,15 +89,13 @@ const TeamPage = () => {
       return <Alert type="error" message={formatError(error)} />;
     }
 
-    if (isLoading) {
+    if (isLoading || !response?.data) {
       return <Spin />;
     }
   }
 
   const initialValues: TeamFields =
     id && response?.data ? { ...response.data } : { name: '', members: [] };
-
-  console.log('initial values', initialValues);
 
   return (
     <>

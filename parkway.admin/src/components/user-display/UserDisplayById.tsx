@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import useApi from '../../hooks/useApi.ts';
+import useApi, { buildQueryKey } from '../../hooks/useApi.ts';
 import { Skeleton } from 'antd';
 import { WarningOutlined } from '@ant-design/icons';
 import UserProfileDisplay from './UserProfileDisplay.tsx';
@@ -12,7 +12,7 @@ const UserDisplayById = ({ id }: UserDisplayProps) => {
   const { getProfiles } = useApi();
   const { isPending, data: response } = useQuery({
     queryFn: getProfiles,
-    queryKey: ['userProfiles']
+    queryKey: buildQueryKey('profiles')
   });
 
   if (!id) return null;

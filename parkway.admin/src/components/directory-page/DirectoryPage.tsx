@@ -3,7 +3,7 @@ import { UserProfile } from '../../types/UserProfile.ts';
 import { ColumnsType } from 'antd/lib/table';
 import styles from './DirectoryPage.module.css';
 import { useQuery } from '@tanstack/react-query';
-import useApi from '../../hooks/useApi.ts';
+import useApi, { buildQueryKey } from '../../hooks/useApi.ts';
 
 const DirectoryPage = () => {
   return (
@@ -35,7 +35,7 @@ const DirectoryList = () => {
     isPending,
     error,
     data: response
-  } = useQuery({ queryFn: getProfiles, queryKey: ['userProfiles'] });
+  } = useQuery({ queryFn: getProfiles, queryKey: buildQueryKey('profiles') });
 
   if (error) {
     return <Alert type="error" message={formatError(error)} />;

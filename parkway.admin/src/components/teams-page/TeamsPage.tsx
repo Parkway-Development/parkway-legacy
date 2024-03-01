@@ -4,7 +4,7 @@ import styles from './TeamsPage.module.css';
 import { Team } from '../../types/Team.ts';
 import { Link } from 'react-router-dom';
 import DeleteButton from '../delete-button/DeleteButton.tsx';
-import useApi from '../../hooks/useApi.ts';
+import useApi, { buildQueryKey } from '../../hooks/useApi.ts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import UserDisplayById from '../user-display/UserDisplayById.tsx';
 
@@ -22,8 +22,6 @@ const TeamsPage = () => {
   );
 };
 
-const TeamsQueryKey = 'teams';
-
 const TeamsList = () => {
   const queryClient = useQueryClient();
   const { deleteTeam, formatError, getTeams } = useApi();
@@ -33,7 +31,7 @@ const TeamsList = () => {
     data: response
   } = useQuery({
     queryFn: getTeams,
-    queryKey: [TeamsQueryKey]
+    queryKey: buildQueryKey('teams')
   });
 
   if (error) {
@@ -52,7 +50,7 @@ const TeamsList = () => {
 
   const handleDelete = () => {
     queryClient.invalidateQueries({
-      queryKey: [TeamsQueryKey]
+      queryKey: buildQueryKey('teams')
     });
   };
 

@@ -1,4 +1,4 @@
-import useApi from '../../hooks/useApi.ts';
+import useApi, { buildQueryKey } from '../../hooks/useApi.ts';
 import { useQuery } from '@tanstack/react-query';
 import { Select, SelectProps } from 'antd';
 import { useEffect, useState } from 'react';
@@ -34,7 +34,7 @@ const UserProfileSelect = ({
   const { getProfiles } = useApi();
   const { isPending, data: response } = useQuery({
     queryFn: getProfiles,
-    queryKey: ['userProfiles']
+    queryKey: buildQueryKey('profiles')
   });
 
   const handleOnChange = (changeValue: any) => {
