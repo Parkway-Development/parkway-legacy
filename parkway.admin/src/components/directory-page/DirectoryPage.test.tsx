@@ -39,8 +39,24 @@ describe('Directory Page', () => {
 
   test('Renders user table', async () => {
     const data: UserProfile[] = [
-      { id: '1', firstname: 'John', lastname: 'Doe', mobile: '123-456-7890' },
-      { id: '2', firstname: 'Jane', lastname: 'Smith', mobile: '444-456-7890' }
+      {
+        _id: '1',
+        firstname: 'John',
+        lastname: 'Doe',
+        mobile: '123-456-7890',
+        member: true,
+        status: 'active',
+        applicationrole: 'none'
+      },
+      {
+        _id: '2',
+        firstname: 'Jane',
+        lastname: 'Smith',
+        mobile: '444-456-7890',
+        member: true,
+        status: 'active',
+        applicationrole: 'none'
+      }
     ];
 
     const overrides = buildMocks(['getProfiles', data]);
@@ -50,9 +66,9 @@ describe('Directory Page', () => {
     expect(await screen.findByText('Total Count: 2')).toBeVisible();
 
     data.forEach((user) => {
-      expect(screen.getByText(user.firstname)).toBeVisible();
-      expect(screen.getByText(user.lastname)).toBeVisible();
-      expect(screen.getByText(user.mobile)).toBeVisible();
+      expect(screen.getByText(user.firstname!)).toBeVisible();
+      expect(screen.getByText(user.lastname!)).toBeVisible();
+      expect(screen.getByText(user.mobile!)).toBeVisible();
     });
   });
 });

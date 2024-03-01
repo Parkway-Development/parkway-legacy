@@ -45,8 +45,10 @@ export const mockApi = (
     getPasswordSettings: vi.fn(),
     getProfiles: vi.fn(),
     getTeams: vi.fn(),
+    getTeamById: vi.fn(),
     login: vi.fn(),
     signup: vi.fn(),
+    updateTeam: vi.fn(),
     ...overrides
   });
 };
@@ -77,6 +79,7 @@ export const buildMocks = <K extends keyof ApiType>(
   const overrides: Partial<ApiType> = {};
 
   mocks.forEach(([key, data]) => {
+    // noinspection SuspiciousTypeOfGuard
     if (typeof data === 'string') {
       overrides[key] = vi.fn().mockRejectedValue({ message: data });
     } else {

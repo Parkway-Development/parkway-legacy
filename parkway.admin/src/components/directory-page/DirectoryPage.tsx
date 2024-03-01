@@ -57,7 +57,7 @@ const DirectoryList = () => {
       <Table
         dataSource={data}
         columns={directoryListColumns}
-        rowKey={(record) => record.id}
+        rowKey={(record) => record._id}
         size="small"
         bordered
       />

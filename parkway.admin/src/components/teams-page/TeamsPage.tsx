@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import DeleteButton from '../delete-button/DeleteButton.tsx';
 import useApi from '../../hooks/useApi.ts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import UserDisplayById from '../user-display/UserDisplayById.tsx';
 
 const TeamsPage = () => {
   return (
@@ -58,15 +59,30 @@ const TeamsList = () => {
   const directoryListColumns: ColumnsType<Team> = [
     {
       title: 'Name',
-      dataIndex: 'name'
+      width: 100,
+      render: ({ _id, name }: Team) => <Link to={`/teams/${_id}`}>{name}</Link>
     },
     {
       title: 'Description',
-      dataIndex: 'description'
+      dataIndex: 'description',
+      width: 250
+    },
+    {
+      title: 'Leader',
+      width: 100,
+      dataIndex: 'leaderId',
+      render: (value: Team['leaderId']) => <UserDisplayById id={value} />
+    },
+    {
+      title: 'Members',
+      width: 50,
+      dataIndex: 'members',
+      align: 'center',
+      render: (value: Team['members']) => value.length
     },
     {
       title: 'Delete',
-      render: (value) => (
+      render: (value: Team) => (
         <DeleteButton
           id={value._id}
           deleteFn={deleteTeam}

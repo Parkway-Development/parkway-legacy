@@ -32,7 +32,13 @@ const DeleteButton = ({ id, deleteFn, onSuccess }: DeleteButtonProps) => {
   return (
     <>
       {contextHolder}
-      <Button type="primary" danger onClick={handleClick} disabled={isPending}>
+      <Button
+        type="primary"
+        danger
+        onClick={handleClick}
+        disabled={isPending}
+        size="small"
+      >
         <CloseOutlined spin={isPending} />
       </Button>
     </>
