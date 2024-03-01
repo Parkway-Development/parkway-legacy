@@ -1,4 +1,4 @@
-import { Button, Form, Input, notification } from 'antd';
+import { Breadcrumb, Button, Form, Input, notification } from 'antd';
 import { Team } from '../../types/Team.ts';
 import styles from './TeamPage.module.css';
 import { Link, useNavigate } from 'react-router-dom';
@@ -51,7 +51,16 @@ const TeamPage = () => {
   return (
     <>
       {contextHolder}
-      <h2>Team</h2>
+      <Breadcrumb
+        items={[
+          {
+            title: <Link to="/teams">Teams</Link>
+          },
+          {
+            title: 'Add Team'
+          }
+        ]}
+      />
       <Form
         form={form}
         name="basic"

@@ -1,4 +1,4 @@
-import { App as AntdApp } from 'antd';
+import { App as AntdApp, Button, Image, Layout, Menu, theme } from 'antd';
 import styles from './App.module.css';
 import { Link, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from './hooks/useAuth.tsx';
@@ -7,6 +7,9 @@ import { SyntheticEvent } from 'react';
 function App() {
   const { isLoggedIn, logout, user } = useAuth();
   const navigate = useNavigate();
+  const {
+    token: { colorBgContainer, borderRadiusLG }
+  } = theme.useToken();
 
   if (!isLoggedIn) navigate('/login');
 
@@ -17,38 +20,57 @@ function App() {
 
   return (
     <AntdApp>
-      <div className={styles.mainContainer}>
-        <header>
-          <h1>Parkway Ministries Admin</h1>
-          <p>
-            Welcome, {user?.name}!{' '}
-            <a href="#" onClick={handleLogout}>
-              Logout
-            </a>
-          </p>
-        </header>
-        <div className={styles.container}>
-          <nav>
-            <ul>
-              <li>
-                <Link to="/">Home</Link>
-              </li>
-              <li>
-                <Link to="/directory">Directory</Link>
-              </li>
-              <li>
-                <Link to="/giving">Giving</Link>
-              </li>
-              <li>
-                <Link to="/teams">Teams</Link>
-              </li>
-            </ul>
-          </nav>
-          <div className={styles.mainContent}>
-            <Outlet />
+      <Layout className={styles.container}>
+        <Layout.Sider className={styles.sidebar}>
+          <div className={styles.logo}>
+            <Link to="/">
+              <Image src="/logo.png" preview={false} alt="Parkway Ministries" />
+            </Link>
           </div>
-        </div>
-      </div>
+          <Menu
+            theme="dark"
+            mode="inline"
+            items={[
+              {
+                key: 1,
+                label: <Link to="/directory">Directory</Link>
+              },
+              {
+                key: 2,
+                label: <Link to="/giving">Giving</Link>
+              },
+              {
+                key: 3,
+                label: <Link to="/teams">Teams</Link>
+              }
+            ]}
+          />
+        </Layout.Sider>
+        <Layout>
+          <Layout.Header style={{ padding: 0, background: colorBgContainer }}>
+            <div className={styles.header}>
+              <span className={styles.title}>Admin Portal</span>
+              <span className={styles.userSection}>
+                Welcome, {user?.name}!{' '}
+                <Button type="link" onClick={handleLogout}>
+                  Logout
+                </Button>
+              </span>
+            </div>
+          </Layout.Header>
+          <Layout.Content
+            style={{
+              margin: '24px 16px',
+              padding: 24,
+              minHeight: 280,
+              background: colorBgContainer,
+              borderRadius: borderRadiusLG
+            }}
+          >
+            <Outlet />
+          </Layout.Content>
+        </Layout>
+      </Layout>
     </AntdApp>
   );
 }
