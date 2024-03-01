@@ -4,11 +4,12 @@ import styles from './TeamPage.module.css';
 import { Link, useNavigate } from 'react-router-dom';
 import { useMutation } from '@tanstack/react-query';
 import useApi from '../../hooks/useApi.ts';
+import UserProfileSelect from '../user-profile-select/UserProfileSelect.tsx';
 
 interface TeamFields {
   name: string;
-  description: string;
-  leaderId: string;
+  description?: string;
+  leaderId?: string;
   members: string[];
 }
 
@@ -17,12 +18,15 @@ const TeamPage = () => {
   const { isPending, mutate } = useMutation({ mutationFn: createTeam });
   const [api, contextHolder] = notification.useNotification();
   const navigate = useNavigate();
+  const [form] = Form.useForm<TeamFields>();
+  const leaderId = Form.useWatch('leaderId', form);
 
   const handleLogin = (fields: TeamFields) => {
     const payload: Omit<Team, '_id'> = {
       name: fields.name.trim(),
       description: fields.description?.trim(),
-      members: []
+      leaderId: fields.leaderId,
+      members: fields.members ?? []
     };
 
     mutate(payload, {
@@ -34,11 +38,22 @@ const TeamPage = () => {
     });
   };
 
+  const handleLeaderIdChange = (value: string | undefined) =>
+    form.setFieldsValue({
+      leaderId: value
+    });
+
+  const handleMembersChange = (value: string[] | undefined) =>
+    form.setFieldsValue({
+      members: value
+    });
+
   return (
     <>
       {contextHolder}
       <h2>Team</h2>
       <Form
+        form={form}
         name="basic"
         labelCol={{ span: 3 }}
         wrapperCol={{ span: 12 }}
@@ -56,6 +71,18 @@ const TeamPage = () => {
 
         <Form.Item<TeamFields> label="Description" name="description">
           <Input />
+        </Form.Item>
+
+        <Form.Item<TeamFields> label="Leader" name="leaderId">
+          <UserProfileSelect onChange={handleLeaderIdChange} />
+        </Form.Item>
+
+        <Form.Item<TeamFields> label="Members" name="members">
+          <UserProfileSelect
+            isMultiSelect
+            onChange={handleMembersChange}
+            excludedUserId={leaderId}
+          />
         </Form.Item>
 
         <Form.Item wrapperCol={{ offset: 3, span: 12 }}>
