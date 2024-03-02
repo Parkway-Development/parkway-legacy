@@ -15,6 +15,7 @@ import {
   statusOptions,
   UserProfile
 } from '../../types/UserProfile.ts';
+import dayjs from 'dayjs';
 
 export type UserProfileFormFields = Omit<
   UserProfile,
@@ -29,12 +30,51 @@ type TeamFormProps = {
 
 const FormItem = Form.Item<UserProfileFormFields>;
 
+export const transformFieldsToPayload = (
+  fields: UserProfileFormFields
+): Omit<UserProfile, '_id'> => ({
+  firstname: fields.firstname.trim(),
+  lastname: fields.lastname.trim(),
+  middleinitial: fields.middleinitial?.trim(),
+  nickname: fields.nickname?.trim(),
+  dateofbirth: fields.dateofbirth,
+  gender: fields.gender,
+  email: fields.email?.trim(),
+  mobile: fields.mobile?.trim(),
+  streetaddress1: fields.streetaddress1?.trim(),
+  streetaddress2: fields.streetaddress2?.trim(),
+  city: fields.city?.trim(),
+  state: fields.state?.trim(),
+  zip: fields.zip?.trim(),
+  userId: fields.userId,
+  member: fields.member,
+  status: fields.status,
+  applicationrole: fields.applicationrole
+});
+
+const addProfileInitialValues: UserProfileFormFields = {
+  firstname: '',
+  lastname: '',
+  applicationrole: 'none',
+  status: 'active',
+  member: false
+};
+
 const UserProfileForm = ({
   isSaving,
   initialValues,
   onFinish
 }: TeamFormProps) => {
   const [form] = Form.useForm<UserProfileFormFields>();
+
+  const initial = initialValues
+    ? {
+        ...initialValues,
+        dateofbirth: initialValues.dateofbirth
+          ? dayjs(initialValues.dateofbirth, 'YYYY-MM-DD')
+          : undefined
+      }
+    : addProfileInitialValues;
 
   return (
     <>
@@ -55,7 +95,7 @@ const UserProfileForm = ({
         wrapperCol={{ span: 7 }}
         onFinish={onFinish}
         disabled={isSaving}
-        initialValues={initialValues}
+        initialValues={initial}
       >
         <FormItem
           label="First Name"
@@ -121,11 +161,11 @@ const UserProfileForm = ({
           <Input />
         </FormItem>
 
-        <FormItem label="Member" name="member" initialValue={true}>
+        <FormItem label="Member" name="member">
           <Switch />
         </FormItem>
 
-        <FormItem label="Status" name="status" initialValue="active">
+        <FormItem label="Status" name="status">
           <Radio.Group>
             {statusOptions?.map(({ value, label }) => (
               <Radio.Button value={value} key={value}>
@@ -135,11 +175,7 @@ const UserProfileForm = ({
           </Radio.Group>
         </FormItem>
 
-        <FormItem
-          label="Application Role"
-          name="applicationrole"
-          initialValue="none"
-        >
+        <FormItem label="Application Role" name="applicationrole">
           <Select options={applicationRoleOptions} />
         </FormItem>
 

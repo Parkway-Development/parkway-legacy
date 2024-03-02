@@ -8,7 +8,7 @@ import { useQueryClient } from '@tanstack/react-query';
 
 const DirectoryPage = () => {
   const queryClient = useQueryClient();
-  const { deleteUserProfile, getProfiles } = useApi();
+  const { deleteUserProfile, getUserProfiles } = useApi();
 
   const handleDelete = () => {
     queryClient.invalidateQueries({
@@ -37,7 +37,7 @@ const DirectoryPage = () => {
 
   return (
     <BaseDataTablePage
-      queryFn={getProfiles}
+      queryFn={getUserProfiles}
       queryKey={buildQueryKey('profiles')}
       columns={columns}
       title="Directory"

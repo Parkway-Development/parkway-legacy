@@ -9,9 +9,9 @@ interface UserDisplayProps {
 }
 
 const UserDisplayById = ({ id }: UserDisplayProps) => {
-  const { getProfiles } = useApi();
+  const { getUserProfiles } = useApi();
   const { isPending, data: response } = useQuery({
-    queryFn: getProfiles,
+    queryFn: getUserProfiles,
     queryKey: buildQueryKey('profiles')
   });
 

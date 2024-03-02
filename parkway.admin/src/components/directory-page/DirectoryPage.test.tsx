@@ -25,14 +25,14 @@ describe('Directory Page', () => {
   });
 
   test('Shows no data message', async () => {
-    setup({ getProfiles: vi.fn().mockResolvedValue([]) });
+    setup({ getUserProfiles: vi.fn().mockResolvedValue([]) });
     expect(await screen.findByText(/no data/i)).toBeVisible();
   });
 
   test('Shows error message', async () => {
     const error = 'unknown error message to display';
 
-    setup(buildMocks(['getProfiles', error]));
+    setup(buildMocks(['getUserProfiles', error]));
 
     expect(await screen.findByText(error)).toBeVisible();
   });
@@ -59,7 +59,7 @@ describe('Directory Page', () => {
       }
     ];
 
-    const overrides = buildMocks(['getProfiles', data]);
+    const overrides = buildMocks(['getUserProfiles', data]);
 
     setup(overrides);
 

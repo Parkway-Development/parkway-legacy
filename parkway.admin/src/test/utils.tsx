@@ -45,12 +45,14 @@ export const mockApi = (
     deleteUserProfile: vi.fn(),
     deleteTeam: vi.fn(),
     getPasswordSettings: vi.fn(),
-    getProfiles: vi.fn(),
+    getUserProfileById: vi.fn(),
+    getUserProfiles: vi.fn(),
     getTeams: vi.fn(),
     getTeamById: vi.fn(),
     login: vi.fn(),
     signup: vi.fn(),
     updateTeam: vi.fn(),
+    updateUserProfile: vi.fn(),
     ...overrides
   });
 };
