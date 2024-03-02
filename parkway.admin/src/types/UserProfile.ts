@@ -1,5 +1,6 @@
-export interface UserProfile {
-  _id: string;
+import { BaseEntity } from './BaseEntity.ts';
+
+export type UserProfile = BaseEntity & {
   firstname: string;
   lastname: string;
   middleinitial?: string;
@@ -26,4 +27,4 @@ export interface UserProfile {
     | 'none';
   teams?: string[];
   family?: string;
-}
+};
