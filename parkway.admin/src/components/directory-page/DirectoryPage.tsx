@@ -1,10 +1,20 @@
 import { UserProfile } from '../../types/UserProfile.ts';
 import { ColumnsType } from 'antd/lib/table';
 import useApi, { buildQueryKey } from '../../hooks/useApi.ts';
-import BaseDataTablePage from '../base-data-table-page/BaseDataTablePage.tsx';
+import BaseDataTablePage, {
+  buildDeleteColumn
+} from '../base-data-table-page/BaseDataTablePage.tsx';
+import { useQueryClient } from '@tanstack/react-query';
 
 const DirectoryPage = () => {
-  const { getProfiles } = useApi();
+  const queryClient = useQueryClient();
+  const { deleteUserProfile, getProfiles } = useApi();
+
+  const handleDelete = () => {
+    queryClient.invalidateQueries({
+      queryKey: buildQueryKey('profiles')
+    });
+  };
 
   const columns: ColumnsType<UserProfile> = [
     {
@@ -18,7 +28,8 @@ const DirectoryPage = () => {
     {
       title: 'Mobile',
       dataIndex: 'mobile'
-    }
+    },
+    buildDeleteColumn(deleteUserProfile, handleDelete)
   ];
 
   return (

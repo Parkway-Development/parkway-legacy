@@ -42,6 +42,7 @@ export const mockApi = (
     formatError: (error) => error?.message ?? 'unknown error',
     createTeam: vi.fn(),
     createUserProfile: vi.fn(),
+    deleteUserProfile: vi.fn(),
     deleteTeam: vi.fn(),
     getPasswordSettings: vi.fn(),
     getProfiles: vi.fn(),
