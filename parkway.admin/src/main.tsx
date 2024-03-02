@@ -12,8 +12,9 @@ import { ProtectedRoute } from './components/protected-route/ProtectedRoute.tsx'
 import LoginPage from './components/login-page/LoginPage.tsx';
 import SignupPage from './components/signup-page/SignupPage.tsx';
 import TeamsPage from './components/teams-page/TeamsPage.tsx';
-import TeamPage from './components/team-page/TeamPage.tsx';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import AddTeamPage from './components/team-page/AddTeamPage.tsx';
+import EditTeamPage from './components/team-page/EditTeamPage.tsx';
 
 const queryClient = new QueryClient();
 
@@ -36,8 +37,8 @@ createRoot(document.getElementById('root')!).render(
             >
               <Route path="directory" element={<DirectoryPage />} />
               <Route path="giving" element={<GivingPage />} />
-              <Route path="teams/add" element={<TeamPage />} />
-              <Route path="teams/:id" element={<TeamPage />} />
+              <Route path="teams/add" element={<AddTeamPage />} />
+              <Route path="teams/:id/edit" element={<EditTeamPage />} />
               <Route path="teams" element={<TeamsPage />} />
               <Route index element={<HomePage />} />
             </Route>

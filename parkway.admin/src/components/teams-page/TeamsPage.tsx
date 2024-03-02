@@ -22,7 +22,9 @@ const TeamsPage = () => {
     {
       title: 'Name',
       width: 100,
-      render: ({ _id, name }: Team) => <Link to={`/teams/${_id}`}>{name}</Link>
+      render: ({ _id, name }: Team) => (
+        <Link to={`/teams/${_id}/edit`}>{name}</Link>
+      )
     },
     {
       title: 'Description',
