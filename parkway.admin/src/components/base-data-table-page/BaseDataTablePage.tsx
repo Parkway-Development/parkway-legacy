@@ -42,7 +42,7 @@ export const buildActionsColumn = <T extends BaseEntity>({
 
     if (editLink) {
       nodes.push(
-        <Link to={editLink(value)}>
+        <Link to={editLink(value)} key="edit">
           <EditOutlined />
         </Link>
       );
@@ -51,6 +51,7 @@ export const buildActionsColumn = <T extends BaseEntity>({
     if (deleteAction) {
       nodes.push(
         <DeleteButton
+          key="delete"
           id={value._id}
           deleteFn={deleteAction.deleteFn}
           onSuccess={deleteAction.handleDelete}

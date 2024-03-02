@@ -1,11 +1,4 @@
-import {
-  createContext,
-  ReactNode,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef
-} from 'react';
+import { createContext, ReactNode, useContext, useMemo } from 'react';
 import { useLocalStorage } from './useLocalStorage';
 import { jwtDecode } from 'jwt-decode';
 import { useNavigate } from 'react-router-dom';
@@ -27,24 +20,15 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useLocalStorage<AuthUser>('user', undefined);
-  const [token, setToken] = useLocalStorage<string>('token', undefined);
-  const isLoggedInRef = useRef<boolean>();
+  const [user, setUser, clearUser] = useLocalStorage<AuthUser>(
+    'user',
+    undefined
+  );
+  const [token, setToken, clearToken] = useLocalStorage<string>(
+    'token',
+    undefined
+  );
   const navigate = useNavigate();
-
-  useEffect(() => {
-    if (token) {
-      const shouldRedirect = isLoggedInRef.current === false;
-      isLoggedInRef.current = true;
-
-      if (shouldRedirect) {
-        navigate('/');
-      }
-    } else if (isLoggedInRef.current) {
-      isLoggedInRef.current = false;
-      navigate('/login');
-    }
-  }, [token]);
 
   const value = useMemo(() => {
     const login = (data: LoginResponse) => {
@@ -57,11 +41,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       setUser(user);
       setToken(data.token);
+      navigate('/');
     };
 
     const logout = () => {
-      setUser(undefined);
-      setToken(undefined);
+      clearUser();
+      clearToken();
+      navigate('/login');
     };
 
     const expiration = token ? jwtDecode(token).exp ?? 0 : 0;

@@ -36,6 +36,7 @@ const DeleteButton = ({ id, deleteFn, onSuccess }: DeleteButtonProps) => {
         title="Delete"
         description="Are you sure to delete this?"
         onConfirm={handleClick}
+        onCancel={() => {}}
         disabled={isPending}
         okText="Yes"
         cancelText="No"
