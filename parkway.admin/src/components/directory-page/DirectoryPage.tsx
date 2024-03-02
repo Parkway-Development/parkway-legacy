@@ -1,4 +1,9 @@
-import { UserProfile } from '../../types/UserProfile.ts';
+import {
+  applicationRoleMapping,
+  genderMapping,
+  statusMapping,
+  UserProfile
+} from '../../types/UserProfile.ts';
 import { ColumnsType } from 'antd/lib/table';
 import useApi, { buildQueryKey } from '../../hooks/useApi.ts';
 import BaseDataTablePage, {
@@ -6,6 +11,7 @@ import BaseDataTablePage, {
 } from '../base-data-table-page/BaseDataTablePage.tsx';
 import { useQueryClient } from '@tanstack/react-query';
 import { CheckCircleOutlined } from '@ant-design/icons';
+import { translateMapping } from '../../utilities/mappingHelpers.ts';
 
 const DirectoryPage = () => {
   const queryClient = useQueryClient();
@@ -48,7 +54,9 @@ const DirectoryPage = () => {
     },
     {
       title: 'Gender',
-      dataIndex: 'gender'
+      dataIndex: 'gender',
+      render: (value: UserProfile['gender']) =>
+        translateMapping(genderMapping, value)
     },
     {
       title: 'Email',
@@ -91,11 +99,15 @@ const DirectoryPage = () => {
     },
     {
       title: 'Status',
-      dataIndex: 'status'
+      dataIndex: 'status',
+      render: (value: UserProfile['status']) =>
+        translateMapping(statusMapping, value)
     },
     {
       title: 'App Role',
-      dataIndex: 'applicationrole'
+      dataIndex: 'applicationrole',
+      render: (value: UserProfile['applicationrole']) =>
+        translateMapping(applicationRoleMapping, value)
     },
     {
       title: 'Teams',

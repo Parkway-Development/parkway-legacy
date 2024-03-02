@@ -11,11 +11,12 @@ import {
 import styles from './UserProfileForm.module.css';
 import { Link } from 'react-router-dom';
 import {
-  applicationRoleOptions,
-  statusOptions,
+  applicationRoleMapping,
+  statusMapping,
   UserProfile
 } from '../../types/UserProfile.ts';
 import dayjs from 'dayjs';
+import { buildSelectOptionsFromMapping } from '../../utilities/mappingHelpers.ts';
 
 export type UserProfileFormFields = Omit<
   UserProfile,
@@ -167,7 +168,7 @@ const UserProfileForm = ({
 
         <FormItem label="Status" name="status">
           <Radio.Group>
-            {statusOptions?.map(({ value, label }) => (
+            {Object.entries(statusMapping).map(([value, label]) => (
               <Radio.Button value={value} key={value}>
                 {label}
               </Radio.Button>
@@ -176,7 +177,9 @@ const UserProfileForm = ({
         </FormItem>
 
         <FormItem label="Application Role" name="applicationrole">
-          <Select options={applicationRoleOptions} />
+          <Select
+            options={buildSelectOptionsFromMapping(applicationRoleMapping)}
+          />
         </FormItem>
 
         <Form.Item wrapperCol={{ offset: 3, span: 12 }}>

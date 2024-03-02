@@ -1,5 +1,4 @@
 import { BaseEntity } from './BaseEntity.ts';
-import { SelectProps } from 'antd';
 
 export type UserProfile = BaseEntity & {
   firstname: string;
@@ -30,65 +29,30 @@ export type UserProfile = BaseEntity & {
   family?: string;
 };
 
-export type StatusOptionType = {
-  value: UserProfile['status'];
-  label: string;
+export const genderMapping: Record<
+  NonNullable<UserProfile['gender']>,
+  string
+> = {
+  male: 'Male',
+  female: 'Female'
 };
 
-export const statusOptions: SelectProps<string, StatusOptionType>['options'] = [
-  {
-    value: 'active',
-    label: 'Active'
-  },
-  {
-    value: 'inactive',
-    label: 'Inactive'
-  },
-  {
-    value: 'deceased',
-    label: 'Deceased'
-  },
-  {
-    value: 'visitor',
-    label: 'Visitor'
-  }
-];
-
-export type ApplicationRoleOptionType = {
-  value: UserProfile['applicationrole'];
-  label: string;
+export const statusMapping: Record<UserProfile['status'], string> = {
+  active: 'Active',
+  inactive: 'Inactive',
+  deceased: 'Deceased',
+  visitor: 'Visitor'
 };
 
-export const applicationRoleOptions: SelectProps<
-  string,
-  ApplicationRoleOptionType
->['options'] = [
-  {
-    value: 'none',
-    label: 'None'
-  },
-  {
-    value: 'super',
-    label: 'Super'
-  },
-  {
-    value: 'owner',
-    label: 'Owner'
-  },
-  {
-    value: 'admin',
-    label: 'Admin'
-  },
-  {
-    value: 'lead',
-    label: 'Lead'
-  },
-  {
-    value: 'contributor',
-    label: 'Contributor'
-  },
-  {
-    value: 'viewer',
-    label: 'Viewer'
-  }
-];
+export const applicationRoleMapping: Record<
+  UserProfile['applicationrole'],
+  string
+> = {
+  none: 'None',
+  super: 'Super',
+  owner: 'Owner',
+  admin: 'Admin',
+  lead: 'Lead',
+  contributor: 'Contributor',
+  viewer: 'Viewer'
+};
