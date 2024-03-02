@@ -34,7 +34,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     if (token) {
-      const shouldRedirect = isLoggedInRef.current === undefined;
+      const shouldRedirect = isLoggedInRef.current === false;
       isLoggedInRef.current = true;
 
       if (shouldRedirect) {
