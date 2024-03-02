@@ -12,11 +12,6 @@ const userSchema = new mongoose.Schema({
     password: {
         required: true,
         type: String
-    },
-    profileId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Profile',
-        required: false
     }
 }, {timestamps: true})
 

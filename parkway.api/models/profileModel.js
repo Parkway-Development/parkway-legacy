@@ -1,17 +1,17 @@
 const mongoose = require('mongoose');
 
 const profileSchema = new mongoose.Schema({
-    firstname: {
+    firstName: {
         required: true,
         type: String,
         lowercase: true
     },
-    lastname: {
+    lastName: {
         required: true,
         type: String,
         lowercase: true
     },
-    middleinitial: {
+    middleInitial: {
         required: false,
         type: String,
         lowercase: true
@@ -21,7 +21,7 @@ const profileSchema = new mongoose.Schema({
         type: String,
         lowercase: true
     },
-    dateofbirth: {
+    dateOfBirth: {
         required: false,
         type: Date
     },
@@ -40,12 +40,12 @@ const profileSchema = new mongoose.Schema({
         required: false,
         type: String
     },
-    streetaddress1: {
+    streetAddress1: {
         required: false,
         type: String,
         lowercase: true
     },
-    streetaddress2: {
+    streetAddress2: {
         required: false,
         type: String,
         lowercase: true
@@ -64,11 +64,6 @@ const profileSchema = new mongoose.Schema({
         required: false,
         type: String
     },
-    userId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: false
-    },
     member:{
         required: true,
         default: false,
@@ -78,10 +73,10 @@ const profileSchema = new mongoose.Schema({
         type: String,
         required: true,
         default: 'active',
-        enum: ['active', 'inactive', 'deceased','visitor'],
+        enum: ['active','inactive','deceased','visitor','child','guest'],
         lowercase: true
     },
-    applicationrole: {
+    applicationRole: {
         type: String,
         required: true,
         default: 'none',
@@ -97,7 +92,17 @@ const profileSchema = new mongoose.Schema({
         type:mongoose.Schema.Types.ObjectId,
         ref: 'Family',
         required: false
-    }
+    },
+    permissions: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Permissions',
+        required: false
+    },
+    preferences: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Preferences',
+        required: false
+    },
 }, {timestamps: true})
 
 module.exports = mongoose.model('Profile', profileSchema, 'profiles')

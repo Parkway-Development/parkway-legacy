@@ -11,6 +11,8 @@ const loginUser = async (req, res) => {
     try {
         const user = await User.login(email, password);
         const token = createToken(user._id)
+        
+        const fullUser = await User.findOne({email});
         res.status(200).json({email, token});
     } catch (err) {
         res.status(400).json({err: err.message})
@@ -23,22 +25,21 @@ const signupUser = async (req, res) => {
     try {
         const user = await User.signup(email, password);
         const token = createToken(user._id)
+
+        //check to see if there is a matching profile
+        const profile = await Profile.findOne({email})
+
+        if(profile){
+            return res.status(200).json({email, token, profile});
+        }
+        
         res.status(201).json({email, token});
     } catch (err) {
         res.status(400).json({err: err.message})
     }
 }
 
-//Get All Users
-const getAll = async (req, res) => {
-    const users = await User.find({}).sort({email: 1});
-    if(!users){
-        return res.status(404).json({mssg: "No users were returned."})
-    }
-    res.status(200).json(users)
-}
-
 module.exports = { 
     signupUser, 
     loginUser,
-    getAll}
+}

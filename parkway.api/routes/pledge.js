@@ -10,7 +10,7 @@ const{
     getPledgesByProfile,
     updatePledge,
     deletePledge,
-} = require('../controllers/pledge');
+} = require('../controllers/pledgeController');
 
 //Post a pledge
 router.post('/pledges', addPledge)

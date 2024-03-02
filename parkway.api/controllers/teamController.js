@@ -14,7 +14,7 @@ const addTeam = async (req, res) => {
     const teamToSave = await team.save();
 
     if(!teamToSave){
-    return res.status(404).json({mssg: "The save failed."})}
+    return res.status(404).json({message: "The save failed."})}
 
     res.status(200).json(teamToSave)
 }
@@ -23,7 +23,7 @@ const addTeam = async (req, res) => {
 const getAll = async (req, res) => {
     const teams = await Team.find({}).sort({teamName: 1});
     if(!teams){
-        return res.status(404).json({mssg: "No teams were returned."})
+        return res.status(404).json({message: "No teams were returned."})
     }
     res.status(200).json(teams)
 }
@@ -39,7 +39,7 @@ const getById = async (req, res) => {
     const team = await Team.findById(id);
 
     if(!team){
-        return res.status(404).json({mssg: "No such team found."})
+        return res.status(404).json({message: "No such team found."})
     }
         
     res.status(200).json(team)
@@ -49,7 +49,7 @@ const getById = async (req, res) => {
 const getByName = async (req, res) => {
     const teams = await Team.find({teamName: req.params.teamName});
     if(!teams){
-        return res.status(404).json({mssg: "No teams found."})
+        return res.status(404).json({message: "No teams found."})
     }
     res.status(200).json(teams)
 }
@@ -64,7 +64,7 @@ const updateTeam = async (req, res) => {
     const updatedTeam = await Team.findByIdAndUpdate(id, req.body, {new: true});
 
     if(!updatedTeam){
-        return res.status(404).json({mssg: "No such team found."})
+        return res.status(404).json({message: "No such team found."})
     }
     res.status(200).json(updatedTeam)
 }
@@ -110,7 +110,7 @@ const deleteTeam = async (req, res) => {
     const deletedTeam = await Team.findByIdAndDelete(id);
 
     if(!deletedTeam){
-        return res.status(404).json({mssg: "No such team found."})
+        return res.status(404).json({message: "No such team found."})
     }
     res.status(200).json(deletedTeam)
 }
@@ -144,7 +144,7 @@ const addLeader = async (req, res) => {
 
     if(!updatedTeam){ return res.status(404).json({message: "No such team found."}) }
 
-    res.status(200).json({ team: updatedTeam, profile: updatedProfile })
+    return res.status(200).json({ team: updatedTeam, profile: updatedProfile })
 }
 
 const removeLeader = async (req, res) => {

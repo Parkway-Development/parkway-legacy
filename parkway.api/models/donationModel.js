@@ -22,7 +22,7 @@ const donationSchema = new mongoose.Schema({
         enum: ['unassigned','general','building','mens ministry','womens ministry','youth','missions','music','media','oasis','other'],
         default: 'unassigned'
     },
-    profileId: {
+    profile: {
         required: false,
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Profile'

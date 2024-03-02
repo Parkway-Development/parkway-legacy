@@ -5,7 +5,7 @@ const budgetModel = new mongoose.Schema({
         type: Number,
         required: true
     },
-    fundId: {
+    fund: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Fund',
         required: true
