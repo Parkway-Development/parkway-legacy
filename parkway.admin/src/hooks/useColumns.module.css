@@ -1,0 +1,11 @@
+.columnConfigList {
+    div {
+        display: flex;
+        gap: 1em;
+    }
+}
+
+.actionsColumn {
+    display: flex;
+    justify-content: space-evenly;
+}

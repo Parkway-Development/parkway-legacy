@@ -4,34 +4,37 @@ import {
   statusMapping,
   UserProfile
 } from '../../types/UserProfile.ts';
-import { ColumnsType } from 'antd/lib/table';
 import useApi, { buildQueryKey } from '../../hooks/useApi.ts';
 import BaseDataTablePage from '../base-data-table-page/BaseDataTablePage.tsx';
 import { useQueryClient } from '@tanstack/react-query';
 import { CheckCircleOutlined } from '@ant-design/icons';
 import { translateMapping } from '../../utilities/mappingHelpers.ts';
-import useColumns from '../../hooks/useColumns.tsx';
+import useColumns, { OrderedColumnsType } from '../../hooks/useColumns.tsx';
 
-const userProfileColumns: ColumnsType<UserProfile> = [
+const userProfileColumns: OrderedColumnsType<UserProfile> = [
   {
     title: 'First Name',
     dataIndex: 'firstname',
-    key: 'firstname'
+    key: 'firstname',
+    displayOrder: 1
   },
   {
     title: 'Last Name',
     dataIndex: 'lastname',
-    key: 'lastname'
+    key: 'lastname',
+    displayOrder: 2
   },
   {
     title: 'Middle Initial',
     dataIndex: 'middleinitial',
-    key: 'middleinitial'
+    key: 'middleinitial',
+    displayOrder: 3
   },
   {
     title: 'Nickname',
     dataIndex: 'nickname',
-    key: 'nickname'
+    key: 'nickname',
+    displayOrder: 4
   },
   {
     title: 'Date of Birth',
@@ -40,54 +43,64 @@ const userProfileColumns: ColumnsType<UserProfile> = [
       if (!value) return undefined;
       return new Date(value).toLocaleDateString();
     },
-    key: 'dateofbirth'
+    key: 'dateofbirth',
+    displayOrder: 5
   },
   {
     title: 'Gender',
     dataIndex: 'gender',
     render: (value: UserProfile['gender']) =>
       translateMapping(genderMapping, value),
-    key: 'gender'
+    key: 'gender',
+    displayOrder: 6
   },
   {
     title: 'Email',
     dataIndex: 'email',
-    key: 'email'
+    key: 'email',
+    displayOrder: 7
   },
   {
     title: 'Mobile',
     dataIndex: 'mobile',
-    key: 'mobile'
+    key: 'mobile',
+    displayOrder: 8
   },
   {
     title: 'Street Address 1',
     dataIndex: 'streetaddress1',
-    key: 'streetaddress1'
+    key: 'streetaddress1',
+    displayOrder: 9
   },
   {
     title: 'Street Address 2',
     dataIndex: 'streetaddress2',
-    key: 'streetaddress2'
+    key: 'streetaddress2',
+    displayOrder: 10
   },
   {
     title: 'City',
     dataIndex: 'city',
-    key: 'city'
+    key: 'city',
+    displayOrder: 11
   },
   {
     title: 'State',
     dataIndex: 'state',
-    key: 'state'
+    key: 'state',
+    displayOrder: 12
   },
   {
     title: 'Zip',
     dataIndex: 'zip',
-    key: 'zip'
+    key: 'zip',
+    displayOrder: 13
   },
   {
     title: 'User Id',
     dataIndex: 'userId',
-    key: 'userId'
+    key: 'userId',
+    displayOrder: 14
   },
   {
     title: 'Member?',
@@ -95,33 +108,38 @@ const userProfileColumns: ColumnsType<UserProfile> = [
     render: (value: UserProfile['member']) =>
       value ? <CheckCircleOutlined /> : undefined,
     align: 'center',
-    key: 'member'
+    key: 'member',
+    displayOrder: 15
   },
   {
     title: 'Status',
     dataIndex: 'status',
     render: (value: UserProfile['status']) =>
       translateMapping(statusMapping, value),
-    key: 'status'
+    key: 'status',
+    displayOrder: 16
   },
   {
     title: 'App Role',
     dataIndex: 'applicationrole',
     render: (value: UserProfile['applicationrole']) =>
       translateMapping(applicationRoleMapping, value),
-    key: 'applicationrole'
+    key: 'applicationrole',
+    displayOrder: 17
   },
   {
     title: 'Teams',
     dataIndex: 'teams',
     render: (value: UserProfile['teams']) => value?.length ?? 0,
     align: 'center',
-    key: 'teams'
+    key: 'teams',
+    displayOrder: 18
   },
   {
     title: 'Family',
     dataIndex: 'family',
-    key: 'family'
+    key: 'family',
+    displayOrder: 19
   }
 ];
 

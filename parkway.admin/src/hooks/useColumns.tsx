@@ -1,13 +1,25 @@
 import { GenericResponse } from './useApi.ts';
 import { BaseEntity } from '../types/BaseEntity.ts';
 import { Link, To } from 'react-router-dom';
-import { ColumnsType, ColumnType } from 'antd/lib/table';
-import { ReactNode, useRef, useState } from 'react';
-import { EditOutlined, TableOutlined } from '@ant-design/icons';
+import { ColumnType } from 'antd/lib/table';
+import { ReactNode, useEffect, useRef, useState } from 'react';
+import {
+  ArrowDownOutlined,
+  ArrowUpOutlined,
+  EditOutlined,
+  TableOutlined
+} from '@ant-design/icons';
 import DeleteButton from '../components/delete-button/DeleteButton.tsx';
-import styles from '../components/base-data-table-page/BaseDataTablePage.module.css';
-import { Checkbox, Modal, ModalFuncProps } from 'antd';
+import styles from './useColumns.module.css';
+import { Button, Checkbox, Modal, ModalFuncProps } from 'antd';
 import * as React from 'react';
+import { CheckboxChangeEvent } from 'antd/lib/checkbox';
+
+type OrderedColumnType<T extends BaseEntity> = ColumnType<T> & {
+  displayOrder: number;
+};
+
+export type OrderedColumnsType<T extends BaseEntity> = OrderedColumnType<T>[];
 
 type DeleteAction = {
   deleteFn: (id: string) => GenericResponse;
@@ -15,7 +27,7 @@ type DeleteAction = {
 };
 
 type UseColumnOptions<T extends BaseEntity> = {
-  columns: ColumnsType<T>;
+  columns: OrderedColumnsType<T>;
   deleteAction?: DeleteAction;
   editLink?: (value: T) => To;
 };
@@ -33,7 +45,7 @@ const buildActionsColumn = <T extends BaseEntity>({
   editLink,
   onColumnConfigClick,
   contextHolder
-}: BuildActionsColumnOptions<T>): ColumnType<T> | undefined => {
+}: BuildActionsColumnOptions<T>): OrderedColumnType<T> | undefined => {
   const buildNodes = (value: T) => {
     const nodes: ReactNode[] = [];
 
@@ -81,8 +93,94 @@ const buildActionsColumn = <T extends BaseEntity>({
     ),
     width,
     align: 'center',
-    key: '__actions'
+    key: '__actions',
+    displayOrder: 0
   };
+};
+
+const ModalContent = <T extends BaseEntity>({
+  columns: columnsProp
+}: {
+  columns: React.MutableRefObject<OrderedColumnsType<T>>;
+}) => {
+  const [columns, setColumns] = useState<OrderedColumnsType<T>>(
+    columnsProp.current
+  );
+
+  const maxDisplayOrder = columns.reduce(
+    (prev, { displayOrder }) => (displayOrder > prev ? displayOrder : prev),
+    0
+  );
+
+  useEffect(() => {
+    columnsProp.current = columns;
+  }, [columns]);
+
+  const handleCheckboxChecked =
+    (key: React.Key | undefined) => (e: CheckboxChangeEvent) => {
+      setColumns((prev) =>
+        prev.map((c) =>
+          c.key === key ? { ...c, hidden: !e.target.checked } : c
+        )
+      );
+    };
+
+  const handleMove =
+    (displayOrder: number, key: React.Key | undefined, moveUp: boolean) =>
+    () => {
+      const positionDifference = moveUp ? -1 : 1;
+      const otherIndex = columns.find(
+        (other) => other.displayOrder === displayOrder + positionDifference
+      );
+
+      if (!otherIndex) {
+        return;
+      }
+
+      setColumns((prev) =>
+        prev.map((c) => {
+          if (c.key === key) {
+            return { ...c, displayOrder: displayOrder + positionDifference };
+          } else if (c.key === otherIndex.key) {
+            return { ...c, displayOrder };
+          } else {
+            return c;
+          }
+        })
+      );
+    };
+
+  return (
+    <div className={styles.columnConfigList}>
+      {columns
+        .filter(({ key }) => key && key !== '__actions')
+        .sort((a, b) => a.displayOrder - b.displayOrder)
+        .map(({ title, hidden, key, displayOrder }) => (
+          <div key={key}>
+            <Button
+              disabled={displayOrder >= maxDisplayOrder}
+              onClick={handleMove(displayOrder, key, false)}
+              size="small"
+            >
+              <ArrowDownOutlined />
+            </Button>
+            <Button
+              disabled={displayOrder <= 1}
+              onClick={handleMove(displayOrder, key, true)}
+              size="small"
+            >
+              <ArrowUpOutlined />
+            </Button>
+            <Checkbox
+              defaultChecked={hidden === undefined || !hidden}
+              onChange={handleCheckboxChecked(key)}
+            >
+              {title?.toString()}
+            </Checkbox>
+          </div>
+        ))}
+    </div>
+  );
 };
 
 export const useColumns = <T extends BaseEntity>({
@@ -90,39 +188,18 @@ export const useColumns = <T extends BaseEntity>({
   ...buildActionsColumnProp
 }: UseColumnOptions<T>) => {
   const [modal, contextHolder] = Modal.useModal();
-  const tempColumnsRef = useRef<ColumnsType<T>>([]);
-  const previousColumnsRef = useRef<ColumnsType<T>>([]);
+  const tempColumnsRef = useRef<OrderedColumnsType<T>>([]);
+  const previousColumnsRef = useRef<OrderedColumnsType<T>>([]);
 
   const handleColumnConfigClick = () => {
-    console.log(
-      'building columns config with ref value of',
-      tempColumnsRef.current
-    );
     const config: ModalFuncProps = {
       title: 'Column Configuration',
       icon: null,
-      content: (
-        <div>
-          {tempColumnsRef.current
-            .filter(({ key }) => key !== '__actions')
-            .map(({ title, hidden, key }) => (
-              <div key={key}>
-                <Checkbox
-                  defaultChecked={hidden === undefined || !hidden}
-                  onChange={(e) => {
-                    tempColumnsRef.current = tempColumnsRef.current.map((c) =>
-                      c.key === key ? { ...c, hidden: !e.target.checked } : c
-                    );
-                  }}
-                >
-                  {title?.toString()}
-                </Checkbox>
-              </div>
-            ))}
-        </div>
-      ),
+      content: <ModalContent<T> columns={tempColumnsRef} />,
       onOk: () => {
-        setColumns(tempColumnsRef.current);
+        setColumns(
+          tempColumnsRef.current.sort((a, b) => a.displayOrder - b.displayOrder)
+        );
       },
       okCancel: true,
       cancelText: 'Cancel',
@@ -135,17 +212,18 @@ export const useColumns = <T extends BaseEntity>({
     modal.info(config);
   };
 
-  const [columns, setColumns] = useState<ColumnsType<T>>(() => {
+  const [columns, setColumns] = useState<OrderedColumnsType<T>>(() => {
     const actionsColumn = buildActionsColumn({
       ...buildActionsColumnProp,
       onColumnConfigClick: handleColumnConfigClick,
       contextHolder
     });
 
-    const finalColumns = actionsColumn
+    let finalColumns = actionsColumn
       ? [actionsColumn, ...propColumns]
       : propColumns;
 
+    finalColumns = finalColumns.sort((a, b) => a.displayOrder - b.displayOrder);
     tempColumnsRef.current = finalColumns;
 
     return finalColumns;

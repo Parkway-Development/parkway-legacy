@@ -1,24 +1,25 @@
-import { ColumnsType } from 'antd/lib/table';
 import { Team } from '../../types/Team.ts';
 import useApi, { buildQueryKey } from '../../hooks/useApi.ts';
 import { useQueryClient } from '@tanstack/react-query';
 import UserDisplayById from '../user-display/UserDisplayById.tsx';
 import BaseDataTablePage from '../base-data-table-page/BaseDataTablePage.tsx';
-import useColumns from '../../hooks/useColumns.tsx';
+import useColumns, { OrderedColumnsType } from '../../hooks/useColumns.tsx';
 
-const teamColumns: ColumnsType<Team> = [
+const teamColumns: OrderedColumnsType<Team> = [
   {
     title: 'Name',
     dataIndex: 'name',
     width: 200,
-    key: 'name'
+    key: 'name',
+    displayOrder: 1
   },
   {
     title: 'Leader',
     width: 200,
     dataIndex: 'leaderId',
     render: (value: Team['leaderId']) => <UserDisplayById id={value} />,
-    key: 'leaderId'
+    key: 'leaderId',
+    displayOrder: 2
   },
   {
     title: 'Members',
@@ -26,12 +27,14 @@ const teamColumns: ColumnsType<Team> = [
     dataIndex: 'members',
     align: 'center',
     render: (value: Team['members']) => value.length,
-    key: 'members'
+    key: 'members',
+    displayOrder: 3
   },
   {
     title: 'Description',
     dataIndex: 'description',
-    key: 'description'
+    key: 'description',
+    displayOrder: 4
   }
 ];
 
