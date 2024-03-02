@@ -12,6 +12,7 @@ type BaseDataTablePageProps<T extends BaseEntity> =
   BaseDataTableListProps<T> & {
     title: string;
     addLink?: To;
+    addLinkTitle?: string;
   };
 
 type BaseDataTableListProps<T extends BaseEntity> = {
@@ -41,6 +42,7 @@ export const buildDeleteColumn = <T extends BaseEntity>(
 const BaseDataTablePage = <T extends BaseEntity>({
   title,
   addLink,
+  addLinkTitle,
   ...listProps
 }: BaseDataTablePageProps<T>) => {
   return (
@@ -49,7 +51,9 @@ const BaseDataTablePage = <T extends BaseEntity>({
       {addLink && (
         <nav className={styles.nav}>
           <Link to={addLink}>
-            <Button type="primary">Add {title.slice(0, -1)}</Button>
+            <Button type="primary">
+              {addLinkTitle ?? `Add ${title.slice(0, -1)}`}
+            </Button>
           </Link>
         </nav>
       )}

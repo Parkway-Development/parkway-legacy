@@ -15,6 +15,7 @@ import TeamsPage from './components/teams-page/TeamsPage.tsx';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import AddTeamPage from './components/team-page/AddTeamPage.tsx';
 import EditTeamPage from './components/team-page/EditTeamPage.tsx';
+import AddUserProfilePage from './components/user-profile-page/AddUserProfilePage.tsx';
 
 const queryClient = new QueryClient();
 
@@ -36,6 +37,7 @@ createRoot(document.getElementById('root')!).render(
               errorElement={<ErrorPage />}
             >
               <Route path="directory" element={<DirectoryPage />} />
+              <Route path="profiles/add" element={<AddUserProfilePage />} />
               <Route path="giving" element={<GivingPage />} />
               <Route path="teams/add" element={<AddTeamPage />} />
               <Route path="teams/:id/edit" element={<EditTeamPage />} />

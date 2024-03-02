@@ -27,6 +27,8 @@ const DirectoryPage = () => {
       queryKey={buildQueryKey('profiles')}
       columns={columns}
       title="Directory"
+      addLink="/profiles/add"
+      addLinkTitle="Add Profile"
     />
   );
 };
