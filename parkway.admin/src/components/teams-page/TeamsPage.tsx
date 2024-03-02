@@ -1,11 +1,10 @@
 import { ColumnsType } from 'antd/lib/table';
 import { Team } from '../../types/Team.ts';
-import { Link } from 'react-router-dom';
 import useApi, { buildQueryKey } from '../../hooks/useApi.ts';
 import { useQueryClient } from '@tanstack/react-query';
 import UserDisplayById from '../user-display/UserDisplayById.tsx';
 import BaseDataTablePage, {
-  buildDeleteColumn
+  buildActionsColumn
 } from '../base-data-table-page/BaseDataTablePage.tsx';
 
 const TeamsPage = () => {
@@ -19,21 +18,18 @@ const TeamsPage = () => {
   };
 
   const teamColumns: ColumnsType<Team> = [
+    buildActionsColumn({
+      deleteAction: { deleteFn: deleteTeam, handleDelete },
+      editLink: ({ _id }) => `/teams/${_id}/edit`
+    }),
     {
       title: 'Name',
-      width: 100,
-      render: ({ _id, name }: Team) => (
-        <Link to={`/teams/${_id}/edit`}>{name}</Link>
-      )
-    },
-    {
-      title: 'Description',
-      dataIndex: 'description',
-      width: 250
+      dataIndex: 'name',
+      width: 200
     },
     {
       title: 'Leader',
-      width: 100,
+      width: 200,
       dataIndex: 'leaderId',
       render: (value: Team['leaderId']) => <UserDisplayById id={value} />
     },
@@ -44,7 +40,10 @@ const TeamsPage = () => {
       align: 'center',
       render: (value: Team['members']) => value.length
     },
-    buildDeleteColumn(deleteTeam, handleDelete)
+    {
+      title: 'Description',
+      dataIndex: 'description'
+    }
   ];
 
   return (

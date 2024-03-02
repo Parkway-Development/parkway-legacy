@@ -2,7 +2,7 @@ import { UserProfile } from '../../types/UserProfile.ts';
 import { ColumnsType } from 'antd/lib/table';
 import useApi, { buildQueryKey } from '../../hooks/useApi.ts';
 import BaseDataTablePage, {
-  buildDeleteColumn
+  buildActionsColumn
 } from '../base-data-table-page/BaseDataTablePage.tsx';
 import { useQueryClient } from '@tanstack/react-query';
 
@@ -17,6 +17,10 @@ const DirectoryPage = () => {
   };
 
   const columns: ColumnsType<UserProfile> = [
+    buildActionsColumn({
+      deleteAction: { deleteFn: deleteUserProfile, handleDelete },
+      editLink: ({ _id }) => `/profiles/${_id}/edit`
+    }),
     {
       title: 'First Name',
       dataIndex: 'firstname'
@@ -28,8 +32,7 @@ const DirectoryPage = () => {
     {
       title: 'Mobile',
       dataIndex: 'mobile'
-    },
-    buildDeleteColumn(deleteUserProfile, handleDelete)
+    }
   ];
 
   return (

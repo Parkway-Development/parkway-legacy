@@ -7,6 +7,8 @@ import { useQuery } from '@tanstack/react-query';
 import { BaseEntity } from '../../types/BaseEntity.ts';
 import DeleteButton from '../delete-button/DeleteButton.tsx';
 import { ColumnType } from 'antd/lib/table';
+import { ReactNode } from 'react';
+import { EditOutlined } from '@ant-design/icons';
 
 type BaseDataTablePageProps<T extends BaseEntity> =
   BaseDataTableListProps<T> & {
@@ -21,20 +23,54 @@ type BaseDataTableListProps<T extends BaseEntity> = {
   columns: ColumnsType<T>;
 };
 
-export const buildDeleteColumn = <T extends BaseEntity>(
-  deleteFn: (id: string) => GenericResponse,
-  handleDelete: () => void
-): ColumnType<T> => {
+type DeleteAction = {
+  deleteFn: (id: string) => GenericResponse;
+  handleDelete: () => void;
+};
+
+type BuildActionsColumnOptions<T extends BaseEntity> = {
+  deleteAction?: DeleteAction;
+  editLink?: (value: T) => To;
+};
+
+export const buildActionsColumn = <T extends BaseEntity>({
+  deleteAction,
+  editLink
+}: BuildActionsColumnOptions<T>): ColumnType<T> => {
+  const buildNodes = (value: T) => {
+    const nodes: ReactNode[] = [];
+
+    if (editLink) {
+      nodes.push(
+        <Link to={editLink(value)}>
+          <EditOutlined />
+        </Link>
+      );
+    }
+
+    if (deleteAction) {
+      nodes.push(
+        <DeleteButton
+          id={value._id}
+          deleteFn={deleteAction.deleteFn}
+          onSuccess={deleteAction.handleDelete}
+        />
+      );
+    }
+
+    return nodes;
+  };
+
+  const itemWidth = 50;
+  let width = 0;
+  if (editLink) width += itemWidth;
+  if (deleteAction) width += itemWidth;
+
   return {
-    title: 'Delete',
     render: (value: T) => (
-      <DeleteButton
-        id={value._id}
-        deleteFn={deleteFn}
-        onSuccess={handleDelete}
-      />
+      <div className={styles.actionsColumn}>{buildNodes(value)}</div>
     ),
-    width: 50,
+    width,
     align: 'center'
   };
 };
