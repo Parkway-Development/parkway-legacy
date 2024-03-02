@@ -59,9 +59,8 @@ function App() {
             </div>
           </Layout.Header>
           <Layout.Content
+            className={styles.mainContent}
             style={{
-              margin: '24px 16px',
-              padding: 24,
               minHeight: 280,
               background: colorBgContainer,
               borderRadius: borderRadiusLG

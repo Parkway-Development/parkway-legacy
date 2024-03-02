@@ -71,7 +71,7 @@ const buildActionsColumn = <T extends BaseEntity>({
     return nodes;
   };
 
-  const itemWidth = 50;
+  const itemWidth = 30;
   let width = 0;
   if (editLink) width += itemWidth;
   if (deleteAction) width += itemWidth;
@@ -89,9 +89,15 @@ const buildActionsColumn = <T extends BaseEntity>({
       </>
     ),
     render: (value: T) => (
-      <div className={styles.actionsColumn}>{buildNodes(value)}</div>
+      <div
+        className={styles.actionsColumn}
+        style={{ minWidth: width, maxWidth: width }}
+      >
+        {buildNodes(value)}
+      </div>
     ),
     width,
+    fixed: 'left',
     align: 'center',
     key: '__actions',
     displayOrder: 0

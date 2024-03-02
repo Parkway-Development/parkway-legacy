@@ -80,6 +80,7 @@ const BaseDataTableList = <T extends BaseEntity>({
         rowKey={(record) => record._id}
         size="small"
         bordered
+        scroll={{ x: 'auto' }}
       />
     </div>
   );
