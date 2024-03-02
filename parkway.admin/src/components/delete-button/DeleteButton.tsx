@@ -1,4 +1,4 @@
-import { Button, notification } from 'antd';
+import { Button, notification, Popconfirm } from 'antd';
 import { CloseOutlined } from '@ant-design/icons';
 import useApi, { GenericResponse } from '../../hooks/useApi.ts';
 import { useMutation } from '@tanstack/react-query';
@@ -32,15 +32,19 @@ const DeleteButton = ({ id, deleteFn, onSuccess }: DeleteButtonProps) => {
   return (
     <>
       {contextHolder}
-      <Button
-        type="primary"
-        danger
-        onClick={handleClick}
+      <Popconfirm
+        title="Delete"
+        description="Are you sure to delete this?"
+        onConfirm={handleClick}
+        onCancel={() => {}}
         disabled={isPending}
-        size="small"
+        okText="Yes"
+        cancelText="No"
       >
-        <CloseOutlined spin={isPending} />
-      </Button>
+        <Button type="primary" danger disabled={isPending} size="small">
+          <CloseOutlined spin={isPending} />
+        </Button>
+      </Popconfirm>
     </>
   );
 };

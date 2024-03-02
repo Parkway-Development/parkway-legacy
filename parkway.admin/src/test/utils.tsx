@@ -41,14 +41,18 @@ export const mockApi = (
   vi.mocked(useApiFn).mockReturnValue({
     formatError: (error) => error?.message ?? 'unknown error',
     createTeam: vi.fn(),
+    createUserProfile: vi.fn(),
+    deleteUserProfile: vi.fn(),
     deleteTeam: vi.fn(),
     getPasswordSettings: vi.fn(),
-    getProfiles: vi.fn(),
+    getUserProfileById: vi.fn(),
+    getUserProfiles: vi.fn(),
     getTeams: vi.fn(),
     getTeamById: vi.fn(),
     login: vi.fn(),
     signup: vi.fn(),
     updateTeam: vi.fn(),
+    updateUserProfile: vi.fn(),
     ...overrides
   });
 };

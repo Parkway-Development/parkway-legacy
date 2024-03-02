@@ -4,10 +4,10 @@ import { AxiosInstance } from 'axios';
 
 export type TeamsApiType = {
   createTeam: (payload: Omit<Team, '_id'>) => TypedResponse<Team>;
-  updateTeam: (payload: Team) => TypedResponse<Team>;
   deleteTeam: (id: string) => GenericResponse;
   getTeamById: (id: string) => () => TypedResponse<Team>;
   getTeams: () => TypedResponse<Team[]>;
+  updateTeam: (payload: Team) => TypedResponse<Team>;
 };
 
 const createTeam = (instance: AxiosInstance, payload: Omit<Team, '_id'>) =>

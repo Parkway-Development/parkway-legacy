@@ -20,8 +20,14 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useLocalStorage<AuthUser>('user', undefined);
-  const [token, setToken] = useLocalStorage<string>('token', undefined);
+  const [user, setUser, clearUser] = useLocalStorage<AuthUser>(
+    'user',
+    undefined
+  );
+  const [token, setToken, clearToken] = useLocalStorage<string>(
+    'token',
+    undefined
+  );
   const navigate = useNavigate();
 
   const value = useMemo(() => {
@@ -39,8 +45,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
 
     const logout = () => {
-      setUser(undefined);
-      setToken(undefined);
+      clearUser();
+      clearToken();
       navigate('/login');
     };
 

@@ -1,5 +1,6 @@
-export interface UserProfile {
-  _id: string;
+import { BaseEntity } from './BaseEntity.ts';
+
+export type UserProfile = BaseEntity & {
   firstname: string;
   lastname: string;
   middleinitial?: string;
@@ -26,4 +27,32 @@ export interface UserProfile {
     | 'none';
   teams?: string[];
   family?: string;
-}
+};
+
+export const genderMapping: Record<
+  NonNullable<UserProfile['gender']>,
+  string
+> = {
+  male: 'Male',
+  female: 'Female'
+};
+
+export const statusMapping: Record<UserProfile['status'], string> = {
+  active: 'Active',
+  inactive: 'Inactive',
+  deceased: 'Deceased',
+  visitor: 'Visitor'
+};
+
+export const applicationRoleMapping: Record<
+  UserProfile['applicationrole'],
+  string
+> = {
+  none: 'None',
+  super: 'Super',
+  owner: 'Owner',
+  admin: 'Admin',
+  lead: 'Lead',
+  contributor: 'Contributor',
+  viewer: 'Viewer'
+};

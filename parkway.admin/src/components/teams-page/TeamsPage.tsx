@@ -1,110 +1,67 @@
-import { Alert, Button, Empty, Spin, Table } from 'antd';
-import { ColumnsType } from 'antd/lib/table';
-import styles from './TeamsPage.module.css';
 import { Team } from '../../types/Team.ts';
-import { Link } from 'react-router-dom';
-import DeleteButton from '../delete-button/DeleteButton.tsx';
-import useApi from '../../hooks/useApi.ts';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import useApi, { buildQueryKey } from '../../hooks/useApi.ts';
+import { useQueryClient } from '@tanstack/react-query';
 import UserDisplayById from '../user-display/UserDisplayById.tsx';
+import BaseDataTablePage from '../base-data-table-page/BaseDataTablePage.tsx';
+import useColumns, { OrderedColumnsType } from '../../hooks/useColumns.tsx';
+
+const teamColumns: OrderedColumnsType<Team> = [
+  {
+    title: 'Name',
+    dataIndex: 'name',
+    width: 200,
+    key: 'name',
+    displayOrder: 1
+  },
+  {
+    title: 'Leader',
+    width: 200,
+    dataIndex: 'leaderId',
+    render: (value: Team['leaderId']) => <UserDisplayById id={value} />,
+    key: 'leaderId',
+    displayOrder: 2
+  },
+  {
+    title: 'Members',
+    width: 50,
+    dataIndex: 'members',
+    align: 'center',
+    render: (value: Team['members']) => value.length,
+    key: 'members',
+    displayOrder: 3
+  },
+  {
+    title: 'Description',
+    dataIndex: 'description',
+    key: 'description',
+    displayOrder: 4
+  }
+];
 
 const TeamsPage = () => {
-  return (
-    <>
-      <h2>Teams</h2>
-      <nav className={styles.nav}>
-        <Link to="/teams/add">
-          <Button type="primary">Add Team</Button>
-        </Link>
-      </nav>
-      <TeamsList />
-    </>
-  );
-};
-
-const TeamsQueryKey = 'teams';
-
-const TeamsList = () => {
   const queryClient = useQueryClient();
-  const { deleteTeam, formatError, getTeams } = useApi();
-  const {
-    isPending,
-    error,
-    data: response
-  } = useQuery({
-    queryFn: getTeams,
-    queryKey: [TeamsQueryKey]
-  });
-
-  if (error) {
-    return <Alert type="error" message={formatError(error)} />;
-  }
-
-  if (isPending) {
-    return <Spin />;
-  }
-
-  if (!response?.data?.length) {
-    return <Empty />;
-  }
-
-  const { data } = response;
+  const { deleteTeam, getTeams } = useApi();
 
   const handleDelete = () => {
     queryClient.invalidateQueries({
-      queryKey: [TeamsQueryKey]
+      queryKey: buildQueryKey('teams')
     });
   };
 
-  const directoryListColumns: ColumnsType<Team> = [
-    {
-      title: 'Name',
-      width: 100,
-      render: ({ _id, name }: Team) => <Link to={`/teams/${_id}`}>{name}</Link>
-    },
-    {
-      title: 'Description',
-      dataIndex: 'description',
-      width: 250
-    },
-    {
-      title: 'Leader',
-      width: 100,
-      dataIndex: 'leaderId',
-      render: (value: Team['leaderId']) => <UserDisplayById id={value} />
-    },
-    {
-      title: 'Members',
-      width: 50,
-      dataIndex: 'members',
-      align: 'center',
-      render: (value: Team['members']) => value.length
-    },
-    {
-      title: 'Delete',
-      render: (value: Team) => (
-        <DeleteButton
-          id={value._id}
-          deleteFn={deleteTeam}
-          onSuccess={handleDelete}
-        />
-      ),
-      width: 50,
-      align: 'center'
-    }
-  ];
+  const { columns } = useColumns({
+    columns: teamColumns,
+    deleteAction: { deleteFn: deleteTeam, handleDelete },
+    editLink: ({ _id }) => `/teams/${_id}/edit`
+  });
 
   return (
-    <div className={styles.dataContainer}>
-      <p>Total Count: {data.length}</p>
-      <Table
-        dataSource={data}
-        columns={directoryListColumns}
-        rowKey={(record) => record._id}
-        size="small"
-        bordered
-      />
-    </div>
+    <BaseDataTablePage
+      addLink="/teams/add"
+      queryFn={getTeams}
+      queryKey={buildQueryKey('teams')}
+      columns={columns}
+      title="Teams"
+    />
   );
 };
 

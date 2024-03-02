@@ -13,6 +13,14 @@ export type ApiType = GeneralApiType &
     formatError: (error: Error | null) => string;
   };
 
+type QueryType = 'passwordSettings' | 'profiles' | 'teams';
+
+export const buildQueryKey = (queryType: QueryType, id?: string) => {
+  const result: any[] = [queryType];
+  if (id) result.push({ _id: id });
+  return result;
+};
+
 const createInstance = (token: string | undefined) =>
   axios.create({
     headers: {

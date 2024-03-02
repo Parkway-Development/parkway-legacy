@@ -2,7 +2,7 @@ import styles from './SignupPage.module.css';
 import { Alert, Button, Card, Form, Input } from 'antd';
 import { useAuth } from '../../hooks/useAuth';
 import { Link } from 'react-router-dom';
-import useApi from '../../hooks/useApi';
+import useApi, { buildQueryKey } from '../../hooks/useApi';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { PasswordSettings } from '../../api/generalApi.ts';
 
@@ -40,7 +40,7 @@ const SignupPage = () => {
   const { data: passwordSettings, isPending: passwordSettingsLoading } =
     useQuery({
       queryFn: getPasswordSettings,
-      queryKey: ['passwordSettings']
+      queryKey: buildQueryKey('passwordSettings')
     });
   const { isPending, error, mutate } = useMutation({
     mutationFn: signup

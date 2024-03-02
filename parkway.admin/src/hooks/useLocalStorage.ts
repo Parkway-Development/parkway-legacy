@@ -3,7 +3,7 @@ import { useState } from 'react';
 export const useLocalStorage = <T>(
   keyName: string,
   defaultValue: T | undefined
-): [T | undefined, (user: T | undefined) => void] => {
+): [T | undefined, (user: T | undefined) => void, () => void] => {
   const [storedValue, setStoredValue] = useState(() => {
     try {
       const value = window.localStorage.getItem(keyName);
@@ -17,6 +17,7 @@ export const useLocalStorage = <T>(
       return defaultValue;
     }
   });
+
   const setValue = (newValue: T | undefined) => {
     try {
       window.localStorage.setItem(keyName, JSON.stringify(newValue));
@@ -25,5 +26,14 @@ export const useLocalStorage = <T>(
     }
     setStoredValue(newValue);
   };
-  return [storedValue, setValue];
+
+  const clearValue = () => {
+    try {
+      window.localStorage.removeItem(keyName);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  return [storedValue, setValue, clearValue];
 };
