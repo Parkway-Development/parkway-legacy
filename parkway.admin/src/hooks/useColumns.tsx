@@ -161,8 +161,18 @@ const ModalContent = <T extends BaseEntity>({
       );
     };
 
+  const handleShowHideClick = (show: boolean) => () => {
+    setColumns((prev) =>
+      prev.map((c) => (c.key === '__actions' ? c : { ...c, hidden: !show }))
+    );
+  };
+
   return (
     <div className={styles.columnConfigList}>
+      <div className={styles.columnConfigListOptions}>
+        <Button onClick={handleShowHideClick(true)}>Show All</Button>
+        <Button onClick={handleShowHideClick(false)}>Hide All</Button>
+      </div>
       {columns
         .filter(({ key }) => key && key !== '__actions')
         .sort((a, b) => a.displayOrder - b.displayOrder)
@@ -207,32 +217,35 @@ export const useColumns = <T extends BaseEntity>({
   const previousColumnsRef = useRef<OrderedColumnsType<T>>([]);
 
   const handleColumnConfigClick = () => {
+    const handleOkClick = () => {
+      const newColumns = tempColumnsRef.current.sort(
+        (a, b) => a.displayOrder - b.displayOrder
+      );
+      setColumns(newColumns);
+
+      const localStorageColumns: LocalStorageColumnsType[] = newColumns.map(
+        ({ key, displayOrder, hidden }) => ({
+          key: key?.toString() ?? '',
+          displayOrder,
+          hidden: hidden === true
+        })
+      );
+
+      setValue(localStorageColumns);
+    };
+
+    const handleCancelClick = () => {
+      tempColumnsRef.current = previousColumnsRef.current;
+    };
+
     const config: ModalFuncProps = {
       title: 'Column Configuration',
       icon: null,
       content: <ModalContent<T> columns={tempColumnsRef} />,
-      onOk: () => {
-        const newColumns = tempColumnsRef.current.sort(
-          (a, b) => a.displayOrder - b.displayOrder
-        );
-        setColumns(newColumns);
-
-        const localStorageColumns: LocalStorageColumnsType[] = newColumns.map(
-          ({ key, displayOrder, hidden }) => ({
-            key: key?.toString() ?? '',
-            displayOrder,
-            hidden: hidden === true
-          })
-        );
-
-        setValue(localStorageColumns);
-      },
+      style: { top: '2em' },
       okCancel: true,
-      cancelText: 'Cancel',
-      onCancel: () => {
-        tempColumnsRef.current = previousColumnsRef.current;
-      },
-      style: { top: '2em' }
+      onOk: handleOkClick,
+      onCancel: handleCancelClick
     };
 
     previousColumnsRef.current = tempColumnsRef.current;
