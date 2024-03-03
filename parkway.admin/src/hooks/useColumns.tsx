@@ -11,9 +11,8 @@ import {
 } from '@ant-design/icons';
 import DeleteButton from '../components/delete-button/DeleteButton.tsx';
 import styles from './useColumns.module.css';
-import { Button, Checkbox, Modal, ModalFuncProps } from 'antd';
+import { Button, Modal, ModalFuncProps, Switch } from 'antd';
 import * as React from 'react';
-import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 
 type OrderedColumnType<T extends BaseEntity> = ColumnType<T> & {
   displayOrder: number;
@@ -122,12 +121,10 @@ const ModalContent = <T extends BaseEntity>({
     columnsProp.current = columns;
   }, [columns]);
 
-  const handleCheckboxChecked =
-    (key: React.Key | undefined) => (e: CheckboxChangeEvent) => {
+  const handleSwitchToggle =
+    (key: React.Key | undefined) => (toggled: boolean) => {
       setColumns((prev) =>
-        prev.map((c) =>
-          c.key === key ? { ...c, hidden: !e.target.checked } : c
-        )
+        prev.map((c) => (c.key === key ? { ...c, hidden: !toggled } : c))
       );
     };
 
@@ -177,12 +174,11 @@ const ModalContent = <T extends BaseEntity>({
             >
               <ArrowUpOutlined />
             </Button>
-            <Checkbox
-              defaultChecked={hidden === undefined || !hidden}
-              onChange={handleCheckboxChecked(key)}
-            >
-              {title?.toString()}
-            </Checkbox>
+            <Switch
+              checked={hidden === undefined || !hidden}
+              onClick={handleSwitchToggle(key)}
+            />
+            <span>{title?.toString()}</span>
           </div>
         ))}
     </div>
@@ -211,11 +207,12 @@ export const useColumns = <T extends BaseEntity>({
       cancelText: 'Cancel',
       onCancel: () => {
         tempColumnsRef.current = previousColumnsRef.current;
-      }
+      },
+      style: { top: '2em' }
     };
 
     previousColumnsRef.current = tempColumnsRef.current;
-    modal.info(config);
+    void modal.info(config);
   };
 
   const [columns, setColumns] = useState<OrderedColumnsType<T>>(() => {
