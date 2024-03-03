@@ -1,10 +1,16 @@
 import { BaseEntity } from '../../types/BaseEntity.ts';
 import * as React from 'react';
-import { useEffect, useState } from 'react';
-import styles from './ColumnConfigurationModal.module.css';
+import { CSSProperties, useEffect, useState } from 'react';
 import { Button, ModalFuncProps, Switch } from 'antd';
-import { ArrowDownOutlined, ArrowUpOutlined } from '@ant-design/icons';
 import { OrderedColumnsType } from '../../hooks/useColumns.tsx';
+import {
+  DragDropContext,
+  Droppable,
+  Draggable,
+  DropResult,
+  DraggableProvidedDraggableProps
+} from '@hello-pangea/dnd';
+import { DragOutlined } from '@ant-design/icons';
 
 type ColumnConfigurationModal<T extends BaseEntity> = {
   columns: React.MutableRefObject<OrderedColumnsType<T>>;
@@ -17,11 +23,6 @@ const ColumnConfigurationModal = <T extends BaseEntity>({
     columnsProp.current
   );
 
-  const maxDisplayOrder = columns.reduce(
-    (prev, { displayOrder }) => (displayOrder > prev ? displayOrder : prev),
-    0
-  );
-
   useEffect(() => {
     columnsProp.current = columns;
   }, [columns]);
@@ -32,29 +33,61 @@ const ColumnConfigurationModal = <T extends BaseEntity>({
     );
   };
 
-  const handleMove =
-    (displayOrder: number, key: string, moveUp: boolean) => () => {
-      const positionDifference = moveUp ? -1 : 1;
-      const otherIndex = columns.find(
-        (other) => other.displayOrder === displayOrder + positionDifference
-      );
+  const reorder = (
+    list: OrderedColumnsType<T>,
+    startIndex: number,
+    endIndex: number
+  ) => {
+    const [removed] = list.splice(startIndex, 1);
+    list.splice(endIndex, 0, removed);
 
-      if (!otherIndex) {
-        return;
-      }
+    return list;
+  };
 
-      setColumns((prev) =>
-        prev.map((c) => {
-          if (c.key === key) {
-            return { ...c, displayOrder: displayOrder + positionDifference };
-          } else if (c.key === otherIndex.key) {
-            return { ...c, displayOrder };
-          } else {
-            return c;
-          }
-        })
-      );
-    };
+  const getItemStyle = (
+    isDragging: boolean,
+    draggableStyle: DraggableProvidedDraggableProps['style']
+  ): CSSProperties => ({
+    // some basic styles to make the items look a bit nicer
+    userSelect: 'none',
+    margin: `0 0 .5em 0`,
+    display: 'flex',
+    gap: '1em',
+    border: '1px solid #ccc',
+    borderRadius: '4px',
+    padding: '.25em .5em',
+
+    // change background colour if dragging
+    background: isDragging ? 'lightgreen' : 'unset',
+
+    // styles we need to apply on draggables
+    ...draggableStyle
+  });
+
+  const getListStyle = (isDraggingOver: boolean) => ({
+    border: isDraggingOver ? '1px dashed darkblue' : 'unset',
+    padding: '.5em'
+  });
+
+  const onDragEnd = (result: DropResult) => {
+    // dropped outside the list
+    if (!result.destination) {
+      return;
+    }
+
+    const items = reorder(
+      columns,
+      result.source.index + 1,
+      result.destination.index + 1
+    );
+
+    setColumns(
+      items.map((c, index) => ({
+        ...c,
+        displayOrder: index
+      }))
+    );
+  };
 
   const handleShowHideClick = (show: boolean) => () => {
     setColumns((prev) =>
@@ -63,37 +96,54 @@ const ColumnConfigurationModal = <T extends BaseEntity>({
   };
 
   return (
-    <div className={styles.columnConfigList}>
-      <div className={styles.columnConfigListOptions}>
+    <div>
+      <div>
         <Button onClick={handleShowHideClick(true)}>Show All</Button>
         <Button onClick={handleShowHideClick(false)}>Hide All</Button>
       </div>
-      {columns
-        .filter(({ key }) => key !== '__actions')
-        .sort((a, b) => a.displayOrder - b.displayOrder)
-        .map(({ title, hidden, key, displayOrder }) => (
-          <div key={key}>
-            <Button
-              disabled={displayOrder >= maxDisplayOrder}
-              onClick={handleMove(displayOrder, key, false)}
-              size="small"
+
+      <DragDropContext onDragEnd={onDragEnd}>
+        <Droppable droppableId="droppable">
+          {(provided, snapshot) => (
+            <div
+              {...provided.droppableProps}
+              ref={provided.innerRef}
+              style={getListStyle(snapshot.isDraggingOver)}
             >
-              <ArrowDownOutlined />
-            </Button>
-            <Button
-              disabled={displayOrder <= 1}
-              onClick={handleMove(displayOrder, key, true)}
-              size="small"
-            >
-              <ArrowUpOutlined />
-            </Button>
-            <Switch
-              checked={hidden === undefined || !hidden}
-              onClick={handleSwitchToggle(key)}
-            />
-            <span>{title?.toString()}</span>
-          </div>
-        ))}
+              {columns
+                .filter(({ key }) => key !== '__actions')
+                .sort((a, b) => a.displayOrder - b.displayOrder)
+                .map(({ title, hidden, key }, index) => (
+                  <Draggable
+                    key={key}
+                    draggableId={key.toString()}
+                    index={index}
+                  >
+                    {(provided, snapshot) => (
+                      <div
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}
+                        style={getItemStyle(
+                          snapshot.isDragging,
+                          provided.draggableProps.style
+                        )}
+                      >
+                        <DragOutlined />
+                        <Switch
+                          checked={hidden === undefined || !hidden}
+                          onClick={handleSwitchToggle(key)}
+                        />
+                        <span>{title?.toString()}</span>
+                      </div>
+                    )}
+                  </Draggable>
+                ))}
+              {provided.placeholder}
+            </div>
+          )}
+        </Droppable>
+      </DragDropContext>
     </div>
   );
 };
