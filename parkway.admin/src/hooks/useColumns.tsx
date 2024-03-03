@@ -13,6 +13,13 @@ import DeleteButton from '../components/delete-button/DeleteButton.tsx';
 import styles from './useColumns.module.css';
 import { Button, Modal, ModalFuncProps, Switch } from 'antd';
 import * as React from 'react';
+import { useLocalStorage } from './useLocalStorage.ts';
+
+type LocalStorageColumnsType = {
+  key: string;
+  displayOrder: number;
+  hidden: boolean;
+};
 
 type OrderedColumnType<T extends BaseEntity> = ColumnType<T> & {
   displayOrder: number;
@@ -27,13 +34,14 @@ type DeleteAction = {
 
 type UseColumnOptions<T extends BaseEntity> = {
   columns: OrderedColumnsType<T>;
+  columnType: string;
   deleteAction?: DeleteAction;
   editLink?: (value: T) => To;
 };
 
 type BuildActionsColumnOptions<T extends BaseEntity> = Omit<
   UseColumnOptions<T>,
-  'columns'
+  'columns' | 'columnType'
 > & {
   onColumnConfigClick: () => void;
   contextHolder: React.ReactElement;
@@ -187,9 +195,14 @@ const ModalContent = <T extends BaseEntity>({
 
 export const useColumns = <T extends BaseEntity>({
   columns: propColumns,
+  columnType,
   ...buildActionsColumnProp
 }: UseColumnOptions<T>) => {
   const [modal, contextHolder] = Modal.useModal();
+  const [storedValue, setValue] = useLocalStorage<LocalStorageColumnsType[]>(
+    `columnConfiguration:${columnType}`,
+    undefined
+  );
   const tempColumnsRef = useRef<OrderedColumnsType<T>>([]);
   const previousColumnsRef = useRef<OrderedColumnsType<T>>([]);
 
@@ -199,9 +212,20 @@ export const useColumns = <T extends BaseEntity>({
       icon: null,
       content: <ModalContent<T> columns={tempColumnsRef} />,
       onOk: () => {
-        setColumns(
-          tempColumnsRef.current.sort((a, b) => a.displayOrder - b.displayOrder)
+        const newColumns = tempColumnsRef.current.sort(
+          (a, b) => a.displayOrder - b.displayOrder
         );
+        setColumns(newColumns);
+
+        const localStorageColumns: LocalStorageColumnsType[] = newColumns.map(
+          ({ key, displayOrder, hidden }) => ({
+            key: key?.toString() ?? '',
+            displayOrder,
+            hidden: hidden === true
+          })
+        );
+
+        setValue(localStorageColumns);
       },
       okCancel: true,
       cancelText: 'Cancel',
@@ -225,6 +249,22 @@ export const useColumns = <T extends BaseEntity>({
     let finalColumns = actionsColumn
       ? [actionsColumn, ...propColumns]
       : propColumns;
+
+    // Apply saved values if found
+    if (storedValue?.length) {
+      finalColumns = finalColumns.map((c) => {
+        const configuredColumn = storedValue.find((x) => x.key === c.key);
+        if (configuredColumn) {
+          return {
+            ...c,
+            displayOrder: configuredColumn.displayOrder,
+            hidden: configuredColumn.hidden
+          };
+        }
+
+        return c;
+      });
+    }
 
     finalColumns = finalColumns.sort((a, b) => a.displayOrder - b.displayOrder);
     tempColumnsRef.current = finalColumns;
