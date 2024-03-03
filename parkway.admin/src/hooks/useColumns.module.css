@@ -1,21 +1,3 @@
-.columnConfigList {
-    > div {
-        display: flex;
-        gap: 1em;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        padding: .25em .5em;
-    }
-
-    > div:not(:last-child) {
-        margin-bottom: .25em;
-    }
-
-    .columnConfigListOptions {
-        border: none;
-    }
-}
-
 .actionsColumn {
     display: flex;
     justify-content: space-evenly;

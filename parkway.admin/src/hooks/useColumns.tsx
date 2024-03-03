@@ -2,18 +2,16 @@ import { GenericResponse } from './useApi.ts';
 import { BaseEntity } from '../types/BaseEntity.ts';
 import { Link, To } from 'react-router-dom';
 import { ColumnType } from 'antd/lib/table';
-import { ReactNode, useEffect, useRef, useState } from 'react';
-import {
-  ArrowDownOutlined,
-  ArrowUpOutlined,
-  EditOutlined,
-  TableOutlined
-} from '@ant-design/icons';
+import { ReactNode, useRef, useState } from 'react';
+import { EditOutlined, TableOutlined } from '@ant-design/icons';
 import DeleteButton from '../components/delete-button/DeleteButton.tsx';
 import styles from './useColumns.module.css';
-import { Button, Modal, ModalFuncProps, Switch } from 'antd';
+import { Modal, ModalFuncProps } from 'antd';
 import * as React from 'react';
 import { useLocalStorage } from './useLocalStorage.ts';
+import ColumnConfigurationModal, {
+  modalProps
+} from '../components/column-configuration-modal/ColumnConfigurationModal.tsx';
 
 type LocalStorageColumnsType = {
   key: string;
@@ -113,96 +111,6 @@ const buildActionsColumn = <T extends BaseEntity>({
   };
 };
 
-const ModalContent = <T extends BaseEntity>({
-  columns: columnsProp
-}: {
-  columns: React.MutableRefObject<OrderedColumnsType<T>>;
-}) => {
-  const [columns, setColumns] = useState<OrderedColumnsType<T>>(
-    columnsProp.current
-  );
-
-  const maxDisplayOrder = columns.reduce(
-    (prev, { displayOrder }) => (displayOrder > prev ? displayOrder : prev),
-    0
-  );
-
-  useEffect(() => {
-    columnsProp.current = columns;
-  }, [columns]);
-
-  const handleSwitchToggle = (key: string) => (toggled: boolean) => {
-    setColumns((prev) =>
-      prev.map((c) => (c.key === key ? { ...c, hidden: !toggled } : c))
-    );
-  };
-
-  const handleMove =
-    (displayOrder: number, key: string, moveUp: boolean) => () => {
-      const positionDifference = moveUp ? -1 : 1;
-      const otherIndex = columns.find(
-        (other) => other.displayOrder === displayOrder + positionDifference
-      );
-
-      if (!otherIndex) {
-        return;
-      }
-
-      setColumns((prev) =>
-        prev.map((c) => {
-          if (c.key === key) {
-            return { ...c, displayOrder: displayOrder + positionDifference };
-          } else if (c.key === otherIndex.key) {
-            return { ...c, displayOrder };
-          } else {
-            return c;
-          }
-        })
-      );
-    };
-
-  const handleShowHideClick = (show: boolean) => () => {
-    setColumns((prev) =>
-      prev.map((c) => (c.key === '__actions' ? c : { ...c, hidden: !show }))
-    );
-  };
-
-  return (
-    <div className={styles.columnConfigList}>
-      <div className={styles.columnConfigListOptions}>
-        <Button onClick={handleShowHideClick(true)}>Show All</Button>
-        <Button onClick={handleShowHideClick(false)}>Hide All</Button>
-      </div>
-      {columns
-        .filter(({ key }) => key !== '__actions')
-        .sort((a, b) => a.displayOrder - b.displayOrder)
-        .map(({ title, hidden, key, displayOrder }) => (
-          <div key={key}>
-            <Button
-              disabled={displayOrder >= maxDisplayOrder}
-              onClick={handleMove(displayOrder, key, false)}
-              size="small"
-            >
-              <ArrowDownOutlined />
-            </Button>
-            <Button
-              disabled={displayOrder <= 1}
-              onClick={handleMove(displayOrder, key, true)}
-              size="small"
-            >
-              <ArrowUpOutlined />
-            </Button>
-            <Switch
-              checked={hidden === undefined || !hidden}
-              onClick={handleSwitchToggle(key)}
-            />
-            <span>{title?.toString()}</span>
-          </div>
-        ))}
-    </div>
-  );
-};
-
 export const useColumns = <T extends BaseEntity>({
   columns: propColumns,
   columnType,
@@ -239,11 +147,8 @@ export const useColumns = <T extends BaseEntity>({
     };
 
     const config: ModalFuncProps = {
-      title: 'Column Configuration',
-      icon: null,
-      content: <ModalContent<T> columns={tempColumnsRef} />,
-      style: { top: '2em' },
-      okCancel: true,
+      ...modalProps,
+      content: <ColumnConfigurationModal<T> columns={tempColumnsRef} />,
       onOk: handleOkClick,
       onCancel: handleCancelClick
     };
