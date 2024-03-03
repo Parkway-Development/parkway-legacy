@@ -50,6 +50,7 @@ const TeamsPage = () => {
 
   const { columns } = useColumns({
     columns: teamColumns,
+    columnType: 'teamsPage',
     deleteAction: { deleteFn: deleteTeam, handleDelete },
     editLink: ({ _id }) => `/teams/${_id}/edit`
   });

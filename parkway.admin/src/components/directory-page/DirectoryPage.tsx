@@ -155,6 +155,7 @@ const DirectoryPage = () => {
 
   const { columns } = useColumns({
     columns: userProfileColumns,
+    columnType: 'directoryPage',
     deleteAction: { deleteFn: deleteUserProfile, handleDelete },
     editLink: ({ _id }) => `/profiles/${_id}/edit`
   });
