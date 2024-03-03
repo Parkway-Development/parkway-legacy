@@ -23,6 +23,8 @@ type LocalStorageColumnsType = {
 
 type OrderedColumnType<T extends BaseEntity> = ColumnType<T> & {
   displayOrder: number;
+  dataIndex?: keyof T;
+  key: string;
 };
 
 export type OrderedColumnsType<T extends BaseEntity> = OrderedColumnType<T>[];
@@ -129,16 +131,14 @@ const ModalContent = <T extends BaseEntity>({
     columnsProp.current = columns;
   }, [columns]);
 
-  const handleSwitchToggle =
-    (key: React.Key | undefined) => (toggled: boolean) => {
-      setColumns((prev) =>
-        prev.map((c) => (c.key === key ? { ...c, hidden: !toggled } : c))
-      );
-    };
+  const handleSwitchToggle = (key: string) => (toggled: boolean) => {
+    setColumns((prev) =>
+      prev.map((c) => (c.key === key ? { ...c, hidden: !toggled } : c))
+    );
+  };
 
   const handleMove =
-    (displayOrder: number, key: React.Key | undefined, moveUp: boolean) =>
-    () => {
+    (displayOrder: number, key: string, moveUp: boolean) => () => {
       const positionDifference = moveUp ? -1 : 1;
       const otherIndex = columns.find(
         (other) => other.displayOrder === displayOrder + positionDifference
@@ -174,7 +174,7 @@ const ModalContent = <T extends BaseEntity>({
         <Button onClick={handleShowHideClick(false)}>Hide All</Button>
       </div>
       {columns
-        .filter(({ key }) => key && key !== '__actions')
+        .filter(({ key }) => key !== '__actions')
         .sort((a, b) => a.displayOrder - b.displayOrder)
         .map(({ title, hidden, key, displayOrder }) => (
           <div key={key}>
@@ -225,7 +225,7 @@ export const useColumns = <T extends BaseEntity>({
 
       const localStorageColumns: LocalStorageColumnsType[] = newColumns.map(
         ({ key, displayOrder, hidden }) => ({
-          key: key?.toString() ?? '',
+          key,
           displayOrder,
           hidden: hidden === true
         })
