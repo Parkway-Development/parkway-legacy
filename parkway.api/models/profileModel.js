@@ -1,6 +1,10 @@
 const mongoose = require('mongoose');
 
 const profileSchema = new mongoose.Schema({
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    },
     firstName: {
         required: true,
         type: String,
@@ -28,7 +32,6 @@ const profileSchema = new mongoose.Schema({
     gender: {
         required: false,
         type: String,
-        enum: ['male','female'],
         lowercase: true
     },
     email: {
@@ -36,7 +39,11 @@ const profileSchema = new mongoose.Schema({
         type: String,
         lowercase: true
     },
-    mobile: {
+    mobilePhone: {
+        required: false,
+        type: String
+    },
+    homePhone: {
         required: false,
         type: String
     },
@@ -69,10 +76,9 @@ const profileSchema = new mongoose.Schema({
         default: false,
         type: Boolean
     },
-    status:{
+    memberStatus:{
         type: String,
-        required: true,
-        default: 'active',
+        required: false,
         enum: ['active','inactive','deceased','visitor','child','guest'],
         lowercase: true
     },

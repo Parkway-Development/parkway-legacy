@@ -30,4 +30,8 @@ router.patch('/pledges/:id', updatePledge)
 //Delete a pledge by ID
 router.delete('/pledges/:id', deletePledge)
 
+router.use('*', (req, res) => {
+    res.status(404).json({ message: 'Not Found' });
+});
+
 module.exports = router;

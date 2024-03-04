@@ -34,4 +34,8 @@ router.patch('/expenses/:id', updateExpense)
 //Delete an expense by ID
 router.delete('/expenses/:id', deleteExpense)
 
+router.use('*', (req, res) => {
+    res.status(404).json({ message: 'Not Found' });
+});
+
 module.exports = router;

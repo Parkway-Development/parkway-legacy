@@ -31,4 +31,8 @@ router.patch('/donations/:id', updateDonation)
 //Delete a donation by ID
 router.delete('/donations/:id', deleteDonation)
 
+router.use('*', (req, res) => {
+    res.status(404).json({ message: 'Not Found' });
+});
+
 module.exports = router;

@@ -30,4 +30,8 @@ router.patch('/payrolls/:id', updatePayroll)
 //Delete a payroll by ID
 router.delete('/payrolls/:id', deletePayroll)
 
+router.use('*', (req, res) => {
+    res.status(404).json({ message: 'Not Found' });
+});
+
 module.exports = router;

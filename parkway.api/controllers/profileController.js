@@ -2,16 +2,43 @@ const mongoose = require('mongoose')
 const Profile = require('../models/profileModel')
 const User = require('../models/userModel')
 
+//Search for a pre-existing profile
+const searchForAProfile = async (inboundProfile) => {
+
+    const inProfile = inboundProfile;
+
+
+    let profile = null;
+    if(inProfile.firstName && inProfile.lastName){
+        profile = await Profile.findOne({firstName: inProfile.firstName, lastName: inProfile.lastName})} 
+    else if(inProfile.mobilePhone){
+        profile = Profile.findOne({mobilePhone: inProfile.mobilePhone}) }
+    else if(inProfile.homePhone){
+        profile = Profile.findOne({homePhone: inProfile.homePhone}) }
+
+    if(!profile){
+        return null}
+    return profile
+}
+
 //Post a profile
 const addProfile = async (req, res) => {
-    const profile = new Profile(req.body)
+    const submittedProfile = new Profile(req.body)
 
-    const profileToSave = await profile.save();
+    const existingProfile = await searchForAProfile(submittedProfile)
+    if(existingProfile){
+        return res.status(400).json({
+            submittedProfile: profile, 
+            existingProfile: existingProfile, 
+            message: "There is a possible matching profile. Please check the details and try again."})
+    }
 
-    if(!profileToSave){
+    const savedProfile = await submittedProfile.save();
+
+    if(!savedProfile){
     return res.status(404).json({message: "The save failed."})}
 
-    res.status(200).json(profileToSave)
+    res.status(200).json(savedProfile)
 }
 
 //Get all profiles
@@ -65,8 +92,22 @@ const getByLastName = async (req, res) => {
 }
 
 //Get profiles by mobile number
-const getByMobile = async (req, res) => {
-    const profiles = await Profile.find({mobile: req.params.mobile})
+const getByMobileNumber = async (req, res) => {
+    const profiles = await Profile.find({mobileNumber: req.params.mobileNumber})
+        .populate('family')
+        .populate('permissions')
+        .populate('preferences')
+        .populate('teams');
+
+    if(!profiles){
+        return res.status(404).json({message: "No profiles found."})
+    }
+    res.status(200).json(profiles)
+}
+
+//Get profiles by home number
+const getByHomeNumber = async (req, res) => {
+    const profiles = await Profile.find({homeNumber: req.params.homeNumber})
         .populate('family')
         .populate('permissions')
         .populate('preferences')
@@ -92,7 +133,12 @@ const updateProfile = async (req, res) => {
     );
 
     if(profile){
-        profile = await Profile.populate(profile, {path: 'family'}, {path: 'permissions'}, {path: 'preferences'}, {path: 'teams'})
+        profile = await Profile.populate(
+            profile, 
+            {path: 'family'}, 
+            {path: 'permissions'}, 
+            {path: 'preferences'}, 
+            {path: 'teams'})
         return res.status(200).json(profile);
     }else{
         return res.status(404).json({error: "There was a problem updating the profile."})
@@ -138,22 +184,28 @@ const connectUserAndProfile = async (req, res) => {
         return res.status(404).json({error: 'No such profile.'})
     }
 
-    //Make sure the user account exists
-    const user = await User.findById(userId);
+    //get the User and add the profileId to it
+    let profile = await Profile.findById(profileId);
+    const user = await User.findByIdAndUpdate(userId, {profile: profile}, {new: true});
 
     if(!user){
-        return res.status(404).json({error: 'No such user account.'})
+        return res.status(404).json({error: 'There was a problem connecting the user to the profile.  The user object was not returned.'})
+    }
+    
+    //get the Profile and add the userId to it
+    profile = await Profile.findByIdAndUpdate(profileId, {user: user}, {new: true});
+    if(!profile){
+        return res.status(404).json({error: 'There was a problem connecting the profile to the user.  The profile object was not returned.'})
     }
 
-    //Update the profile with the user account
-    let profile = await Profile.findOneAndUpdate({ _id: profileId},{userId: userId},{new: true});
+    profile = await Profile.findById(profile._id).populate('user','family permissions preferences teams').exec()
 
-    if(profile){
-        profile = await Profile.populate(profile, {path: 'family'}, {path: 'permissions'}, {path: 'preferences'}, {path: 'teams'})
-        return res.status(200).json(profile);
-    }else{
-        return res.status(404).json({error: "There was a problem updating the profile."})
+    const cleanedProfile = profile.toObject();
+    if(cleanedProfile.user){
+        delete cleanedProfile.user.password;
     }
+    
+    return res.status(200).json(cleanedProfile)
 }
 
 module.exports = { 
@@ -161,7 +213,8 @@ module.exports = {
     getAll, 
     getById, 
     getByLastName, 
-    getByMobile, 
+    getByMobileNumber,
+    getByHomeNumber, 
     updateProfile, 
     deleteProfile,
     connectUserAndProfile 

@@ -2,14 +2,14 @@ const mongoose = require('mongoose');
 
 //figure out benefits with Cathy
 const payrollSchema = new mongoose.Schema({
-    employeeId: {
+    profile: {
         required: true,
         type: mongoose.Schema.Types.ObjectId,
+        ref: 'Profile'
     },
     payPeriod: {
         required: true,
-        type: String,
-        lowercase: true
+        type: Number
     },
     payDate: {
         required: true,

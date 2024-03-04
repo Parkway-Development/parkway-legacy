@@ -34,4 +34,8 @@ router.patch('/liabilities/:id', updateLiability)
 //Delete a liability by ID
 router.delete('/liabilities/:id', deleteLiability)
 
+router.use('*', (req, res) => {
+    res.status(404).json({ message: 'Not Found' });
+});
+
 module.exports = router;

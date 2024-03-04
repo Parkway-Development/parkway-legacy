@@ -34,4 +34,8 @@ router.patch('/assets/:id', updateAsset)
 //Delete an asset by ID
 router.delete('/assets/:id', deleteAsset)
 
+router.use('*', (req, res) => {
+    res.status(404).json({ message: 'Not Found' });
+});
+
 module.exports = router;

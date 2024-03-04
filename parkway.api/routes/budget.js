@@ -34,4 +34,8 @@ router.patch('/budgets/:id', updateBudget)
 //Delete a budget by ID
 router.delete('/budgets/:id', deleteBudget)
 
+router.use('*', (req, res) => {
+    res.status(404).json({ message: 'Not Found' });
+});
+
 module.exports = router;

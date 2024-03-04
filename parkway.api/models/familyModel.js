@@ -1,12 +1,12 @@
 const mongoose = require('mongoose');
 
 const familySchema = new mongoose.Schema({
-    fatherId: {
+    father: {
         required: false,
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Profile'
     },
-    motherId: {
+    mother: {
         required: false,
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Profile'

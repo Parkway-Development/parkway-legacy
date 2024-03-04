@@ -11,15 +11,16 @@ const teamSchema = new mongoose.Schema({
         type: String,
         lowercase: true
     },
-    leaderId: {
+    leader: {
         required: false,
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Profile'
     },
     members: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Profile'}
-    ]
+        ref: 'Profile',
+        required: false
+    }]
 });
 
 

@@ -45,6 +45,11 @@ app.use('/api/payroll', payrollRoutes);
 app.use('/api/pledge', pledgeRoutes);
 app.use('/api/vendor', vendorRoutes);
 
+// Catch-all route for undefined paths
+app.use('*', (req, res) => {
+    res.status(404).json({ message: 'Endpoint not found' });
+});
+
 
 //Database connection
 mongoose.connect(process.env.DATABASE_URL)
