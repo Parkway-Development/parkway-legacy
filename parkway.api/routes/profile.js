@@ -4,7 +4,8 @@ const {
     getAll,
     getById,
     getByLastName,
-    getByMobile,
+    getByMobileNumber,
+    getByHomeNumber,
     updateProfile,
     deleteProfile,
     connectUserAndProfile
@@ -29,7 +30,10 @@ router.get('/id/:id', getById)
 router.get('/lastname/:lastname', getByLastName)
 
 //Get profiles by mobile number
-router.get('/mobile/:mobile', getByMobile)
+router.get('/mobile/:mobileNumber', getByMobileNumber)
+
+//Get profiles by home number
+router.get('/home/:homeNumber', getByHomeNumber)
 
 //Update a profile by id
 router.patch('/:id', updateProfile)
@@ -39,5 +43,9 @@ router.delete('/:id', deleteProfile)
 
 //Join a profile with a user
 router.post('/join/:profileId', connectUserAndProfile)
+
+router.use('*', (req, res) => {
+    res.status(404).json({ message: 'Not Found' });
+});
 
 module.exports = router;

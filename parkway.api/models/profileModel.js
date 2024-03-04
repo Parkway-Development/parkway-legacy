@@ -1,17 +1,21 @@
 const mongoose = require('mongoose');
 
 const profileSchema = new mongoose.Schema({
-    firstname: {
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    },
+    firstName: {
         required: true,
         type: String,
         lowercase: true
     },
-    lastname: {
+    lastName: {
         required: true,
         type: String,
         lowercase: true
     },
-    middleinitial: {
+    middleInitial: {
         required: false,
         type: String,
         lowercase: true
@@ -21,14 +25,13 @@ const profileSchema = new mongoose.Schema({
         type: String,
         lowercase: true
     },
-    dateofbirth: {
+    dateOfBirth: {
         required: false,
         type: Date
     },
     gender: {
         required: false,
         type: String,
-        enum: ['male','female'],
         lowercase: true
     },
     email: {
@@ -36,16 +39,20 @@ const profileSchema = new mongoose.Schema({
         type: String,
         lowercase: true
     },
-    mobile: {
+    mobilePhone: {
         required: false,
         type: String
     },
-    streetaddress1: {
+    homePhone: {
+        required: false,
+        type: String
+    },
+    streetAddress1: {
         required: false,
         type: String,
         lowercase: true
     },
-    streetaddress2: {
+    streetAddress2: {
         required: false,
         type: String,
         lowercase: true
@@ -64,24 +71,18 @@ const profileSchema = new mongoose.Schema({
         required: false,
         type: String
     },
-    userId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: false
-    },
     member:{
         required: true,
         default: false,
         type: Boolean
     },
-    status:{
+    memberStatus:{
         type: String,
-        required: true,
-        default: 'active',
-        enum: ['active', 'inactive', 'deceased','visitor'],
+        required: false,
+        enum: ['active','inactive','deceased','visitor','child','guest'],
         lowercase: true
     },
-    applicationrole: {
+    applicationRole: {
         type: String,
         required: true,
         default: 'none',
@@ -97,7 +98,17 @@ const profileSchema = new mongoose.Schema({
         type:mongoose.Schema.Types.ObjectId,
         ref: 'Family',
         required: false
-    }
+    },
+    permissions: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Permissions',
+        required: false
+    },
+    preferences: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Preferences',
+        required: false
+    },
 }, {timestamps: true})
 
 module.exports = mongoose.model('Profile', profileSchema, 'profiles')

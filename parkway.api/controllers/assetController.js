@@ -8,9 +8,9 @@ const addAsset = async (req, res) => {
     try {
         const asset = new Asset(req.body);
         await asset.save();
-        res.status(201).send(asset);
+        return res.status(201).send(asset);
     } catch (error) {
-        res.status(400).send(error);
+        return res.status(400).send(error);
     }
 }
 
@@ -18,9 +18,9 @@ const addAsset = async (req, res) => {
 const getAllAssets = async (req, res) => {
     try {
         const assets = await Asset.find({});
-        res.status(200).send(assets);
+        return res.status(200).send(assets);
     } catch (error) {
-        res.status(400).send(error);
+        return res.status(400).send(error);
     }
 }
 
@@ -28,9 +28,9 @@ const getAllAssets = async (req, res) => {
 const getAssetById = async (req, res) => {
     try {
         const asset = await Asset.findById(req.params.id);
-        res.status(200).send(asset);
+        return res.status(200).send(asset);
     } catch (error) {
-        res.status(400).send(error);
+        return res.status(400).send(error);
     }
 }
 
@@ -38,9 +38,9 @@ const getAssetById = async (req, res) => {
 const getAssetsByType = async (req, res) => {
     try {
         const assets = await Asset.find({ assetType: req.params.type });
-        res.status(200).send(assets);
+        return res.status(200).send(assets);
     } catch (error) {
-        res.status(400).send(error);
+        return res.status(400).send(error);
     }
 }
 
@@ -48,9 +48,9 @@ const getAssetsByType = async (req, res) => {
 const getAssetsByCategory = async (req, res) => {
     try {
         const assets = await Asset.find({ assetCategory: req.params.category });
-        res.status(200).send(assets);
+        return res.status(200).send(assets);
     } catch (error) {
-        res.status(400).send(error);
+        return res.status(400).send(error);
     }
 }
 
@@ -61,10 +61,10 @@ const updateAsset = async (req, res) => {
             (req.params.id, req.body
                 , { new: true, runValidators: true }
             );
-        res.status(200).send('Asset updated');
+        return res.status(200).send('Asset updated');
     }
     catch (error) {
-        res.status(400).send(error);
+        return res.status(400).send(error);
     }
 }
 
@@ -72,9 +72,9 @@ const updateAsset = async (req, res) => {
 const deleteAsset = async (req, res) => {
     try {
         await Asset.findByIdAndDelete(req.params.id);
-        res.status(200).send('Asset deleted');
+        return res.status(200).send('Asset deleted');
     } catch (error) {
-        res.status(400).send(error);
+        return res.status(400).send(error);
     }
 }
 

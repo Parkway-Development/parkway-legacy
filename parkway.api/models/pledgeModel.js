@@ -21,12 +21,10 @@ const pledgeSchema = new mongoose.Schema({
     },
     fund: {
         required: true,
-        enum: ['general','building','mens ministry','womens ministry','youth','missions','music','media','oasis','other'],
-        type: String,
-        default: 'unassigned',
-        lowercase: true
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Fund',
     },
-    profileId: {
+    profile: {
         required: true,
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Profile'
@@ -34,3 +32,11 @@ const pledgeSchema = new mongoose.Schema({
 })
 
 module.exports = mongoose.model('Pledge', pledgeSchema, 'pledges');
+
+// fund: {
+//     required: true,
+//     enum: ['general','building','mens ministry','womens ministry','youth','missions','music','media','oasis','other'],
+//     type: String,
+//     default: 'unassigned',
+//     lowercase: true
+// },

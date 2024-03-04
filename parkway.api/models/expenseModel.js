@@ -21,8 +21,8 @@ const expenseSchema = new mongoose.Schema({
     },
     fund: {
         required: false,
-        type: String,
-        lowercase: true
+        type: mongoose.Schema.Types.ObjectId,
+        required: true
     },
     notes: {
         required: false,

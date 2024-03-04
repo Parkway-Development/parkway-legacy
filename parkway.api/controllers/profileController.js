@@ -2,42 +2,55 @@ const mongoose = require('mongoose')
 const Profile = require('../models/profileModel')
 const User = require('../models/userModel')
 
+//Search for a pre-existing profile
+const searchForAProfile = async (inboundProfile) => {
+
+    const inProfile = inboundProfile;
+
+
+    let profile = null;
+    if(inProfile.firstName && inProfile.lastName){
+        profile = await Profile.findOne({firstName: inProfile.firstName, lastName: inProfile.lastName})} 
+    else if(inProfile.mobilePhone){
+        profile = Profile.findOne({mobilePhone: inProfile.mobilePhone}) }
+    else if(inProfile.homePhone){
+        profile = Profile.findOne({homePhone: inProfile.homePhone}) }
+
+    if(!profile){
+        return null}
+    return profile
+}
+
 //Post a profile
 const addProfile = async (req, res) => {
-    const profile = new Profile({
-        firstname: req.body.firstname,
-        lastname: req.body.lastname,
-        middleinitial: req.body.middleinitial,
-        nickname: req.body.nickname,
-        dateofbirth: req.body.dateofbirth,
-        gender: req.body.gender,
-        email: req.body.email,
-        mobile: req.body.mobile,
-        streetaddress1: req.body.streetaddress1,
-        streetaddress2: req.body.streetaddress2,
-        city: req.body.city,
-        state: req.body.state,
-        zip: req.body.zip,
-        userId: req.body.userId,
-        member: req.body.member,
-        status: req.body.status,
-        applicationrole: req.body.applicationrole,
-        
-    })
+    const submittedProfile = new Profile(req.body)
 
-    const profileToSave = await profile.save();
+    const existingProfile = await searchForAProfile(submittedProfile)
+    if(existingProfile){
+        return res.status(400).json({
+            submittedProfile: profile, 
+            existingProfile: existingProfile, 
+            message: "There is a possible matching profile. Please check the details and try again."})
+    }
 
-    if(!profileToSave){
-    return res.status(404).json({mssg: "The save failed."})}
+    const savedProfile = await submittedProfile.save();
 
-    res.status(200).json(profileToSave)
+    if(!savedProfile){
+    return res.status(404).json({message: "The save failed."})}
+
+    res.status(200).json(savedProfile)
 }
 
 //Get all profiles
 const getAll = async (req, res) => {
-    const profiles = await Profile.find({}).sort({lastname: 1, firstname: 1});
+    const profiles = await Profile.find({})
+        .populate('family')
+        .populate('permissions')
+        .populate('preferences')
+        .populate('teams')
+        .sort({lastname: 1, firstname: 1});
     if(!profiles){
-        return res.status(404).json({mssg: "No profiles were returned."})
+        return res.status(404).json({message: "No profiles were returned."})
     }
     res.status(200).json(profiles)
 }
@@ -50,10 +63,14 @@ const getById = async (req, res) => {
     if(!mongoose.Types.ObjectId.isValid(id)){
         return res.status(404).json({error: 'No such profile.'})
     }
-    const profile = await Profile.findById(id);
+    const profile = await Profile.findById(id)
+        .populate('family')
+        .populate('permissions')
+        .populate('preferences')
+        .populate('teams');
 
     if(!profile){
-        return res.status(404).json({mssg: "No such profile found."})
+        return res.status(404).json({message: "No such profile found."})
     }
         
     res.status(200).json(profile)
@@ -61,18 +78,43 @@ const getById = async (req, res) => {
 
 //Get profile by last name
 const getByLastName = async (req, res) => {
-    const profiles = await Profile.find({lastname: req.params.lastname});
+
+    const profiles = await Profile.find({lastname: req.params.lastname})
+        .populate('family')
+        .populate('permissions')
+        .populate('preferences')
+        .populate('teams');
+
     if(!profiles){
-        return res.status(404).json({mssg: "No profiles found."})
+        return res.status(404).json({message: "No profiles found."})
     }
     res.status(200).json(profiles)
 }
 
 //Get profiles by mobile number
-const getByMobile = async (req, res) => {
-    const profiles = await Profile.find({mobile: req.params.mobile});
+const getByMobileNumber = async (req, res) => {
+    const profiles = await Profile.find({mobileNumber: req.params.mobileNumber})
+        .populate('family')
+        .populate('permissions')
+        .populate('preferences')
+        .populate('teams');
+
     if(!profiles){
-        return res.status(404).json({mssg: "No profiles found."})
+        return res.status(404).json({message: "No profiles found."})
+    }
+    res.status(200).json(profiles)
+}
+
+//Get profiles by home number
+const getByHomeNumber = async (req, res) => {
+    const profiles = await Profile.find({homeNumber: req.params.homeNumber})
+        .populate('family')
+        .populate('permissions')
+        .populate('preferences')
+        .populate('teams');
+
+    if(!profiles){
+        return res.status(404).json({message: "No profiles found."})
     }
     res.status(200).json(profiles)
 }
@@ -85,18 +127,22 @@ const updateProfile = async (req, res) => {
         return res.status(404).json({error: 'No such profile.'})
     }
 
-    const profile = await Profile.findOneAndUpdate({_id: id}, {
-        ...req.body
-    },
-    {
-        new: true
-    })
+    let profile = await Profile.findOneAndUpdate({ _id: id }, 
+        { ...req.body }, 
+        { new: true }
+    );
 
-    if(!profile){
+    if(profile){
+        profile = await Profile.populate(
+            profile, 
+            {path: 'family'}, 
+            {path: 'permissions'}, 
+            {path: 'preferences'}, 
+            {path: 'teams'})
+        return res.status(200).json(profile);
+    }else{
         return res.status(404).json({error: "There was a problem updating the profile."})
     }
-
-    res.status(200).json(profile)
 }
 
 //Delete profile by ID
@@ -110,10 +156,10 @@ const deleteProfile = async (req, res) => {
     const profile = await Profile.findOneAndDelete({_id: id});
 
     if(!profile){
-        return res.status(500).json({mssg: "Something went wrong with the deletion."})
+        return res.status(500).json({message: "Something went wrong with the deletion."})
     }
 
-    res.status(200).json(`The profile for ${profile.firstname + " " + profile.lastname} has been deleted.`)
+    res.status(200).json(`The profile for ${profile.firstName + " " + profile.lastName} has been deleted.`)
 }
 
 //Join a profile to a user
@@ -138,28 +184,28 @@ const connectUserAndProfile = async (req, res) => {
         return res.status(404).json({error: 'No such profile.'})
     }
 
-    //Make sure the user account exists
-    const user = await User.findById(userId);
+    //get the User and add the profileId to it
+    let profile = await Profile.findById(profileId);
+    const user = await User.findByIdAndUpdate(userId, {profile: profile}, {new: true});
 
     if(!user){
-        return res.status(404).json({error: 'No such user account.'})
+        return res.status(404).json({error: 'There was a problem connecting the user to the profile.  The user object was not returned.'})
     }
-
-    //Update the profile with the user account
-    const profile = await Profile.findByIdAndUpdate({_id: profileId}, {userId: userId},{new: true})
-
+    
+    //get the Profile and add the userId to it
+    profile = await Profile.findByIdAndUpdate(profileId, {user: user}, {new: true});
     if(!profile){
-        return res.status(404).json({error: "There was a problem updating the profile."})
+        return res.status(404).json({error: 'There was a problem connecting the profile to the user.  The profile object was not returned.'})
     }
 
-    //Update the profile with user account
-    const newUser = await User.findByIdAndUpdate({_id: userId}, { profileId: profileId}, {new: true})
+    profile = await Profile.findById(profile._id).populate('user','family permissions preferences teams').exec()
 
-    if(!newUser){
-        return res.status(404).json({error: "There was a problem updating the user account."})
+    const cleanedProfile = profile.toObject();
+    if(cleanedProfile.user){
+        delete cleanedProfile.user.password;
     }
-
-    res.status(200).json(profile)
+    
+    return res.status(200).json(cleanedProfile)
 }
 
 module.exports = { 
@@ -167,7 +213,8 @@ module.exports = {
     getAll, 
     getById, 
     getByLastName, 
-    getByMobile, 
+    getByMobileNumber,
+    getByHomeNumber, 
     updateProfile, 
     deleteProfile,
     connectUserAndProfile 

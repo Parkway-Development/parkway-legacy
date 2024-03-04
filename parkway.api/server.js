@@ -6,7 +6,18 @@ const userRoutes = require('./routes/user');
 const profileRoutes = require('./routes/profile');
 const settingRoutes = require('./routes/setting');
 const teamRoutes = require('./routes/team');
-const accountingRoutes = require('./routes/accounting');
+const assetRoutes = require('./routes/asset');
+const budgetRoutes = require('./routes/budget');
+const donationRoutes = require('./routes/donation');
+const expenseRoutes = require('./routes/expense');
+const fundRoutes = require('./routes/fund');
+const liabilityRoutes = require('./routes/liability');
+const payrollRoutes = require('./routes/payroll');
+const pledgeRoutes = require('./routes/pledge');
+const vendorRoutes = require('./routes/vendor');
+
+
+const { Profile } = require('./models/profileModel');
 
 //express app
 const app = express();
@@ -24,7 +35,20 @@ app.use('/api/user', userRoutes);
 app.use('/api/profile', profileRoutes);
 app.use('/api/setting', settingRoutes);
 app.use('/api/team', teamRoutes);
-app.use('/api/accounting', accountingRoutes);
+app.use('/api/asset', assetRoutes);
+app.use('/api/budget', budgetRoutes);
+app.use('/api/donation', donationRoutes);
+app.use('/api/expense', expenseRoutes);
+app.use('/api/fund', fundRoutes);
+app.use('/api/liability', liabilityRoutes);
+app.use('/api/payroll', payrollRoutes);
+app.use('/api/pledge', pledgeRoutes);
+app.use('/api/vendor', vendorRoutes);
+
+// Catch-all route for undefined paths
+app.use('*', (req, res) => {
+    res.status(404).json({ message: 'Endpoint not found' });
+});
 
 
 //Database connection

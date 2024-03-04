@@ -30,4 +30,8 @@ router.patch('/funds/:id', updateFund)
 //Delete a fund by ID
 router.delete('/funds/:id', deleteFund)
 
+router.use('*', (req, res) => {
+    res.status(404).json({ message: 'Not Found' });
+});
+
 module.exports = router;

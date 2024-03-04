@@ -35,15 +35,19 @@ router.patch('/:id', updateTeam)
 router.delete('/:id', deleteTeam)
 
 //Add a leader
-router.post('/addleader/:id', addLeader)
+router.post('/leader/add/:id', addLeader)
 
 //Add a member
-router.post('/removeleader/:id', removeLeader)
+router.post('/leader/remove/:id', removeLeader)
 
 //add multiple members
-router.post('/addmembers/:id', addMembers)
+router.post('/members/add/:id', addMembers)
 
 //remove multiple members
-router.post('/removemembers/:id', removeMembers)
+router.post('/members/remove/:id', removeMembers)
+
+router.use('*', (req, res) => {
+    res.status(404).json({ message: 'Not Found' });
+});
 
 module.exports = router;

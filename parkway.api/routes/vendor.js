@@ -26,4 +26,8 @@ router.patch('/vendor/:id', updateVendor)
 //Delete a vendor by ID
 router.delete('/vendor/:id', deleteVendor)
 
+router.use('*', (req, res) => {
+    res.status(404).json({ message: 'Not Found' });
+});
+
 module.exports = router;
