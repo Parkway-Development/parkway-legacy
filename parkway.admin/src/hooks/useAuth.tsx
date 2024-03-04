@@ -41,13 +41,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       setUser(user);
       setToken(data.token);
-      navigate('/');
+      navigate('/', { replace: true });
+    };
+
+    const clearState = () => {
+      clearUser();
+      clearToken();
     };
 
     const logout = () => {
-      clearUser();
-      clearToken();
-      navigate('/login');
+      clearState();
+      navigate('/login', { replace: true });
     };
 
     const expiration = token ? jwtDecode(token).exp ?? 0 : 0;
@@ -55,15 +59,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const isExpired = expiration * 1000 < currentDate.getTime();
 
     if (token && isExpired) {
-      logout();
+      clearState();
     }
 
+    const isLoggedIn = user !== undefined && token !== undefined && !isExpired;
+
     return {
-      user,
+      user: isLoggedIn ? user : undefined,
       login,
       logout,
-      isLoggedIn: user !== undefined && token !== undefined && !isExpired,
-      token
+      isLoggedIn,
+      token: isLoggedIn ? token : undefined
     };
   }, [user, setUser, token]);
 

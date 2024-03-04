@@ -5,7 +5,6 @@ import './index.css';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import GivingPage from './components/giving-page/GivingPage.tsx';
 import DirectoryPage from './components/directory-page/DirectoryPage.tsx';
-import ErrorPage from './components/error-page/ErrorPage.tsx';
 import HomePage from './components/home-page/HomePage.tsx';
 import { AuthProvider } from './hooks/useAuth.tsx';
 import { ProtectedRoute } from './components/protected-route/ProtectedRoute.tsx';
@@ -17,6 +16,8 @@ import AddTeamPage from './components/team-page/AddTeamPage.tsx';
 import EditTeamPage from './components/team-page/EditTeamPage.tsx';
 import AddUserProfilePage from './components/user-profile-page/AddUserProfilePage.tsx';
 import EditUserProfilePage from './components/user-profile-page/EditUserProfilePage.tsx';
+import MyProfilePage from './components/user-profile-page/MyProfilePage.tsx';
+import NotFoundPage from './components/not-found-page/NotFoundPage.tsx';
 
 const queryClient = new QueryClient();
 
@@ -35,10 +36,10 @@ createRoot(document.getElementById('root')!).render(
                   <App />
                 </ProtectedRoute>
               }
-              errorElement={<ErrorPage />}
             >
               <Route path="directory" element={<DirectoryPage />} />
               <Route path="profiles/add" element={<AddUserProfilePage />} />
+              <Route path="profiles/me" element={<MyProfilePage />} />
               <Route
                 path="profiles/:id/edit"
                 element={<EditUserProfilePage />}
@@ -48,6 +49,7 @@ createRoot(document.getElementById('root')!).render(
               <Route path="teams/:id/edit" element={<EditTeamPage />} />
               <Route path="teams" element={<TeamsPage />} />
               <Route index element={<HomePage />} />
+              <Route path="*" element={<NotFoundPage />} />
             </Route>
           </Routes>
         </QueryClientProvider>
