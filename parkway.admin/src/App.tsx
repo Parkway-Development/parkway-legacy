@@ -11,7 +11,7 @@ function App() {
     token: { colorBgContainer, borderRadiusLG }
   } = theme.useToken();
 
-  if (!isLoggedIn) navigate('/login');
+  if (!isLoggedIn) navigate('/login', { replace: true });
 
   const handleLogout = (e: SyntheticEvent) => {
     e.preventDefault();
