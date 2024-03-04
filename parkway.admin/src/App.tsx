@@ -3,9 +3,10 @@ import styles from './App.module.css';
 import { Link, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from './hooks/useAuth.tsx';
 import { SyntheticEvent } from 'react';
+import { LogoutOutlined, UserOutlined } from '@ant-design/icons';
 
 function App() {
-  const { isLoggedIn, logout, user } = useAuth();
+  const { isLoggedIn, logout } = useAuth();
   const navigate = useNavigate();
   const {
     token: { colorBgContainer, borderRadiusLG }
@@ -51,9 +52,13 @@ function App() {
             <div className={styles.header}>
               <span className={styles.title}>Admin Portal</span>
               <span className={styles.userSection}>
-                Welcome, {user?.name}!{' '}
-                <Button type="link" onClick={handleLogout}>
-                  Logout
+                <Link to="/profiles/me">
+                  <Button type="text" title="User Profile">
+                    <UserOutlined />
+                  </Button>
+                </Link>
+                <Button onClick={handleLogout} type="text" title="Logout">
+                  <LogoutOutlined />
                 </Button>
               </span>
             </div>

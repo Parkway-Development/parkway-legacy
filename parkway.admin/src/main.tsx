@@ -17,6 +17,8 @@ import AddTeamPage from './components/team-page/AddTeamPage.tsx';
 import EditTeamPage from './components/team-page/EditTeamPage.tsx';
 import AddUserProfilePage from './components/user-profile-page/AddUserProfilePage.tsx';
 import EditUserProfilePage from './components/user-profile-page/EditUserProfilePage.tsx';
+import MyProfilePage from './components/user-profile-page/MyProfilePage.tsx';
+import NotFoundPage from './components/not-found-page/NotFoundPage.tsx';
 
 const queryClient = new QueryClient();
 
@@ -39,6 +41,7 @@ createRoot(document.getElementById('root')!).render(
             >
               <Route path="directory" element={<DirectoryPage />} />
               <Route path="profiles/add" element={<AddUserProfilePage />} />
+              <Route path="profiles/me" element={<MyProfilePage />} />
               <Route
                 path="profiles/:id/edit"
                 element={<EditUserProfilePage />}
