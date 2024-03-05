@@ -7,12 +7,14 @@ import { UserProfile } from '../types/UserProfile.ts';
 export interface AuthUser {
   id: string;
   email: string;
+  profileId?: string;
 }
 
 export type InternalLoginResponse = {
   user: AuthUser;
   profile: UserProfile | undefined;
   errorMessage: string | undefined;
+  hasValidProfile: boolean;
 };
 
 interface AuthContextType {
@@ -40,21 +42,26 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const value = useMemo(() => {
     const login = (data: LoginResponse): InternalLoginResponse => {
-      const tokenData = jwtDecode<TokenPayload>(data.token);
+      const { profile, token } = data;
+
+      const tokenData = jwtDecode<TokenPayload>(token);
+      const hasValidProfile =
+        typeof profile !== 'string' && tokenData._id === profile?.user;
+
       const user: AuthUser = {
         id: tokenData._id,
-        email: data.email
+        email: data.email,
+        profileId: hasValidProfile ? profile._id : undefined
       };
 
       setUser(user);
-      setToken(data.token);
-
-      const { profile } = data;
+      setToken(token);
 
       return {
         user,
         profile: typeof profile !== 'string' ? profile : undefined,
-        errorMessage: typeof profile === 'string' ? profile : undefined
+        errorMessage: typeof profile === 'string' ? profile : undefined,
+        hasValidProfile
       };
     };
 

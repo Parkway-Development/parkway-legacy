@@ -20,7 +20,7 @@ const LoginPage = () => {
       onSuccess: ({ data }) => {
         const result = login(data);
 
-        if (result.user.id === result.profile?._id) {
+        if (result.user.id === result.profile?.user) {
           navigate('/', { replace: true });
         } else {
           setLoginResponse(result);
