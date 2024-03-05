@@ -49,6 +49,7 @@ export const mockApi = (
     getUserProfiles: vi.fn(),
     getTeams: vi.fn(),
     getTeamById: vi.fn(),
+    joinProfileAndUser: vi.fn(),
     login: vi.fn(),
     signup: vi.fn(),
     updateTeam: vi.fn(),

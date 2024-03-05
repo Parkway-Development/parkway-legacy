@@ -41,21 +41,21 @@ describe('Directory Page', () => {
     const data: UserProfile[] = [
       {
         _id: '1',
-        firstname: 'John',
-        lastname: 'Doe',
-        mobile: '123-456-7890',
+        firstName: 'John',
+        lastName: 'Doe',
+        mobilePhone: '123-456-7890',
         member: true,
-        status: 'active',
-        applicationrole: 'none'
+        memberStatus: 'active',
+        applicationRole: 'none'
       },
       {
         _id: '2',
-        firstname: 'Jane',
-        lastname: 'Smith',
-        mobile: '444-456-7890',
+        firstName: 'Jane',
+        lastName: 'Smith',
+        mobilePhone: '444-456-7890',
         member: true,
-        status: 'active',
-        applicationrole: 'none'
+        memberStatus: 'active',
+        applicationRole: 'none'
       }
     ];
 
@@ -66,9 +66,9 @@ describe('Directory Page', () => {
     expect(await screen.findByText('Total Count: 2')).toBeVisible();
 
     data.forEach((user) => {
-      expect(screen.getByText(user.firstname!)).toBeVisible();
-      expect(screen.getByText(user.lastname!)).toBeVisible();
-      expect(screen.getByText(user.mobile!)).toBeVisible();
+      expect(screen.getByText(user.firstName!)).toBeVisible();
+      expect(screen.getByText(user.lastName!)).toBeVisible();
+      expect(screen.getByText(user.mobilePhone!)).toBeVisible();
     });
   });
 });

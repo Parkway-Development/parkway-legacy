@@ -4,6 +4,6 @@ export type Team = BaseEntity & {
   _id: string;
   name: string;
   description?: string;
-  leaderId?: string;
+  leader?: string;
   members: string[];
 };

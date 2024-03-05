@@ -70,7 +70,7 @@ const UserProfileSelect = ({
         .filter((profile) => profile._id !== excludedUserId)
         .map((profile) => ({
           value: profile._id,
-          label: profile.firstname + ' ' + profile.lastname
+          label: profile.firstName + ' ' + profile.lastName
         }));
     }
   }

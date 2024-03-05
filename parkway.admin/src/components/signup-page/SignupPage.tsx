@@ -1,10 +1,12 @@
 import styles from './SignupPage.module.css';
 import { Alert, Button, Card, Form, Input } from 'antd';
-import { useAuth } from '../../hooks/useAuth';
-import { Link } from 'react-router-dom';
+import { InternalLoginResponse, useAuth } from '../../hooks/useAuth';
+import { Link, useNavigate } from 'react-router-dom';
 import useApi, { buildQueryKey } from '../../hooks/useApi';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { PasswordSettings } from '../../api/generalApi.ts';
+import { useState } from 'react';
+import ProfileVerification from '../profile-verification/ProfileVerification.tsx';
 
 interface SignupFields {
   email: string;
@@ -35,6 +37,7 @@ const PasswordRequirement = ({ count, display }: PasswordRequirementProps) => {
 };
 
 const SignupPage = () => {
+  const navigate = useNavigate();
   const { login } = useAuth();
   const { getPasswordSettings, signup, formatError } = useApi();
   const { data: passwordSettings, isPending: passwordSettingsLoading } =
@@ -45,12 +48,21 @@ const SignupPage = () => {
   const { isPending, error, mutate } = useMutation({
     mutationFn: signup
   });
+  const [loginResponse, setLoginResponse] = useState<InternalLoginResponse>();
 
   const handleSignup = ({ email, password }: SignupFields) =>
     mutate(
       { email, password },
       {
-        onSuccess: ({ data }) => login(data)
+        onSuccess: ({ data }) => {
+          const result = login(data);
+
+          if (result.hasValidProfile) {
+            navigate('/', { replace: true });
+          } else {
+            setLoginResponse(result);
+          }
+        }
       }
     );
 
@@ -62,8 +74,12 @@ const SignupPage = () => {
     `^(?=.*[a-z]){${settings.minimumLowercase},}(?=.*[A-Z]){${settings.minimumUppercase},}(?=.*\\d){${settings.minimumNumbers},}(?=.*[-#!$@£%^&*()_+|~=\`{}\\[\\]:";'<>?,.\\/ ]){${settings.minimumSymbols},}[A-Za-z\\d-#!$@£%^&*()_+|~=\`{}\\[\\]:";'<>?,.\\/ ]{${settings.minimumLength},}$`
   );
 
+  if (loginResponse) {
+    return <ProfileVerification loginResponse={loginResponse} />;
+  }
+
   return (
-    <div className={styles.page}>
+    <div className="entryPage">
       <Card
         title="Parkway Ministries Admin Signup"
         bordered={false}

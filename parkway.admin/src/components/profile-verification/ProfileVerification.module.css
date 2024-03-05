@@ -1,0 +1,16 @@
+.existingData {
+    margin: 1em 1em 0 1em;
+    width: 100%;
+
+    td {
+        vertical-align: top;
+    }
+}
+
+.footer {
+    display: flex;
+    justify-content: space-evenly;
+    margin-top: 1em;
+    padding-top: 1em;
+    border-top: 1px solid #ccc;
+}
