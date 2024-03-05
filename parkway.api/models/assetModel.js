@@ -20,7 +20,7 @@ const assetSchema = new mongoose.Schema({
     depreciationType: {
         type: String,
         required: true,
-        default: 'straight-line'
+        default: 'Straight-Line'
     },
     inServiceDate: {
         type: Date,

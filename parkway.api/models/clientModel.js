@@ -50,7 +50,32 @@ const clientSchema = new mongoose.Schema({
         required: true,
         type: String,
         default: 'Beta Client'
-    }
+    },
+    subscriptionStartDate: {
+        required: true,
+        type: Date,
+        default: Date.now
+    },
+    subscriptionEndDate: {
+        required: true,
+        type: Date,
+        default: Date.now
+    },
+    subscriptionStatus: {
+        required: true,
+        type: String,
+        default: 'Active'
+    },
+    subscriptionPlan: {
+        required: true,
+        type: String,
+        default: 'Free'
+    },
+    depreciationType: {
+        required: false,
+        type: String,
+        default: 'Straight Line'
+    },
 })
 
 

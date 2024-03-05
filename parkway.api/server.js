@@ -15,6 +15,8 @@ const liabilityRoutes = require('./routes/liability');
 const payrollRoutes = require('./routes/payroll');
 const pledgeRoutes = require('./routes/pledge');
 const vendorRoutes = require('./routes/vendor');
+//const clientRoutes = require('./routes/client');
+const platformRoutes = require('./routes/platform');
 
 
 const { Profile } = require('./models/profileModel');
@@ -44,6 +46,8 @@ app.use('/api/liability', liabilityRoutes);
 app.use('/api/payroll', payrollRoutes);
 app.use('/api/pledge', pledgeRoutes);
 app.use('/api/vendor', vendorRoutes);
+//app.use('/api/client', clientRoutes);
+app.use('/api/platform', platformRoutes);
 
 // Catch-all route for undefined paths
 app.use('*', (req, res) => {
