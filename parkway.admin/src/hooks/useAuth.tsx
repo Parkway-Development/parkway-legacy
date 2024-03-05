@@ -42,11 +42,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const value = useMemo(() => {
     const login = (data: LoginResponse): InternalLoginResponse => {
-      const { profile, token } = data;
+      const { profile, token, message } = data;
 
       const tokenData = jwtDecode<TokenPayload>(token);
       const hasValidProfile =
-        typeof profile !== 'string' && tokenData._id === profile?.user;
+        profile !== undefined && tokenData._id === profile?.user;
 
       const user: AuthUser = {
         id: tokenData._id,
@@ -59,8 +59,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       return {
         user,
-        profile: typeof profile !== 'string' ? profile : undefined,
-        errorMessage: typeof profile === 'string' ? profile : undefined,
+        profile: profile && !message ? profile : undefined,
+        errorMessage: message,
         hasValidProfile
       };
     };
@@ -104,7 +104,8 @@ export const useAuth = () => {
 export interface LoginResponse {
   email: string;
   token: string;
-  profile?: string | UserProfile;
+  profile?: UserProfile;
+  message?: string;
 }
 
 interface TokenPayload {

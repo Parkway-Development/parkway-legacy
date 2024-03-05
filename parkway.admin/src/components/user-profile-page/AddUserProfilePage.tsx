@@ -1,5 +1,5 @@
-import { notification } from 'antd';
-import { useNavigate } from 'react-router-dom';
+import { Breadcrumb, notification } from 'antd';
+import { Link, useNavigate } from 'react-router-dom';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import useApi, { buildQueryKey } from '../../hooks/useApi.ts';
 import UserProfileForm, {
@@ -35,7 +35,23 @@ const AddUserProfilePage = () => {
   return (
     <>
       {contextHolder}
-      <UserProfileForm onFinish={handleAddUserProfile} isSaving={isPending} />
+
+      <Breadcrumb
+        items={[
+          {
+            title: <Link to="/directory">Directory</Link>
+          },
+          {
+            title: 'Add Profile'
+          }
+        ]}
+      />
+      <UserProfileForm
+        onFinish={handleAddUserProfile}
+        isSaving={isPending}
+        onCancel={() => navigate('/directory')}
+        isMyProfile={false}
+      />
     </>
   );
 };

@@ -1,5 +1,5 @@
-import { Alert, notification, Spin } from 'antd';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Alert, Breadcrumb, notification, Spin } from 'antd';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import useApi, { buildQueryKey } from '../../hooks/useApi.ts';
 import UserProfileForm, {
@@ -48,7 +48,7 @@ const EditUserProfilePage = () => {
     ...response.data
   };
 
-  const handleUpdateTeam = (fields: UserProfileFormFields) => {
+  const handleUpdateUserProfile = (fields: UserProfileFormFields) => {
     const payload = transformFieldsToPayload(fields);
 
     mutate(
@@ -69,10 +69,23 @@ const EditUserProfilePage = () => {
   return (
     <>
       {contextHolder}
+
+      <Breadcrumb
+        items={[
+          {
+            title: <Link to="/directory">Directory</Link>
+          },
+          {
+            title: 'Edit Profile'
+          }
+        ]}
+      />
       <UserProfileForm
-        onFinish={handleUpdateTeam}
+        onFinish={handleUpdateUserProfile}
         isSaving={isPending}
         initialValues={initialValues}
+        onCancel={() => navigate('/directory')}
+        isMyProfile={false}
       />
     </>
   );

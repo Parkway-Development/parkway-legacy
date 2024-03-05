@@ -1,15 +1,5 @@
-import {
-  Breadcrumb,
-  Button,
-  DatePicker,
-  Form,
-  Input,
-  Radio,
-  Select,
-  Switch
-} from 'antd';
+import { Button, DatePicker, Form, Input, Radio, Select, Switch } from 'antd';
 import styles from './UserProfileForm.module.css';
-import { Link } from 'react-router-dom';
 import {
   applicationRoleMapping,
   memberStatusMapping,
@@ -27,13 +17,20 @@ type TeamFormProps = {
   isSaving: boolean;
   initialValues?: UserProfileFormFields;
   onFinish: (values: UserProfileFormFields) => void;
+  onCancel: () => void;
+  submitText?: string;
+  cancelText?: string;
+  isMyProfile: boolean;
 };
 
 const FormItem = Form.Item<UserProfileFormFields>;
 
-export const transformFieldsToPayload = (
+export const transformFieldsToMyProfilePayload = (
   fields: UserProfileFormFields
-): Omit<UserProfile, '_id'> => ({
+): Omit<
+  UserProfile,
+  '_id' | 'user' | 'member' | 'memberStatus' | 'applicationRole'
+> => ({
   firstName: fields.firstName.trim(),
   lastName: fields.lastName.trim(),
   middleInitial: fields.middleInitial?.trim(),
@@ -47,7 +44,13 @@ export const transformFieldsToPayload = (
   streetAddress2: fields.streetAddress2?.trim(),
   city: fields.city?.trim(),
   state: fields.state?.trim(),
-  zip: fields.zip?.trim(),
+  zip: fields.zip?.trim()
+});
+
+export const transformFieldsToPayload = (
+  fields: UserProfileFormFields
+): Omit<UserProfile, '_id'> => ({
+  ...transformFieldsToMyProfilePayload(fields),
   user: fields.user,
   member: fields.member,
   memberStatus: fields.memberStatus,
@@ -65,7 +68,11 @@ const addProfileInitialValues: UserProfileFormFields = {
 const UserProfileForm = ({
   isSaving,
   initialValues,
-  onFinish
+  onFinish,
+  onCancel,
+  submitText = 'Submit',
+  cancelText = 'Cancel',
+  isMyProfile
 }: TeamFormProps) => {
   const [form] = Form.useForm<UserProfileFormFields>();
 
@@ -80,21 +87,10 @@ const UserProfileForm = ({
 
   return (
     <>
-      <Breadcrumb
-        items={[
-          {
-            title: <Link to="/directory">Directory</Link>
-          },
-          {
-            title: initialValues ? 'Edit Profile' : 'Add Profile'
-          }
-        ]}
-      />
       <Form<UserProfileFormFields>
         form={form}
         name="basic"
-        labelCol={{ span: 3 }}
-        wrapperCol={{ span: 7 }}
+        layout="vertical"
         onFinish={onFinish}
         disabled={isSaving}
         initialValues={initial}
@@ -131,13 +127,15 @@ const UserProfileForm = ({
           </Radio.Group>
         </FormItem>
 
-        <FormItem
-          label="Email"
-          name="email"
-          rules={[{ type: 'email', message: 'Invalid email' }]}
-        >
-          <Input />
-        </FormItem>
+        {!isMyProfile && (
+          <FormItem
+            label="Email"
+            name="email"
+            rules={[{ type: 'email', message: 'Invalid email' }]}
+          >
+            <Input />
+          </FormItem>
+        )}
 
         <FormItem label="Mobile Phone" name="mobilePhone">
           <Input />
@@ -167,39 +165,41 @@ const UserProfileForm = ({
           <Input />
         </FormItem>
 
-        <FormItem label="Member" name="member">
-          <Switch />
-        </FormItem>
+        {!isMyProfile && (
+          <>
+            <FormItem label="Member" name="member">
+              <Switch />
+            </FormItem>
 
-        <FormItem label="Member Status" name="memberStatus">
-          <Radio.Group>
-            {Object.entries(memberStatusMapping).map(([value, label]) => (
-              <Radio.Button value={value} key={value}>
-                {label}
-              </Radio.Button>
-            ))}
-          </Radio.Group>
-        </FormItem>
+            <FormItem label="Member Status" name="memberStatus">
+              <Radio.Group>
+                {Object.entries(memberStatusMapping).map(([value, label]) => (
+                  <Radio.Button value={value} key={value}>
+                    {label}
+                  </Radio.Button>
+                ))}
+              </Radio.Group>
+            </FormItem>
 
-        <FormItem label="Application Role" name="applicationRole">
-          <Select
-            options={buildSelectOptionsFromMapping(applicationRoleMapping)}
-          />
-        </FormItem>
+            <FormItem label="Application Role" name="applicationRole">
+              <Select
+                options={buildSelectOptionsFromMapping(applicationRoleMapping)}
+              />
+            </FormItem>
+          </>
+        )}
 
-        <Form.Item wrapperCol={{ offset: 3, span: 12 }}>
-          <div>
+        <Form.Item>
+          <div className={styles.footer}>
             <Button
               type="primary"
               htmlType="submit"
               disabled={isSaving}
               loading={isSaving}
             >
-              Submit
+              {submitText}
             </Button>
-            <Link to="/directory" className={styles.close}>
-              <Button>Close</Button>
-            </Link>
+            <Button onClick={onCancel}>{cancelText}</Button>
           </div>
         </Form.Item>
       </Form>
