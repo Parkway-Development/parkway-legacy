@@ -128,8 +128,6 @@ const updateProfile = async (req, res) => {
     try{
         const { id } = req.params;
 
-        console.log(req.body);
-        console.log(id);
         if (!mongoose.Types.ObjectId.isValid(id)) {
             return res.status(404).json({ error: 'No such profile.' });
         }
@@ -139,7 +137,6 @@ const updateProfile = async (req, res) => {
             { new: true }
         );
 
-        console.log(profile);
         if (profile) {
             profile = await Profile.populate(profile, [{ path: 'family' }, { path: 'permissions' }, { path: 'preferences' }, { path: 'teams' }]);
             return res.status(200).json(profile);
