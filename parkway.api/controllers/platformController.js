@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 const Enum = require('../models/enumModel')
 
 //Get all enums
-exports.getEnums = async (req, res) => {
+const getEnums = async (req, res) => {
     const enums = await Enum.find({})
     if(!enums){
         return res.status(404).json({message: "No enums were returned."})
@@ -11,7 +11,7 @@ exports.getEnums = async (req, res) => {
 }
 
 //Get enum by name
-exports.getEnumByName = async (req, res) => {
+const getEnumByName = async (req, res) => {
     try {
         const { name } = req.params;
         const enums = await Enum.findOne({name: name})
@@ -22,7 +22,7 @@ exports.getEnumByName = async (req, res) => {
 }
 
 //Add enum
-exports.addEnum = async (req, res) => {
+const addEnum = async (req, res) => {
     try {
         const enumItem = new Enum(req.body);
         await enumItem.save();
@@ -34,7 +34,7 @@ exports.addEnum = async (req, res) => {
 }
 
 //Update enum
-exports.updateEnum = async (req, res) => {
+const updateEnum = async (req, res) => {
     try {
         const { name } = req.params;
         const updatedEnum = await Enum.findOneAndUpdate({name: name}, req.body, {new: true})
@@ -45,7 +45,7 @@ exports.updateEnum = async (req, res) => {
 }
 
 //Delete enum
-exports.deleteEnum = async (req, res) => {
+const deleteEnum = async (req, res) => {
     try {
         const { name } = req.params;
         await Enum.findOneAndDelete({name: name})
@@ -56,13 +56,9 @@ exports.deleteEnum = async (req, res) => {
 }
 
 module.exports = { 
-    addProfile, 
-    getAll, 
-    getById, 
-    getByLastName, 
-    getByMobileNumber,
-    getByHomeNumber, 
-    updateProfile, 
-    deleteProfile,
-    connectUserAndProfile 
+    getEnums,
+    getEnumByName,
+    addEnum,
+    updateEnum,
+    deleteEnum
 }

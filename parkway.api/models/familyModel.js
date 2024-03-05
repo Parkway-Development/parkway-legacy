@@ -17,9 +17,7 @@ const familySchema = new mongoose.Schema({
     }],
     status: {
         type: String,
-        required: true,
-        enum: ['married', 'divorced', 'single', 'widowed', 'separated', 'other'],
-        lowercase: true
+        required: false
     }
 }, {timestamps: true})
 

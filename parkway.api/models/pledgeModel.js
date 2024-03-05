@@ -15,9 +15,7 @@ const pledgeSchema = new mongoose.Schema({
     },
     frequency: {
         required: true,
-        type: String,
-        enum: ['weekly','bi-weekly','twice monthly','monthly','quarterly','semi-annually','annually'],
-        lowercase: true
+        type: String
     },
     fund: {
         required: true,

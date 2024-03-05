@@ -11,16 +11,12 @@ const donationSchema = new mongoose.Schema({
     },
     donationType: {
         required: true,
-        type: String,
-        enum: ['cash','check','credit','other','online','stock','property','goods','services'],
-        lowercase: true
+        type: String
     },
     fund: {
         required: true,
         type: String,
-        lowercase: true,
-        enum: ['unassigned','general','building','mens ministry','womens ministry','youth','missions','music','media','oasis','other'],
-        default: 'unassigned'
+        default: 'Unassigned'
     },
     profile: {
         required: false,
