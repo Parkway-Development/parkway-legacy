@@ -9,7 +9,7 @@ const donationSchema = new mongoose.Schema({
         required: true,
         type: Date
     },
-    type: {
+    donationType: {
         required: true,
         type: String,
         enum: ['cash','check','credit','other','online','stock','property','goods','services'],
