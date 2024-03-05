@@ -79,13 +79,15 @@ const getById = async (req, res) => {
 //Get profile by last name
 const getByLastName = async (req, res) => {
 
-    const profiles = await Profile.find({lastname: req.params.lastname})
+    const { lastName } = req.params;
+
+    const profiles = await Profile.find({$text: {$search: lastName}})
         .populate('family')
         .populate('permissions')
         .populate('preferences')
         .populate('teams');
 
-    if(!profiles){
+    if(profiles.length  === 0){
         return res.status(404).json({message: "No profiles found."})
     }
     res.status(200).json(profiles)
@@ -93,6 +95,7 @@ const getByLastName = async (req, res) => {
 
 //Get profiles by mobile number
 const getByMobileNumber = async (req, res) => {
+    const { mobileNumber } = req.params;
     const profiles = await Profile.find({mobileNumber: req.params.mobileNumber})
         .populate('family')
         .populate('permissions')
@@ -107,6 +110,7 @@ const getByMobileNumber = async (req, res) => {
 
 //Get profiles by home number
 const getByHomeNumber = async (req, res) => {
+    const { homeNumber } = req.params;
     const profiles = await Profile.find({homeNumber: req.params.homeNumber})
         .populate('family')
         .populate('permissions')
@@ -121,28 +125,31 @@ const getByHomeNumber = async (req, res) => {
 
 //Update profile by ID
 const updateProfile = async (req, res) => {
-    const { id } = req.params;
+    try{
+        const { id } = req.params;
 
-    if(!mongoose.Types.ObjectId.isValid(id)){
-        return res.status(404).json({error: 'No such profile.'})
-    }
+        console.log(req.body);
+        console.log(id);
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(404).json({ error: 'No such profile.' });
+        }
 
-    let profile = await Profile.findOneAndUpdate({ _id: id }, 
-        { ...req.body }, 
-        { new: true }
-    );
+        let profile = await Profile.findOneAndUpdate({ _id: id }, 
+            { ...req.body }, 
+            { new: true }
+        );
 
-    if(profile){
-        profile = await Profile.populate(
-            profile, 
-            {path: 'family'}, 
-            {path: 'permissions'}, 
-            {path: 'preferences'}, 
-            {path: 'teams'})
-        return res.status(200).json(profile);
-    }else{
-        return res.status(404).json({error: "There was a problem updating the profile."})
-    }
+        console.log(profile);
+        if (profile) {
+            profile = await Profile.populate(profile, [{ path: 'family' }, { path: 'permissions' }, { path: 'preferences' }, { path: 'teams' }]);
+            return res.status(200).json(profile);
+        } else {
+            return res.status(404).json({ error: "There was a problem updating the profile." });
+        }
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ error: "There was a problem updating the profile." });
+    };
 }
 
 //Delete profile by ID

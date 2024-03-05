@@ -27,7 +27,7 @@ router.get('/', getAll)
 router.get('/id/:id', getById)
 
 //Get profiles by last name
-router.get('/lastname/:lastname', getByLastName)
+router.get('/lastname/:lastName', getByLastName)
 
 //Get profiles by mobile number
 router.get('/mobile/:mobileNumber', getByMobileNumber)
