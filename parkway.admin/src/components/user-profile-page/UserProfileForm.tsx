@@ -12,7 +12,7 @@ import styles from './UserProfileForm.module.css';
 import { Link } from 'react-router-dom';
 import {
   applicationRoleMapping,
-  statusMapping,
+  memberStatusMapping,
   UserProfile
 } from '../../types/UserProfile.ts';
 import dayjs from 'dayjs';
@@ -34,30 +34,31 @@ const FormItem = Form.Item<UserProfileFormFields>;
 export const transformFieldsToPayload = (
   fields: UserProfileFormFields
 ): Omit<UserProfile, '_id'> => ({
-  firstname: fields.firstname.trim(),
-  lastname: fields.lastname.trim(),
-  middleinitial: fields.middleinitial?.trim(),
+  firstName: fields.firstName.trim(),
+  lastName: fields.lastName.trim(),
+  middleInitial: fields.middleInitial?.trim(),
   nickname: fields.nickname?.trim(),
-  dateofbirth: fields.dateofbirth,
+  dateOfBirth: fields.dateOfBirth,
   gender: fields.gender,
   email: fields.email?.trim(),
-  mobile: fields.mobile?.trim(),
-  streetaddress1: fields.streetaddress1?.trim(),
-  streetaddress2: fields.streetaddress2?.trim(),
+  mobilePhone: fields.mobilePhone?.trim(),
+  homePhone: fields.homePhone?.trim(),
+  streetAddress1: fields.streetAddress1?.trim(),
+  streetAddress2: fields.streetAddress2?.trim(),
   city: fields.city?.trim(),
   state: fields.state?.trim(),
   zip: fields.zip?.trim(),
-  userId: fields.userId,
+  user: fields.user,
   member: fields.member,
-  status: fields.status,
-  applicationrole: fields.applicationrole
+  memberStatus: fields.memberStatus,
+  applicationRole: fields.applicationRole
 });
 
 const addProfileInitialValues: UserProfileFormFields = {
-  firstname: '',
-  lastname: '',
-  applicationrole: 'none',
-  status: 'active',
+  firstName: '',
+  lastName: '',
+  applicationRole: 'none',
+  memberStatus: 'active',
   member: false
 };
 
@@ -71,8 +72,8 @@ const UserProfileForm = ({
   const initial = initialValues
     ? {
         ...initialValues,
-        dateofbirth: initialValues.dateofbirth
-          ? dayjs(initialValues.dateofbirth, 'YYYY-MM-DD')
+        dateOfBirth: initialValues.dateOfBirth
+          ? dayjs(initialValues.dateOfBirth, 'YYYY-MM-DD')
           : undefined
       }
     : addProfileInitialValues;
@@ -100,12 +101,12 @@ const UserProfileForm = ({
       >
         <FormItem
           label="First Name"
-          name="firstname"
+          name="firstName"
           rules={[{ required: true, whitespace: true, message: 'Required' }]}
         >
           <Input autoFocus />
         </FormItem>
-        <FormItem label="Middle Initial" name="middleinitial">
+        <FormItem label="Middle Initial" name="middleInitial">
           <Input />
         </FormItem>
         <FormItem label="Nickname" name="nickname">
@@ -113,13 +114,13 @@ const UserProfileForm = ({
         </FormItem>
         <FormItem
           label="Last Name"
-          name="lastname"
+          name="lastName"
           rules={[{ required: true, whitespace: true, message: 'Required' }]}
         >
           <Input />
         </FormItem>
 
-        <FormItem label="Date of Birth" name="dateofbirth">
+        <FormItem label="Date of Birth" name="dateOfBirth">
           <DatePicker />
         </FormItem>
 
@@ -138,15 +139,19 @@ const UserProfileForm = ({
           <Input />
         </FormItem>
 
-        <FormItem label="Mobile Number" name="mobile">
+        <FormItem label="Mobile Phone" name="mobilePhone">
           <Input />
         </FormItem>
 
-        <FormItem label="Street Address Line 1" name="streetaddress1">
+        <FormItem label="Home Phone" name="homePhone">
           <Input />
         </FormItem>
 
-        <FormItem label="Street Address Line 2" name="streetaddress2">
+        <FormItem label="Street Address Line 1" name="streetAddress1">
+          <Input />
+        </FormItem>
+
+        <FormItem label="Street Address Line 2" name="streetAddress2">
           <Input />
         </FormItem>
 
@@ -166,9 +171,9 @@ const UserProfileForm = ({
           <Switch />
         </FormItem>
 
-        <FormItem label="Status" name="status">
+        <FormItem label="Member Status" name="memberStatus">
           <Radio.Group>
-            {Object.entries(statusMapping).map(([value, label]) => (
+            {Object.entries(memberStatusMapping).map(([value, label]) => (
               <Radio.Button value={value} key={value}>
                 {label}
               </Radio.Button>
@@ -176,7 +181,7 @@ const UserProfileForm = ({
           </Radio.Group>
         </FormItem>
 
-        <FormItem label="Application Role" name="applicationrole">
+        <FormItem label="Application Role" name="applicationRole">
           <Select
             options={buildSelectOptionsFromMapping(applicationRoleMapping)}
           />

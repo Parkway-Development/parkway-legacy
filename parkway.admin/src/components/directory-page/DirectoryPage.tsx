@@ -1,7 +1,7 @@
 import {
   applicationRoleMapping,
   genderMapping,
-  statusMapping,
+  memberStatusMapping,
   UserProfile
 } from '../../types/UserProfile.ts';
 import useApi, { buildQueryKey } from '../../hooks/useApi.ts';
@@ -14,20 +14,20 @@ import useColumns, { OrderedColumnsType } from '../../hooks/useColumns.tsx';
 const userProfileColumns: OrderedColumnsType<UserProfile> = [
   {
     title: 'First Name',
-    dataIndex: 'firstname',
-    key: 'firstname',
+    dataIndex: 'firstName',
+    key: 'firstName',
     displayOrder: 1
   },
   {
     title: 'Last Name',
-    dataIndex: 'lastname',
-    key: 'lastname',
+    dataIndex: 'lastName',
+    key: 'lastName',
     displayOrder: 2
   },
   {
     title: 'Middle Initial',
-    dataIndex: 'middleinitial',
-    key: 'middleinitial',
+    dataIndex: 'middleInitial',
+    key: 'middleInitial',
     displayOrder: 3
   },
   {
@@ -38,12 +38,12 @@ const userProfileColumns: OrderedColumnsType<UserProfile> = [
   },
   {
     title: 'Date of Birth',
-    dataIndex: 'dateofbirth',
-    render: (value: UserProfile['dateofbirth']) => {
+    dataIndex: 'dateOfBirth',
+    render: (value: UserProfile['dateOfBirth']) => {
       if (!value) return undefined;
       return new Date(value).toLocaleDateString();
     },
-    key: 'dateofbirth',
+    key: 'dateOfBirth',
     displayOrder: 5
   },
   {
@@ -61,46 +61,54 @@ const userProfileColumns: OrderedColumnsType<UserProfile> = [
     displayOrder: 7
   },
   {
-    title: 'Mobile',
-    dataIndex: 'mobile',
-    key: 'mobile',
+    title: 'Mobile Phone',
+    dataIndex: 'mobilePhone',
+    key: 'mobilePhone',
     displayOrder: 8
   },
   {
-    title: 'Street Address 1',
-    dataIndex: 'streetaddress1',
-    key: 'streetaddress1',
+    title: 'Home Phone',
+    dataIndex: 'homePhone',
+    key: 'homePhone',
     displayOrder: 9
   },
   {
-    title: 'Street Address 2',
-    dataIndex: 'streetaddress2',
-    key: 'streetaddress2',
+    title: 'Street Address 1',
+    dataIndex: 'streetAddress1',
+    key: 'streetAddress1',
     displayOrder: 10
+  },
+  {
+    title: 'Street Address 2',
+    dataIndex: 'streetAddress2',
+    key: 'streetAddress2',
+    displayOrder: 11
   },
   {
     title: 'City',
     dataIndex: 'city',
     key: 'city',
-    displayOrder: 11
+    displayOrder: 12
   },
   {
     title: 'State',
     dataIndex: 'state',
     key: 'state',
-    displayOrder: 12
+    displayOrder: 13
   },
   {
     title: 'Zip',
     dataIndex: 'zip',
     key: 'zip',
-    displayOrder: 13
+    displayOrder: 14
   },
   {
-    title: 'User Id',
-    dataIndex: 'userId',
-    key: 'userId',
-    displayOrder: 14
+    title: 'User Linked',
+    dataIndex: 'user',
+    key: 'user',
+    render: (value: UserProfile['user']) =>
+      value ? <CheckCircleOutlined /> : undefined,
+    displayOrder: 15
   },
   {
     title: 'Member?',
@@ -109,23 +117,23 @@ const userProfileColumns: OrderedColumnsType<UserProfile> = [
       value ? <CheckCircleOutlined /> : undefined,
     align: 'center',
     key: 'member',
-    displayOrder: 15
-  },
-  {
-    title: 'Status',
-    dataIndex: 'status',
-    render: (value: UserProfile['status']) =>
-      translateMapping(statusMapping, value),
-    key: 'status',
     displayOrder: 16
   },
   {
-    title: 'App Role',
-    dataIndex: 'applicationrole',
-    render: (value: UserProfile['applicationrole']) =>
-      translateMapping(applicationRoleMapping, value),
-    key: 'applicationrole',
+    title: 'Member Status',
+    dataIndex: 'memberStatus',
+    render: (value: UserProfile['memberStatus']) =>
+      translateMapping(memberStatusMapping, value),
+    key: 'memberStatus',
     displayOrder: 17
+  },
+  {
+    title: 'App Role',
+    dataIndex: 'applicationRole',
+    render: (value: UserProfile['applicationRole']) =>
+      translateMapping(applicationRoleMapping, value),
+    key: 'applicationRole',
+    displayOrder: 18
   },
   {
     title: 'Teams',
@@ -133,13 +141,13 @@ const userProfileColumns: OrderedColumnsType<UserProfile> = [
     render: (value: UserProfile['teams']) => value?.length ?? 0,
     align: 'center',
     key: 'teams',
-    displayOrder: 18
+    displayOrder: 19
   },
   {
     title: 'Family',
     dataIndex: 'family',
     key: 'family',
-    displayOrder: 19
+    displayOrder: 20
   }
 ];
 

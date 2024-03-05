@@ -1,23 +1,30 @@
 import { BaseEntity } from './BaseEntity.ts';
 
 export type UserProfile = BaseEntity & {
-  firstname: string;
-  lastname: string;
-  middleinitial?: string;
+  user?: string;
+  firstName: string;
+  lastName: string;
+  middleInitial?: string;
   nickname?: string;
-  dateofbirth?: Date;
+  dateOfBirth?: Date;
   gender?: 'male' | 'female';
   email?: string;
-  mobile?: string;
-  streetaddress1?: string;
-  streetaddress2?: string;
+  mobilePhone?: string;
+  homePhone?: string;
+  streetAddress1?: string;
+  streetAddress2?: string;
   city?: string;
   state?: string;
   zip?: string;
-  userId?: string;
   member: boolean;
-  status: 'active' | 'inactive' | 'deceased' | 'visitor';
-  applicationrole:
+  memberStatus:
+    | 'active'
+    | 'inactive'
+    | 'deceased'
+    | 'visitor'
+    | 'child'
+    | 'guest';
+  applicationRole:
     | 'super'
     | 'owner'
     | 'admin'
@@ -27,6 +34,8 @@ export type UserProfile = BaseEntity & {
     | 'none';
   teams?: string[];
   family?: string;
+  permissions?: string;
+  preferences?: string;
 };
 
 export const genderMapping: Record<
@@ -37,15 +46,18 @@ export const genderMapping: Record<
   female: 'Female'
 };
 
-export const statusMapping: Record<UserProfile['status'], string> = {
-  active: 'Active',
-  inactive: 'Inactive',
-  deceased: 'Deceased',
-  visitor: 'Visitor'
-};
+export const memberStatusMapping: Record<UserProfile['memberStatus'], string> =
+  {
+    active: 'Active',
+    inactive: 'Inactive',
+    deceased: 'Deceased',
+    visitor: 'Visitor',
+    child: 'Child',
+    guest: 'Guest'
+  };
 
 export const applicationRoleMapping: Record<
-  UserProfile['applicationrole'],
+  UserProfile['applicationRole'],
   string
 > = {
   none: 'None',
