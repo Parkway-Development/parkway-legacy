@@ -7,23 +7,19 @@ const profileSchema = new mongoose.Schema({
     },
     firstName: {
         required: true,
-        type: String,
-        lowercase: true
+        type: String
     },
     lastName: {
         required: true,
-        type: String,
-        lowercase: true
+        type: String
     },
     middleInitial: {
         required: false,
-        type: String,
-        lowercase: true
+        type: String
     },
     nickname: {
         required: false,
-        type: String,
-        lowercase: true
+        type: String
     },
     dateOfBirth: {
         required: false,
@@ -31,13 +27,11 @@ const profileSchema = new mongoose.Schema({
     },
     gender: {
         required: false,
-        type: String,
-        lowercase: true
+        type: String
     },
     email: {
         required: false,
-        type: String,
-        lowercase: true
+        type: String
     },
     mobilePhone: {
         required: false,
@@ -49,23 +43,19 @@ const profileSchema = new mongoose.Schema({
     },
     streetAddress1: {
         required: false,
-        type: String,
-        lowercase: true
+        type: String
     },
     streetAddress2: {
         required: false,
-        type: String,
-        lowercase: true
+        type: String
     },
     city: {
         required: false,
-        type: String,
-        lowercase: true
+        type: String
     },
     state: {
         required: false,
-        type: String,
-        lowercase: true
+        type: String
     },
     zip: {
         required: false,
