@@ -10,3 +10,13 @@ main > h1, h2, h3, h4, h5, h6 {
 main > nav.ant-breadcrumb {
   margin-bottom: 2em;
 }
+
+.entryPage {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: lightgray;
+}

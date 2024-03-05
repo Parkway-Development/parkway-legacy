@@ -63,7 +63,7 @@ const SignupPage = () => {
   );
 
   return (
-    <div className={styles.page}>
+    <div className="entryPage">
       <Card
         title="Parkway Ministries Admin Signup"
         bordered={false}

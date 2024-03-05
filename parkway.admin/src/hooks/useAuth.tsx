@@ -2,16 +2,22 @@ import { createContext, ReactNode, useContext, useMemo } from 'react';
 import { useLocalStorage } from './useLocalStorage';
 import { jwtDecode } from 'jwt-decode';
 import { useNavigate } from 'react-router-dom';
+import { UserProfile } from '../types/UserProfile.ts';
 
 export interface AuthUser {
   id: string;
-  name: string;
   email: string;
 }
 
+export type InternalLoginResponse = {
+  user: AuthUser;
+  profile: UserProfile | undefined;
+  errorMessage: string | undefined;
+};
+
 interface AuthContextType {
   user: AuthUser | undefined;
-  login: (data: LoginResponse) => void;
+  login: (data: LoginResponse) => InternalLoginResponse;
   logout: () => void;
   isLoggedIn: boolean;
   token: string | undefined;
@@ -24,24 +30,32 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     'user',
     undefined
   );
+
   const [token, setToken, clearToken] = useLocalStorage<string>(
     'token',
     undefined
   );
+
   const navigate = useNavigate();
 
   const value = useMemo(() => {
-    const login = (data: LoginResponse) => {
+    const login = (data: LoginResponse): InternalLoginResponse => {
       const tokenData = jwtDecode<TokenPayload>(data.token);
       const user: AuthUser = {
         id: tokenData._id,
-        name: `User Id ${tokenData._id}`,
         email: data.email
       };
 
       setUser(user);
       setToken(data.token);
-      navigate('/', { replace: true });
+
+      const { profile } = data;
+
+      return {
+        user,
+        profile: typeof profile !== 'string' ? profile : undefined,
+        errorMessage: typeof profile === 'string' ? profile : undefined
+      };
     };
 
     const clearState = () => {
@@ -83,6 +97,7 @@ export const useAuth = () => {
 export interface LoginResponse {
   email: string;
   token: string;
+  profile?: string | UserProfile;
 }
 
 interface TokenPayload {
