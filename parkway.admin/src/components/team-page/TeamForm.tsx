@@ -14,11 +14,11 @@ type TeamFormProps = {
 
 const TeamForm = ({ isSaving, initialValues, onFinish }: TeamFormProps) => {
   const [form] = Form.useForm<TeamFormFields>();
-  const leaderId = Form.useWatch('leaderId', form);
+  const leader = Form.useWatch('leader', form);
 
-  const handleLeaderIdChange = (value: string | undefined) =>
+  const handleLeaderChange = (value: string | undefined) =>
     form.setFieldsValue({
-      leaderId: value
+      leader: value
     });
 
   const handleMembersChange = (value: string[] | undefined) =>
@@ -60,10 +60,10 @@ const TeamForm = ({ isSaving, initialValues, onFinish }: TeamFormProps) => {
           <Input />
         </Form.Item>
 
-        <Form.Item<TeamFormFields> label="Leader" name="leaderId">
+        <Form.Item<TeamFormFields> label="Leader" name="leader">
           <UserProfileSelect
-            onChange={handleLeaderIdChange}
-            initialValue={initialValues?.leaderId}
+            onChange={handleLeaderChange}
+            initialValue={initialValues?.leader}
           />
         </Form.Item>
 
@@ -71,7 +71,7 @@ const TeamForm = ({ isSaving, initialValues, onFinish }: TeamFormProps) => {
           <UserProfileSelect
             isMultiSelect
             onChange={handleMembersChange}
-            excludedUserId={leaderId}
+            excludedUserId={leader}
             initialValue={initialValues?.members}
           />
         </Form.Item>

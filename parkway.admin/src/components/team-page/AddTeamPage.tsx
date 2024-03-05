@@ -18,7 +18,7 @@ const AddTeamPage = () => {
     const payload: Omit<Team, '_id'> = {
       name: fields.name.trim(),
       description: fields.description?.trim(),
-      leaderId: fields.leaderId,
+      leader: fields.leader,
       members: fields.members ?? []
     };
 

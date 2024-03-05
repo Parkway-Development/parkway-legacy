@@ -16,9 +16,9 @@ const teamColumns: OrderedColumnsType<Team> = [
   {
     title: 'Leader',
     width: 200,
-    dataIndex: 'leaderId',
-    render: (value: Team['leaderId']) => <UserDisplayById id={value} />,
-    key: 'leaderId',
+    dataIndex: 'leader',
+    render: (value: Team['leader']) => <UserDisplayById id={value} />,
+    key: 'leader',
     displayOrder: 2
   },
   {
