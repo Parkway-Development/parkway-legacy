@@ -108,7 +108,8 @@ const userProfileColumns: OrderedColumnsType<UserProfile> = [
     key: 'user',
     render: (value: UserProfile['user']) =>
       value ? <CheckCircleOutlined /> : undefined,
-    displayOrder: 15
+    displayOrder: 15,
+    align: 'center'
   },
   {
     title: 'Member?',

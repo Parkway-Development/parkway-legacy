@@ -1,10 +1,16 @@
-import { InternalLoginResponse } from '../../hooks/useAuth.tsx';
+import { InternalLoginResponse, useAuth } from '../../hooks/useAuth.tsx';
 import styles from './ProfileVerification.module.css';
-import { Alert, Button, Card } from 'antd';
+import { Alert, Card } from 'antd';
 import { ReactNode } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import useApi from '../../hooks/useApi.ts';
 import { useNavigate } from 'react-router-dom';
+import UserProfileForm, {
+  transformFieldsToMyProfilePayload,
+  transformFieldsToPayload,
+  UserProfileFormFields
+} from '../user-profile-page/UserProfileForm.tsx';
+import { UserProfile } from '../../types/UserProfile.ts';
 
 type ProfileVerificationProps = {
   loginResponse: InternalLoginResponse;
@@ -12,8 +18,14 @@ type ProfileVerificationProps = {
 
 const ProfileVerification = ({ loginResponse }: ProfileVerificationProps) => {
   const navigate = useNavigate();
+  const { logout } = useAuth();
   const { errorMessage, profile, user } = loginResponse;
-  const { formatError, joinProfileAndUser } = useApi();
+  const {
+    createUserProfile,
+    formatError,
+    joinProfileAndUser,
+    updateUserProfile
+  } = useApi();
   const {
     isPending: isJoining,
     mutate: performJoin,
@@ -22,22 +34,46 @@ const ProfileVerification = ({ loginResponse }: ProfileVerificationProps) => {
     mutationFn: joinProfileAndUser
   });
 
-  const disableOptions = isJoining;
+  const {
+    isPending: isAdding,
+    mutate: createProfile,
+    error: createProfileError
+  } = useMutation({
+    mutationFn: createUserProfile
+  });
+
+  const {
+    isPending: isUpdating,
+    mutate: updateProfile,
+    error: updateProfileError
+  } = useMutation({
+    mutationFn: updateUserProfile
+  });
+
+  const disableOptions = isJoining || isAdding || isUpdating;
 
   let content: ReactNode;
 
-  if (errorMessage || !profile || joinError) {
+  const showError =
+    (errorMessage && errorMessage !== 'No profile found') ||
+    joinError !== null ||
+    createProfileError !== null ||
+    updateProfileError !== null;
+
+  if (showError) {
     let error: string;
 
     if (errorMessage) error = errorMessage;
     else if (joinError) error = formatError(joinError);
+    else if (createProfileError) error = formatError(createProfileError);
+    else if (updateProfileError) error = formatError(updateProfileError);
     else error = 'Unexpected error finding profile';
 
     content = <Alert className={styles.error} message={error} type="error" />;
   } else {
-    const handleJoin = () => {
+    const handleJoin = (profileId: string) => {
       performJoin(
-        { userId: user.id, profileId: profile._id },
+        { userId: user.id, profileId: profileId },
         {
           onSuccess: () => {
             navigate('/', { replace: true });
@@ -46,96 +82,74 @@ const ProfileVerification = ({ loginResponse }: ProfileVerificationProps) => {
       );
     };
 
-    const {
-      firstName,
-      middleInitial,
-      lastName,
-      nickname,
-      mobilePhone,
-      homePhone,
-      streetAddress1,
-      streetAddress2,
-      city,
-      state,
-      zip
-    } = profile;
+    const handleAddUserProfile = (fields: UserProfileFormFields) => {
+      const payload = transformFieldsToPayload(fields);
+
+      createProfile(payload, {
+        onSuccess: ({ data }: { data: UserProfile }) => {
+          handleJoin(data._id);
+        }
+      });
+    };
+
+    const handleUpdateUserProfile = (fields: UserProfileFormFields) => {
+      const payload = transformFieldsToPayload(fields);
+
+      updateProfile(
+        { ...payload, _id: profile!._id },
+        {
+          onSuccess: ({ data }: { data: UserProfile }) => {
+            handleJoin(data._id);
+          }
+        }
+      );
+    };
+
+    const handleSubmit = (values: UserProfileFormFields) => {
+      const payload = transformFieldsToMyProfilePayload(values);
+
+      if (!profile) {
+        handleAddUserProfile({
+          ...payload,
+          member: false,
+          memberStatus: 'inactive',
+          applicationRole: 'none',
+          email: user.email
+        });
+      } else {
+        handleUpdateUserProfile({ ...profile, ...payload, email: user.email });
+      }
+    };
 
     content = (
       <>
-        <span>
-          Information was already found for your email address. Please confirm
-          whether the information below is correct. Edits to the profile can be
-          made after verification.
-        </span>
-        <table className={styles.existingData}>
-          <tbody>
-            <tr>
-              <td>First Name:</td>
-              <td>{firstName}</td>
-            </tr>
-            {middleInitial && (
-              <tr>
-                <td>Middle Initial:</td>
-                <td>{middleInitial}</td>
-              </tr>
-            )}
-            <tr>
-              <td>Last Name:</td>
-              <td>{lastName}</td>
-            </tr>
-            {nickname && (
-              <tr>
-                <td>Nickname:</td>
-                <td>{nickname}</td>
-              </tr>
-            )}
-            {mobilePhone && (
-              <tr>
-                <td>Mobile Phone:</td>
-                <td>{mobilePhone}</td>
-              </tr>
-            )}
-            {homePhone && (
-              <tr>
-                <td>Home Phone:</td>
-                <td>{homePhone}</td>
-              </tr>
-            )}
-            {streetAddress1 && (
-              <tr>
-                <td>Address:</td>
-                <td>
-                  <div>{streetAddress1}</div>
-                  {streetAddress2 && <div>{streetAddress2}</div>}
-                  <div>
-                    {city}, {state} {zip}
-                  </div>
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-        <div className={styles.footer}>
-          <Button
-            type="primary"
-            onClick={handleJoin}
-            loading={isJoining}
-            disabled={disableOptions}
-          >
-            This is me
-          </Button>
-          <Button type="primary" danger disabled={disableOptions}>
-            This is NOT me
-          </Button>
-        </div>
+        {profile && (
+          <p className={styles.email}>
+            Information was already found for your email address. Please enter
+            your information below.
+          </p>
+        )}
+        <p className={styles.email}>Email: {user.email}</p>
+        <UserProfileForm
+          isSaving={disableOptions}
+          onFinish={handleSubmit}
+          onCancel={() => {
+            logout();
+            window.location.reload();
+          }}
+          submitText="Complete Registration"
+          cancelText="Cancel"
+          isMyProfile
+        />
       </>
     );
   }
 
   return (
-    <div className="entryPage">
+    <div className={styles.entryPage}>
       <Card
-        title="Profile Verification"
+        className={styles.card}
+        title="Complete Registration"
         bordered={false}
         style={{ width: 500 }}
       >
