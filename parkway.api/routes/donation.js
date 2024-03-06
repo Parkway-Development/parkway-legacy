@@ -14,22 +14,22 @@ const{
 
 //Donations
 //Post a donation
-router.post('/donations', addDonation)
+router.post('/', addDonation)
 
 //Get all donations
-router.get('/donations', getAllDonations)
+router.get('/', getAllDonations)
 
 //Get donation by ID
-router.get('/donations/:id', getDonationById)
+router.get('/:id', getDonationById)
 
 //Get donations by profile
-router.get('/donations/profile/:id', getDonationsByProfile)
+router.get('/profile/:id', getDonationsByProfile)
 
 //Update a donation by ID
-router.patch('/donations/:id', updateDonation)
+router.patch('/:id', updateDonation)
 
 //Delete a donation by ID
-router.delete('/donations/:id', deleteDonation)
+router.delete('/:id', deleteDonation)
 
 router.use('*', (req, res) => {
     res.status(404).json({ message: 'Not Found' });
