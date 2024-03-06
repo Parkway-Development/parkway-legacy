@@ -39,7 +39,8 @@ const useApi: () => ApiType = () => {
         return 'Invalid session';
       }
 
-      const message = error.response?.data?.err;
+      const message =
+        error.response?.data?.error ?? error.response?.data?.message;
       if (typeof message === 'string') {
         return message;
       }

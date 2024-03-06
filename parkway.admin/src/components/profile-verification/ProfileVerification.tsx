@@ -1,11 +1,12 @@
 import { InternalLoginResponse, useAuth } from '../../hooks/useAuth.tsx';
 import styles from './ProfileVerification.module.css';
-import { Alert, Card } from 'antd';
-import { ReactNode } from 'react';
+import { Alert, Card, Spin } from 'antd';
+import { ReactNode, useEffect } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import useApi from '../../hooks/useApi.ts';
 import { useNavigate } from 'react-router-dom';
 import UserProfileForm, {
+  addProfileInitialValues,
   transformFieldsToMyProfilePayload,
   transformFieldsToPayload,
   UserProfileFormFields
@@ -17,8 +18,9 @@ type ProfileVerificationProps = {
 };
 
 const ProfileVerification = ({ loginResponse }: ProfileVerificationProps) => {
+  console.log('login response', loginResponse);
   const navigate = useNavigate();
-  const { logout } = useAuth();
+  const { logout, storeProfileId } = useAuth();
   const { errorMessage, profile, user } = loginResponse;
   const {
     createUserProfile,
@@ -50,6 +52,39 @@ const ProfileVerification = ({ loginResponse }: ProfileVerificationProps) => {
     mutationFn: updateUserProfile
   });
 
+  const handleJoin = (profileId: string) => {
+    performJoin(
+      { userId: user.id, profileId },
+      {
+        onSuccess: () => {
+          storeProfileId(profileId, user);
+          navigate('/profiles/me', { replace: true });
+        }
+      }
+    );
+  };
+
+  const handleAddUserProfile = (fields: UserProfileFormFields) => {
+    const payload = transformFieldsToPayload(fields);
+
+    createProfile(payload, {
+      onSuccess: ({ data }: { data: UserProfile }) => {
+        handleJoin(data._id);
+      }
+    });
+  };
+
+  useEffect(() => {
+    if (!profile) {
+      handleAddUserProfile({
+        ...addProfileInitialValues,
+        firstName: 'NewUser',
+        lastName: user.email,
+        email: user.email
+      });
+    }
+  }, []);
+
   const disableOptions = isJoining || isAdding || isUpdating;
 
   let content: ReactNode;
@@ -63,40 +98,27 @@ const ProfileVerification = ({ loginResponse }: ProfileVerificationProps) => {
   if (showError) {
     let error: string;
 
-    if (errorMessage) error = errorMessage;
+    if (errorMessage && errorMessage !== 'No profile found')
+      error = errorMessage;
     else if (joinError) error = formatError(joinError);
     else if (createProfileError) error = formatError(createProfileError);
     else if (updateProfileError) error = formatError(updateProfileError);
     else error = 'Unexpected error finding profile';
 
     content = <Alert className={styles.error} message={error} type="error" />;
+  } else if (!profile) {
+    content = (
+      <div className={styles.createProfile}>
+        <Spin size="large" />
+        <p>Creating your profile...</p>
+      </div>
+    );
   } else {
-    const handleJoin = (profileId: string) => {
-      performJoin(
-        { userId: user.id, profileId: profileId },
-        {
-          onSuccess: () => {
-            navigate('/', { replace: true });
-          }
-        }
-      );
-    };
-
-    const handleAddUserProfile = (fields: UserProfileFormFields) => {
-      const payload = transformFieldsToPayload(fields);
-
-      createProfile(payload, {
-        onSuccess: ({ data }: { data: UserProfile }) => {
-          handleJoin(data._id);
-        }
-      });
-    };
-
     const handleUpdateUserProfile = (fields: UserProfileFormFields) => {
       const payload = transformFieldsToPayload(fields);
 
       updateProfile(
-        { ...payload, _id: profile!._id },
+        { ...payload, _id: profile._id },
         {
           onSuccess: ({ data }: { data: UserProfile }) => {
             handleJoin(data._id);
@@ -107,18 +129,7 @@ const ProfileVerification = ({ loginResponse }: ProfileVerificationProps) => {
 
     const handleSubmit = (values: UserProfileFormFields) => {
       const payload = transformFieldsToMyProfilePayload(values);
-
-      if (!profile) {
-        handleAddUserProfile({
-          ...payload,
-          member: false,
-          memberStatus: 'inactive',
-          applicationRole: 'none',
-          email: user.email
-        });
-      } else {
-        handleUpdateUserProfile({ ...profile, ...payload, email: user.email });
-      }
+      handleUpdateUserProfile({ ...profile, ...payload, email: user.email });
     };
 
     content = (

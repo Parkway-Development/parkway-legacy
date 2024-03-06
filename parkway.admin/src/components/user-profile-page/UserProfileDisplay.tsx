@@ -21,7 +21,6 @@ const InfoRow = ({ label, value }: { label: string; value?: string }) => {
 const UserProfileDisplay = ({ profile, onEdit }: UserProfileDisplay) => {
   return (
     <>
-      <h2>My Profile</h2>
       <Button onClick={onEdit} type="primary">
         Edit
       </Button>

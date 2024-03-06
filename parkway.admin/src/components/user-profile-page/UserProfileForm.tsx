@@ -57,7 +57,7 @@ export const transformFieldsToPayload = (
   applicationRole: fields.applicationRole
 });
 
-const addProfileInitialValues: UserProfileFormFields = {
+export const addProfileInitialValues: UserProfileFormFields = {
   firstName: '',
   lastName: '',
   applicationRole: 'none',

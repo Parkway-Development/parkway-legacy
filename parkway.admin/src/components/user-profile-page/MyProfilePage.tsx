@@ -47,18 +47,24 @@ const MyProfilePage = () => {
 
   const profile = response.data;
 
-  const hasBlankName =
-    profile.firstName.trim().length === 0 ||
-    profile.lastName.trim().length === 0;
+  const isNewUser = profile.firstName === 'NewUser';
 
-  if (!isEditing || hasBlankName) {
+  if (!isEditing && !isNewUser) {
     return (
-      <UserProfileDisplay profile={profile} onEdit={() => setIsEditing(true)} />
+      <>
+        <h2>My Profile</h2>
+        <UserProfileDisplay
+          profile={profile}
+          onEdit={() => setIsEditing(true)}
+        />
+      </>
     );
   }
 
   const initialValues: UserProfileFormFields = {
-    ...profile
+    ...profile,
+    firstName: isNewUser ? '' : profile.firstName,
+    lastName: isNewUser ? '' : profile.lastName
   };
 
   const finishEditing = () => setIsEditing(false);
@@ -84,6 +90,7 @@ const MyProfilePage = () => {
   return (
     <>
       {contextHolder}
+      <h2>My Profile</h2>
       <UserProfileForm
         onFinish={handleUpdateUserProfile}
         isSaving={isPending}

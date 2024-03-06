@@ -18,11 +18,12 @@ export type InternalLoginResponse = {
 };
 
 interface AuthContextType {
-  user: AuthUser | undefined;
+  isLoggedIn: boolean;
   login: (data: LoginResponse) => InternalLoginResponse;
   logout: () => void;
-  isLoggedIn: boolean;
+  storeProfileId: (profileId: string, user: AuthUser) => void;
   token: string | undefined;
+  user: AuthUser | undefined;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -83,14 +84,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       clearState();
     }
 
-    const isLoggedIn = user !== undefined && token !== undefined && !isExpired;
+    const isLoggedIn =
+      user !== undefined &&
+      user.profileId !== undefined &&
+      token !== undefined &&
+      !isExpired;
 
     return {
       user: isLoggedIn ? user : undefined,
       login,
       logout,
       isLoggedIn,
-      token: isLoggedIn ? token : undefined
+      storeProfileId: (profileId: string, user: AuthUser) =>
+        setUser({ ...user, profileId }),
+      token
     };
   }, [user, setUser, token]);
 
