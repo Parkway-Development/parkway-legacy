@@ -28,7 +28,7 @@ const addProfile = async (req, res) => {
     const existingProfile = await searchForAProfile(submittedProfile)
     if(existingProfile){
         return res.status(400).json({
-            submittedProfile: profile, 
+            submittedProfile,
             existingProfile: existingProfile, 
             message: "There is a possible matching profile. Please check the details and try again."})
     }
