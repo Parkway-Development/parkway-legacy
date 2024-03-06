@@ -2,6 +2,10 @@ require('dotenv').config();
 
 const express = require('express');
 const mongoose = require('mongoose');
+const Grid = require('gridfs-stream');
+const Multer = require('multer');
+const conn = mongoose.connection;
+
 const userRoutes = require('./routes/user');
 const profileRoutes = require('./routes/profile');
 const settingRoutes = require('./routes/setting');
@@ -17,9 +21,14 @@ const pledgeRoutes = require('./routes/pledge');
 const vendorRoutes = require('./routes/vendor');
 //const clientRoutes = require('./routes/client');
 const platformRoutes = require('./routes/platform');
-
+const songRoutes = require('./routes/song');
 
 const { Profile } = require('./models/profileModel');
+
+Grid.mongo = mongoose.mongo;
+let gfs;
+
+const upload = Multer({ dest: 'uploads/' });
 
 //express app
 const app = express();
@@ -48,6 +57,7 @@ app.use('/api/pledge', pledgeRoutes);
 app.use('/api/vendor', vendorRoutes);
 //app.use('/api/client', clientRoutes);
 app.use('/api/platform', platformRoutes);
+app.use('/api/song', songRoutes);
 
 // Catch-all route for undefined paths
 app.use('*', (req, res) => {
@@ -59,6 +69,8 @@ app.use('*', (req, res) => {
 mongoose.connect(process.env.DATABASE_URL)
     .then(() => {
         console.log('Database connected.')
+        gfs = Grid(conn.db, mongoose.mongo);
+        gfs.collection('uploads');
         app.listen(process.env.PORT, () => {
             console.log('Listening for requests on port', process.env.PORT)
         })
