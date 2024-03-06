@@ -7,7 +7,6 @@ const searchForAProfile = async (inboundProfile) => {
 
     const inProfile = inboundProfile;
 
-
     let profile = null;
     if(inProfile.firstName && inProfile.lastName){
         profile = await Profile.findOne({firstName: inProfile.firstName, lastName: inProfile.lastName})} 
