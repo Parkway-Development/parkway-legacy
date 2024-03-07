@@ -1,20 +1,27 @@
 const mongoose = require('mongoose');
-const Donation = require('../models/donationModel');
+const Donations = require('../models/donationModel');
 
 //Post a donation
 const addDonation = async (req, res) => {
-    const donation = new Donation(req.body);
-    const donationToSave = await donation.save();
+    const donation = new Donations(req.body);
 
-    if(!donationToSave){
-    return res.status(404).json({message: "The save failed."})}
-
-    res.status(200).json(donationToSave)
+    const validationError = donation.validateSync();
+    if(validationError){
+        return res.status(400).json({message: validationError.message})
+    }
+//TODO: Review what is happening here
+    try{
+        await donation.save();
+        return res.status(201).json(donationToSave);
+    }
+    catch (error){
+        return res.status(500).json({message: error.message})
+    }
 }
 
 //Get all donations
 const getAllDonations = async (req, res) => {
-    const donations = await Donation.find({}).sort({date: -1});
+    const donations = await Donations.find({}).sort({date: -1});
     if(!donations){
         return res.status(404).json({message: "No donations were returned."})
     }
@@ -29,7 +36,7 @@ const getDonationById = async (req, res) => {
     if(!mongoose.Types.ObjectId.isValid(id)){
         return res.status(404).json({error: 'No such donation.'})
     }
-    const donation = await Donation.findById(id);
+    const donation = await Donations.findById(id);
 
     if(!donation){
         return res.status(404).json({message: "No such donation found."})
@@ -40,7 +47,7 @@ const getDonationById = async (req, res) => {
 
 //Get donations by profile
 const getDonationsByProfile = async (req, res) => {
-    const donations = await Donation.find({profileId: req.params.id}).sort({date: -1});
+    const donations = await Donations.find({profile: req.params.id}).sort({date: -1});
     if(!donations){
         return res.status(404).json({message: "No donations found."})
     }
@@ -77,13 +84,13 @@ const deleteDonation = async (req, res) => {
         return res.status(404).json({error: 'No such donation.'})
     }
 
-    const donation = await Donation.findById(id);
+    const donation = await Donations.findById(id);
 
     if(!donation){
         return res.status(404).json({message: "No such donation found."})
     }
 
-    const deletedDonation = await Donation.findByIdAndDelete(id);
+    const deletedDonation = await Donations.findByIdAndDelete(id);
 
     if(!deletedDonation){
         return res.status(404).json({message: "The delete failed."})

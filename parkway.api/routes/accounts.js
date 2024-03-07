@@ -4,31 +4,31 @@ const router = express.Router();
 requireAuthorization(router);
 
 const{
-    addFund,
-    getAllFunds,
-    getFundById,
-    getFundsByName,
-    updateFund,
-    deleteFund
-} = require('../controllers/fundController')
+    addAccount,
+    getAllAccounts,
+    getAccountById,
+    getAccountByName,
+    updateAccount,
+    deleteAccount
+} = require('../controllers/accountController')
 
 //Post a fund
-router.post('/funds', addFund)
+router.post('/', addAccount)
 
 //Get all funds
-router.get('/funds', getAllFunds)
+router.get('/', getAllAccounts)
 
 //Get fund by ID
-router.get('/funds/:id', getFundById)
+router.get('/:id', getAccountById)
 
 //Get a fund by name
-router.get('/funds/name/:name', getFundsByName)
+router.get('/name/:name', getAccountByName)
 
 //Update a fund by ID
-router.patch('/funds/:id', updateFund)
+router.patch('/:id', updateAccount)
 
 //Delete a fund by ID
-router.delete('/funds/:id', deleteFund)
+router.delete('/:id', deleteAccount)
 
 router.use('*', (req, res) => {
     res.status(404).json({ message: 'Not Found' });

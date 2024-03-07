@@ -30,10 +30,10 @@ router.get('/id/:id', getById)
 router.get('/lastname/:lastName', getByLastName)
 
 //Get profiles by mobile number
-router.get('/mobile/:mobileNumber', getByMobileNumber)
+router.get('/mobilenumber/:mobileNumber', getByMobileNumber)
 
 //Get profiles by home number
-router.get('/home/:homeNumber', getByHomeNumber)
+router.get('/homenumber/:homeNumber', getByHomeNumber)
 
 //Update a profile by id
 router.patch('/:id', updateProfile)
