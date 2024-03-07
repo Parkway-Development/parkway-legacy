@@ -1,5 +1,5 @@
 const express = require('express');
-const { requireAuthorization} = require("../auth");
+const { requireAuthorization} = require("../../auth");
 const router = express.Router();
 requireAuthorization(router);
 
@@ -11,7 +11,7 @@ const{
     getLiabilitiesByCategory,
     updateLiability,
     deleteLiability
-} = require('../controllers/liabilityController')
+} = require('../../controllers/accounting/liabilityController')
 
 //Post a liability
 router.post('/liabilities', addLiability)

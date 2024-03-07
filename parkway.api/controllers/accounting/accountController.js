@@ -1,7 +1,7 @@
 
 const mongoose = require('mongoose');
-const Account = require('../models/accountModel');
-const ValidationHelper = require('../helpers/validationHelper');
+const Account = require('../../models/accounting/accountModel');
+const ValidationHelper = require('../../helpers/validationHelper');
 
 //Post an account
 const addAccount = async (req, res) => {

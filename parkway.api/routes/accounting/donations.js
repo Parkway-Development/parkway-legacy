@@ -6,9 +6,9 @@ const{
     getDonationsByProfile,
     updateDonation,
     deleteDonation
-} = require('../controllers/donationController')
+} = require('../../controllers/accounting/donationController')
 
-const { requireAuthorization} = require("../auth");
+const { requireAuthorization} = require("../../auth");
 
 const router = express.Router();
 

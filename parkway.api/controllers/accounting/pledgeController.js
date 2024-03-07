@@ -1,7 +1,7 @@
 //setup Mongoose
 const mongoose = require('mongoose');
 //import the necessary models
-const Pledge = require('../models/pledgeModel');
+const Pledge = require('../../models/accounting/pledgeModel');
 
 
 //Post a pledge

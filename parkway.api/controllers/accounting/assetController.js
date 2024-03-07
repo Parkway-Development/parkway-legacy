@@ -1,7 +1,7 @@
 //setup Mongoose
 const mongoose = require('mongoose');
 //import the necessary models
-const Asset = require('../models/assetModel');
+const Asset = require('../../models/accounting/assetModel');
 
 //Post an asset
 const addAsset = async (req, res) => {

@@ -1,7 +1,7 @@
 //setup Mongoose
 const mongoose = require('mongoose');
 //import the necessary models
-const Budget = require('../models/budgetModel');
+const Budget = require('../../models/accounting/budgetModel');
 
 //Post a budget
 const addBudget = async (req, res) => {

@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const Donations = require('../models/donationModel');
+const Donations = require('../../models/accounting/donationModel');
 
 //Post a donation
 const addDonation = async (req, res) => {

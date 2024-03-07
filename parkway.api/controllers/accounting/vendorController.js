@@ -1,7 +1,7 @@
 //setup Mongoose
 const mongoose = require('mongoose');
 //import the necessary models
-const Vendor = require('../models/vendorModel');
+const Vendor = require('../../models/accounting/vendorModel');
 
 //Post a vendor
 const addVendor = async (req, res) => {

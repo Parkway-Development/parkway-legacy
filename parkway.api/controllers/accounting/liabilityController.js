@@ -1,7 +1,7 @@
 //setup Mongoose
 const mongoose = require('mongoose');
 //import the necessary models
-const Liability = require('../models/liabilityModel');
+const Liability = require('../../models/accounting/liabilityModel');
 
 const addLiability = async (req, res) => {
     try {
