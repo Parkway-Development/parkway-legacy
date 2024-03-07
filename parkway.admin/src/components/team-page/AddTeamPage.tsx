@@ -7,9 +7,12 @@ import TeamForm, { TeamFormFields } from './TeamForm.tsx';
 
 const AddTeamPage = () => {
   const queryClient = useQueryClient();
-  const { createTeam, formatError } = useApi();
+  const {
+    teamsApi: { create },
+    formatError
+  } = useApi();
   const { isPending, mutate } = useMutation({
-    mutationFn: createTeam
+    mutationFn: create
   });
   const [api, contextHolder] = notification.useNotification();
   const navigate = useNavigate();

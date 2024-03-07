@@ -31,7 +31,9 @@ const UserProfileSelect = ({
   const [value, setValue] = useState<string | string[] | undefined>(
     initialValue
   );
-  const { getUserProfiles } = useApi();
+  const {
+    usersApi: { getUserProfiles }
+  } = useApi();
   const { isPending, data: response } = useQuery({
     queryFn: getUserProfiles,
     queryKey: buildQueryKey('profiles')

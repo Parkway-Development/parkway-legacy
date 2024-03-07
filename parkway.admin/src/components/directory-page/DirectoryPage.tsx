@@ -154,7 +154,9 @@ const userProfileColumns: OrderedColumnsType<UserProfile> = [
 
 const DirectoryPage = () => {
   const queryClient = useQueryClient();
-  const { deleteUserProfile, getUserProfiles } = useApi();
+  const {
+    usersApi: { deleteUserProfile, getUserProfiles }
+  } = useApi();
 
   const handleDelete = () => {
     queryClient.invalidateQueries({

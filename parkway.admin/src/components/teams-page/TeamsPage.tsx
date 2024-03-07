@@ -40,7 +40,9 @@ const teamColumns: OrderedColumnsType<Team> = [
 
 const TeamsPage = () => {
   const queryClient = useQueryClient();
-  const { deleteTeam, getTeams } = useApi();
+  const {
+    teamsApi: { delete: deleteFn, getAll }
+  } = useApi();
 
   const handleDelete = () => {
     queryClient.invalidateQueries({
@@ -51,14 +53,14 @@ const TeamsPage = () => {
   const { columns } = useColumns({
     columns: teamColumns,
     columnType: 'teamsPage',
-    deleteAction: { deleteFn: deleteTeam, handleDelete },
+    deleteAction: { deleteFn, handleDelete },
     editLink: ({ _id }) => `/teams/${_id}/edit`
   });
 
   return (
     <BaseDataTablePage
       addLink="/teams/add"
-      queryFn={getTeams}
+      queryFn={getAll}
       queryKey={buildQueryKey('teams')}
       columns={columns}
       title="Teams"

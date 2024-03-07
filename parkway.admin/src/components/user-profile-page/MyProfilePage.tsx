@@ -14,7 +14,10 @@ const MyProfilePage = () => {
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const { user } = useAuth();
   const queryClient = useQueryClient();
-  const { getUserProfileById, formatError, updateUserProfile } = useApi();
+  const {
+    usersApi: { getUserProfileById, updateUserProfile },
+    formatError
+  } = useApi();
   const profileId = user?.profileId;
 
   const { isPending, mutate } = useMutation({

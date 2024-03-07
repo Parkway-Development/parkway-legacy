@@ -10,7 +10,10 @@ import { UserProfile } from '../../types/UserProfile.ts';
 
 const AddUserProfilePage = () => {
   const queryClient = useQueryClient();
-  const { createUserProfile, formatError } = useApi();
+  const {
+    usersApi: { createUserProfile },
+    formatError
+  } = useApi();
   const { isPending, mutate } = useMutation({
     mutationFn: createUserProfile
   });

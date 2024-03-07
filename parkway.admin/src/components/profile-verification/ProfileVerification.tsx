@@ -43,7 +43,6 @@ const stringComparison = (
 };
 
 const ProfileVerification = ({ loginResponse }: ProfileVerificationProps) => {
-  console.log('login response', loginResponse);
   const navigate = useNavigate();
   const { storeProfileId } = useAuth();
   const { errorMessage, profile, user } = loginResponse;
@@ -130,7 +129,10 @@ const ProfileVerification = ({ loginResponse }: ProfileVerificationProps) => {
       return result;
     }
   );
-  const { createUserProfile, formatError, joinProfileAndUser } = useApi();
+  const {
+    usersApi: { createUserProfile, joinProfileAndUser },
+    formatError
+  } = useApi();
   const {
     isPending: isJoining,
     mutate: performJoin,

@@ -1,17 +1,20 @@
 import { useAuth } from './useAuth.tsx';
 import axios, { AxiosError, AxiosResponse } from 'axios';
-import addTeamsApi, { TeamsApiType } from '../api/teamsApi.ts';
+import buildTeamsApi, { TeamsApiType } from '../api/teamsApi.ts';
 import addUsersApi, { UsersApiType } from '../api/userApi.ts';
 import addGeneralApi, { GeneralApiType } from '../api/generalApi.ts';
+import buildFundsApi, { FundsApiType } from '../api/fundsApi.ts';
 
 export type GenericResponse = Promise<AxiosResponse<any, any>>;
 export type TypedResponse<T> = Promise<Omit<AxiosResponse<T>, 'config'>>;
 
-export type ApiType = GeneralApiType &
-  TeamsApiType &
-  UsersApiType & {
-    formatError: (error: Error | null) => string;
-  };
+export type ApiType = {
+  formatError: (error: Error | null) => string;
+  fundsApi: FundsApiType;
+  generalApi: GeneralApiType;
+  teamsApi: TeamsApiType;
+  usersApi: UsersApiType;
+};
 
 type QueryType = 'passwordSettings' | 'profiles' | 'teams';
 
@@ -52,9 +55,10 @@ const useApi: () => ApiType = () => {
   const instance = createInstance(token);
 
   return {
-    ...addGeneralApi(instance),
-    ...addTeamsApi(instance),
-    ...addUsersApi(instance),
+    fundsApi: buildFundsApi(instance),
+    generalApi: addGeneralApi(instance),
+    teamsApi: buildTeamsApi(instance),
+    usersApi: addUsersApi(instance),
     formatError
   };
 };

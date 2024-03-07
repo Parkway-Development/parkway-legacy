@@ -23,7 +23,7 @@ router.post('/', addTeam)
 router.get('/', getAll)
 
 //Get team by ID
-router.get('/id/:id', getById)
+router.get('/:id', getById)
 
 //Get teams by team name
 router.get('/name/:name', getByName)

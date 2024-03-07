@@ -13,7 +13,10 @@ const EditUserProfilePage = () => {
   const id = params.id;
 
   const queryClient = useQueryClient();
-  const { getUserProfileById, formatError, updateUserProfile } = useApi();
+  const {
+    usersApi: { getUserProfileById, updateUserProfile },
+    formatError
+  } = useApi();
 
   const { isPending, mutate } = useMutation({
     mutationFn: updateUserProfile
