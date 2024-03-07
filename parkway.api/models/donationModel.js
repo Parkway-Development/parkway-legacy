@@ -19,7 +19,6 @@ const donationSchema = new mongoose.Schema({
         default: 'Unassigned'
     },
     profile: {
-        required: false,
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Profile'
     }

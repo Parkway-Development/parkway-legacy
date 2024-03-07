@@ -1,15 +1,13 @@
 const mongoose = require('mongoose');
 
-const fundSchema = new mongoose.Schema({
+const accountSchema = new mongoose.Schema({
     name: {
         type: String,
-        required: true,
-        unique: true
+        required: true
     },
     description: {
         type: String,
-        required: false,
-        default: 'New Fund'
+        default: 'New Account'
     },
     targetAmount: {
         type: Number,
@@ -21,10 +19,9 @@ const fundSchema = new mongoose.Schema({
         required: true,
         default: 0
     },
-    notes: {
-        type: String,
-        required: false
-    }
+    notes: [ 
+        String 
+    ]
     });
 
-module.exports = mongoose.model('Fund', fundSchema, 'funds')
+module.exports = mongoose.model('Account', accountSchema, 'accounts')

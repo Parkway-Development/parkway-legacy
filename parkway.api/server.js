@@ -6,22 +6,22 @@ const Grid = require('gridfs-stream');
 const Multer = require('multer');
 const conn = mongoose.connection;
 
-const userRoutes = require('./routes/user');
-const profileRoutes = require('./routes/profile');
-const settingRoutes = require('./routes/setting');
-const teamRoutes = require('./routes/team');
-const assetRoutes = require('./routes/asset');
-const budgetRoutes = require('./routes/budget');
-const donationRoutes = require('./routes/donation');
-const expenseRoutes = require('./routes/expense');
-const fundRoutes = require('./routes/fund');
-const liabilityRoutes = require('./routes/liability');
+const userRoutes = require('./routes/users');
+const profileRoutes = require('./routes/profiles');
+const settingRoutes = require('./routes/settings');
+const teamRoutes = require('./routes/teams');
+const assetRoutes = require('./routes/assets');
+const budgetRoutes = require('./routes/budgets');
+const donationRoutes = require('./routes/donations');
+const expenseRoutes = require('./routes/expenses');
+const accountRoutes = require('./routes/accounts');
+const liabilityRoutes = require('./routes/liabilities');
 const payrollRoutes = require('./routes/payroll');
-const pledgeRoutes = require('./routes/pledge');
-const vendorRoutes = require('./routes/vendor');
+const pledgeRoutes = require('./routes/pledges');
+const vendorRoutes = require('./routes/vendors');
 //const clientRoutes = require('./routes/client');
 const platformRoutes = require('./routes/platform');
-const songRoutes = require('./routes/song');
+const songRoutes = require('./routes/songs');
 
 const { Profile } = require('./models/profileModel');
 
@@ -42,22 +42,22 @@ app.use((req, res, next)  => {
 app.use(express.json());
 
 //Routes
-app.use('/api/user', userRoutes);
-app.use('/api/profile', profileRoutes);
-app.use('/api/setting', settingRoutes);
-app.use('/api/team', teamRoutes);
-app.use('/api/asset', assetRoutes);
-app.use('/api/budget', budgetRoutes);
-app.use('/api/donation', donationRoutes);
-app.use('/api/expense', expenseRoutes);
-app.use('/api/fund', fundRoutes);
-app.use('/api/liability', liabilityRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/profiles', profileRoutes);
+app.use('/api/settings', settingRoutes);
+app.use('/api/teams', teamRoutes);
+app.use('/api/assets', assetRoutes);
+app.use('/api/budgets', budgetRoutes);
+app.use('/api/donations', donationRoutes);
+app.use('/api/expenses', expenseRoutes);
+app.use('/api/accounts', accountRoutes);
+app.use('/api/liabilities', liabilityRoutes);
 app.use('/api/payroll', payrollRoutes);
-app.use('/api/pledge', pledgeRoutes);
-app.use('/api/vendor', vendorRoutes);
-//app.use('/api/client', clientRoutes);
+app.use('/api/pledges', pledgeRoutes);
+app.use('/api/vendors', vendorRoutes);
+//app.use('/api/clients', clientRoutes);
 app.use('/api/platform', platformRoutes);
-app.use('/api/song', songRoutes);
+app.use('/api/songs', songRoutes);
 
 // Catch-all route for undefined paths
 app.use('*', (req, res) => {
