@@ -10,10 +10,13 @@ const EditTeamPage = () => {
   const id = params.id;
 
   const queryClient = useQueryClient();
-  const { getTeamById, formatError, updateTeam } = useApi();
+  const {
+    teamsApi: { getById, update },
+    formatError
+  } = useApi();
 
   const { isPending, mutate } = useMutation({
-    mutationFn: updateTeam
+    mutationFn: update
   });
 
   const {
@@ -22,7 +25,7 @@ const EditTeamPage = () => {
     error
   } = useQuery({
     enabled: id !== undefined,
-    queryFn: getTeamById(id!),
+    queryFn: getById(id!),
     queryKey: buildQueryKey('teams', id ?? '')
   });
 

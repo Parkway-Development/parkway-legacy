@@ -81,13 +81,11 @@ const signupUser = async (req, res) => {
         //check to see if there is a matching profile
         const profile = await Profile.findOne({email})
 
-        const response = {_id: newUser._id, email: email, token: token, profile: "No profile found."}
-
         if(profile){
-            response.profile = profile
+            return res.status(201).json({email: email, token: token, profile: profile});
         }
-        
-        return res.status(profile ? 200 : 201).json(response);
+
+        return res.status(200).json({email: email, token: token, message: 'No profile found'});
     } catch (error) {
         return res.status(400).json({error: error.message})
     }

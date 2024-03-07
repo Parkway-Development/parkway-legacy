@@ -1,19 +1,22 @@
 import { useAuth } from './useAuth.tsx';
 import axios, { AxiosError, AxiosResponse } from 'axios';
-import addTeamsApi, { TeamsApiType } from '../api/teamsApi.ts';
+import buildTeamsApi, { TeamsApiType } from '../api/teamsApi.ts';
 import addUsersApi, { UsersApiType } from '../api/userApi.ts';
-import addGeneralApi, { GeneralApiType } from '../api/generalApi.ts';
+import buildGeneralApi, { GeneralApiType } from '../api/generalApi.ts';
+import buildAccountsApi, { AccountsApiType } from '../api/accountsApi.ts';
 
 export type GenericResponse = Promise<AxiosResponse<any, any>>;
 export type TypedResponse<T> = Promise<Omit<AxiosResponse<T>, 'config'>>;
 
-export type ApiType = GeneralApiType &
-  TeamsApiType &
-  UsersApiType & {
-    formatError: (error: Error | null) => string;
-  };
+export type ApiType = {
+  formatError: (error: Error | null) => string;
+  accountsApi: AccountsApiType;
+  generalApi: GeneralApiType;
+  teamsApi: TeamsApiType;
+  usersApi: UsersApiType;
+};
 
-type QueryType = 'passwordSettings' | 'profiles' | 'teams';
+type QueryType = 'accounts' | 'passwordSettings' | 'profiles' | 'teams';
 
 export const buildQueryKey = (queryType: QueryType, id?: string) => {
   const result: any[] = [queryType];
@@ -39,7 +42,8 @@ const useApi: () => ApiType = () => {
         return 'Invalid session';
       }
 
-      const message = error.response?.data?.err;
+      const message =
+        error.response?.data?.error ?? error.response?.data?.message;
       if (typeof message === 'string') {
         return message;
       }
@@ -51,9 +55,10 @@ const useApi: () => ApiType = () => {
   const instance = createInstance(token);
 
   return {
-    ...addGeneralApi(instance),
-    ...addTeamsApi(instance),
-    ...addUsersApi(instance),
+    accountsApi: buildAccountsApi(instance),
+    generalApi: buildGeneralApi(instance),
+    teamsApi: buildTeamsApi(instance),
+    usersApi: addUsersApi(instance),
     formatError
   };
 };

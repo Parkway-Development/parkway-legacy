@@ -1,7 +1,13 @@
 import { expect, test, describe, vi } from 'vitest';
 import DirectoryPage from './DirectoryPage';
-import { buildMocks, mockApi, render, screen } from '../../test/utils';
-import useApi, { ApiType } from '../../hooks/useApi';
+import {
+  buildMocks,
+  mockApi,
+  MockApiType,
+  render,
+  screen
+} from '../../test/utils';
+import useApi from '../../hooks/useApi';
 import { UserProfile } from '../../types/UserProfile';
 
 vi.mock('../../hooks/useApi');
@@ -11,7 +17,7 @@ describe('Directory Page', () => {
     vi.resetAllMocks();
   });
 
-  const setup = (overrides: Partial<ApiType> = {}) => {
+  const setup = (overrides: MockApiType = {}) => {
     mockApi(useApi, {
       ...overrides
     });
@@ -25,14 +31,14 @@ describe('Directory Page', () => {
   });
 
   test('Shows no data message', async () => {
-    setup({ getUserProfiles: vi.fn().mockResolvedValue([]) });
+    setup({ usersApi: { getAll: vi.fn().mockResolvedValue([]) } });
     expect(await screen.findByText(/no data/i)).toBeVisible();
   });
 
   test('Shows error message', async () => {
     const error = 'unknown error message to display';
 
-    setup(buildMocks(['getUserProfiles', error]));
+    setup(buildMocks(['usersApi', 'getAll', error]));
 
     expect(await screen.findByText(error)).toBeVisible();
   });
@@ -59,7 +65,7 @@ describe('Directory Page', () => {
       }
     ];
 
-    const overrides = buildMocks(['getUserProfiles', data]);
+    const overrides = buildMocks(['usersApi', 'getAll', data]);
 
     setup(overrides);
 

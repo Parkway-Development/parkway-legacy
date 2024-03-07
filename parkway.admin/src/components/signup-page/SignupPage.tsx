@@ -39,7 +39,11 @@ const PasswordRequirement = ({ count, display }: PasswordRequirementProps) => {
 const SignupPage = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
-  const { getPasswordSettings, signup, formatError } = useApi();
+  const {
+    generalApi: { getPasswordSettings },
+    usersApi: { signup },
+    formatError
+  } = useApi();
   const { data: passwordSettings, isPending: passwordSettingsLoading } =
     useQuery({
       queryFn: getPasswordSettings,

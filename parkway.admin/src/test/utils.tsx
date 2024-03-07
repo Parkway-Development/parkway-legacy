@@ -3,6 +3,15 @@ import { afterEach, Mock, vi } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ApiType, TypedResponse } from '../hooks/useApi.ts';
+import { BaseApiType } from '../api/baseApi.ts';
+import { BaseEntity } from '../types/BaseEntity.ts';
+import { Account } from '../types/Account.ts';
+import { Team } from '../types/Team.ts';
+import { AccountsApiType } from '../api/accountsApi.ts';
+import { TeamsApiType } from '../api/teamsApi.ts';
+import { UsersApiType } from '../api/userApi.ts';
+import { GeneralApiType } from '../api/generalApi.ts';
+import { UserProfile } from '../types/UserProfile.ts';
 
 afterEach(() => {
   cleanup();
@@ -34,26 +43,49 @@ export { default as userEvent } from '@testing-library/user-event';
 // override render export
 export { customRender as render };
 
+const mockBaseApi = <T extends BaseEntity>(
+  overrides: Partial<BaseApiType<T>> = {}
+): BaseApiType<T> => ({
+  create: vi.fn(),
+  delete: vi.fn(),
+  getAll: vi.fn(),
+  getById: vi.fn(),
+  update: vi.fn(),
+  ...overrides
+});
+
+export type MockApiType = Partial<{
+  accountsApi: Partial<AccountsApiType>;
+  teamsApi: Partial<TeamsApiType>;
+  usersApi: Partial<UsersApiType>;
+  generalApi: Partial<GeneralApiType>;
+}>;
+
 export const mockApi = (
   useApiFn: () => ApiType,
-  overrides: Partial<ApiType> = {}
+  {
+    accountsApi,
+    teamsApi,
+    usersApi,
+    generalApi,
+    ...overrides
+  }: MockApiType = {}
 ) => {
   vi.mocked(useApiFn).mockReturnValue({
     formatError: (error) => error?.message ?? 'unknown error',
-    createTeam: vi.fn(),
-    createUserProfile: vi.fn(),
-    deleteUserProfile: vi.fn(),
-    deleteTeam: vi.fn(),
-    getPasswordSettings: vi.fn(),
-    getUserProfileById: vi.fn(),
-    getUserProfiles: vi.fn(),
-    getTeams: vi.fn(),
-    getTeamById: vi.fn(),
-    joinProfileAndUser: vi.fn(),
-    login: vi.fn(),
-    signup: vi.fn(),
-    updateTeam: vi.fn(),
-    updateUserProfile: vi.fn(),
+    usersApi: {
+      ...mockBaseApi<UserProfile>(usersApi),
+      joinProfileAndUser: vi.fn(),
+      login: vi.fn(),
+      signup: vi.fn(),
+      ...usersApi
+    },
+    accountsApi: mockBaseApi<Account>(accountsApi),
+    teamsApi: mockBaseApi<Team>(teamsApi),
+    generalApi: {
+      getPasswordSettings: vi.fn(),
+      ...generalApi
+    },
     ...overrides
   });
 };
@@ -61,13 +93,23 @@ export const mockApi = (
 type ExtractDataType<T> =
   T extends TypedResponse<infer TValue> ? TValue : never;
 
-const buildResolvedMock = <K extends keyof ApiType>(
+type ExtractReturnType<
+  T,
+  K1 extends keyof T,
+  K2 extends keyof T[K1]
+> = T[K1][K2] extends (...args: any[]) => any ? ReturnType<T[K1][K2]> : never;
+
+const buildResolvedMock = <
+  K extends keyof ApiType,
+  K2 extends keyof ApiType[K]
+>(
   _: K,
-  resolvedValue: ExtractDataType<ReturnType<ApiType[K]>>
+  __: K2,
+  resolvedValue: ExtractDataType<ExtractReturnType<ApiType, K, K2>>
 ): Mock => {
   const mock = vi.fn<
     any,
-    TypedResponse<ExtractDataType<ReturnType<ApiType[K]>>>
+    TypedResponse<ExtractDataType<ExtractReturnType<ApiType, K, K2>>>
   >();
   mock.mockResolvedValue({
     data: resolvedValue,
@@ -78,17 +120,29 @@ const buildResolvedMock = <K extends keyof ApiType>(
   return mock;
 };
 
-export const buildMocks = <K extends keyof ApiType>(
-  ...mocks: [K, ExtractDataType<ReturnType<ApiType[K]>> | string][]
-): Partial<ApiType> => {
-  const overrides: Partial<ApiType> = {};
+export const buildMocks = <
+  K1 extends keyof ApiType,
+  K2 extends keyof ApiType[K1]
+>(
+  ...mocks: [
+    K1,
+    K2,
+    ExtractDataType<ExtractReturnType<ApiType, K1, K2>> | string
+  ][]
+): MockApiType => {
+  const overrides: MockApiType = {
+    generalApi: {},
+    usersApi: {}
+  };
 
-  mocks.forEach(([key, data]) => {
+  mocks.forEach(([key, key2, data]) => {
     // noinspection SuspiciousTypeOfGuard
     if (typeof data === 'string') {
-      overrides[key] = vi.fn().mockRejectedValue({ message: data });
+      // @ts-ignore
+      overrides[key][key2] = vi.fn().mockRejectedValue({ message: data });
     } else {
-      overrides[key] = buildResolvedMock(key, data);
+      // @ts-ignore
+      overrides[key][key2] = buildResolvedMock(key, key2, data);
     }
   });
 

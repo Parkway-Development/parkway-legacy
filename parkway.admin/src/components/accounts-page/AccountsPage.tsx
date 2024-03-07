@@ -1,72 +1,73 @@
-import { Team } from '../../types/Team.ts';
+import { Account } from '../../types/Account.ts';
 import useApi, { buildQueryKey } from '../../hooks/useApi.ts';
 import { useQueryClient } from '@tanstack/react-query';
-import UserDisplayById from '../user-display/UserDisplayById.tsx';
 import BaseDataTablePage from '../base-data-table-page/BaseDataTablePage.tsx';
 import useColumns, { OrderedColumnsType } from '../../hooks/useColumns.tsx';
 
-const teamColumns: OrderedColumnsType<Team> = [
+const teamColumns: OrderedColumnsType<Account> = [
   {
     title: 'Name',
     dataIndex: 'name',
-    width: 200,
     key: 'name',
     displayOrder: 1
   },
   {
-    title: 'Leader',
-    width: 200,
-    dataIndex: 'leader',
-    render: (value: Team['leader']) => <UserDisplayById id={value} />,
+    title: 'Description',
+    dataIndex: 'description',
     key: 'leader',
     displayOrder: 2
   },
   {
-    title: 'Members',
-    width: 50,
-    dataIndex: 'members',
-    align: 'center',
-    render: (value: Team['members']) => value.length,
-    key: 'members',
+    title: 'Target Amount',
+    dataIndex: 'targetAmount',
+    align: 'right',
+    key: 'targetAmount',
     displayOrder: 3
   },
   {
-    title: 'Description',
-    dataIndex: 'description',
-    key: 'description',
+    title: 'Current Amount',
+    dataIndex: 'currentAmount',
+    key: 'currentAmount',
+    align: 'right',
     displayOrder: 4
+  },
+  {
+    title: 'Notes',
+    dataIndex: 'notes',
+    key: 'notes',
+    displayOrder: 5
   }
 ];
 
-const TeamsPage = () => {
+const AccountsPage = () => {
   const queryClient = useQueryClient();
-  const queryKey = buildQueryKey('teams');
+  const queryKey = buildQueryKey('accounts');
   const {
-    teamsApi: { delete: deleteFn, getAll }
+    accountsApi: { delete: deleteFn, getAll }
   } = useApi();
 
   const handleDelete = () => {
     queryClient.invalidateQueries({
-      queryKey: buildQueryKey('teams')
+      queryKey
     });
   };
 
   const { columns } = useColumns({
     columns: teamColumns,
-    columnType: 'teamsPage',
+    columnType: 'accountsPage',
     deleteAction: { deleteFn, handleDelete },
-    editLink: ({ _id }) => `/teams/${_id}/edit`
+    editLink: ({ _id }) => `/accounts/${_id}/edit`
   });
 
   return (
     <BaseDataTablePage
-      addLink="/teams/add"
+      addLink="/accounts/add"
       queryFn={getAll}
       queryKey={queryKey}
       columns={columns}
-      title="Teams"
+      title="Accounts"
     />
   );
 };
 
-export default TeamsPage;
+export default AccountsPage;

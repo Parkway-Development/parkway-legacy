@@ -4,6 +4,7 @@
     justify-content: center;
     align-items: center;
     background-color: lightgray;
+    min-height: 100vh;
 }
 
 .card {
@@ -13,4 +14,47 @@
 
 .email {
     margin: 0 0 1em 0;
+}
+
+.createProfile {
+    text-align: center;
+
+    p {
+        margin-bottom: 0;
+    }
+}
+
+.verifyMatch {
+    margin: 2em 0;
+
+    .header {
+        text-align: center;
+    }
+
+    table {
+        border-collapse: collapse;
+        margin: 0 auto;
+
+        thead th {
+            padding-bottom: 1em;
+        }
+
+        tfoot td {
+            text-align: center;
+            padding-top: 1em;
+        }
+    }
+
+    .tableFooter {
+        display: flex;
+        justify-content: space-evenly;
+    }
+}
+
+.validColumn {
+    display: flex;
+    border-left: 1px solid #000;
+    margin-left: 1em;
+    padding-left: 1em;
+    gap: 1em;
 }

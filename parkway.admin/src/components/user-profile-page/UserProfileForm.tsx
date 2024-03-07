@@ -13,7 +13,7 @@ export type UserProfileFormFields = Omit<
   '_id' | 'teams' | 'family'
 >;
 
-type TeamFormProps = {
+type UserProfileFormProps = {
   isSaving: boolean;
   initialValues?: UserProfileFormFields;
   onFinish: (values: UserProfileFormFields) => void;
@@ -57,7 +57,7 @@ export const transformFieldsToPayload = (
   applicationRole: fields.applicationRole
 });
 
-const addProfileInitialValues: UserProfileFormFields = {
+export const addProfileInitialValues: UserProfileFormFields = {
   firstName: '',
   lastName: '',
   applicationRole: 'none',
@@ -73,7 +73,7 @@ const UserProfileForm = ({
   submitText = 'Submit',
   cancelText = 'Cancel',
   isMyProfile
-}: TeamFormProps) => {
+}: UserProfileFormProps) => {
   const [form] = Form.useForm<UserProfileFormFields>();
 
   const initial = initialValues

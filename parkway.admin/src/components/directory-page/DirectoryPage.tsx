@@ -154,7 +154,9 @@ const userProfileColumns: OrderedColumnsType<UserProfile> = [
 
 const DirectoryPage = () => {
   const queryClient = useQueryClient();
-  const { deleteUserProfile, getUserProfiles } = useApi();
+  const {
+    usersApi: { delete: deleteFn, getAll }
+  } = useApi();
 
   const handleDelete = () => {
     queryClient.invalidateQueries({
@@ -165,13 +167,13 @@ const DirectoryPage = () => {
   const { columns } = useColumns({
     columns: userProfileColumns,
     columnType: 'directoryPage',
-    deleteAction: { deleteFn: deleteUserProfile, handleDelete },
+    deleteAction: { deleteFn, handleDelete },
     editLink: ({ _id }) => `/profiles/${_id}/edit`
   });
 
   return (
     <BaseDataTablePage
-      queryFn={getUserProfiles}
+      queryFn={getAll}
       queryKey={buildQueryKey('profiles')}
       columns={columns}
       title="Directory"

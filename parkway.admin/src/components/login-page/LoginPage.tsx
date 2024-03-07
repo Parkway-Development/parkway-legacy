@@ -11,7 +11,10 @@ import ProfileVerification from '../profile-verification/ProfileVerification.tsx
 const LoginPage = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
-  const { login: loginFn, formatError } = useApi();
+  const {
+    usersApi: { login: loginFn },
+    formatError
+  } = useApi();
   const { mutate, error, isPending } = useMutation({ mutationFn: loginFn });
   const [loginResponse, setLoginResponse] = useState<InternalLoginResponse>();
 

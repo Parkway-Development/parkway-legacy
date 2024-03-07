@@ -3,11 +3,12 @@ import SignupPage, { DefaultPasswordSettings } from './SignupPage';
 import {
   buildMocks,
   mockApi,
+  MockApiType,
   render,
   screen,
   userEvent
 } from '../../test/utils';
-import useApi, { ApiType } from '../../hooks/useApi';
+import useApi from '../../hooks/useApi';
 
 vi.mock('../../hooks/useAuth', () => ({
   useAuth: () => ({
@@ -21,9 +22,13 @@ describe('Signup Page', () => {
     vi.resetAllMocks();
   });
 
-  const setup = (overrides: Partial<ApiType> = {}) => {
+  const setup = (overrides: MockApiType = {}) => {
     mockApi(useApi, {
-      ...buildMocks(['getPasswordSettings', DefaultPasswordSettings]),
+      ...buildMocks([
+        'generalApi',
+        'getPasswordSettings',
+        DefaultPasswordSettings
+      ]),
       ...overrides
     });
 
@@ -77,7 +82,7 @@ describe('Signup Page', () => {
 
   test('Display email already exists error', async () => {
     const error = 'Email already exists';
-    const overrides = buildMocks(['signup', error]);
+    const overrides = buildMocks(['usersApi', 'signup', error]);
     setup(overrides);
 
     await userEvent.type(screen.getByLabelText(/email/i), 'test@test.com');
@@ -87,15 +92,16 @@ describe('Signup Page', () => {
       'abcd1234#ABC'
     );
 
-    expect(overrides.signup).not.toHaveBeenCalled();
+    expect(overrides.usersApi!.signup).not.toHaveBeenCalled();
     expect(screen.getByRole('button', { name: /signup/i })).toBeEnabled();
     await userEvent.click(screen.getByRole('button', { name: /signup/i }));
     expect(await screen.findByText(/email already exists/i)).toBeVisible();
-    expect(overrides.signup).toHaveBeenCalledOnce();
+    expect(overrides.usersApi!.signup).toHaveBeenCalledOnce();
   });
 
   test('Can submit form', async () => {
     const overrides = buildMocks([
+      'usersApi',
       'signup',
       { email: 'test@test.com', token: '1234' }
     ]);
@@ -108,8 +114,8 @@ describe('Signup Page', () => {
       'abcd1234#ABC'
     );
 
-    expect(overrides.signup).not.toHaveBeenCalled();
+    expect(overrides.usersApi!.signup).not.toHaveBeenCalled();
     await userEvent.click(screen.getByRole('button', { name: /signup/i }));
-    expect(overrides.signup).toHaveBeenCalledOnce();
+    expect(overrides.usersApi!.signup).toHaveBeenCalledOnce();
   });
 });

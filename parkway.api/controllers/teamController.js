@@ -7,7 +7,7 @@ const addTeam = async (req, res) => {
     const team = new Team({
         name: req.body.name,
         description: req.body.description,
-        leaderId: req.body.leaderId,
+        leader: req.body.leader,
         members: req.body.members
     })
 
@@ -85,12 +85,12 @@ const deleteTeam = async (req, res) => {
     }
 
     //If the team has members, update their profiles to remove the team
-    const { leaderId, members } = team;
+    const { leader, members } = team;
 
     // Update the leader's profile
-    if (leaderId) {
+    if (leader) {
         await Profile.findByIdAndUpdate(
-            leaderId,
+            leader,
             { $pull: { teams: id } },
             { new: true }
         );
@@ -118,29 +118,29 @@ const deleteTeam = async (req, res) => {
 //Add a leader. If the leader is already a member, remove them from the members list
 const addLeader = async (req, res) => {
     const { id } = req.params;
-    const { leaderId } = req.body;
+    const { leader } = req.body;
 
     if(!mongoose.Types.ObjectId.isValid(id)){
         return res.status(404).json({error: 'No such team.'})
     }
-    if(!mongoose.Types.ObjectId.isValid(leaderId)){
+    if(!mongoose.Types.ObjectId.isValid(leader)){
         return res.status(404).json({error: 'No such profile.'})
     }
 
     //If the leader is already a member, remove them from the members list
     const team = await Team.findById(id);
 
-    if(team.members.includes(leaderId)){
-            await Team.findByIdAndUpdate(id, {$pull: {members: leaderId}});
+    if(team.members.includes(leader)){
+            await Team.findByIdAndUpdate(id, {$pull: {members: leader}});
     }
 
     //Update the leader's profile to add the team
-    const updatedProfile = await Profile.findByIdAndUpdate({_id: leaderId},{$addToSet: {teams: id}},{new: true})
+    const updatedProfile = await Profile.findByIdAndUpdate({_id: leader},{$addToSet: {teams: id}},{new: true})
 
     if(!updatedProfile){ return res.status(404).json({message: "No such profile found."}) }
 
     //Update the team to add the leader
-    const updatedTeam = await Team.findByIdAndUpdate({_id: id},{leaderId: leaderId},{new: true});
+    const updatedTeam = await Team.findByIdAndUpdate({_id: id},{leader: leader},{new: true});
 
     if(!updatedTeam){ return res.status(404).json({message: "No such team found."}) }
 
@@ -159,19 +159,19 @@ const removeLeader = async (req, res) => {
         return res.status(404).json({ message: "No such team found." });
     }
 
-    const { leaderId } = team;
-    if (!leaderId) {
+    const { leader } = team;
+    if (!leader) {
         return res.status(404).json({ message: "No leader assigned for this team." });
     }
 
     const updatedTeam = await Team.findByIdAndUpdate(
         teamId,
-        {$unset: {leaderId: ""}},
+        {$unset: {leader: ""}},
         {new: true}
     );
 
     const updatedProfile = await Profile.findByIdAndUpdate(
-        leaderId,
+        leader,
         { $pull: { teams: teamId } },
         { new: true }
     );
@@ -213,10 +213,10 @@ const addMembers = async (req, res) => {
             return res.status(404).json({ message: "No such team found." });
         }
 
-        // Filter out any member IDs that match the team's leaderId and add them to rejected members if necessary
+        // Filter out any member IDs that match the team's leader and add them to rejected members if necessary
         const nonLeaderMembers = [];
         validMemberIds.forEach(id => {
-            if (id.toString() === team.leaderId.toString()) {
+            if (id.toString() === team.leader.toString()) {
                 rejectedMembers.push({ memberId: id, reason: 'Member is the team leader' });
             } else {
                 nonLeaderMembers.push(id);
@@ -277,10 +277,10 @@ const removeMembers = async (req, res) => {
             return res.status(404).json({ message: "No such team found." });
         }
 
-        // Filter out any member IDs that match the team's leaderId and add them to rejected members if necessary
+        // Filter out any member IDs that match the team's leader and add them to rejected members if necessary
         const nonLeaderMembers = [];
         validMemberIds.forEach(id => {
-            if (id.toString() === team.leaderId.toString()) {
+            if (id.toString() === team.leader.toString()) {
                 rejectedMembers.push({ memberId: id, reason: 'Member is the team leader' });
             } else {
                 nonLeaderMembers.push(id);

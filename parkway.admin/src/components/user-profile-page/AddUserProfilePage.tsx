@@ -10,9 +10,12 @@ import { UserProfile } from '../../types/UserProfile.ts';
 
 const AddUserProfilePage = () => {
   const queryClient = useQueryClient();
-  const { createUserProfile, formatError } = useApi();
+  const {
+    usersApi: { create },
+    formatError
+  } = useApi();
   const { isPending, mutate } = useMutation({
-    mutationFn: createUserProfile
+    mutationFn: create
   });
   const [api, contextHolder] = notification.useNotification();
   const navigate = useNavigate();
