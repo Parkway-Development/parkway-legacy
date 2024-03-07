@@ -15,7 +15,7 @@ export interface PasswordSettings {
 
 const buildGeneralApi = (instance: AxiosInstance): GeneralApiType => ({
   getPasswordSettings: () =>
-    instance.get<PasswordSettings>('/api/setting/password')
+    instance.get<PasswordSettings>('/api/settings/password')
 });
 
 export default buildGeneralApi;

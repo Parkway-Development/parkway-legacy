@@ -34,11 +34,11 @@ function App() {
             items={[
               {
                 key: 1,
-                label: <Link to="/directory">Directory</Link>
+                label: <Link to="/accounts">Accounts</Link>
               },
               {
                 key: 2,
-                label: <Link to="/funds">Funds</Link>
+                label: <Link to="/directory">Directory</Link>
               },
               {
                 key: 3,

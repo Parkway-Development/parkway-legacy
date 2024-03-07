@@ -21,12 +21,12 @@ export interface JoinProfileInput {
 }
 
 const addUsersApi = (instance: AxiosInstance): UsersApiType => ({
-  ...buildBaseApi<UserProfile>(instance, '/api/profile'),
+  ...buildBaseApi<UserProfile>(instance, '/api/profiles'),
   joinProfileAndUser: ({ profileId, ...payload }) =>
-    instance.post<UserProfile>(`/api/profile/join/${profileId}`, payload),
-  login: (payload) => instance.post<LoginResponse>('/api/user/login', payload),
+    instance.post<UserProfile>(`/api/profiles/join/${profileId}`, payload),
+  login: (payload) => instance.post<LoginResponse>('/api/users/login', payload),
   signup: (payload) =>
-    instance.post<LoginResponse>('/api/user/connect', payload)
+    instance.post<LoginResponse>('/api/users/connect', payload)
 });
 
 export default addUsersApi;

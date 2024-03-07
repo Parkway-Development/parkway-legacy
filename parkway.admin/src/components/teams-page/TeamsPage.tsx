@@ -40,7 +40,7 @@ const teamColumns: OrderedColumnsType<Team> = [
 
 const TeamsPage = () => {
   const queryClient = useQueryClient();
-  const queryKey = buildQueryKey('funds');
+  const queryKey = buildQueryKey('teams');
   const {
     teamsApi: { delete: deleteFn, getAll }
   } = useApi();

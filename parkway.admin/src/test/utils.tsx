@@ -5,9 +5,9 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ApiType, TypedResponse } from '../hooks/useApi.ts';
 import { BaseApiType } from '../api/baseApi.ts';
 import { BaseEntity } from '../types/BaseEntity.ts';
-import { Fund } from '../types/Fund.ts';
+import { Account } from '../types/Account.ts';
 import { Team } from '../types/Team.ts';
-import { FundsApiType } from '../api/fundsApi.ts';
+import { AccountsApiType } from '../api/accountsApi.ts';
 import { TeamsApiType } from '../api/teamsApi.ts';
 import { UsersApiType } from '../api/userApi.ts';
 import { GeneralApiType } from '../api/generalApi.ts';
@@ -55,7 +55,7 @@ const mockBaseApi = <T extends BaseEntity>(
 });
 
 export type MockApiType = Partial<{
-  fundsApi: Partial<FundsApiType>;
+  accountsApi: Partial<AccountsApiType>;
   teamsApi: Partial<TeamsApiType>;
   usersApi: Partial<UsersApiType>;
   generalApi: Partial<GeneralApiType>;
@@ -63,7 +63,13 @@ export type MockApiType = Partial<{
 
 export const mockApi = (
   useApiFn: () => ApiType,
-  { fundsApi, teamsApi, usersApi, generalApi, ...overrides }: MockApiType = {}
+  {
+    accountsApi,
+    teamsApi,
+    usersApi,
+    generalApi,
+    ...overrides
+  }: MockApiType = {}
 ) => {
   vi.mocked(useApiFn).mockReturnValue({
     formatError: (error) => error?.message ?? 'unknown error',
@@ -74,7 +80,7 @@ export const mockApi = (
       signup: vi.fn(),
       ...usersApi
     },
-    fundsApi: mockBaseApi<Fund>(fundsApi),
+    accountsApi: mockBaseApi<Account>(accountsApi),
     teamsApi: mockBaseApi<Team>(teamsApi),
     generalApi: {
       getPasswordSettings: vi.fn(),

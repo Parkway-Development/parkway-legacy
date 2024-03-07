@@ -3,20 +3,20 @@ import axios, { AxiosError, AxiosResponse } from 'axios';
 import buildTeamsApi, { TeamsApiType } from '../api/teamsApi.ts';
 import addUsersApi, { UsersApiType } from '../api/userApi.ts';
 import buildGeneralApi, { GeneralApiType } from '../api/generalApi.ts';
-import buildFundsApi, { FundsApiType } from '../api/fundsApi.ts';
+import buildAccountsApi, { AccountsApiType } from '../api/accountsApi.ts';
 
 export type GenericResponse = Promise<AxiosResponse<any, any>>;
 export type TypedResponse<T> = Promise<Omit<AxiosResponse<T>, 'config'>>;
 
 export type ApiType = {
   formatError: (error: Error | null) => string;
-  fundsApi: FundsApiType;
+  accountsApi: AccountsApiType;
   generalApi: GeneralApiType;
   teamsApi: TeamsApiType;
   usersApi: UsersApiType;
 };
 
-type QueryType = 'funds' | 'passwordSettings' | 'profiles' | 'teams';
+type QueryType = 'accounts' | 'passwordSettings' | 'profiles' | 'teams';
 
 export const buildQueryKey = (queryType: QueryType, id?: string) => {
   const result: any[] = [queryType];
@@ -55,7 +55,7 @@ const useApi: () => ApiType = () => {
   const instance = createInstance(token);
 
   return {
-    fundsApi: buildFundsApi(instance),
+    accountsApi: buildAccountsApi(instance),
     generalApi: buildGeneralApi(instance),
     teamsApi: buildTeamsApi(instance),
     usersApi: addUsersApi(instance),
