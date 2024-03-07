@@ -15,13 +15,13 @@ const MyProfilePage = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const {
-    usersApi: { getUserProfileById, updateUserProfile },
+    usersApi: { getById, update },
     formatError
   } = useApi();
   const profileId = user?.profileId;
 
   const { isPending, mutate } = useMutation({
-    mutationFn: updateUserProfile
+    mutationFn: update
   });
 
   const {
@@ -30,7 +30,7 @@ const MyProfilePage = () => {
     error
   } = useQuery({
     enabled: profileId !== undefined,
-    queryFn: getUserProfileById(profileId!),
+    queryFn: getById(profileId!),
     queryKey: buildQueryKey('profiles', profileId ?? '')
   });
 

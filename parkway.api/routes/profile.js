@@ -24,7 +24,7 @@ router.post('/', addProfile)
 router.get('/', getAll)
 
 //Get profile by ID
-router.get('/id/:id', getById)
+router.get('/:id', getById)
 
 //Get profiles by last name
 router.get('/lastname/:lastName', getByLastName)

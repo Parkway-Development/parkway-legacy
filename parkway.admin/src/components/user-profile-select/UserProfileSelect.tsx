@@ -32,10 +32,10 @@ const UserProfileSelect = ({
     initialValue
   );
   const {
-    usersApi: { getUserProfiles }
+    usersApi: { getAll }
   } = useApi();
   const { isPending, data: response } = useQuery({
-    queryFn: getUserProfiles,
+    queryFn: getAll,
     queryKey: buildQueryKey('profiles')
   });
 

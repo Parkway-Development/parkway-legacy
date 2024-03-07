@@ -14,12 +14,12 @@ const EditUserProfilePage = () => {
 
   const queryClient = useQueryClient();
   const {
-    usersApi: { getUserProfileById, updateUserProfile },
+    usersApi: { getById, update },
     formatError
   } = useApi();
 
   const { isPending, mutate } = useMutation({
-    mutationFn: updateUserProfile
+    mutationFn: update
   });
 
   const {
@@ -28,7 +28,7 @@ const EditUserProfilePage = () => {
     error
   } = useQuery({
     enabled: id !== undefined,
-    queryFn: getUserProfileById(id!),
+    queryFn: getById(id!),
     queryKey: buildQueryKey('profiles', id ?? '')
   });
 

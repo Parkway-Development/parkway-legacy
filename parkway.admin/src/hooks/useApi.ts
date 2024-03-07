@@ -2,7 +2,7 @@ import { useAuth } from './useAuth.tsx';
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import buildTeamsApi, { TeamsApiType } from '../api/teamsApi.ts';
 import addUsersApi, { UsersApiType } from '../api/userApi.ts';
-import addGeneralApi, { GeneralApiType } from '../api/generalApi.ts';
+import buildGeneralApi, { GeneralApiType } from '../api/generalApi.ts';
 import buildFundsApi, { FundsApiType } from '../api/fundsApi.ts';
 
 export type GenericResponse = Promise<AxiosResponse<any, any>>;
@@ -56,7 +56,7 @@ const useApi: () => ApiType = () => {
 
   return {
     fundsApi: buildFundsApi(instance),
-    generalApi: addGeneralApi(instance),
+    generalApi: buildGeneralApi(instance),
     teamsApi: buildTeamsApi(instance),
     usersApi: addUsersApi(instance),
     formatError

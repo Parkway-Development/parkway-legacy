@@ -11,6 +11,7 @@ import { FundsApiType } from '../api/fundsApi.ts';
 import { TeamsApiType } from '../api/teamsApi.ts';
 import { UsersApiType } from '../api/userApi.ts';
 import { GeneralApiType } from '../api/generalApi.ts';
+import { UserProfile } from '../types/UserProfile.ts';
 
 afterEach(() => {
   cleanup();
@@ -67,14 +68,10 @@ export const mockApi = (
   vi.mocked(useApiFn).mockReturnValue({
     formatError: (error) => error?.message ?? 'unknown error',
     usersApi: {
-      createUserProfile: vi.fn(),
-      deleteUserProfile: vi.fn(),
-      getUserProfileById: vi.fn(),
-      getUserProfiles: vi.fn(),
+      ...mockBaseApi<UserProfile>(usersApi),
       joinProfileAndUser: vi.fn(),
       login: vi.fn(),
       signup: vi.fn(),
-      updateUserProfile: vi.fn(),
       ...usersApi
     },
     fundsApi: mockBaseApi<Fund>(fundsApi),

@@ -130,7 +130,7 @@ const ProfileVerification = ({ loginResponse }: ProfileVerificationProps) => {
     }
   );
   const {
-    usersApi: { createUserProfile, joinProfileAndUser },
+    usersApi: { create, joinProfileAndUser },
     formatError
   } = useApi();
   const {
@@ -146,7 +146,7 @@ const ProfileVerification = ({ loginResponse }: ProfileVerificationProps) => {
     mutate: createProfile,
     error: createProfileError
   } = useMutation({
-    mutationFn: createUserProfile
+    mutationFn: create
   });
 
   const handleJoin = (profileId: string) => {
