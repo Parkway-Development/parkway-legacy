@@ -16,7 +16,7 @@ export type ApiType = {
   usersApi: UsersApiType;
 };
 
-type QueryType = 'passwordSettings' | 'profiles' | 'teams';
+type QueryType = 'funds' | 'passwordSettings' | 'profiles' | 'teams';
 
 export const buildQueryKey = (queryType: QueryType, id?: string) => {
   const result: any[] = [queryType];

@@ -13,22 +13,22 @@ const{
 } = require('../controllers/fundController')
 
 //Post a fund
-router.post('/funds', addFund)
+router.post('/', addFund)
 
 //Get all funds
-router.get('/funds', getAllFunds)
+router.get('/', getAllFunds)
 
 //Get fund by ID
-router.get('/funds/:id', getFundById)
+router.get('/:id', getFundById)
 
 //Get a fund by name
-router.get('/funds/name/:name', getFundsByName)
+router.get('/name/:name', getFundsByName)
 
 //Update a fund by ID
-router.patch('/funds/:id', updateFund)
+router.patch('/:id', updateFund)
 
 //Delete a fund by ID
-router.delete('/funds/:id', deleteFund)
+router.delete('/:id', deleteFund)
 
 router.use('*', (req, res) => {
     res.status(404).json({ message: 'Not Found' });

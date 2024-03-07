@@ -18,6 +18,7 @@ import AddUserProfilePage from './components/user-profile-page/AddUserProfilePag
 import EditUserProfilePage from './components/user-profile-page/EditUserProfilePage.tsx';
 import MyProfilePage from './components/user-profile-page/MyProfilePage.tsx';
 import NotFoundPage from './components/not-found-page/NotFoundPage.tsx';
+import FundsPage from './components/funds-page/FundsPage.tsx';
 
 const queryClient = new QueryClient();
 
@@ -38,6 +39,7 @@ createRoot(document.getElementById('root')!).render(
               }
             >
               <Route path="directory" element={<DirectoryPage />} />
+              <Route path="funds" element={<FundsPage />} />
               <Route path="profiles/add" element={<AddUserProfilePage />} />
               <Route path="profiles/me" element={<MyProfilePage />} />
               <Route

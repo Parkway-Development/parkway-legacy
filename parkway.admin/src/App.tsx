@@ -38,10 +38,14 @@ function App() {
               },
               {
                 key: 2,
-                label: <Link to="/giving">Giving</Link>
+                label: <Link to="/funds">Funds</Link>
               },
               {
                 key: 3,
+                label: <Link to="/giving">Giving</Link>
+              },
+              {
+                key: 4,
                 label: <Link to="/teams">Teams</Link>
               }
             ]}
