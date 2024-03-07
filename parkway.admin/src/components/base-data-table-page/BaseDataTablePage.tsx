@@ -2,9 +2,15 @@ import { Alert, Button, Empty, Spin, Table } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import styles from './BaseDataTablePage.module.css';
 import { Link, To } from 'react-router-dom';
-import useApi, { TypedResponse } from '../../hooks/useApi.ts';
-import { useQuery } from '@tanstack/react-query';
+import useApi, {
+  ApiType,
+  BaseApiTypes,
+  buildQueryKey,
+  TypedResponse
+} from '../../hooks/useApi.ts';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { BaseEntity } from '../../types/BaseEntity.ts';
+import useColumns, { OrderedColumnsType } from '../../hooks/useColumns.tsx';
 
 type BaseDataTablePageProps<T extends BaseEntity> =
   BaseDataTableListProps<T> & {
@@ -83,6 +89,58 @@ const BaseDataTableList = <T extends BaseEntity>({
         scroll={{ x: 'auto' }}
       />
     </div>
+  );
+};
+
+type BaseApiDataTablePageProps<
+  T extends BaseEntity,
+  TBaseApi extends keyof ApiType
+> = Pick<BaseDataTablePageProps<T>, 'title'> & {
+  queryKey: 'accounts' | 'teams' | 'profiles';
+  columns: OrderedColumnsType<T>;
+  baseApi: TBaseApi;
+};
+
+export const BaseApiDataTablePage = <
+  T extends BaseEntity,
+  TBaseApi extends keyof BaseApiTypes
+>({
+  queryKey: queryKeyProp,
+  columns: columnsProp,
+  baseApi,
+  title
+}: BaseApiDataTablePageProps<T, TBaseApi>) => {
+  const queryClient = useQueryClient();
+  const queryKey = buildQueryKey(queryKeyProp);
+  const apiResult = useApi();
+  const stuff = apiResult[baseApi];
+
+  const { delete: deleteFn, getAll } = stuff;
+
+  const handleDelete = () => {
+    queryClient.invalidateQueries({
+      queryKey
+    });
+  };
+
+  const { columns } = useColumns({
+    columns: columnsProp,
+    columnType: `${queryKeyProp}Page`,
+    deleteAction: { deleteFn, handleDelete },
+    editLink: ({ _id }) => `/${queryKeyProp}/${_id}/edit`
+  });
+
+  // @ts-ignore
+  const queryFn: () => TypedResponse<T[]> = getAll;
+
+  return (
+    <BaseDataTablePage<T>
+      addLink={`/${queryKey}/add`}
+      queryFn={queryFn}
+      queryKey={queryKey}
+      columns={columns}
+      title={title}
+    />
   );
 };
 

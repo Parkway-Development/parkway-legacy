@@ -4,12 +4,10 @@ import {
   memberStatusMapping,
   UserProfile
 } from '../../types/UserProfile.ts';
-import useApi, { buildQueryKey } from '../../hooks/useApi.ts';
-import BaseDataTablePage from '../base-data-table-page/BaseDataTablePage.tsx';
-import { useQueryClient } from '@tanstack/react-query';
+import { BaseApiDataTablePage } from '../base-data-table-page/BaseDataTablePage.tsx';
 import { CheckCircleOutlined } from '@ant-design/icons';
 import { translateMapping } from '../../utilities/mappingHelpers.ts';
-import useColumns, { OrderedColumnsType } from '../../hooks/useColumns.tsx';
+import { OrderedColumnsType } from '../../hooks/useColumns.tsx';
 
 const userProfileColumns: OrderedColumnsType<UserProfile> = [
   {
@@ -152,35 +150,13 @@ const userProfileColumns: OrderedColumnsType<UserProfile> = [
   }
 ];
 
-const DirectoryPage = () => {
-  const queryClient = useQueryClient();
-  const {
-    usersApi: { delete: deleteFn, getAll }
-  } = useApi();
-
-  const handleDelete = () => {
-    queryClient.invalidateQueries({
-      queryKey: buildQueryKey('profiles')
-    });
-  };
-
-  const { columns } = useColumns({
-    columns: userProfileColumns,
-    columnType: 'directoryPage',
-    deleteAction: { deleteFn, handleDelete },
-    editLink: ({ _id }) => `/profiles/${_id}/edit`
-  });
-
-  return (
-    <BaseDataTablePage
-      queryFn={getAll}
-      queryKey={buildQueryKey('profiles')}
-      columns={columns}
-      title="Directory"
-      addLink="/profiles/add"
-      addLinkTitle="Add Profile"
-    />
-  );
-};
+const DirectoryPage = () => (
+  <BaseApiDataTablePage
+    queryKey="profiles"
+    baseApi="usersApi"
+    columns={userProfileColumns}
+    title="Directory"
+  />
+);
 
 export default DirectoryPage;

@@ -1,10 +1,8 @@
 import { Account } from '../../types/Account.ts';
-import useApi, { buildQueryKey } from '../../hooks/useApi.ts';
-import { useQueryClient } from '@tanstack/react-query';
-import BaseDataTablePage from '../base-data-table-page/BaseDataTablePage.tsx';
-import useColumns, { OrderedColumnsType } from '../../hooks/useColumns.tsx';
+import { BaseApiDataTablePage } from '../base-data-table-page/BaseDataTablePage.tsx';
+import { OrderedColumnsType } from '../../hooks/useColumns.tsx';
 
-const teamColumns: OrderedColumnsType<Account> = [
+const accountColumns: OrderedColumnsType<Account> = [
   {
     title: 'Name',
     dataIndex: 'name',
@@ -39,35 +37,13 @@ const teamColumns: OrderedColumnsType<Account> = [
   }
 ];
 
-const AccountsPage = () => {
-  const queryClient = useQueryClient();
-  const queryKey = buildQueryKey('accounts');
-  const {
-    accountsApi: { delete: deleteFn, getAll }
-  } = useApi();
-
-  const handleDelete = () => {
-    queryClient.invalidateQueries({
-      queryKey
-    });
-  };
-
-  const { columns } = useColumns({
-    columns: teamColumns,
-    columnType: 'accountsPage',
-    deleteAction: { deleteFn, handleDelete },
-    editLink: ({ _id }) => `/accounts/${_id}/edit`
-  });
-
-  return (
-    <BaseDataTablePage
-      addLink="/accounts/add"
-      queryFn={getAll}
-      queryKey={queryKey}
-      columns={columns}
-      title="Accounts"
-    />
-  );
-};
+const AccountsPage = () => (
+  <BaseApiDataTablePage
+    queryKey="accounts"
+    baseApi="accountsApi"
+    columns={accountColumns}
+    title="Accounts"
+  />
+);
 
 export default AccountsPage;
