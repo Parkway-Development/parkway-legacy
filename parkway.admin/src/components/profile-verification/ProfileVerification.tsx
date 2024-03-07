@@ -11,12 +11,7 @@ import {
 import { useMutation } from '@tanstack/react-query';
 import useApi from '../../hooks/useApi.ts';
 import { useNavigate } from 'react-router-dom';
-import {
-  addProfileInitialValues,
-  transformFieldsToMyProfilePayload,
-  transformFieldsToPayload,
-  UserProfileFormFields
-} from '../user-profile-page/UserProfileForm.tsx';
+import { addProfileInitialValues } from '../user-profile-page/UserProfileForm.tsx';
 import { UserProfile } from '../../types/UserProfile.ts';
 import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
 
@@ -135,12 +130,7 @@ const ProfileVerification = ({ loginResponse }: ProfileVerificationProps) => {
       return result;
     }
   );
-  const {
-    createUserProfile,
-    formatError,
-    joinProfileAndUser,
-    updateUserProfile
-  } = useApi();
+  const { createUserProfile, formatError, joinProfileAndUser } = useApi();
   const {
     isPending: isJoining,
     mutate: performJoin,
@@ -157,14 +147,6 @@ const ProfileVerification = ({ loginResponse }: ProfileVerificationProps) => {
     mutationFn: createUserProfile
   });
 
-  const {
-    isPending: isUpdating,
-    mutate: updateProfile,
-    error: updateProfileError
-  } = useMutation({
-    mutationFn: updateUserProfile
-  });
-
   const handleJoin = (profileId: string) => {
     performJoin(
       { userId: user.id, profileId },
@@ -177,8 +159,13 @@ const ProfileVerification = ({ loginResponse }: ProfileVerificationProps) => {
     );
   };
 
-  const handleAddUserProfile = (fields: UserProfileFormFields) => {
-    const payload = transformFieldsToPayload(fields);
+  const createNewUserProfile = () => {
+    const payload = {
+      ...addProfileInitialValues,
+      firstName: 'NewUser',
+      lastName: user.email,
+      email: user.email
+    };
 
     createProfile(payload, {
       onSuccess: ({ data }: { data: UserProfile }) => {
@@ -189,12 +176,7 @@ const ProfileVerification = ({ loginResponse }: ProfileVerificationProps) => {
 
   useEffect(() => {
     if (!profile) {
-      handleAddUserProfile({
-        ...addProfileInitialValues,
-        firstName: 'NewUser',
-        lastName: user.email,
-        email: user.email
-      });
+      createNewUserProfile();
     }
   }, []);
 
@@ -219,8 +201,7 @@ const ProfileVerification = ({ loginResponse }: ProfileVerificationProps) => {
   const showError =
     (errorMessage && errorMessage !== 'No profile found') ||
     joinError !== null ||
-    createProfileError !== null ||
-    updateProfileError !== null;
+    createProfileError !== null;
 
   if (showError) {
     let error: string;
@@ -229,7 +210,6 @@ const ProfileVerification = ({ loginResponse }: ProfileVerificationProps) => {
       error = errorMessage;
     else if (joinError) error = formatError(joinError);
     else if (createProfileError) error = formatError(createProfileError);
-    else if (updateProfileError) error = formatError(updateProfileError);
     else error = 'Unexpected error finding profile';
 
     content = <Alert className={styles.error} message={error} type="error" />;
@@ -248,30 +228,21 @@ const ProfileVerification = ({ loginResponse }: ProfileVerificationProps) => {
       </Card>
     );
   } else {
-    const handleUpdateUserProfile = (fields: UserProfileFormFields) => {
-      const payload = transformFieldsToPayload(fields);
-
-      updateProfile(
-        { ...payload, _id: profile._id },
-        {
-          onSuccess: ({ data }: { data: UserProfile }) => {
-            handleJoin(data._id);
-          }
-        }
-      );
-    };
-
-    const handleSubmit = (values: UserProfileFormFields) => {
-      const payload = transformFieldsToMyProfilePayload(values);
-      handleUpdateUserProfile({ ...profile, ...payload, email: user.email });
-    };
-
     const validInputs = inputComparisons.reduce(
       (p, current) => (current.isValid ? p + 1 : p),
       0
     );
+
     const canValidate =
       validInputs === inputComparisons.length && validInputs > 0;
+
+    const handleValidate = () => {
+      if (canValidate) {
+        handleJoin(profile._id);
+      }
+    };
+
+    const processing = isJoining || isAdding;
 
     content = (
       <Card className={styles.verifyMatch}>
@@ -299,6 +270,7 @@ const ProfileVerification = ({ loginResponse }: ProfileVerificationProps) => {
                     onChange={handleInputChange}
                     name={field}
                     autoComplete="off"
+                    readOnly={processing}
                   />
                 </td>
                 <td className={styles.validColumn}>
@@ -320,13 +292,23 @@ const ProfileVerification = ({ loginResponse }: ProfileVerificationProps) => {
           </tbody>
           <tfoot>
             <tr>
-              <td>
-                <Button type="primary">Cancel</Button>
-              </td>
-              <td>
-                <Button type="primary" disabled={!canValidate}>
-                  Submit
-                </Button>
+              <td colSpan={2}>
+                {processing ? (
+                  <Spin />
+                ) : (
+                  <div className={styles.tableFooter}>
+                    <Button type="primary" onClick={createNewUserProfile}>
+                      Cancel
+                    </Button>
+                    <Button
+                      type="primary"
+                      onClick={handleValidate}
+                      disabled={!canValidate}
+                    >
+                      Submit
+                    </Button>
+                  </div>
+                )}
               </td>
             </tr>
           </tfoot>

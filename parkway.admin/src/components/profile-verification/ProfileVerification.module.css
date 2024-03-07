@@ -44,6 +44,11 @@
             padding-top: 1em;
         }
     }
+
+    .tableFooter {
+        display: flex;
+        justify-content: space-evenly;
+    }
 }
 
 .validColumn {
