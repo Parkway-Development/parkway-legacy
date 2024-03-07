@@ -1,5 +1,5 @@
 const express = require('express');
-const { requireAuthorization} = require("../auth");
+const { requireAuthorization} = require("../../auth");
 const router = express.Router();
 requireAuthorization(router);
 
@@ -9,7 +9,7 @@ const{
     getVendorById,
     updateVendor,
     deleteVendor,
-} = require('../controllers/vendorController')
+} = require('../../controllers/accounting/vendorController')
 
 //Post a vendor
 router.post('/vendor', addVendor)

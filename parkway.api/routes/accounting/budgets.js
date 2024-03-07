@@ -1,5 +1,5 @@
 const express = require('express');
-const { requireAuthorization} = require("../auth");
+const { requireAuthorization} = require("../../auth");
 const router = express.Router();
 requireAuthorization(router);
 
@@ -11,7 +11,7 @@ const{
     getBudgetsByFund,
     updateBudget,
     deleteBudget
-} = require('../controllers/budgetController')
+} = require('../../controllers/accounting/budgetController')
 
 //Post a budget
 router.post('/budgets', addBudget)

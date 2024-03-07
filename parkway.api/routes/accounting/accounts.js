@@ -1,5 +1,5 @@
 const express = require('express');
-const { requireAuthorization} = require("../auth");
+const { requireAuthorization} = require("../../auth");
 const router = express.Router();
 requireAuthorization(router);
 
@@ -10,7 +10,7 @@ const{
     getAccountByName,
     updateAccount,
     deleteAccount
-} = require('../controllers/accountController')
+} = require('../../controllers/accounting/accountController')
 
 //Post a fund
 router.post('/', addAccount)

@@ -10,15 +10,15 @@ const userRoutes = require('./routes/users');
 const profileRoutes = require('./routes/profiles');
 const settingRoutes = require('./routes/settings');
 const teamRoutes = require('./routes/teams');
-const assetRoutes = require('./routes/assets');
-const budgetRoutes = require('./routes/budgets');
-const donationRoutes = require('./routes/donations');
-const expenseRoutes = require('./routes/expenses');
-const accountRoutes = require('./routes/accounts');
-const liabilityRoutes = require('./routes/liabilities');
-const payrollRoutes = require('./routes/payroll');
-const pledgeRoutes = require('./routes/pledges');
-const vendorRoutes = require('./routes/vendors');
+const assetRoutes = require('./routes/accounting/assets');
+const budgetRoutes = require('./routes/accounting/budgets');
+const donationRoutes = require('./routes/accounting/donations');
+const expenseRoutes = require('./routes/accounting/expenses');
+const accountRoutes = require('./routes/accounting/accounts');
+const liabilityRoutes = require('./routes/accounting/liabilities');
+const payrollRoutes = require('./routes/accounting/payroll');
+const pledgeRoutes = require('./routes/accounting/pledges');
+const vendorRoutes = require('./routes/accounting/vendors');
 //const clientRoutes = require('./routes/client');
 const platformRoutes = require('./routes/platform');
 const songRoutes = require('./routes/songs');
@@ -46,18 +46,21 @@ app.use('/api/users', userRoutes);
 app.use('/api/profiles', profileRoutes);
 app.use('/api/settings', settingRoutes);
 app.use('/api/teams', teamRoutes);
-app.use('/api/assets', assetRoutes);
-app.use('/api/budgets', budgetRoutes);
-app.use('/api/donations', donationRoutes);
-app.use('/api/expenses', expenseRoutes);
-app.use('/api/accounts', accountRoutes);
-app.use('/api/liabilities', liabilityRoutes);
-app.use('/api/payroll', payrollRoutes);
-app.use('/api/pledges', pledgeRoutes);
-app.use('/api/vendors', vendorRoutes);
-//app.use('/api/clients', clientRoutes);
 app.use('/api/platform', platformRoutes);
 app.use('/api/songs', songRoutes);
+//app.use('/api/clients', clientRoutes);
+
+//Accounting routes
+app.use('/api/accounting/assets', assetRoutes);
+app.use('/api/accounting/budgets', budgetRoutes);
+app.use('/api/accounting/donations', donationRoutes);
+app.use('/api/accounting/expenses', expenseRoutes);
+app.use('/api/accounting/accounts', accountRoutes);
+app.use('/api/accounting/liabilities', liabilityRoutes);
+app.use('/api/accounting/payroll', payrollRoutes);
+app.use('/api/accounting/pledges', pledgeRoutes);
+app.use('/api/accounting/vendors', vendorRoutes);
+
 
 // Catch-all route for undefined paths
 app.use('*', (req, res) => {

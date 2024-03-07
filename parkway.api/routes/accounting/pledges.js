@@ -1,5 +1,5 @@
 const express = require('express');
-const { requireAuthorization} = require("../auth");
+const { requireAuthorization} = require("../../auth");
 const router = express.Router();
 requireAuthorization(router);
 
@@ -10,7 +10,7 @@ const{
     getPledgesByProfile,
     updatePledge,
     deletePledge,
-} = require('../controllers/pledgeController');
+} = require('../../controllers/accounting/pledgeController');
 
 //Post a pledge
 router.post('/pledges', addPledge)

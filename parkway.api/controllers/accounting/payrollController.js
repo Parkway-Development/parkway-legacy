@@ -1,7 +1,7 @@
 //setup Mongoose
 const mongoose = require('mongoose');
 //import the necessary models
-const Payroll = require('../models/payrollModel');
+const Payroll = require('../../models/accounting/payrollModel');
 
 
 //Post a payroll

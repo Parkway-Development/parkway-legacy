@@ -1,5 +1,5 @@
 const express = require('express');
-const { requireAuthorization} = require("../auth");
+const { requireAuthorization} = require("../../auth");
 const router = express.Router();
 requireAuthorization(router);
 
@@ -11,7 +11,7 @@ const{
     getAssetsByCategory,
     updateAsset,
     deleteAsset
-} = require('../controllers/assetController')
+} = require('../../controllers/accounting/assetController')
 
 //Post an asset
 router.post('/assets', addAsset)
