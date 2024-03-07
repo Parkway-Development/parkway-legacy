@@ -1,9 +1,7 @@
 import { Team } from '../../types/Team.ts';
-import useApi, { buildQueryKey } from '../../hooks/useApi.ts';
-import { useQueryClient } from '@tanstack/react-query';
 import UserDisplayById from '../user-display/UserDisplayById.tsx';
-import BaseDataTablePage from '../base-data-table-page/BaseDataTablePage.tsx';
-import useColumns, { OrderedColumnsType } from '../../hooks/useColumns.tsx';
+import { BaseApiDataTablePage } from '../base-data-table-page/BaseDataTablePage.tsx';
+import { OrderedColumnsType } from '../../hooks/useColumns.tsx';
 
 const teamColumns: OrderedColumnsType<Team> = [
   {
@@ -38,35 +36,13 @@ const teamColumns: OrderedColumnsType<Team> = [
   }
 ];
 
-const TeamsPage = () => {
-  const queryClient = useQueryClient();
-  const queryKey = buildQueryKey('teams');
-  const {
-    teamsApi: { delete: deleteFn, getAll }
-  } = useApi();
-
-  const handleDelete = () => {
-    queryClient.invalidateQueries({
-      queryKey: buildQueryKey('teams')
-    });
-  };
-
-  const { columns } = useColumns({
-    columns: teamColumns,
-    columnType: 'teamsPage',
-    deleteAction: { deleteFn, handleDelete },
-    editLink: ({ _id }) => `/teams/${_id}/edit`
-  });
-
-  return (
-    <BaseDataTablePage
-      addLink="/teams/add"
-      queryFn={getAll}
-      queryKey={queryKey}
-      columns={columns}
-      title="Teams"
-    />
-  );
-};
+const TeamsPage = () => (
+  <BaseApiDataTablePage
+    queryKey="teams"
+    baseApi="teamsApi"
+    columns={teamColumns}
+    title="Teams"
+  />
+);
 
 export default TeamsPage;

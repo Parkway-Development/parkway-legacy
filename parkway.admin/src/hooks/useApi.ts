@@ -8,12 +8,15 @@ import buildAccountsApi, { AccountsApiType } from '../api/accountsApi.ts';
 export type GenericResponse = Promise<AxiosResponse<any, any>>;
 export type TypedResponse<T> = Promise<Omit<AxiosResponse<T>, 'config'>>;
 
-export type ApiType = {
-  formatError: (error: Error | null) => string;
+export type BaseApiTypes = {
   accountsApi: AccountsApiType;
-  generalApi: GeneralApiType;
   teamsApi: TeamsApiType;
   usersApi: UsersApiType;
+};
+
+export type ApiType = BaseApiTypes & {
+  formatError: (error: Error | null) => string;
+  generalApi: GeneralApiType;
 };
 
 type QueryType = 'accounts' | 'passwordSettings' | 'profiles' | 'teams';
