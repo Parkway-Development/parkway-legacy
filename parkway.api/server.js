@@ -65,8 +65,12 @@ app.use('/api/accounting/contributions', contributionRoutes);
 
 
 // Catch-all route for undefined paths
+//TODO: Add logging.....lots and lots of logging
 app.use('*', (req, res) => {
-    res.status(404).json({ message: 'Endpoint not found' });
+    console.log(`Path: ${req.path}, Method: ${req.method}, Params: ${req.params}, Query: ${req.query}, Body: ${req.body}`)
+
+    if(req.method === 'PATCH' && !req.params.id) { return res.status(400).json({ error: 'Required parameters were not sent.' } ) }
+    return res.status(404).json({ message: 'Endpoint not found' });
 });
 
 

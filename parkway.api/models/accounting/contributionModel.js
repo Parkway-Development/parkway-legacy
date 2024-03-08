@@ -13,6 +13,14 @@ const contributionSchema = new mongoose.Schema({
     depositDate: {
         type: Date
     },
+    locked: {
+        type: Boolean,
+        default: false
+    },
+    depositBatchId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'DepositBatch'
+    },
     type: {
         required: true,
         type: String
