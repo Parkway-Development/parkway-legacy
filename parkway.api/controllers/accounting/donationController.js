@@ -4,7 +4,6 @@ const ValidationHelper = require('../../helpers/validationHelper');
 
 //Post a donation
 const addDonation = async (req, res) => {
-    if(req.body.name){ req.body.name = ValidationHelper.sanitizeString(req.body.name) }
 
     const donation = new Donations(req.body);
 
@@ -79,7 +78,6 @@ const updateDonation = async (req, res) => {
 }
 
 //Delete a donation by ID
-//TODO:  Add a check to see if the donation is associated with a profile.  If it is, remove that connection.
 const deleteDonation = async (req, res) => {
 
     if(!req.params.id){ return res.status(400).json({error: 'No Donation ID provided.'})}

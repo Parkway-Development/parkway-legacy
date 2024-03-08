@@ -19,6 +19,7 @@ const liabilityRoutes = require('./routes/accounting/liabilities');
 const payrollRoutes = require('./routes/accounting/payroll');
 const pledgeRoutes = require('./routes/accounting/pledges');
 const vendorRoutes = require('./routes/accounting/vendors');
+const contributionRoutes = require('./routes/accounting/contributions');
 //const clientRoutes = require('./routes/client');
 const platformRoutes = require('./routes/platform');
 const songRoutes = require('./routes/songs');
@@ -60,6 +61,7 @@ app.use('/api/accounting/liabilities', liabilityRoutes);
 app.use('/api/accounting/payroll', payrollRoutes);
 app.use('/api/accounting/pledges', pledgeRoutes);
 app.use('/api/accounting/vendors', vendorRoutes);
+app.use('/api/accounting/contributions', contributionRoutes);
 
 
 // Catch-all route for undefined paths
