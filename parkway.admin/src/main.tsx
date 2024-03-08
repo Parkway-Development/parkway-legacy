@@ -19,6 +19,8 @@ import EditUserProfilePage from './components/directory-page/EditUserProfilePage
 import MyProfilePage from './components/user-profile-page/MyProfilePage.tsx';
 import NotFoundPage from './components/not-found-page/NotFoundPage.tsx';
 import AccountsPage from './components/accounts-page/AccountsPage.tsx';
+import AddAccountPage from './components/accounts-page/AddAccountPage.tsx';
+import EditAccountPage from './components/accounts-page/EditAccountPage.tsx';
 
 const queryClient = new QueryClient();
 
@@ -44,7 +46,11 @@ createRoot(document.getElementById('root')!).render(
                 <Route path=":id/edit" element={<EditUserProfilePage />} />
                 <Route index element={<DirectoryPage />} />
               </Route>
-              <Route path="accounts" element={<AccountsPage />} />
+              <Route path="accounts">
+                <Route path="add" element={<AddAccountPage />} />
+                <Route path=":id/edit" element={<EditAccountPage />} />
+                <Route index element={<AccountsPage />} />
+              </Route>
               <Route path="giving" element={<GivingPage />} />
               <Route path="teams">
                 <Route path="add" element={<AddTeamPage />} />
