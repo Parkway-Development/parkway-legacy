@@ -11,6 +11,7 @@ import useApi, {
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { BaseEntity } from '../../types/BaseEntity.ts';
 import useColumns, { OrderedColumnsType } from '../../hooks/useColumns.tsx';
+import { IsBaseEntityApi } from '../../api/baseApi.ts';
 
 type BaseDataTablePageProps<T extends BaseEntity> =
   BaseDataTableListProps<T> & {
@@ -83,7 +84,7 @@ const BaseDataTableList = <T extends BaseEntity>({
       <Table
         dataSource={data}
         columns={columns}
-        rowKey={(record) => record._id}
+        rowKey={(record: T) => record._id}
         size="small"
         bordered
         scroll={{ x: 'auto' }}
@@ -98,7 +99,7 @@ type BaseApiDataTablePageProps<
 > = Pick<BaseDataTablePageProps<T>, 'title'> & {
   queryKey: 'accounts' | 'teams' | 'profiles';
   columns: OrderedColumnsType<T>;
-  baseApi: TBaseApi;
+  baseApiType: TBaseApi;
 };
 
 export const BaseApiDataTablePage = <
@@ -107,15 +108,21 @@ export const BaseApiDataTablePage = <
 >({
   queryKey: queryKeyProp,
   columns: columnsProp,
-  baseApi,
+  baseApiType,
   title
 }: BaseApiDataTablePageProps<T, TBaseApi>) => {
   const queryClient = useQueryClient();
   const queryKey = buildQueryKey(queryKeyProp);
   const apiResult = useApi();
-  const stuff = apiResult[baseApi];
+  const baseApiEntity = apiResult[baseApiType];
 
-  const { delete: deleteFn, getAll } = stuff;
+  if (!IsBaseEntityApi<T>(baseApiEntity)) {
+    throw new Error(
+      `${baseApiEntity} is not compatible with this table component, use BaseDataTablePage component instead`
+    );
+  }
+
+  const { delete: deleteFn, getAll } = baseApiEntity;
 
   const handleDelete = () => {
     queryClient.invalidateQueries({
@@ -130,13 +137,10 @@ export const BaseApiDataTablePage = <
     editLink: ({ _id }) => `/${queryKeyProp}/${_id}/edit`
   });
 
-  // @ts-ignore
-  const queryFn: () => TypedResponse<T[]> = getAll;
-
   return (
     <BaseDataTablePage<T>
       addLink={`/${queryKey}/add`}
-      queryFn={queryFn}
+      queryFn={getAll}
       queryKey={queryKey}
       columns={columns}
       title={title}

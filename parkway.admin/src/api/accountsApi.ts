@@ -5,6 +5,6 @@ import { Account } from '../types/Account.ts';
 export type AccountsApiType = BaseApiType<Account>;
 
 const buildAccountsApi = (instance: AxiosInstance): AccountsApiType =>
-  buildBaseApi<Account>(instance, '/api/accounts');
+  buildBaseApi<Account>(instance, '/api/accounting/accounts');
 
 export default buildAccountsApi;

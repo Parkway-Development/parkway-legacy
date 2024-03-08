@@ -153,7 +153,7 @@ const userProfileColumns: OrderedColumnsType<UserProfile> = [
 const DirectoryPage = () => (
   <BaseApiDataTablePage
     queryKey="profiles"
-    baseApi="usersApi"
+    baseApiType="usersApi"
     columns={userProfileColumns}
     title="Directory"
   />
