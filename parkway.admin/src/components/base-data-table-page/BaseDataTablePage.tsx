@@ -3,9 +3,9 @@ import { ColumnsType } from 'antd/lib/table';
 import styles from './BaseDataTablePage.module.css';
 import { Link, To } from 'react-router-dom';
 import useApi, {
-  ApiType,
   BaseApiTypes,
   buildQueryKey,
+  QueryType,
   TypedResponse
 } from '../../hooks/useApi.ts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -26,7 +26,7 @@ type BaseDataTableListProps<T extends BaseEntity> = {
   columns: ColumnsType<T>;
 };
 
-const BaseDataTablePage = <T extends BaseEntity>({
+export const BaseDataTablePage = <T extends BaseEntity>({
   title,
   addLink,
   addLinkTitle,
@@ -95,22 +95,22 @@ const BaseDataTableList = <T extends BaseEntity>({
 
 type BaseApiDataTablePageProps<
   T extends BaseEntity,
-  TBaseApi extends keyof ApiType
-> = Pick<BaseDataTablePageProps<T>, 'title'> & {
-  queryKey: 'accounts' | 'teams' | 'profiles';
+  TBaseApiKey extends keyof BaseApiTypes
+> = Pick<BaseDataTablePageProps<T>, 'title' | 'addLinkTitle'> & {
+  queryKey: QueryType;
   columns: OrderedColumnsType<T>;
-  baseApiType: TBaseApi;
+  baseApiType: TBaseApiKey;
 };
 
 export const BaseApiDataTablePage = <
   T extends BaseEntity,
-  TBaseApi extends keyof BaseApiTypes
+  TBaseApiKey extends keyof BaseApiTypes
 >({
   queryKey: queryKeyProp,
   columns: columnsProp,
   baseApiType,
-  title
-}: BaseApiDataTablePageProps<T, TBaseApi>) => {
+  ...props
+}: BaseApiDataTablePageProps<T, TBaseApiKey>) => {
   const queryClient = useQueryClient();
   const queryKey = buildQueryKey(queryKeyProp);
   const apiResult = useApi();
@@ -143,9 +143,7 @@ export const BaseApiDataTablePage = <
       queryFn={getAll}
       queryKey={queryKey}
       columns={columns}
-      title={title}
+      {...props}
     />
   );
 };
-
-export default BaseDataTablePage;

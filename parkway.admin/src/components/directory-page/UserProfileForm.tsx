@@ -7,20 +7,18 @@ import {
 } from '../../types/UserProfile.ts';
 import dayjs from 'dayjs';
 import { buildSelectOptionsFromMapping } from '../../utilities/mappingHelpers.ts';
+import { AddBaseApiFormProps } from '../base-data-table-page';
 
 export type UserProfileFormFields = Omit<
   UserProfile,
   '_id' | 'teams' | 'family'
 >;
 
-type UserProfileFormProps = {
-  isSaving: boolean;
+type UserProfileFormProps = AddBaseApiFormProps<UserProfile> & {
   initialValues?: UserProfileFormFields;
-  onFinish: (values: UserProfileFormFields) => void;
-  onCancel: () => void;
   submitText?: string;
   cancelText?: string;
-  isMyProfile: boolean;
+  isMyProfile?: boolean;
 };
 
 const FormItem = Form.Item<UserProfileFormFields>;
@@ -68,13 +66,22 @@ export const addProfileInitialValues: UserProfileFormFields = {
 const UserProfileForm = ({
   isSaving,
   initialValues,
-  onFinish,
+  onSave,
   onCancel,
   submitText = 'Submit',
   cancelText = 'Cancel',
-  isMyProfile
+  isMyProfile = false
 }: UserProfileFormProps) => {
   const [form] = Form.useForm<UserProfileFormFields>();
+
+  const handleSubmit = (values: UserProfileFormFields) => {
+    const payload = isMyProfile
+      ? transformFieldsToMyProfilePayload(values)
+      : transformFieldsToPayload(values);
+
+    const finalPayload = payload as Omit<UserProfile, '_id'>;
+    onSave(finalPayload);
+  };
 
   const initial = initialValues
     ? {
@@ -91,7 +98,7 @@ const UserProfileForm = ({
         form={form}
         name="basic"
         layout="vertical"
-        onFinish={onFinish}
+        onFinish={handleSubmit}
         disabled={isSaving}
         initialValues={initial}
       >

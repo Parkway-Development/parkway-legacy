@@ -3,18 +3,33 @@ import styles from './TeamForm.module.css';
 import { Link } from 'react-router-dom';
 import UserProfileSelect from '../user-profile-select/UserProfileSelect.tsx';
 import { Team } from '../../types/Team.ts';
+import { AddBaseApiFormProps } from '../base-data-table-page';
 
-export type TeamFormFields = Omit<Team, '_id'>;
+type TeamWithoutId = Omit<Team, '_id'>;
 
-type TeamFormProps = {
-  isSaving: boolean;
-  initialValues?: TeamFormFields;
-  onFinish: (values: TeamFormFields) => void;
+type TeamFormProps = AddBaseApiFormProps<Team> & {
+  initialValues?: TeamWithoutId;
 };
 
-const TeamForm = ({ isSaving, initialValues, onFinish }: TeamFormProps) => {
-  const [form] = Form.useForm<TeamFormFields>();
+const TeamForm = ({
+  isSaving,
+  initialValues,
+  onSave,
+  onCancel
+}: TeamFormProps) => {
+  const [form] = Form.useForm<TeamWithoutId>();
   const leader = Form.useWatch('leader', form);
+
+  const handleSave = (values: Omit<Team, '_id'>) => {
+    const payload: Omit<Team, '_id'> = {
+      name: values.name.trim(),
+      description: values.description?.trim(),
+      leader: values.leader,
+      members: values.members ?? []
+    };
+
+    onSave(payload);
+  };
 
   const handleLeaderChange = (value: string | undefined) =>
     form.setFieldsValue({
@@ -38,17 +53,17 @@ const TeamForm = ({ isSaving, initialValues, onFinish }: TeamFormProps) => {
           }
         ]}
       />
-      <Form<TeamFormFields>
+      <Form<TeamWithoutId>
         form={form}
         name="basic"
         labelCol={{ span: 3 }}
         wrapperCol={{ span: 12 }}
-        onFinish={onFinish}
+        onFinish={handleSave}
         autoComplete="off"
         disabled={isSaving}
         initialValues={initialValues}
       >
-        <Form.Item<TeamFormFields>
+        <Form.Item<TeamWithoutId>
           label="Name"
           name="name"
           rules={[{ required: true, whitespace: true, message: 'Required' }]}
@@ -56,18 +71,18 @@ const TeamForm = ({ isSaving, initialValues, onFinish }: TeamFormProps) => {
           <Input autoFocus />
         </Form.Item>
 
-        <Form.Item<TeamFormFields> label="Description" name="description">
+        <Form.Item<TeamWithoutId> label="Description" name="description">
           <Input />
         </Form.Item>
 
-        <Form.Item<TeamFormFields> label="Leader" name="leader">
+        <Form.Item<TeamWithoutId> label="Leader" name="leader">
           <UserProfileSelect
             onChange={handleLeaderChange}
             initialValue={initialValues?.leader}
           />
         </Form.Item>
 
-        <Form.Item<TeamFormFields> label="Members" name="members">
+        <Form.Item<TeamWithoutId> label="Members" name="members">
           <UserProfileSelect
             isMultiSelect
             onChange={handleMembersChange}
@@ -86,9 +101,9 @@ const TeamForm = ({ isSaving, initialValues, onFinish }: TeamFormProps) => {
             >
               Submit
             </Button>
-            <Link to="/teams" className={styles.close}>
-              <Button>Close</Button>
-            </Link>
+            <Button className={styles.close} onClick={onCancel}>
+              Close
+            </Button>
           </div>
         </Form.Item>
       </Form>
