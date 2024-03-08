@@ -38,7 +38,7 @@ function App() {
               },
               {
                 key: 2,
-                label: <Link to="/directory">Directory</Link>
+                label: <Link to="/profiles">Directory</Link>
               },
               {
                 key: 3,

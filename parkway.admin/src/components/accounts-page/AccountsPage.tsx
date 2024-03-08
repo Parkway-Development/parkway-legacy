@@ -33,14 +33,15 @@ const accountColumns: OrderedColumnsType<Account> = [
     title: 'Notes',
     dataIndex: 'notes',
     key: 'notes',
-    displayOrder: 5
+    displayOrder: 5,
+    render: (value: Account['notes']) => value?.length ?? 0
   }
 ];
 
 const AccountsPage = () => (
   <BaseApiDataTablePage
     queryKey="accounts"
-    baseApi="accountsApi"
+    baseApiType="accountsApi"
     columns={accountColumns}
     title="Accounts"
   />

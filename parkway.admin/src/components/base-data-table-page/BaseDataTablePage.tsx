@@ -3,14 +3,15 @@ import { ColumnsType } from 'antd/lib/table';
 import styles from './BaseDataTablePage.module.css';
 import { Link, To } from 'react-router-dom';
 import useApi, {
-  ApiType,
   BaseApiTypes,
   buildQueryKey,
+  QueryType,
   TypedResponse
 } from '../../hooks/useApi.ts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { BaseEntity } from '../../types/BaseEntity.ts';
 import useColumns, { OrderedColumnsType } from '../../hooks/useColumns.tsx';
+import { IsBaseEntityApi } from '../../api/baseApi.ts';
 
 type BaseDataTablePageProps<T extends BaseEntity> =
   BaseDataTableListProps<T> & {
@@ -25,7 +26,7 @@ type BaseDataTableListProps<T extends BaseEntity> = {
   columns: ColumnsType<T>;
 };
 
-const BaseDataTablePage = <T extends BaseEntity>({
+export const BaseDataTablePage = <T extends BaseEntity>({
   title,
   addLink,
   addLinkTitle,
@@ -83,7 +84,7 @@ const BaseDataTableList = <T extends BaseEntity>({
       <Table
         dataSource={data}
         columns={columns}
-        rowKey={(record) => record._id}
+        rowKey={(record: T) => record._id}
         size="small"
         bordered
         scroll={{ x: 'auto' }}
@@ -94,28 +95,34 @@ const BaseDataTableList = <T extends BaseEntity>({
 
 type BaseApiDataTablePageProps<
   T extends BaseEntity,
-  TBaseApi extends keyof ApiType
-> = Pick<BaseDataTablePageProps<T>, 'title'> & {
-  queryKey: 'accounts' | 'teams' | 'profiles';
+  TBaseApiKey extends keyof BaseApiTypes
+> = Pick<BaseDataTablePageProps<T>, 'title' | 'addLinkTitle'> & {
+  queryKey: QueryType;
   columns: OrderedColumnsType<T>;
-  baseApi: TBaseApi;
+  baseApiType: TBaseApiKey;
 };
 
 export const BaseApiDataTablePage = <
   T extends BaseEntity,
-  TBaseApi extends keyof BaseApiTypes
+  TBaseApiKey extends keyof BaseApiTypes
 >({
   queryKey: queryKeyProp,
   columns: columnsProp,
-  baseApi,
-  title
-}: BaseApiDataTablePageProps<T, TBaseApi>) => {
+  baseApiType,
+  ...props
+}: BaseApiDataTablePageProps<T, TBaseApiKey>) => {
   const queryClient = useQueryClient();
   const queryKey = buildQueryKey(queryKeyProp);
   const apiResult = useApi();
-  const stuff = apiResult[baseApi];
+  const baseApiEntity = apiResult[baseApiType];
 
-  const { delete: deleteFn, getAll } = stuff;
+  if (!IsBaseEntityApi<T>(baseApiEntity)) {
+    throw new Error(
+      `${baseApiEntity} is not compatible with this table component, use BaseDataTablePage component instead`
+    );
+  }
+
+  const { delete: deleteFn, getAll } = baseApiEntity;
 
   const handleDelete = () => {
     queryClient.invalidateQueries({
@@ -130,18 +137,13 @@ export const BaseApiDataTablePage = <
     editLink: ({ _id }) => `/${queryKeyProp}/${_id}/edit`
   });
 
-  // @ts-ignore
-  const queryFn: () => TypedResponse<T[]> = getAll;
-
   return (
     <BaseDataTablePage<T>
       addLink={`/${queryKey}/add`}
-      queryFn={queryFn}
+      queryFn={getAll}
       queryKey={queryKey}
       columns={columns}
-      title={title}
+      {...props}
     />
   );
 };
-
-export default BaseDataTablePage;

@@ -10,6 +10,12 @@ export type BaseApiType<T extends BaseEntity> = {
   update: (payload: T) => TypedResponse<T>;
 };
 
+export const IsBaseEntityApi = <T extends BaseEntity>(
+  apiEntity: any
+): apiEntity is BaseApiType<T> =>
+  Object.keys(apiEntity).includes('getAll') &&
+  Object.keys(apiEntity).includes('getById');
+
 const buildBaseApi = <T extends BaseEntity>(
   instance: AxiosInstance,
   basePath: string

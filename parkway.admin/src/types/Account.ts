@@ -5,5 +5,5 @@ export type Account = BaseEntity & {
   description?: string;
   targetAmount: number;
   currentAmount: number;
-  notes?: string;
+  notes?: string[];
 };

@@ -4,7 +4,7 @@ import { Alert, notification, Spin } from 'antd';
 import UserProfileForm, {
   transformFieldsToPayload,
   UserProfileFormFields
-} from './UserProfileForm.tsx';
+} from '../directory-page/UserProfileForm.tsx';
 import { UserProfile } from '../../types/UserProfile.ts';
 import { useAuth } from '../../hooks/useAuth.tsx';
 import { useState } from 'react';
@@ -95,7 +95,7 @@ const MyProfilePage = () => {
       {contextHolder}
       <h2>My Profile</h2>
       <UserProfileForm
-        onFinish={handleUpdateUserProfile}
+        onSave={handleUpdateUserProfile}
         isSaving={isPending}
         initialValues={initialValues}
         onCancel={finishEditing}

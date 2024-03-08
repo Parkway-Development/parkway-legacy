@@ -19,7 +19,7 @@ export type ApiType = BaseApiTypes & {
   generalApi: GeneralApiType;
 };
 
-type QueryType = 'accounts' | 'passwordSettings' | 'profiles' | 'teams';
+export type QueryType = 'accounts' | 'passwordSettings' | 'profiles' | 'teams';
 
 export const buildQueryKey = (queryType: QueryType, id?: string) => {
   const result: any[] = [queryType];

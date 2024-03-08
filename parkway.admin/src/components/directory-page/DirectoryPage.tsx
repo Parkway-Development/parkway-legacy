@@ -4,7 +4,7 @@ import {
   memberStatusMapping,
   UserProfile
 } from '../../types/UserProfile.ts';
-import { BaseApiDataTablePage } from '../base-data-table-page/BaseDataTablePage.tsx';
+import { BaseApiDataTablePage } from '../base-data-table-page';
 import { CheckCircleOutlined } from '@ant-design/icons';
 import { translateMapping } from '../../utilities/mappingHelpers.ts';
 import { OrderedColumnsType } from '../../hooks/useColumns.tsx';
@@ -153,9 +153,10 @@ const userProfileColumns: OrderedColumnsType<UserProfile> = [
 const DirectoryPage = () => (
   <BaseApiDataTablePage
     queryKey="profiles"
-    baseApi="usersApi"
+    baseApiType="usersApi"
     columns={userProfileColumns}
     title="Directory"
+    addLinkTitle="Add User Profile"
   />
 );
 

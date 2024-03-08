@@ -39,7 +39,7 @@ const teamColumns: OrderedColumnsType<Team> = [
 const TeamsPage = () => (
   <BaseApiDataTablePage
     queryKey="teams"
-    baseApi="teamsApi"
+    baseApiType="teamsApi"
     columns={teamColumns}
     title="Teams"
   />
