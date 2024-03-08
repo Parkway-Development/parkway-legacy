@@ -6,8 +6,7 @@ const assetSchema = new mongoose.Schema({
         required: true
     },
     description: {
-        type: String,
-        required: false
+        type: String
     },
     value: {
         type: Number,
@@ -33,28 +32,25 @@ const assetSchema = new mongoose.Schema({
         default: 1095
     },
     assetType: {
-        type: String,
-        required: false
+        type: String
     },
     assetCategory: {
         type: String,
-        required: false
+        required: false,
+        default: 'Not Categorized'
     },
     assetLocation: {
-        type: String,
-        required: false
+        type: String
     },
     assetStatus: {
-        type: String,
-        required: false
+        type: String
     },
     assetCondition: {
-        type: String,
-        required: false
+        type: String
     },
-        notes: {
-        type: String,
-        required: false
+        notes: [
+        String
+        ]
     }
-})
+)
 module.exports = mongoose.model('Asset', assetSchema, 'assets')
