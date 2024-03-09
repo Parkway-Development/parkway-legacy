@@ -5,9 +5,9 @@ import {
   memberStatusMapping,
   UserProfile
 } from '../../types/UserProfile.ts';
-import dayjs from 'dayjs';
 import { buildSelectOptionsFromMapping } from '../../utilities/mappingHelpers.ts';
 import { AddBaseApiFormProps } from '../base-data-table-page';
+import { transformDateForDatePicker } from '../../utilities/dateHelpers.ts';
 
 export type UserProfileFormFields = Omit<
   UserProfile,
@@ -86,9 +86,7 @@ const UserProfileForm = ({
   const initial = initialValues
     ? {
         ...initialValues,
-        dateOfBirth: initialValues.dateOfBirth
-          ? dayjs(initialValues.dateOfBirth, 'YYYY-MM-DD')
-          : undefined
+        dateOfBirth: transformDateForDatePicker(initialValues.dateOfBirth)
       }
     : addProfileInitialValues;
 

@@ -4,12 +4,16 @@ import buildTeamsApi, { TeamsApiType } from '../api/teamsApi.ts';
 import addUsersApi, { UsersApiType } from '../api/userApi.ts';
 import buildGeneralApi, { GeneralApiType } from '../api/generalApi.ts';
 import buildAccountsApi, { AccountsApiType } from '../api/accountsApi.ts';
+import buildContributionsApi, {
+  ContributionsApiType
+} from '../api/contributionsApi.ts';
 
 export type GenericResponse = Promise<AxiosResponse<any, any>>;
 export type TypedResponse<T> = Promise<Omit<AxiosResponse<T>, 'config'>>;
 
 export type BaseApiTypes = {
   accountsApi: AccountsApiType;
+  contributionsApi: ContributionsApiType;
   teamsApi: TeamsApiType;
   usersApi: UsersApiType;
 };
@@ -19,7 +23,12 @@ export type ApiType = BaseApiTypes & {
   generalApi: GeneralApiType;
 };
 
-export type QueryType = 'accounts' | 'passwordSettings' | 'profiles' | 'teams';
+export type QueryType =
+  | 'accounts'
+  | 'contributions'
+  | 'passwordSettings'
+  | 'profiles'
+  | 'teams';
 
 export const buildQueryKey = (queryType: QueryType, id?: string) => {
   const result: any[] = [queryType];
@@ -59,6 +68,7 @@ const useApi: () => ApiType = () => {
 
   return {
     accountsApi: buildAccountsApi(instance),
+    contributionsApi: buildContributionsApi(instance),
     generalApi: buildGeneralApi(instance),
     teamsApi: buildTeamsApi(instance),
     usersApi: addUsersApi(instance),

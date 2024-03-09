@@ -1,0 +1,19 @@
+.accountRow {
+    display: flex;
+    gap: 1em;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+}
+
+.footerLabel {
+    span:first-of-type {
+        display: inline-block;
+        text-align: right;
+        min-width: 230px;
+        margin-right: 1em;
+    }
+}

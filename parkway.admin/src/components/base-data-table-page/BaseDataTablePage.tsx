@@ -134,12 +134,12 @@ export const BaseApiDataTablePage = <
     columns: columnsProp,
     columnType: `${queryKeyProp}Page`,
     deleteAction: { deleteFn, handleDelete },
-    editLink: ({ _id }) => `/${queryKeyProp}/${_id}/edit`
+    editLink: ({ _id }) => `./${_id}/edit`
   });
 
   return (
     <BaseDataTablePage<T>
-      addLink={`/${queryKey}/add`}
+      addLink={`./add`}
       queryFn={getAll}
       queryKey={queryKey}
       columns={columns}

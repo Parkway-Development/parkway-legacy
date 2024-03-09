@@ -9,7 +9,7 @@ type AccountFields = Omit<AccountWithoutId, 'notes'> & {
   notes: string;
 };
 
-type TeamFormProps = AddBaseApiFormProps<Account> & {
+type AccountFormProps = AddBaseApiFormProps<Account> & {
   initialValues?: AccountWithoutId;
 };
 
@@ -18,7 +18,7 @@ const AccountForm = ({
   initialValues: initialValuesProp,
   onSave,
   onCancel
-}: TeamFormProps) => {
+}: AccountFormProps) => {
   const [form] = Form.useForm<AccountFields>();
   const initialValues = {
     ...initialValuesProp,
@@ -72,11 +72,11 @@ const AccountForm = ({
         </Form.Item>
 
         <Form.Item<AccountFields> label="Target Amount" name="targetAmount">
-          <Input type="number" />
+          <Input type="number" step={0.01} />
         </Form.Item>
 
         <Form.Item<AccountFields> label="Current Value" name="currentAmount">
-          <Input type="number" />
+          <Input type="number" step={0.01} />
         </Form.Item>
 
         <Form.Item<AccountFields> label="Notes" name="notes">

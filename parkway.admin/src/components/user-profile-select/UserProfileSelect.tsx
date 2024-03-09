@@ -1,25 +1,12 @@
 import useApi, { buildQueryKey } from '../../hooks/useApi.ts';
 import { useQuery } from '@tanstack/react-query';
-import { Select, SelectProps } from 'antd';
+import { SelectProps } from 'antd';
 import { useEffect, useState } from 'react';
+import BaseSelect, { BaseSelectionProps } from '../base-select/BaseSelect.tsx';
 
-type BaseSelection<T> = {
-  onChange: (values: T | undefined) => void;
-  initialValue?: T;
-};
-
-type SingleSelection = BaseSelection<string> & {
-  isMultiSelect?: false;
-};
-
-type MultipleSelection = BaseSelection<string[]> & {
-  isMultiSelect: true;
-};
-
-type SelectionProps = SingleSelection | MultipleSelection;
-
-type UserProfileSelectProps = SelectionProps & {
+type UserProfileSelectProps = Omit<BaseSelectionProps, 'value'> & {
   excludedUserId?: string;
+  initialValue?: BaseSelectionProps['value'];
 };
 
 const UserProfileSelect = ({
@@ -78,15 +65,12 @@ const UserProfileSelect = ({
   }
 
   return (
-    <Select
-      mode={isMultiSelect ? 'multiple' : undefined}
+    <BaseSelect
+      isMultiSelect={isMultiSelect}
       onChange={handleOnChange}
-      options={options}
-      value={isPending ? undefined : value}
       loading={isPending}
-      optionFilterProp="label"
-      allowClear
-      showSearch
+      options={options}
+      value={value}
     />
   );
 };
