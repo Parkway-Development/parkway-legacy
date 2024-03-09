@@ -20,17 +20,6 @@ const TeamForm = ({
   const [form] = Form.useForm<TeamWithoutId>();
   const leader = Form.useWatch('leader', form);
 
-  const handleSave = (values: Omit<Team, '_id'>) => {
-    const payload: Omit<Team, '_id'> = {
-      name: values.name.trim(),
-      description: values.description?.trim(),
-      leader: values.leader,
-      members: values.members ?? []
-    };
-
-    onSave(payload);
-  };
-
   const handleLeaderChange = (value: string | undefined) =>
     form.setFieldsValue({
       leader: value
@@ -58,7 +47,7 @@ const TeamForm = ({
         name="basic"
         labelCol={{ span: 3 }}
         wrapperCol={{ span: 12 }}
-        onFinish={handleSave}
+        onFinish={onSave}
         autoComplete="off"
         disabled={isSaving}
         initialValues={initialValues}

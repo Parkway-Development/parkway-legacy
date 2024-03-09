@@ -10,6 +10,7 @@ import { BaseApiType, IsBaseEntityApi } from '../../api/baseApi.ts';
 import { ReactNode } from 'react';
 import { To, useNavigate, useParams } from 'react-router-dom';
 import { AxiosResponse } from 'axios';
+import { trimStrings } from '../../utilities/stringHelpers.ts';
 
 export type EditBaseApiFormProps<T extends BaseEntity> = {
   isSaving: boolean;
@@ -98,7 +99,7 @@ const EditBaseApiEntityPage = <
   };
 
   const handleUpdate = (payload: Omit<T, '_id'>) => {
-    const newPayload = payload as T;
+    const newPayload = trimStrings(payload) as T;
 
     mutate(
       { ...newPayload, _id: id },

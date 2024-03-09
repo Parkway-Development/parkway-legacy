@@ -26,11 +26,8 @@ const AccountForm = ({
   };
 
   const handleSave = (values: AccountFields) => {
-    const payload: Omit<Account, '_id'> = {
-      name: values.name.trim(),
-      description: values.description?.trim(),
-      targetAmount: values.targetAmount,
-      currentAmount: values.currentAmount,
+    const payload: AccountWithoutId = {
+      ...values,
       notes: [values.notes]
     };
 

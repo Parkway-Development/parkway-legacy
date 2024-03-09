@@ -20,25 +20,6 @@ const VendorForm = ({
 }: VendorFormProps) => {
   const [form] = Form.useForm<VendorWithoutId>();
 
-  const handleSave = (values: VendorWithoutId) => {
-    const payload: VendorWithoutId = {
-      name: values.name.trim(),
-      address: values.address?.trim(),
-      city: values.city?.trim(),
-      state: values.state?.trim(),
-      zip: values.zip?.trim(),
-      phone: values.phone?.trim(),
-      email: values.email?.trim(),
-      website: values.website?.trim(),
-      contact: values.contact?.trim(),
-      contactPhone: values.contactPhone?.trim(),
-      contactEmail: values.contactEmail?.trim(),
-      notes: values.notes?.trim()
-    };
-
-    onSave(payload);
-  };
-
   return (
     <>
       <Breadcrumb
@@ -59,7 +40,7 @@ const VendorForm = ({
         name="basic"
         labelCol={{ span: 3 }}
         wrapperCol={{ span: 12 }}
-        onFinish={handleSave}
+        onFinish={onSave}
         autoComplete="off"
         disabled={isSaving}
         initialValues={initialValues}

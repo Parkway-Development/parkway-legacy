@@ -25,16 +25,6 @@ const ContributionForm = ({
   const [isAccountBalanceValid, setIsAccountBalanceValid] =
     useState<boolean>(false);
 
-  const handleSave = (values: ContributionWithoutId) => {
-    const payload: Omit<Contribution, '_id'> = {
-      ...values,
-      type: values.type?.trim(),
-      depositBatchId: values.depositBatchId?.trim()
-    };
-
-    onSave(payload);
-  };
-
   const initialValues = initialValuesProp
     ? {
         ...initialValuesProp,
@@ -81,7 +71,7 @@ const ContributionForm = ({
         name="basic"
         labelCol={{ span: 3 }}
         wrapperCol={{ span: 12 }}
-        onFinish={handleSave}
+        onFinish={onSave}
         autoComplete="off"
         disabled={isSaving}
         initialValues={initialValues}
