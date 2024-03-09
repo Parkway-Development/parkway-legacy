@@ -11,7 +11,7 @@ import {
 import { useMutation } from '@tanstack/react-query';
 import useApi from '../../hooks/useApi.ts';
 import { useNavigate } from 'react-router-dom';
-import { addProfileInitialValues } from '../directory-page/UserProfileForm.tsx';
+import { addProfileInitialValues } from '../directory-page';
 import { UserProfile } from '../../types';
 import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
 

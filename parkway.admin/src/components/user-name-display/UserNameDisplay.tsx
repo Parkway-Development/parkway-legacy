@@ -4,8 +4,8 @@ interface UserProfileDisplayProps {
   user: UserProfile;
 }
 
-const UserProfileDisplay = ({ user }: UserProfileDisplayProps) => {
+export const UserNameDisplay = ({ user }: UserProfileDisplayProps) => {
   return user.firstName + ' ' + user.lastName;
 };
 
-export default UserProfileDisplay;
+export default UserNameDisplay;

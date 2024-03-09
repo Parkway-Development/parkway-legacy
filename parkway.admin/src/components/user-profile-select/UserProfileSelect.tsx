@@ -2,7 +2,7 @@ import useApi, { buildQueryKey } from '../../hooks/useApi.ts';
 import { useQuery } from '@tanstack/react-query';
 import { SelectProps } from 'antd';
 import { useEffect, useState } from 'react';
-import BaseSelect, { BaseSelectionProps } from '../base-select/BaseSelect.tsx';
+import { BaseSelect, BaseSelectionProps } from '../base-select';
 
 type UserProfileSelectProps = Omit<BaseSelectionProps, 'value'> & {
   excludedUserId?: string;

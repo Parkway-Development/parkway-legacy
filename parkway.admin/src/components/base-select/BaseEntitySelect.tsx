@@ -25,7 +25,7 @@ type BaseEntitySelectProps<
   renderer: (value: T) => string;
 };
 
-const BaseEntitySelect = <
+export const BaseEntitySelect = <
   T extends BaseEntity,
   TBaseApiKey extends keyof BaseApiTypes
 >({
@@ -74,5 +74,3 @@ const BaseEntitySelect = <
 
   return <BaseSelect {...props} loading={isPending} options={options} />;
 };
-
-export default BaseEntitySelect;

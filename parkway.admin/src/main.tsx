@@ -3,30 +3,36 @@ import { createRoot } from 'react-dom/client';
 import App from './App';
 import './index.css';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import GivingPage from './components/giving-page/GivingPage.tsx';
-import DirectoryPage from './components/directory-page/DirectoryPage.tsx';
-import HomePage from './components/home-page/HomePage.tsx';
+import GivingPage from './components/giving-page';
+import {
+  AddUserProfilePage,
+  DirectoryPage,
+  EditUserProfilePage
+} from './components/directory-page';
+import HomePage from './components/home-page';
 import { AuthProvider } from './hooks/useAuth.tsx';
-import { ProtectedRoute } from './components/protected-route/ProtectedRoute.tsx';
-import LoginPage from './components/login-page/LoginPage.tsx';
-import SignupPage from './components/signup-page/SignupPage.tsx';
-import TeamsPage from './components/teams-page/TeamsPage.tsx';
+import ProtectedRoute from './components/protected-route';
+import LoginPage from './components/login-page';
+import SignupPage from './components/signup-page';
+import { AddTeamPage, TeamsPage, EditTeamPage } from './components/teams-page';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import AddTeamPage from './components/teams-page/AddTeamPage.tsx';
-import EditTeamPage from './components/teams-page/EditTeamPage.tsx';
-import AddUserProfilePage from './components/directory-page/AddUserProfilePage.tsx';
-import EditUserProfilePage from './components/directory-page/EditUserProfilePage.tsx';
-import MyProfilePage from './components/user-profile-page/MyProfilePage.tsx';
-import NotFoundPage from './components/not-found-page/NotFoundPage.tsx';
-import AccountsPage from './components/accounts-page/AccountsPage.tsx';
-import AddAccountPage from './components/accounts-page/AddAccountPage.tsx';
-import EditAccountPage from './components/accounts-page/EditAccountPage.tsx';
-import ContributionsPage from './components/contributions-page/ContributionsPage.tsx';
-import AddContributionPage from './components/contributions-page/AddContributionPage.tsx';
-import EditContributionPage from './components/contributions-page/EditContributionPage.tsx';
-import AddVendorPage from './components/vendors-page/AddVendorPage.tsx';
-import EditVendorPage from './components/vendors-page/EditVendorPage.tsx';
-import VendorsPage from './components/vendors-page/VendorsPage.tsx';
+import { MyProfilePage } from './components/user-profile-page';
+import NotFoundPage from './components/not-found-page';
+import {
+  AccountsPage,
+  AddAccountPage,
+  EditAccountPage
+} from './components/accounts-page';
+import {
+  AddContributionPage,
+  ContributionsPage,
+  EditContributionPage
+} from './components/contributions-page';
+import {
+  AddVendorPage,
+  EditVendorPage,
+  VendorsPage
+} from './components/vendors-page';
 
 const queryClient = new QueryClient();
 

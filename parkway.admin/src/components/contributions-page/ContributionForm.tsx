@@ -3,7 +3,7 @@ import styles from './ContributionForm.module.css';
 import { Link } from 'react-router-dom';
 import { Contribution, ContributionAccount } from '../../types';
 import { AddBaseApiFormProps } from '../base-data-table-page';
-import UserProfileSelect from '../user-profile-select/UserProfileSelect.tsx';
+import UserProfileSelect from '../user-profile-select';
 import { transformDateForDatePicker } from '../../utilities';
 import AccountsInput from './AccountsInput.tsx';
 import { useState } from 'react';

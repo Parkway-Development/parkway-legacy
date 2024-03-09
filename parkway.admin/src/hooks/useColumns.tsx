@@ -4,14 +4,14 @@ import { Link, To } from 'react-router-dom';
 import { ColumnType } from 'antd/lib/table';
 import { ReactNode, useRef, useState } from 'react';
 import { EditOutlined, TableOutlined } from '@ant-design/icons';
-import DeleteButton from '../components/delete-button/DeleteButton.tsx';
+import DeleteButton from '../components/delete-button';
 import styles from './useColumns.module.css';
 import { Modal, ModalFuncProps } from 'antd';
 import * as React from 'react';
 import { useLocalStorage } from './useLocalStorage.ts';
 import ColumnConfigurationModal, {
   modalProps
-} from '../components/column-configuration-modal/ColumnConfigurationModal.tsx';
+} from '../components/column-configuration-modal';
 
 type LocalStorageColumnsType = {
   key: string;

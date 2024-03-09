@@ -1,16 +1,14 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import useApi, { buildQueryKey } from '../../hooks/useApi.ts';
 import { Alert, notification, Spin } from 'antd';
-import UserProfileForm, {
-  UserProfileFormFields
-} from '../directory-page/UserProfileForm.tsx';
+import { UserProfileForm, UserProfileFormFields } from '../directory-page';
 import { UserProfile } from '../../types';
 import { useAuth } from '../../hooks/useAuth.tsx';
 import { useState } from 'react';
 import UserProfileDisplay from './UserProfileDisplay.tsx';
 import { trimStrings } from '../../utilities';
 
-const MyProfilePage = () => {
+export const MyProfilePage = () => {
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const { user } = useAuth();
   const queryClient = useQueryClient();

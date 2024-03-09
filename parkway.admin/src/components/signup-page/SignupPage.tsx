@@ -6,7 +6,7 @@ import useApi, { buildQueryKey } from '../../hooks/useApi';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { PasswordSettings } from '../../api';
 import { useState } from 'react';
-import ProfileVerification from '../profile-verification/ProfileVerification.tsx';
+import ProfileVerification from '../profile-verification';
 
 interface SignupFields {
   email: string;

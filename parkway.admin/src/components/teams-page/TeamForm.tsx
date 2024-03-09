@@ -1,7 +1,7 @@
 import { Breadcrumb, Button, Form, Input } from 'antd';
 import styles from './TeamForm.module.css';
 import { Link } from 'react-router-dom';
-import UserProfileSelect from '../user-profile-select/UserProfileSelect.tsx';
+import UserProfileSelect from '../user-profile-select';
 import { Team } from '../../types';
 import { AddBaseApiFormProps } from '../base-data-table-page';
 

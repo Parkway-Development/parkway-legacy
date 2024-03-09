@@ -1,5 +1,5 @@
 import { Team } from '../../types';
-import UserDisplayById from '../user-display/UserDisplayById.tsx';
+import { UserNameDisplayById } from '../user-name-display';
 import { BaseApiDataTablePage } from '../base-data-table-page';
 import { OrderedColumnsType } from '../../hooks/useColumns.tsx';
 
@@ -15,7 +15,7 @@ const teamColumns: OrderedColumnsType<Team> = [
     title: 'Leader',
     width: 200,
     dataIndex: 'leader',
-    render: (value: Team['leader']) => <UserDisplayById id={value} />,
+    render: (value: Team['leader']) => <UserNameDisplayById id={value} />,
     key: 'leader',
     displayOrder: 2
   },

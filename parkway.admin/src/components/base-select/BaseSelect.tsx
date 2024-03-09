@@ -14,7 +14,7 @@ export type MultipleSelectionProps = BaseSelection<string[]> & {
 
 export type BaseSelectionProps = SingleSelectionProps | MultipleSelectionProps;
 
-const BaseSelect = ({
+export const BaseSelect = ({
   isMultiSelect = false,
   onChange,
   ...props
@@ -34,5 +34,3 @@ const BaseSelect = ({
     />
   );
 };
-
-export default BaseSelect;

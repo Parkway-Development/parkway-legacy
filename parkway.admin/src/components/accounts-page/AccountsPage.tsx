@@ -1,7 +1,7 @@
 import { Account } from '../../types';
 import { BaseApiDataTablePage } from '../base-data-table-page';
 import { OrderedColumnsType } from '../../hooks/useColumns.tsx';
-import MoneyDisplay from '../money-display/MoneyDisplay.tsx';
+import MoneyDisplay from '../money-display';
 
 const accountColumns: OrderedColumnsType<Account> = [
   {
