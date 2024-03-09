@@ -21,6 +21,9 @@ import NotFoundPage from './components/not-found-page/NotFoundPage.tsx';
 import AccountsPage from './components/accounts-page/AccountsPage.tsx';
 import AddAccountPage from './components/accounts-page/AddAccountPage.tsx';
 import EditAccountPage from './components/accounts-page/EditAccountPage.tsx';
+import ContributionsPage from './components/contributions-page/ContributionsPage.tsx';
+import AddContributionPage from './components/contributions-page/AddContributionPage.tsx';
+import EditContributionPage from './components/contributions-page/EditContributionPage.tsx';
 
 const queryClient = new QueryClient();
 
@@ -47,6 +50,11 @@ createRoot(document.getElementById('root')!).render(
                 <Route index element={<DirectoryPage />} />
               </Route>
               <Route path="accounts">
+                <Route path="contributions">
+                  <Route path="add" element={<AddContributionPage />} />
+                  <Route path=":id/edit" element={<EditContributionPage />} />
+                  <Route index element={<ContributionsPage />} />
+                </Route>
                 <Route path="add" element={<AddAccountPage />} />
                 <Route path=":id/edit" element={<EditAccountPage />} />
                 <Route index element={<AccountsPage />} />
