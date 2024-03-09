@@ -5,10 +5,12 @@ import {
   memberStatusMapping,
   UserProfile
 } from '../../types/UserProfile.ts';
-import { buildSelectOptionsFromMapping } from '../../utilities/mappingHelpers.ts';
+import {
+  buildSelectOptionsFromMapping,
+  transformDateForDatePicker,
+  trimStrings
+} from '../../utilities';
 import { AddBaseApiFormProps } from '../base-data-table-page';
-import { transformDateForDatePicker } from '../../utilities/dateHelpers.ts';
-import { trimStrings } from '../../utilities/stringHelpers.ts';
 
 export type UserProfileFormFields = Omit<
   UserProfile,

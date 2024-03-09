@@ -9,7 +9,7 @@ import { BaseEntity } from '../../types/BaseEntity.ts';
 import { IsBaseEntityApi } from '../../api/baseApi.ts';
 import { ReactNode } from 'react';
 import { To, useNavigate } from 'react-router-dom';
-import { trimStrings } from '../../utilities/stringHelpers.ts';
+import { trimStrings } from '../../utilities';
 
 export type AddBaseApiFormProps<T extends BaseEntity> = {
   isSaving: boolean;

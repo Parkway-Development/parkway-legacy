@@ -8,7 +8,7 @@ import { UserProfile } from '../../types/UserProfile.ts';
 import { useAuth } from '../../hooks/useAuth.tsx';
 import { useState } from 'react';
 import UserProfileDisplay from './UserProfileDisplay.tsx';
-import { trimStrings } from '../../utilities/stringHelpers.ts';
+import { trimStrings } from '../../utilities';
 
 const MyProfilePage = () => {
   const [isEditing, setIsEditing] = useState<boolean>(false);
