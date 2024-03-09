@@ -64,9 +64,9 @@ const getAccountByName = async (req, res) => {
 
 //Update an account by ID
 const updateAccount = async (req, res) => {
-
-    if(!req.params.id){ return res.status(400).json({error: 'No account ID provided.'})}
-    if(!ValidationHelper.validateId(req.params.id)){ return res.status(404).json({error: 'Id is not valid.'}) }
+    const id = req.params.id;
+    if(!id){ return res.status(400).json({error: 'No account ID provided.'})}
+    if(!ValidationHelper.validateId(id)){ return res.status(404).json({error: 'Id is not valid.'}) }
     
     if(req.body.name){ req.body.name = ValidationHelper.sanitizeString(req.body.name) }
 
