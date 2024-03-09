@@ -1,5 +1,5 @@
 import { Account } from '../../types/Account.ts';
-import { BaseApiDataTablePage } from '../base-data-table-page/BaseDataTablePage.tsx';
+import { BaseApiDataTablePage } from '../base-data-table-page';
 import { OrderedColumnsType } from '../../hooks/useColumns.tsx';
 import MoneyDisplay from '../money-display/MoneyDisplay.tsx';
 
