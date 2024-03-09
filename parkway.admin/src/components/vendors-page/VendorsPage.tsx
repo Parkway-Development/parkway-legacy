@@ -1,6 +1,7 @@
 import { BaseApiDataTablePage } from '../base-data-table-page';
 import { OrderedColumnsType } from '../../hooks/useColumns.tsx';
 import { Vendor } from '../../types';
+import EmailDisplay from '../email-display';
 
 const vendorColumns: OrderedColumnsType<Vendor> = [
   {
@@ -44,7 +45,8 @@ const vendorColumns: OrderedColumnsType<Vendor> = [
     title: 'Email',
     dataIndex: 'email',
     key: 'email',
-    displayOrder: 7
+    displayOrder: 7,
+    render: (value: Vendor['email']) => <EmailDisplay email={value} />
   },
   {
     title: 'Website',
@@ -68,7 +70,8 @@ const vendorColumns: OrderedColumnsType<Vendor> = [
     title: 'Contact Email',
     dataIndex: 'contactEmail',
     key: 'contactEmail',
-    displayOrder: 11
+    displayOrder: 11,
+    render: (value: Vendor['contactEmail']) => <EmailDisplay email={value} />
   },
   {
     title: 'Notes',

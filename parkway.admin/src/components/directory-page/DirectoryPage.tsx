@@ -9,6 +9,7 @@ import { CheckCircleOutlined } from '@ant-design/icons';
 import { translateMapping } from '../../utilities';
 import { OrderedColumnsType } from '../../hooks/useColumns.tsx';
 import DateDisplay from '../date-display';
+import EmailDisplay from '../email-display';
 
 const userProfileColumns: OrderedColumnsType<UserProfile> = [
   {
@@ -54,7 +55,8 @@ const userProfileColumns: OrderedColumnsType<UserProfile> = [
     title: 'Email',
     dataIndex: 'email',
     key: 'email',
-    displayOrder: 7
+    displayOrder: 7,
+    render: (value: UserProfile['email']) => <EmailDisplay email={value} />
   },
   {
     title: 'Mobile Phone',
