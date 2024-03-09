@@ -1,12 +1,13 @@
 import { useAuth } from './useAuth.tsx';
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import buildTeamsApi, { TeamsApiType } from '../api/teamsApi.ts';
-import addUsersApi, { UsersApiType } from '../api/userApi.ts';
+import buildUsersApi, { UsersApiType } from '../api/userApi.ts';
 import buildGeneralApi, { GeneralApiType } from '../api/generalApi.ts';
 import buildAccountsApi, { AccountsApiType } from '../api/accountsApi.ts';
 import buildContributionsApi, {
   ContributionsApiType
 } from '../api/contributionsApi.ts';
+import buildVendorsApi, { VendorsApiType } from '../api/vendorsApi.ts';
 
 export type GenericResponse = Promise<AxiosResponse<any, any>>;
 export type TypedResponse<T> = Promise<Omit<AxiosResponse<T>, 'config'>>;
@@ -16,6 +17,7 @@ export type BaseApiTypes = {
   contributionsApi: ContributionsApiType;
   teamsApi: TeamsApiType;
   usersApi: UsersApiType;
+  vendorsApi: VendorsApiType;
 };
 
 export type ApiType = BaseApiTypes & {
@@ -28,7 +30,8 @@ export type QueryType =
   | 'contributions'
   | 'passwordSettings'
   | 'profiles'
-  | 'teams';
+  | 'teams'
+  | 'vendors';
 
 export const buildQueryKey = (queryType: QueryType, id?: string) => {
   const result: any[] = [queryType];
@@ -71,7 +74,8 @@ const useApi: () => ApiType = () => {
     contributionsApi: buildContributionsApi(instance),
     generalApi: buildGeneralApi(instance),
     teamsApi: buildTeamsApi(instance),
-    usersApi: addUsersApi(instance),
+    usersApi: buildUsersApi(instance),
+    vendorsApi: buildVendorsApi(instance),
     formatError
   };
 };

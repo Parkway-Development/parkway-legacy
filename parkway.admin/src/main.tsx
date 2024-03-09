@@ -24,6 +24,9 @@ import EditAccountPage from './components/accounts-page/EditAccountPage.tsx';
 import ContributionsPage from './components/contributions-page/ContributionsPage.tsx';
 import AddContributionPage from './components/contributions-page/AddContributionPage.tsx';
 import EditContributionPage from './components/contributions-page/EditContributionPage.tsx';
+import AddVendorPage from './components/vendors-page/AddVendorPage.tsx';
+import EditVendorPage from './components/vendors-page/EditVendorPage.tsx';
+import VendorsPage from './components/vendors-page/VendorsPage.tsx';
 
 const queryClient = new QueryClient();
 
@@ -54,6 +57,11 @@ createRoot(document.getElementById('root')!).render(
                   <Route path="add" element={<AddContributionPage />} />
                   <Route path=":id/edit" element={<EditContributionPage />} />
                   <Route index element={<ContributionsPage />} />
+                </Route>
+                <Route path="vendors">
+                  <Route path="add" element={<AddVendorPage />} />
+                  <Route path=":id/edit" element={<EditVendorPage />} />
+                  <Route index element={<VendorsPage />} />
                 </Route>
                 <Route path="add" element={<AddAccountPage />} />
                 <Route path=":id/edit" element={<EditAccountPage />} />

@@ -1,6 +1,6 @@
 import { Team } from '../../types/Team.ts';
 import UserDisplayById from '../user-display/UserDisplayById.tsx';
-import { BaseApiDataTablePage } from '../base-data-table-page/BaseDataTablePage.tsx';
+import { BaseApiDataTablePage } from '../base-data-table-page';
 import { OrderedColumnsType } from '../../hooks/useColumns.tsx';
 
 const teamColumns: OrderedColumnsType<Team> = [

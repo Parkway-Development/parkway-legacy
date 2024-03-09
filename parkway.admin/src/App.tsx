@@ -37,10 +37,14 @@ function App() {
                 label: <Link to="/accounts">Accounts</Link>,
                 children: [
                   {
-                    key: 2,
+                    key: 1,
                     label: (
                       <Link to="/accounts/contributions">Contributions</Link>
                     )
+                  },
+                  {
+                    key: 2,
+                    label: <Link to="/accounts/vendors">Vendors</Link>
                   }
                 ]
               },
