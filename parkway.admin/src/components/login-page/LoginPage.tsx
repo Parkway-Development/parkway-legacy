@@ -4,7 +4,7 @@ import { InternalLoginResponse, useAuth } from '../../hooks/useAuth.tsx';
 import { Link, useNavigate } from 'react-router-dom';
 import useApi from '../../hooks/useApi.ts';
 import { useMutation } from '@tanstack/react-query';
-import { LoginFields } from '../../api/userApi.ts';
+import { LoginFields } from '../../api';
 import { useState } from 'react';
 import ProfileVerification from '../profile-verification/ProfileVerification.tsx';
 

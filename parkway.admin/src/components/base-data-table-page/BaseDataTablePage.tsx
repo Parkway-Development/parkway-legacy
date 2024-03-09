@@ -11,7 +11,7 @@ import useApi, {
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { BaseEntity } from '../../types';
 import useColumns, { OrderedColumnsType } from '../../hooks/useColumns.tsx';
-import { IsBaseEntityApi } from '../../api/baseApi.ts';
+import { IsBaseEntityApi } from '../../api';
 
 type BaseDataTablePageProps<T extends BaseEntity> =
   BaseDataTableListProps<T> & {

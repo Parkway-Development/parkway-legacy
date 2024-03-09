@@ -3,7 +3,15 @@ import { afterEach, Mock, vi } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ApiType, TypedResponse } from '../hooks/useApi.ts';
-import { BaseApiType } from '../api/baseApi.ts';
+import {
+  AccountsApiType,
+  BaseApiType,
+  ContributionsApiType,
+  GeneralApiType,
+  TeamsApiType,
+  UsersApiType,
+  VendorsApiType
+} from '../api';
 import {
   Account,
   BaseEntity,
@@ -12,12 +20,6 @@ import {
   UserProfile,
   Vendor
 } from '../types';
-import { AccountsApiType } from '../api/accountsApi.ts';
-import { TeamsApiType } from '../api/teamsApi.ts';
-import { UsersApiType } from '../api/userApi.ts';
-import { GeneralApiType } from '../api/generalApi.ts';
-import { ContributionsApiType } from '../api/contributionsApi.ts';
-import { VendorsApiType } from '../api/vendorsApi.ts';
 
 afterEach(() => {
   cleanup();

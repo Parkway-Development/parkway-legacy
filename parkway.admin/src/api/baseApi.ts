@@ -16,7 +16,7 @@ export const IsBaseEntityApi = <T extends BaseEntity>(
   Object.keys(apiEntity).includes('getAll') &&
   Object.keys(apiEntity).includes('getById');
 
-const buildBaseApi = <T extends BaseEntity>(
+export const buildBaseApi = <T extends BaseEntity>(
   instance: AxiosInstance,
   basePath: string
 ): BaseApiType<T> => ({
@@ -27,5 +27,3 @@ const buildBaseApi = <T extends BaseEntity>(
   update: ({ _id: id, ...payload }: T) =>
     instance.patch(`${basePath}/${id}`, payload)
 });
-
-export default buildBaseApi;

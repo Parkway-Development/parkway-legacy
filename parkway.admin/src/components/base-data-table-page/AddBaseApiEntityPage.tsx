@@ -6,7 +6,7 @@ import useApi, {
   QueryType
 } from '../../hooks/useApi.ts';
 import { BaseEntity } from '../../types';
-import { IsBaseEntityApi } from '../../api/baseApi.ts';
+import { IsBaseEntityApi } from '../../api';
 import { ReactNode } from 'react';
 import { To, useNavigate } from 'react-router-dom';
 import { trimStrings } from '../../utilities';

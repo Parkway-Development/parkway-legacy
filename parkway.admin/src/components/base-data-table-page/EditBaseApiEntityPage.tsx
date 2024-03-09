@@ -6,7 +6,7 @@ import useApi, {
   QueryType
 } from '../../hooks/useApi.ts';
 import { BaseEntity } from '../../types';
-import { BaseApiType, IsBaseEntityApi } from '../../api/baseApi.ts';
+import { BaseApiType, IsBaseEntityApi } from '../../api';
 import { ReactNode } from 'react';
 import { To, useNavigate, useParams } from 'react-router-dom';
 import { AxiosResponse } from 'axios';

@@ -1,13 +1,19 @@
 import { useAuth } from './useAuth.tsx';
 import axios, { AxiosError, AxiosResponse } from 'axios';
-import buildTeamsApi, { TeamsApiType } from '../api/teamsApi.ts';
-import buildUsersApi, { UsersApiType } from '../api/userApi.ts';
-import buildGeneralApi, { GeneralApiType } from '../api/generalApi.ts';
-import buildAccountsApi, { AccountsApiType } from '../api/accountsApi.ts';
-import buildContributionsApi, {
-  ContributionsApiType
-} from '../api/contributionsApi.ts';
-import buildVendorsApi, { VendorsApiType } from '../api/vendorsApi.ts';
+import {
+  AccountsApiType,
+  buildAccountsApi,
+  buildContributionsApi,
+  buildGeneralApi,
+  buildTeamsApi,
+  buildUsersApi,
+  buildVendorsApi,
+  ContributionsApiType,
+  GeneralApiType,
+  TeamsApiType,
+  UsersApiType,
+  VendorsApiType
+} from '../api';
 
 export type GenericResponse = Promise<AxiosResponse<any, any>>;
 export type TypedResponse<T> = Promise<Omit<AxiosResponse<T>, 'config'>>;

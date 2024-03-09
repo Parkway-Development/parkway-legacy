@@ -4,7 +4,7 @@ import useApi, {
   buildQueryKey,
   QueryType
 } from '../../hooks/useApi.ts';
-import { IsBaseEntityApi } from '../../api/baseApi.ts';
+import { IsBaseEntityApi } from '../../api';
 import { useQuery } from '@tanstack/react-query';
 import { Alert, SelectProps } from 'antd';
 import BaseSelect, {

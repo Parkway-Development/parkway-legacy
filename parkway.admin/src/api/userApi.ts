@@ -2,7 +2,7 @@ import { UserProfile } from '../types';
 import { LoginResponse } from '../hooks/useAuth.tsx';
 import { TypedResponse } from '../hooks/useApi.ts';
 import { AxiosInstance } from 'axios';
-import buildBaseApi, { BaseApiType } from './baseApi.ts';
+import { BaseApiType, buildBaseApi } from './baseApi.ts';
 
 export type UsersApiType = BaseApiType<UserProfile> & {
   joinProfileAndUser: (payload: JoinProfileInput) => TypedResponse<UserProfile>;
@@ -20,7 +20,7 @@ export interface JoinProfileInput {
   userId: string;
 }
 
-const addUsersApi = (instance: AxiosInstance): UsersApiType => ({
+export const buildUsersApi = (instance: AxiosInstance): UsersApiType => ({
   ...buildBaseApi<UserProfile>(instance, '/api/profiles'),
   joinProfileAndUser: ({ profileId, ...payload }) =>
     instance.post<UserProfile>(`/api/profiles/join/${profileId}`, payload),
@@ -28,5 +28,3 @@ const addUsersApi = (instance: AxiosInstance): UsersApiType => ({
   signup: (payload) =>
     instance.post<LoginResponse>('/api/users/connect', payload)
 });
-
-export default addUsersApi;
