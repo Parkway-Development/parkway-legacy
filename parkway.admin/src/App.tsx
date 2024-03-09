@@ -34,18 +34,26 @@ function App() {
             items={[
               {
                 key: 1,
-                label: <Link to="/accounts">Accounts</Link>
-              },
-              {
-                key: 2,
-                label: <Link to="/profiles">Directory</Link>
+                label: <Link to="/accounts">Accounts</Link>,
+                children: [
+                  {
+                    key: 2,
+                    label: (
+                      <Link to="/accounts/contributions">Contributions</Link>
+                    )
+                  }
+                ]
               },
               {
                 key: 3,
-                label: <Link to="/giving">Giving</Link>
+                label: <Link to="/profiles">Directory</Link>
               },
               {
                 key: 4,
+                label: <Link to="/giving">Giving</Link>
+              },
+              {
+                key: 5,
                 label: <Link to="/teams">Teams</Link>
               }
             ]}
