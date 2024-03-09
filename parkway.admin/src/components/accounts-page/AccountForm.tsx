@@ -1,7 +1,7 @@
 import { Breadcrumb, Button, Form, Input } from 'antd';
 import styles from './AccountForm.module.css';
 import { Link } from 'react-router-dom';
-import { Account } from '../../types/Account.ts';
+import { Account } from '../../types';
 import { AddBaseApiFormProps } from '../base-data-table-page';
 
 type AccountWithoutId = Omit<Account, '_id'>;
@@ -26,11 +26,8 @@ const AccountForm = ({
   };
 
   const handleSave = (values: AccountFields) => {
-    const payload: Omit<Account, '_id'> = {
-      name: values.name.trim(),
-      description: values.description?.trim(),
-      targetAmount: values.targetAmount,
-      currentAmount: values.currentAmount,
+    const payload: AccountWithoutId = {
+      ...values,
       notes: [values.notes]
     };
 

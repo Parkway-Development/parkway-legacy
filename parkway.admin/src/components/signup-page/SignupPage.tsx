@@ -4,9 +4,9 @@ import { InternalLoginResponse, useAuth } from '../../hooks/useAuth';
 import { Link, useNavigate } from 'react-router-dom';
 import useApi, { buildQueryKey } from '../../hooks/useApi';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { PasswordSettings } from '../../api/generalApi.ts';
+import { PasswordSettings } from '../../api';
 import { useState } from 'react';
-import ProfileVerification from '../profile-verification/ProfileVerification.tsx';
+import ProfileVerification from '../profile-verification';
 
 interface SignupFields {
   email: string;

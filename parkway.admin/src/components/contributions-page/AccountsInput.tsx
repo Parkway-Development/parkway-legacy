@@ -1,10 +1,10 @@
-import { ContributionAccount } from '../../types/Contribution.ts';
+import { ContributionAccount } from '../../types';
 import { SyntheticEvent, useCallback, useEffect, useState } from 'react';
-import AccountSelect from '../account-select/AccountSelect.tsx';
+import AccountSelect from '../account-select';
 import { Button, Input } from 'antd';
 import styles from './AccountsInput.module.css';
 import { CloseOutlined, PlusCircleOutlined } from '@ant-design/icons';
-import MoneyDisplay from '../money-display/MoneyDisplay.tsx';
+import MoneyDisplay from '../money-display';
 
 type ContributionAccountInput = {
   account: string | undefined;

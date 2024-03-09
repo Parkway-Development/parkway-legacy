@@ -5,10 +5,11 @@ import useApi, {
   buildQueryKey,
   QueryType
 } from '../../hooks/useApi.ts';
-import { BaseEntity } from '../../types/BaseEntity.ts';
-import { IsBaseEntityApi } from '../../api/baseApi.ts';
+import { BaseEntity } from '../../types';
+import { IsBaseEntityApi } from '../../api';
 import { ReactNode } from 'react';
 import { To, useNavigate } from 'react-router-dom';
+import { trimStrings } from '../../utilities';
 
 export type AddBaseApiFormProps<T extends BaseEntity> = {
   isSaving: boolean;
@@ -55,7 +56,9 @@ const AddBaseApiEntityPage = <
   const [api, contextHolder] = notification.useNotification();
 
   const handleAdd = (payload: Omit<T, '_id'>) => {
-    mutate(payload, {
+    const trimmedPayload = trimStrings(payload);
+
+    mutate(trimmedPayload, {
       onSuccess: ({ data }: { data: T }) => {
         queryClient.setQueryData(buildQueryKey(queryKeyProp, data._id), data);
         navigate(mainPage);

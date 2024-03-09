@@ -4,10 +4,13 @@ import {
   applicationRoleMapping,
   memberStatusMapping,
   UserProfile
-} from '../../types/UserProfile.ts';
-import { buildSelectOptionsFromMapping } from '../../utilities/mappingHelpers.ts';
+} from '../../types';
+import {
+  buildSelectOptionsFromMapping,
+  transformDateForDatePicker,
+  trimStrings
+} from '../../utilities';
 import { AddBaseApiFormProps } from '../base-data-table-page';
-import { transformDateForDatePicker } from '../../utilities/dateHelpers.ts';
 
 export type UserProfileFormFields = Omit<
   UserProfile,
@@ -22,38 +25,6 @@ type UserProfileFormProps = AddBaseApiFormProps<UserProfile> & {
 };
 
 const FormItem = Form.Item<UserProfileFormFields>;
-
-export const transformFieldsToMyProfilePayload = (
-  fields: UserProfileFormFields
-): Omit<
-  UserProfile,
-  '_id' | 'user' | 'member' | 'memberStatus' | 'applicationRole'
-> => ({
-  firstName: fields.firstName.trim(),
-  lastName: fields.lastName.trim(),
-  middleInitial: fields.middleInitial?.trim(),
-  nickname: fields.nickname?.trim(),
-  dateOfBirth: fields.dateOfBirth,
-  gender: fields.gender,
-  email: fields.email?.trim(),
-  mobilePhone: fields.mobilePhone?.trim(),
-  homePhone: fields.homePhone?.trim(),
-  streetAddress1: fields.streetAddress1?.trim(),
-  streetAddress2: fields.streetAddress2?.trim(),
-  city: fields.city?.trim(),
-  state: fields.state?.trim(),
-  zip: fields.zip?.trim()
-});
-
-export const transformFieldsToPayload = (
-  fields: UserProfileFormFields
-): Omit<UserProfile, '_id'> => ({
-  ...transformFieldsToMyProfilePayload(fields),
-  user: fields.user,
-  member: fields.member,
-  memberStatus: fields.memberStatus,
-  applicationRole: fields.applicationRole
-});
 
 export const addProfileInitialValues: UserProfileFormFields = {
   firstName: '',
@@ -74,21 +45,29 @@ const UserProfileForm = ({
 }: UserProfileFormProps) => {
   const [form] = Form.useForm<UserProfileFormFields>();
 
-  const handleSubmit = (values: UserProfileFormFields) => {
-    const payload = isMyProfile
-      ? transformFieldsToMyProfilePayload(values)
-      : transformFieldsToPayload(values);
-
-    const finalPayload = payload as Omit<UserProfile, '_id'>;
-    onSave(finalPayload);
-  };
-
   const initial = initialValues
     ? {
         ...initialValues,
         dateOfBirth: transformDateForDatePicker(initialValues.dateOfBirth)
       }
     : addProfileInitialValues;
+
+  const handleSubmit = (values: UserProfileFormFields) => {
+    let payload = trimStrings(values);
+
+    if (isMyProfile) {
+      payload = {
+        ...payload,
+        user: initial.user,
+        member: initial.member,
+        memberStatus: initial.memberStatus,
+        applicationRole: initial.applicationRole
+      };
+    }
+
+    const finalPayload = payload as Omit<UserProfile, '_id'>;
+    onSave(finalPayload);
+  };
 
   return (
     <>

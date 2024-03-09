@@ -41,19 +41,23 @@ function App() {
                     label: (
                       <Link to="/accounts/contributions">Contributions</Link>
                     )
+                  },
+                  {
+                    key: 3,
+                    label: <Link to="/accounts/vendors">Vendors</Link>
                   }
                 ]
               },
               {
-                key: 3,
+                key: 4,
                 label: <Link to="/profiles">Directory</Link>
               },
               {
-                key: 4,
+                key: 5,
                 label: <Link to="/giving">Giving</Link>
               },
               {
-                key: 5,
+                key: 6,
                 label: <Link to="/teams">Teams</Link>
               }
             ]}

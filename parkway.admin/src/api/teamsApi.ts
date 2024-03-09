@@ -1,10 +1,8 @@
-import { Team } from '../types/Team.ts';
+import { Team } from '../types';
 import { AxiosInstance } from 'axios';
-import buildBaseApi, { BaseApiType } from './baseApi.ts';
+import { BaseApiType, buildBaseApi } from './baseApi.ts';
 
 export type TeamsApiType = BaseApiType<Team>;
 
-const buildTeamsApi = (instance: AxiosInstance): TeamsApiType =>
+export const buildTeamsApi = (instance: AxiosInstance): TeamsApiType =>
   buildBaseApi<Team>(instance, '/api/teams');
-
-export default buildTeamsApi;

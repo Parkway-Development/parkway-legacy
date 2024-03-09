@@ -2,13 +2,13 @@ import { useQuery } from '@tanstack/react-query';
 import useApi, { buildQueryKey } from '../../hooks/useApi.ts';
 import { Skeleton } from 'antd';
 import { WarningOutlined } from '@ant-design/icons';
-import UserProfileDisplay from './UserProfileDisplay.tsx';
+import UserNameDisplay from './UserNameDisplay.tsx';
 
 interface UserDisplayProps {
   id?: string;
 }
 
-const UserDisplayById = ({ id }: UserDisplayProps) => {
+export const UserNameDisplayById = ({ id }: UserDisplayProps) => {
   const {
     usersApi: { getAll }
   } = useApi();
@@ -25,7 +25,5 @@ const UserDisplayById = ({ id }: UserDisplayProps) => {
 
   const user = response.data.find((user) => user._id === id);
 
-  return user ? <UserProfileDisplay user={user} /> : <WarningOutlined />;
+  return user ? <UserNameDisplay user={user} /> : <WarningOutlined />;
 };
-
-export default UserDisplayById;

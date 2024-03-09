@@ -2,11 +2,7 @@ import { Navigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth.tsx';
 import { ReactNode } from 'react';
 
-export const ProtectedRoute = ({
-  children
-}: {
-  children: ReactNode;
-}): ReactNode => {
+const ProtectedRoute = ({ children }: { children: ReactNode }): ReactNode => {
   const { isLoggedIn } = useAuth();
 
   if (!isLoggedIn) {
@@ -15,3 +11,5 @@ export const ProtectedRoute = ({
 
   return children;
 };
+
+export default ProtectedRoute;

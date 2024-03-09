@@ -13,9 +13,7 @@ export interface PasswordSettings {
   minimumSymbols: number;
 }
 
-const buildGeneralApi = (instance: AxiosInstance): GeneralApiType => ({
+export const buildGeneralApi = (instance: AxiosInstance): GeneralApiType => ({
   getPasswordSettings: () =>
     instance.get<PasswordSettings>('/api/settings/password')
 });
-
-export default buildGeneralApi;

@@ -5,11 +5,12 @@ import useApi, {
   buildQueryKey,
   QueryType
 } from '../../hooks/useApi.ts';
-import { BaseEntity } from '../../types/BaseEntity.ts';
-import { BaseApiType, IsBaseEntityApi } from '../../api/baseApi.ts';
+import { BaseEntity } from '../../types';
+import { BaseApiType, IsBaseEntityApi } from '../../api';
 import { ReactNode } from 'react';
 import { To, useNavigate, useParams } from 'react-router-dom';
 import { AxiosResponse } from 'axios';
+import { trimStrings } from '../../utilities';
 
 export type EditBaseApiFormProps<T extends BaseEntity> = {
   isSaving: boolean;
@@ -98,7 +99,7 @@ const EditBaseApiEntityPage = <
   };
 
   const handleUpdate = (payload: Omit<T, '_id'>) => {
-    const newPayload = payload as T;
+    const newPayload = trimStrings(payload) as T;
 
     mutate(
       { ...newPayload, _id: id },

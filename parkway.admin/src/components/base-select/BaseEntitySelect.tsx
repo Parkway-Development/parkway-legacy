@@ -1,13 +1,14 @@
-import { BaseEntity } from '../../types/BaseEntity.ts';
+import { BaseEntity } from '../../types';
 import useApi, {
   BaseApiTypes,
   buildQueryKey,
   QueryType
 } from '../../hooks/useApi.ts';
-import { IsBaseEntityApi } from '../../api/baseApi.ts';
+import { IsBaseEntityApi } from '../../api';
 import { useQuery } from '@tanstack/react-query';
 import { Alert, SelectProps } from 'antd';
-import BaseSelect, {
+import {
+  BaseSelect,
   MultipleSelectionProps,
   SingleSelectionProps
 } from './BaseSelect.tsx';
@@ -25,7 +26,7 @@ type BaseEntitySelectProps<
   renderer: (value: T) => string;
 };
 
-const BaseEntitySelect = <
+export const BaseEntitySelect = <
   T extends BaseEntity,
   TBaseApiKey extends keyof BaseApiTypes
 >({
@@ -74,5 +75,3 @@ const BaseEntitySelect = <
 
   return <BaseSelect {...props} loading={isPending} options={options} />;
 };
-
-export default BaseEntitySelect;

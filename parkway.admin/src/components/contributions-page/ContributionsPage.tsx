@@ -1,10 +1,10 @@
-import { Contribution } from '../../types/Contribution.ts';
+import { Contribution } from '../../types';
 import { BaseApiDataTablePage } from '../base-data-table-page';
 import { OrderedColumnsType } from '../../hooks/useColumns.tsx';
-import UserDisplayById from '../user-display/UserDisplayById.tsx';
+import { UserNameDisplayById } from '../user-name-display';
 import { LockOutlined } from '@ant-design/icons';
-import DateDisplay from '../date-display/DateDisplay.tsx';
-import MoneyDisplay from '../money-display/MoneyDisplay.tsx';
+import DateDisplay from '../date-display';
+import MoneyDisplay from '../money-display';
 
 const contributionColumns: OrderedColumnsType<Contribution> = [
   {
@@ -68,7 +68,9 @@ const contributionColumns: OrderedColumnsType<Contribution> = [
     title: 'User Profile',
     width: 200,
     dataIndex: 'profile',
-    render: (value: Contribution['profile']) => <UserDisplayById id={value} />,
+    render: (value: Contribution['profile']) => (
+      <UserNameDisplayById id={value} />
+    ),
     key: 'profile',
     displayOrder: 8
   }

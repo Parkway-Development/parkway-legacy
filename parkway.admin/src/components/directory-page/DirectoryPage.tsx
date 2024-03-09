@@ -3,12 +3,13 @@ import {
   genderMapping,
   memberStatusMapping,
   UserProfile
-} from '../../types/UserProfile.ts';
+} from '../../types';
 import { BaseApiDataTablePage } from '../base-data-table-page';
 import { CheckCircleOutlined } from '@ant-design/icons';
-import { translateMapping } from '../../utilities/mappingHelpers.ts';
+import { translateMapping } from '../../utilities';
 import { OrderedColumnsType } from '../../hooks/useColumns.tsx';
-import DateDisplay from '../date-display/DateDisplay.tsx';
+import DateDisplay from '../date-display';
+import EmailDisplay from '../email-display';
 
 const userProfileColumns: OrderedColumnsType<UserProfile> = [
   {
@@ -54,7 +55,8 @@ const userProfileColumns: OrderedColumnsType<UserProfile> = [
     title: 'Email',
     dataIndex: 'email',
     key: 'email',
-    displayOrder: 7
+    displayOrder: 7,
+    render: (value: UserProfile['email']) => <EmailDisplay email={value} />
   },
   {
     title: 'Mobile Phone',
