@@ -78,7 +78,7 @@ const ContributionForm = ({
           name="totalAmount"
           rules={[{ required: true, message: 'Total amount is required.' }]}
         >
-          <Input autoFocus type="number" />
+          <Input autoFocus type="number" step={0.01} />
         </Form.Item>
 
         <Form.Item<ContributionWithoutId>

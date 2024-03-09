@@ -1,6 +1,7 @@
 import { Account } from '../../types/Account.ts';
 import { BaseApiDataTablePage } from '../base-data-table-page/BaseDataTablePage.tsx';
 import { OrderedColumnsType } from '../../hooks/useColumns.tsx';
+import MoneyDisplay from '../money-display/MoneyDisplay.tsx';
 
 const accountColumns: OrderedColumnsType<Account> = [
   {
@@ -20,14 +21,16 @@ const accountColumns: OrderedColumnsType<Account> = [
     dataIndex: 'targetAmount',
     align: 'right',
     key: 'targetAmount',
-    displayOrder: 3
+    displayOrder: 3,
+    render: (value: Account['targetAmount']) => <MoneyDisplay money={value} />
   },
   {
     title: 'Current Amount',
     dataIndex: 'currentAmount',
     key: 'currentAmount',
     align: 'right',
-    displayOrder: 4
+    displayOrder: 4,
+    render: (value: Account['currentAmount']) => <MoneyDisplay money={value} />
   },
   {
     title: 'Notes',

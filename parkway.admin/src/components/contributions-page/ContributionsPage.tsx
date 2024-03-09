@@ -4,6 +4,7 @@ import { OrderedColumnsType } from '../../hooks/useColumns.tsx';
 import UserDisplayById from '../user-display/UserDisplayById.tsx';
 import { LockOutlined } from '@ant-design/icons';
 import DateDisplay from '../date-display/DateDisplay.tsx';
+import MoneyDisplay from '../money-display/MoneyDisplay.tsx';
 
 const contributionColumns: OrderedColumnsType<Contribution> = [
   {
@@ -11,7 +12,10 @@ const contributionColumns: OrderedColumnsType<Contribution> = [
     dataIndex: 'totalAmount',
     key: 'totalAmount',
     align: 'right',
-    displayOrder: 1
+    displayOrder: 1,
+    render: (value: Contribution['totalAmount']) => (
+      <MoneyDisplay money={value} />
+    )
   },
   {
     title: 'Transaction Date',
