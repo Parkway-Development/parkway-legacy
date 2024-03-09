@@ -12,19 +12,19 @@ const{
 } = require('../../controllers/accounting/vendorController')
 
 //Post a vendor
-router.post('/vendor', addVendor)
+router.post('/', addVendor)
 
 //Get all vendors
-router.get('/vendor', getAllVendors)
+router.get('/', getAllVendors)
 
 //Get vendor by ID
-router.get('/vendor/:id', getVendorById)
+router.get('/:id', getVendorById)
 
 //Update a vendor by ID
-router.patch('/vendor/:id', updateVendor)
+router.patch('/:id', updateVendor)
 
 //Delete a vendor by ID
-router.delete('/vendor/:id', deleteVendor)
+router.delete('/:id', deleteVendor)
 
 router.use('*', (req, res) => {
     res.status(404).json({ message: 'Not Found' });
