@@ -1,4 +1,4 @@
-import { BaseEntity } from '../../types/BaseEntity.ts';
+import { BaseEntity } from '../../types';
 import useApi, {
   BaseApiTypes,
   buildQueryKey,

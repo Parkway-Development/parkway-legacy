@@ -1,6 +1,6 @@
 import { AxiosInstance } from 'axios';
 import buildBaseApi, { BaseApiType } from './baseApi.ts';
-import { Contribution } from '../types/Contribution.ts';
+import { Contribution } from '../types';
 
 export type ContributionsApiType = BaseApiType<Contribution>;
 

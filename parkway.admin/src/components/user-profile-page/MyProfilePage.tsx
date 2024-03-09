@@ -4,7 +4,7 @@ import { Alert, notification, Spin } from 'antd';
 import UserProfileForm, {
   UserProfileFormFields
 } from '../directory-page/UserProfileForm.tsx';
-import { UserProfile } from '../../types/UserProfile.ts';
+import { UserProfile } from '../../types';
 import { useAuth } from '../../hooks/useAuth.tsx';
 import { useState } from 'react';
 import UserProfileDisplay from './UserProfileDisplay.tsx';

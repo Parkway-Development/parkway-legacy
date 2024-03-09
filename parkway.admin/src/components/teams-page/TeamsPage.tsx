@@ -1,4 +1,4 @@
-import { Team } from '../../types/Team.ts';
+import { Team } from '../../types';
 import UserDisplayById from '../user-display/UserDisplayById.tsx';
 import { BaseApiDataTablePage } from '../base-data-table-page';
 import { OrderedColumnsType } from '../../hooks/useColumns.tsx';

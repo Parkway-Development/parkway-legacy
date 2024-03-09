@@ -1,4 +1,4 @@
-import { Contribution } from '../../types/Contribution.ts';
+import { Contribution } from '../../types';
 import { BaseApiDataTablePage } from '../base-data-table-page';
 import { OrderedColumnsType } from '../../hooks/useColumns.tsx';
 import UserDisplayById from '../user-display/UserDisplayById.tsx';

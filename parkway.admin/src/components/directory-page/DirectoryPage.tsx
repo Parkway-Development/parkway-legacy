@@ -3,7 +3,7 @@ import {
   genderMapping,
   memberStatusMapping,
   UserProfile
-} from '../../types/UserProfile.ts';
+} from '../../types';
 import { BaseApiDataTablePage } from '../base-data-table-page';
 import { CheckCircleOutlined } from '@ant-design/icons';
 import { translateMapping } from '../../utilities';

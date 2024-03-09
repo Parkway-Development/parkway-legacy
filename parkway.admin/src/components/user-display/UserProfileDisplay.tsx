@@ -1,4 +1,4 @@
-import { UserProfile } from '../../types/UserProfile.ts';
+import { UserProfile } from '../../types';
 
 interface UserProfileDisplayProps {
   user: UserProfile;

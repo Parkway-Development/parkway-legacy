@@ -2,7 +2,7 @@ import { createContext, ReactNode, useContext, useMemo } from 'react';
 import { useLocalStorage } from './useLocalStorage';
 import { jwtDecode } from 'jwt-decode';
 import { useNavigate } from 'react-router-dom';
-import { UserProfile } from '../types/UserProfile.ts';
+import { UserProfile } from '../types';
 
 export interface AuthUser {
   id: string;

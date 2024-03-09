@@ -4,14 +4,20 @@ import { MemoryRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ApiType, TypedResponse } from '../hooks/useApi.ts';
 import { BaseApiType } from '../api/baseApi.ts';
-import { BaseEntity } from '../types/BaseEntity.ts';
-import { Account } from '../types/Account.ts';
-import { Team } from '../types/Team.ts';
+import {
+  Account,
+  BaseEntity,
+  Contribution,
+  Team,
+  UserProfile,
+  Vendor
+} from '../types';
 import { AccountsApiType } from '../api/accountsApi.ts';
 import { TeamsApiType } from '../api/teamsApi.ts';
 import { UsersApiType } from '../api/userApi.ts';
 import { GeneralApiType } from '../api/generalApi.ts';
-import { UserProfile } from '../types/UserProfile.ts';
+import { ContributionsApiType } from '../api/contributionsApi.ts';
+import { VendorsApiType } from '../api/vendorsApi.ts';
 
 afterEach(() => {
   cleanup();
@@ -56,18 +62,22 @@ const mockBaseApi = <T extends BaseEntity>(
 
 export type MockApiType = Partial<{
   accountsApi: Partial<AccountsApiType>;
+  contributionsApi: Partial<ContributionsApiType>;
+  generalApi: Partial<GeneralApiType>;
   teamsApi: Partial<TeamsApiType>;
   usersApi: Partial<UsersApiType>;
-  generalApi: Partial<GeneralApiType>;
+  vendorsApi: Partial<VendorsApiType>;
 }>;
 
 export const mockApi = (
   useApiFn: () => ApiType,
   {
     accountsApi,
+    contributionsApi,
+    generalApi,
     teamsApi,
     usersApi,
-    generalApi,
+    vendorsApi,
     ...overrides
   }: MockApiType = {}
 ) => {
@@ -81,11 +91,13 @@ export const mockApi = (
       ...usersApi
     },
     accountsApi: mockBaseApi<Account>(accountsApi),
+    contributionsApi: mockBaseApi<Contribution>(contributionsApi),
     teamsApi: mockBaseApi<Team>(teamsApi),
     generalApi: {
       getPasswordSettings: vi.fn(),
       ...generalApi
     },
+    vendorsApi: mockBaseApi<Vendor>(vendorsApi),
     ...overrides
   });
 };

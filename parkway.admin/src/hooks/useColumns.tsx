@@ -1,5 +1,5 @@
 import { GenericResponse } from './useApi.ts';
-import { BaseEntity } from '../types/BaseEntity.ts';
+import { BaseEntity } from '../types';
 import { Link, To } from 'react-router-dom';
 import { ColumnType } from 'antd/lib/table';
 import { ReactNode, useRef, useState } from 'react';

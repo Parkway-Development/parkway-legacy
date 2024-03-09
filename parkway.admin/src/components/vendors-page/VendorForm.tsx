@@ -2,7 +2,7 @@ import { Breadcrumb, Button, Form, Input } from 'antd';
 import styles from './VendorForm.module.css';
 import { Link } from 'react-router-dom';
 import { AddBaseApiFormProps } from '../base-data-table-page';
-import { Vendor } from '../../types/Vendor.ts';
+import { Vendor } from '../../types';
 
 type VendorWithoutId = Omit<Vendor, '_id'>;
 

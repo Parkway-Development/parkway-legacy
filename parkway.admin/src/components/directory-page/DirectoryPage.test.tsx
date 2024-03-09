@@ -8,7 +8,7 @@ import {
   screen
 } from '../../test/utils';
 import useApi from '../../hooks/useApi';
-import { UserProfile } from '../../types/UserProfile';
+import { UserProfile } from '../../types';
 
 vi.mock('../../hooks/useApi');
 

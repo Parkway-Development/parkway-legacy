@@ -1,4 +1,4 @@
-import { UserProfile } from '../../types/UserProfile.ts';
+import { UserProfile } from '../../types';
 import { Button, Card } from 'antd';
 import styles from './UserProfileDisplay.module.css';
 

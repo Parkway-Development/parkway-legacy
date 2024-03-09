@@ -1,4 +1,4 @@
-import { BaseEntity } from '../../types/BaseEntity.ts';
+import { BaseEntity } from '../../types';
 import * as React from 'react';
 import { CSSProperties, useEffect, useState } from 'react';
 import { Button, ModalFuncProps, Switch } from 'antd';

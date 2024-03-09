@@ -1,4 +1,4 @@
-import { UserProfile } from '../types/UserProfile.ts';
+import { UserProfile } from '../types';
 import { LoginResponse } from '../hooks/useAuth.tsx';
 import { TypedResponse } from '../hooks/useApi.ts';
 import { AxiosInstance } from 'axios';

@@ -1,7 +1,7 @@
 import { Breadcrumb, Button, DatePicker, Form, Input, Switch } from 'antd';
 import styles from './ContributionForm.module.css';
 import { Link } from 'react-router-dom';
-import { Contribution, ContributionAccount } from '../../types/Contribution.ts';
+import { Contribution, ContributionAccount } from '../../types';
 import { AddBaseApiFormProps } from '../base-data-table-page';
 import UserProfileSelect from '../user-profile-select/UserProfileSelect.tsx';
 import { transformDateForDatePicker } from '../../utilities';

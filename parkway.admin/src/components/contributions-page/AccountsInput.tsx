@@ -1,4 +1,4 @@
-import { ContributionAccount } from '../../types/Contribution.ts';
+import { ContributionAccount } from '../../types';
 import { SyntheticEvent, useCallback, useEffect, useState } from 'react';
 import AccountSelect from '../account-select/AccountSelect.tsx';
 import { Button, Input } from 'antd';

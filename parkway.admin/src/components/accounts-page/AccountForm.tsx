@@ -1,7 +1,7 @@
 import { Breadcrumb, Button, Form, Input } from 'antd';
 import styles from './AccountForm.module.css';
 import { Link } from 'react-router-dom';
-import { Account } from '../../types/Account.ts';
+import { Account } from '../../types';
 import { AddBaseApiFormProps } from '../base-data-table-page';
 
 type AccountWithoutId = Omit<Account, '_id'>;

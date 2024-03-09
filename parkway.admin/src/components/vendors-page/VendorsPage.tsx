@@ -1,6 +1,6 @@
 import { BaseApiDataTablePage } from '../base-data-table-page';
 import { OrderedColumnsType } from '../../hooks/useColumns.tsx';
-import { Vendor } from '../../types/Vendor.ts';
+import { Vendor } from '../../types';
 
 const vendorColumns: OrderedColumnsType<Vendor> = [
   {

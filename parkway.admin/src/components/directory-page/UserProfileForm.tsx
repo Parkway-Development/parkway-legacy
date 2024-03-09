@@ -4,7 +4,7 @@ import {
   applicationRoleMapping,
   memberStatusMapping,
   UserProfile
-} from '../../types/UserProfile.ts';
+} from '../../types';
 import {
   buildSelectOptionsFromMapping,
   transformDateForDatePicker,

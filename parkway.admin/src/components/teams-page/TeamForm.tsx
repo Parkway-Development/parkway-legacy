@@ -2,7 +2,7 @@ import { Breadcrumb, Button, Form, Input } from 'antd';
 import styles from './TeamForm.module.css';
 import { Link } from 'react-router-dom';
 import UserProfileSelect from '../user-profile-select/UserProfileSelect.tsx';
-import { Team } from '../../types/Team.ts';
+import { Team } from '../../types';
 import { AddBaseApiFormProps } from '../base-data-table-page';
 
 type TeamWithoutId = Omit<Team, '_id'>;

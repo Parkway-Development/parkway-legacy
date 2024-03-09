@@ -1,4 +1,4 @@
-import { Team } from '../types/Team.ts';
+import { Team } from '../types';
 import { AxiosInstance } from 'axios';
 import buildBaseApi, { BaseApiType } from './baseApi.ts';
 

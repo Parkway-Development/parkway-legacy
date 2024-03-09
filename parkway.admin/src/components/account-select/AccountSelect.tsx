@@ -1,7 +1,7 @@
 import BaseEntitySelect, {
   ExportedBaseEntitySelectProps
 } from '../base-select/BaseEntitySelect.tsx';
-import { Account } from '../../types/Account.ts';
+import { Account } from '../../types';
 
 const AccountSelect = (props: ExportedBaseEntitySelectProps) => {
   return (

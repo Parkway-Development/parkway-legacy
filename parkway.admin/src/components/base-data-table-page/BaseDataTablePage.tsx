@@ -9,7 +9,7 @@ import useApi, {
   TypedResponse
 } from '../../hooks/useApi.ts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { BaseEntity } from '../../types/BaseEntity.ts';
+import { BaseEntity } from '../../types';
 import useColumns, { OrderedColumnsType } from '../../hooks/useColumns.tsx';
 import { IsBaseEntityApi } from '../../api/baseApi.ts';
 
