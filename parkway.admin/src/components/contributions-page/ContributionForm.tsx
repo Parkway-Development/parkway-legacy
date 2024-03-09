@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { Contribution } from '../../types/Contribution.ts';
 import { AddBaseApiFormProps } from '../base-data-table-page';
 import UserProfileSelect from '../user-profile-select/UserProfileSelect.tsx';
-import dayjs from 'dayjs';
+import { transformDateForDatePicker } from '../../utilities/dateHelpers.ts';
 
 type ContributionWithoutId = Omit<Contribution, '_id'>;
 
@@ -34,12 +34,10 @@ const ContributionForm = ({
   const initialValues = initialValuesProp
     ? {
         ...initialValuesProp,
-        transactionDate: initialValuesProp.transactionDate
-          ? dayjs(initialValuesProp.transactionDate, 'YYYY-MM-DD')
-          : undefined,
-        depositDate: initialValuesProp.depositDate
-          ? dayjs(initialValuesProp.depositDate, 'YYYY-MM-DD')
-          : undefined
+        transactionDate: transformDateForDatePicker(
+          initialValuesProp.transactionDate
+        ),
+        depositDate: transformDateForDatePicker(initialValuesProp.depositDate)
       }
     : undefined;
 
