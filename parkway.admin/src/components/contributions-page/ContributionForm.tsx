@@ -1,10 +1,12 @@
 import { Breadcrumb, Button, DatePicker, Form, Input, Switch } from 'antd';
 import styles from './ContributionForm.module.css';
 import { Link } from 'react-router-dom';
-import { Contribution } from '../../types/Contribution.ts';
+import { Contribution, ContributionAccount } from '../../types/Contribution.ts';
 import { AddBaseApiFormProps } from '../base-data-table-page';
 import UserProfileSelect from '../user-profile-select/UserProfileSelect.tsx';
 import { transformDateForDatePicker } from '../../utilities/dateHelpers.ts';
+import AccountsInput from './AccountsInput.tsx';
+import { useState } from 'react';
 
 type ContributionWithoutId = Omit<Contribution, '_id'>;
 
@@ -19,11 +21,13 @@ const ContributionForm = ({
   onCancel
 }: ContributionFormProps) => {
   const [form] = Form.useForm<ContributionWithoutId>();
+  const totalAmount = Form.useWatch('totalAmount', form);
+  const [isAccountBalanceValid, setIsAccountBalanceValid] =
+    useState<boolean>(false);
 
   const handleSave = (values: ContributionWithoutId) => {
     const payload: Omit<Contribution, '_id'> = {
       ...values,
-      accounts: [],
       type: values.type?.trim(),
       depositBatchId: values.depositBatchId?.trim()
     };
@@ -45,6 +49,17 @@ const ContributionForm = ({
     form.setFieldsValue({
       profile: value
     });
+
+  const handleAccountsChange = (
+    accounts: ContributionAccount[],
+    isValid: boolean
+  ) => {
+    form.setFieldsValue({
+      accounts
+    });
+
+    setIsAccountBalanceValid(isValid);
+  };
 
   return (
     <>
@@ -110,7 +125,11 @@ const ContributionForm = ({
         </Form.Item>
 
         <Form.Item<ContributionWithoutId> label="Accounts" name="accounts">
-          <p>Accounts coming soon...</p>
+          <AccountsInput
+            onChange={handleAccountsChange}
+            totalAmount={totalAmount}
+            initialValue={initialValues?.accounts}
+          />
         </Form.Item>
 
         <Form.Item<ContributionWithoutId>
@@ -129,7 +148,7 @@ const ContributionForm = ({
             <Button
               type="primary"
               htmlType="submit"
-              disabled={isSaving}
+              disabled={isSaving || !isAccountBalanceValid}
               loading={isSaving}
             >
               Submit
