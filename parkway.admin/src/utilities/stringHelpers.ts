@@ -7,7 +7,11 @@ export const trimStrings = <T extends {}>(payload: T): T => {
       trimmedPayload[key] = value.trim();
     } else if (Array.isArray(value)) {
       // @ts-ignore
-      trimmedPayload[key] = trimStrings(value);
+      trimmedPayload[key] = value.map((item) => {
+        if (typeof item === 'string') return item.trim();
+        if (typeof item === 'object') return trimStrings(item);
+        return item;
+      });
     } else if (typeof value === 'object') {
       // @ts-ignore
       trimmedPayload[key] = trimStrings(value);

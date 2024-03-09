@@ -7,7 +7,8 @@ import useApi, {
 import { IsBaseEntityApi } from '../../api';
 import { useQuery } from '@tanstack/react-query';
 import { Alert, SelectProps } from 'antd';
-import BaseSelect, {
+import {
+  BaseSelect,
   MultipleSelectionProps,
   SingleSelectionProps
 } from './BaseSelect.tsx';
