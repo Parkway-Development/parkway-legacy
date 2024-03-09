@@ -3,6 +3,7 @@ import { BaseApiDataTablePage } from '../base-data-table-page';
 import { OrderedColumnsType } from '../../hooks/useColumns.tsx';
 import UserDisplayById from '../user-display/UserDisplayById.tsx';
 import { LockOutlined } from '@ant-design/icons';
+import DateDisplay from '../date-display/DateDisplay.tsx';
 
 const contributionColumns: OrderedColumnsType<Contribution> = [
   {
@@ -17,20 +18,16 @@ const contributionColumns: OrderedColumnsType<Contribution> = [
     dataIndex: 'transactionDate',
     key: 'transactionDate',
     displayOrder: 2,
-    render: (value: Contribution['transactionDate']) => {
-      if (!value) return undefined;
-      return new Date(value).toLocaleDateString();
-    }
+    render: (value: Contribution['transactionDate']) => (
+      <DateDisplay date={value} />
+    )
   },
   {
     title: 'Deposit Date',
     dataIndex: 'depositDate',
     key: 'depositDate',
     displayOrder: 3,
-    render: (value: Contribution['depositDate']) => {
-      if (!value) return undefined;
-      return new Date(value).toLocaleDateString();
-    }
+    render: (value: Contribution['depositDate']) => <DateDisplay date={value} />
   },
   {
     title: 'Locked',

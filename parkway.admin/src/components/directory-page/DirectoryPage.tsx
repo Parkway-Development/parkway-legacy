@@ -8,6 +8,7 @@ import { BaseApiDataTablePage } from '../base-data-table-page';
 import { CheckCircleOutlined } from '@ant-design/icons';
 import { translateMapping } from '../../utilities/mappingHelpers.ts';
 import { OrderedColumnsType } from '../../hooks/useColumns.tsx';
+import DateDisplay from '../date-display/DateDisplay.tsx';
 
 const userProfileColumns: OrderedColumnsType<UserProfile> = [
   {
@@ -37,10 +38,7 @@ const userProfileColumns: OrderedColumnsType<UserProfile> = [
   {
     title: 'Date of Birth',
     dataIndex: 'dateOfBirth',
-    render: (value: UserProfile['dateOfBirth']) => {
-      if (!value) return undefined;
-      return new Date(value).toLocaleDateString();
-    },
+    render: (value: UserProfile['dateOfBirth']) => <DateDisplay date={value} />,
     key: 'dateOfBirth',
     displayOrder: 5
   },
