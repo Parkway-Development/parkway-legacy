@@ -2,6 +2,7 @@ import { BaseApiDataTablePage } from '../base-data-table-page';
 import { OrderedColumnsType } from '../../hooks/useColumns.tsx';
 import { Vendor } from '../../types';
 import EmailDisplay from '../email-display';
+import WebsiteDisplay from '../website-display';
 
 const vendorColumns: OrderedColumnsType<Vendor> = [
   {
@@ -52,7 +53,8 @@ const vendorColumns: OrderedColumnsType<Vendor> = [
     title: 'Website',
     dataIndex: 'website',
     key: 'website',
-    displayOrder: 8
+    displayOrder: 8,
+    render: (value: Vendor['website']) => <WebsiteDisplay website={value} />
   },
   {
     title: 'Contact',
