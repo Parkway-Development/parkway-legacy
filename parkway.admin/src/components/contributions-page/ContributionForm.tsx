@@ -1,8 +1,7 @@
-import { Breadcrumb, Button, DatePicker, Form, Input, Switch } from 'antd';
-import styles from './ContributionForm.module.css';
+import { Breadcrumb, DatePicker, Form, Input, Switch } from 'antd';
 import { Link } from 'react-router-dom';
 import { Contribution, ContributionAccount } from '../../types';
-import { AddBaseApiFormProps } from '../base-data-table-page';
+import { AddBaseApiFormProps, BaseFormFooter } from '../base-data-table-page';
 import UserProfileSelect from '../user-profile-select';
 import { transformDateForDatePicker } from '../../utilities';
 import AccountsInput from './AccountsInput.tsx';
@@ -133,21 +132,11 @@ const ContributionForm = ({
           />
         </Form.Item>
 
-        <Form.Item wrapperCol={{ offset: 3, span: 12 }}>
-          <div>
-            <Button
-              type="primary"
-              htmlType="submit"
-              disabled={isSaving || !isAccountBalanceValid}
-              loading={isSaving}
-            >
-              Submit
-            </Button>
-            <Button className={styles.close} onClick={onCancel}>
-              Close
-            </Button>
-          </div>
-        </Form.Item>
+        <BaseFormFooter
+          isDisabled={isSaving || !isAccountBalanceValid}
+          isLoading={isSaving}
+          onCancel={onCancel}
+        />
       </Form>
     </>
   );

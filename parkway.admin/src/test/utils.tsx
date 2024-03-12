@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ApiType, TypedResponse } from '../hooks/useApi.ts';
 import {
   AccountsApiType,
+  AssetsApiType,
   BaseApiType,
   ContributionsApiType,
   GeneralApiType,
@@ -14,6 +15,7 @@ import {
 } from '../api';
 import {
   Account,
+  Asset,
   BaseEntity,
   Contribution,
   Team,
@@ -64,6 +66,7 @@ const mockBaseApi = <T extends BaseEntity>(
 
 export type MockApiType = Partial<{
   accountsApi: Partial<AccountsApiType>;
+  assetsApi: Partial<AssetsApiType>;
   contributionsApi: Partial<ContributionsApiType>;
   generalApi: Partial<GeneralApiType>;
   teamsApi: Partial<TeamsApiType>;
@@ -75,6 +78,7 @@ export const mockApi = (
   useApiFn: () => ApiType,
   {
     accountsApi,
+    assetsApi,
     contributionsApi,
     generalApi,
     teamsApi,
@@ -93,6 +97,7 @@ export const mockApi = (
       ...usersApi
     },
     accountsApi: mockBaseApi<Account>(accountsApi),
+    assetsApi: mockBaseApi<Asset>(assetsApi),
     contributionsApi: mockBaseApi<Contribution>(contributionsApi),
     teamsApi: mockBaseApi<Team>(teamsApi),
     generalApi: {

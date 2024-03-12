@@ -33,6 +33,11 @@ import {
   EditVendorPage,
   VendorsPage
 } from './components/vendors-page';
+import {
+  AddAssetPage,
+  AssetsPage,
+  EditAssetPage
+} from './components/assets-page';
 
 const queryClient = new QueryClient();
 
@@ -59,6 +64,11 @@ createRoot(document.getElementById('root')!).render(
                 <Route index element={<DirectoryPage />} />
               </Route>
               <Route path="accounts">
+                <Route path="assets">
+                  <Route path="add" element={<AddAssetPage />} />
+                  <Route path=":id/edit" element={<EditAssetPage />} />
+                  <Route index element={<AssetsPage />} />
+                </Route>
                 <Route path="contributions">
                   <Route path="add" element={<AddContributionPage />} />
                   <Route path=":id/edit" element={<EditContributionPage />} />

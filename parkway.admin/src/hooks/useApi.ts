@@ -2,7 +2,9 @@ import { useAuth } from './useAuth.tsx';
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import {
   AccountsApiType,
+  AssetsApiType,
   buildAccountsApi,
+  buildAssetsApi,
   buildContributionsApi,
   buildGeneralApi,
   buildTeamsApi,
@@ -20,6 +22,7 @@ export type TypedResponse<T> = Promise<Omit<AxiosResponse<T>, 'config'>>;
 
 export type BaseApiTypes = {
   accountsApi: AccountsApiType;
+  assetsApi: AssetsApiType;
   contributionsApi: ContributionsApiType;
   teamsApi: TeamsApiType;
   usersApi: UsersApiType;
@@ -33,6 +36,7 @@ export type ApiType = BaseApiTypes & {
 
 export type QueryType =
   | 'accounts'
+  | 'assets'
   | 'contributions'
   | 'passwordSettings'
   | 'profiles'
@@ -77,6 +81,7 @@ const useApi: () => ApiType = () => {
 
   return {
     accountsApi: buildAccountsApi(instance),
+    assetsApi: buildAssetsApi(instance),
     contributionsApi: buildContributionsApi(instance),
     generalApi: buildGeneralApi(instance),
     teamsApi: buildTeamsApi(instance),

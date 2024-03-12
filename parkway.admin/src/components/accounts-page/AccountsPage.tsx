@@ -13,7 +13,7 @@ const accountColumns: OrderedColumnsType<Account> = [
   {
     title: 'Description',
     dataIndex: 'description',
-    key: 'leader',
+    key: 'description',
     displayOrder: 2
   },
   {

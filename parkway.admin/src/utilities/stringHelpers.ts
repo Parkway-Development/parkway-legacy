@@ -1,3 +1,15 @@
+import dayjs from 'dayjs';
+
+const isValidDate = (date: any): boolean => {
+  if (date instanceof dayjs) return true;
+
+  return (
+    date &&
+    Object.prototype.toString.call(date) === '[object Date]' &&
+    !isNaN(date)
+  );
+};
+
 export const trimStrings = <T extends {}>(payload: T): T => {
   const trimmedPayload = { ...payload };
 
@@ -5,10 +17,13 @@ export const trimStrings = <T extends {}>(payload: T): T => {
     if (typeof value === 'string') {
       // @ts-ignore
       trimmedPayload[key] = value.trim();
+    } else if (isValidDate(value)) {
+      // do nothing
     } else if (Array.isArray(value)) {
       // @ts-ignore
       trimmedPayload[key] = value.map((item) => {
         if (typeof item === 'string') return item.trim();
+        if (isValidDate(item)) return item;
         if (typeof item === 'object') return trimStrings(item);
         return item;
       });

@@ -1,5 +1,4 @@
-import { Button, DatePicker, Form, Input, Radio, Select, Switch } from 'antd';
-import styles from './UserProfileForm.module.css';
+import { DatePicker, Form, Input, Radio, Select, Switch } from 'antd';
 import {
   applicationRoleMapping,
   memberStatusMapping,
@@ -10,7 +9,7 @@ import {
   transformDateForDatePicker,
   trimStrings
 } from '../../utilities';
-import { AddBaseApiFormProps } from '../base-data-table-page';
+import { AddBaseApiFormProps, BaseFormFooter } from '../base-data-table-page';
 
 export type UserProfileFormFields = Omit<
   UserProfile,
@@ -74,7 +73,8 @@ const UserProfileForm = ({
       <Form<UserProfileFormFields>
         form={form}
         name="basic"
-        layout="vertical"
+        labelCol={{ span: 3 }}
+        wrapperCol={{ span: 12 }}
         onFinish={handleSubmit}
         disabled={isSaving}
         initialValues={initial}
@@ -173,19 +173,13 @@ const UserProfileForm = ({
           </>
         )}
 
-        <Form.Item>
-          <div className={styles.footer}>
-            <Button
-              type="primary"
-              htmlType="submit"
-              disabled={isSaving}
-              loading={isSaving}
-            >
-              {submitText}
-            </Button>
-            <Button onClick={onCancel}>{cancelText}</Button>
-          </div>
-        </Form.Item>
+        <BaseFormFooter
+          isDisabled={isSaving}
+          isLoading={isSaving}
+          onCancel={onCancel}
+          submitText={submitText}
+          cancelText={cancelText}
+        />
       </Form>
     </>
   );
