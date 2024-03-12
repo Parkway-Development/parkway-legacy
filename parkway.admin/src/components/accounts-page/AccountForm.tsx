@@ -1,8 +1,7 @@
-import { Breadcrumb, Button, Form, Input } from 'antd';
-import styles from './AccountForm.module.css';
+import { Breadcrumb, Form, Input } from 'antd';
 import { Link } from 'react-router-dom';
 import { Account } from '../../types';
-import { AddBaseApiFormProps } from '../base-data-table-page';
+import { AddBaseApiFormProps, BaseFormFooter } from '../base-data-table-page';
 
 type AccountWithoutId = Omit<Account, '_id'>;
 type AccountFields = Omit<AccountWithoutId, 'notes'> & {
@@ -80,21 +79,11 @@ const AccountForm = ({
           <Input.TextArea />
         </Form.Item>
 
-        <Form.Item wrapperCol={{ offset: 3, span: 12 }}>
-          <div>
-            <Button
-              type="primary"
-              htmlType="submit"
-              disabled={isSaving}
-              loading={isSaving}
-            >
-              Submit
-            </Button>
-            <Button className={styles.close} onClick={onCancel}>
-              Close
-            </Button>
-          </div>
-        </Form.Item>
+        <BaseFormFooter
+          isDisabled={isSaving}
+          isLoading={isSaving}
+          onCancel={onCancel}
+        />
       </Form>
     </>
   );

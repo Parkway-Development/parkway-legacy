@@ -1,7 +1,6 @@
-import { Breadcrumb, Button, Form, Input } from 'antd';
-import styles from './VendorForm.module.css';
+import { Breadcrumb, Form, Input } from 'antd';
 import { Link } from 'react-router-dom';
-import { AddBaseApiFormProps } from '../base-data-table-page';
+import { AddBaseApiFormProps, BaseFormFooter } from '../base-data-table-page';
 import { Vendor } from '../../types';
 
 type VendorWithoutId = Omit<Vendor, '_id'>;
@@ -101,21 +100,11 @@ const VendorForm = ({
           <Input />
         </FormItem>
 
-        <Form.Item wrapperCol={{ offset: 3, span: 12 }}>
-          <div>
-            <Button
-              type="primary"
-              htmlType="submit"
-              disabled={isSaving}
-              loading={isSaving}
-            >
-              Submit
-            </Button>
-            <Button className={styles.close} onClick={onCancel}>
-              Close
-            </Button>
-          </div>
-        </Form.Item>
+        <BaseFormFooter
+          isDisabled={isSaving}
+          isLoading={isSaving}
+          onCancel={onCancel}
+        />
       </Form>
     </>
   );
