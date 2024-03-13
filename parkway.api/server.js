@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const Grid = require('gridfs-stream');
 const Multer = require('multer');
 const conn = mongoose.connection;
+const upload = Multer({ dest: 'uploads/' });
 
 const userRoutes = require('./routes/users');
 const profileRoutes = require('./routes/profiles');
@@ -28,8 +29,6 @@ const { Profile } = require('./models/profileModel');
 
 Grid.mongo = mongoose.mongo;
 let gfs;
-
-const upload = Multer({ dest: 'uploads/' });
 
 //express app
 const app = express();
