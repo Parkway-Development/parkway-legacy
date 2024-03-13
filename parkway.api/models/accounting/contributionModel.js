@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { validateAccountSumMatchesAmount } = require('../../helpers/validationHelper');
 
 const contributionSchema = new mongoose.Schema({
     totalAmount: {
@@ -52,10 +53,7 @@ const contributionSchema = new mongoose.Schema({
 }, {timestamps: true})
 
 contributionSchema.path('accounts').validate(function (accounts) {
-    const totalAmount = this.totalAmount;
-    const sumOfAccounts = accounts.reduce((sum, record) => sum + record.amount, 0);
-    return totalAmount === sumOfAccounts;
-},
-'The sum of accounts amounts must equal the total amount.');
+    return validateAccountSumMatchesAmount(this.totalAmount, accounts);
+}, 'The sum of accounts amounts must equal the total amount.');
 
 module.exports = mongoose.model('Contribution', contributionSchema,'contributions');

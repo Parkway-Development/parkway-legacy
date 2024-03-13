@@ -10,6 +10,7 @@ class ValidationHelper {
         return mongoose.Types.ObjectId.isValid(id);
     }
 
+    // Validate the account ids are actual account ids
     static async validateAccountIds(accountIds) {
         const AccountModel = require( '../models/accounting/accountModel');
         let errors = [];
@@ -33,6 +34,12 @@ class ValidationHelper {
 
         return errors.length > 0 ? errors : null;
     }
+
+    // Validate the sum of the amounts going to the accounts equals the total amount
+    static validateAccountSumMatchesAmount = (totalAmount, accounts) => {
+        const sumOfAccounts = accounts.reduce((sum, record) => sum + record.amount, 0);
+        return totalAmount === sumOfAccounts;
+    };
 }
 
 module.exports = ValidationHelper;
