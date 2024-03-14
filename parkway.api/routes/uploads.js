@@ -1,35 +1,28 @@
 const express = require('express');
-const { requireAuthorization} = require("../auth");
+const Multer = require('multer');
+const { requireAuthorization } = require("../auth");
 const router = express.Router();
 requireAuthorization(router);
 
-//Upload a CSV File
-router.post('/upload/subsplash', upload.single('file'), (req, res) => {
-
-    try{
-    const results = [];
-    fs.createReadStream(req.file.path)
-    .pipe(csv())
-    .on('data', (data) => results.push(data))
-    .on('end', () => {
-        console.log(results);
-        res.json({results: results});
-    });
-    res.json({file: req.file});
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({error: error});
+// Initialize Multer storage settings
+const storage = Multer.diskStorage({
+    destination: function(req, file, cb) {
+        cb(null, 'uploads/'); // Make sure this uploads directory exists
+    },
+    filename: function(req, file, cb) {
+        cb(null, file.fieldname + '-' + Date.now());
     }
 });
 
-// const{
-//     addClient,
-//     getAllClients,
-//     getClientById,
-//     getClientByName,
-//     getClientByAccountNumber,
-//     getClientByBusinessPhone,
-//     getClientByBusinessEmail,
-//     updateClient,
-//     deleteClient
-// } = require('../controllers/clientController')
+// Initialize upload middleware
+const upload = Multer({ storage: storage });
+
+const {
+    uploadSubsplashTransferFile
+} = require('../controllers/uploadController');
+
+// Upload a CSV File
+router.post('/subsplash', upload.single('file'), uploadSubsplashTransferFile);
+
+// Export the router
+module.exports = router;
