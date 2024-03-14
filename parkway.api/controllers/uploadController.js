@@ -6,7 +6,7 @@ const fs = require('fs');
 const csv = require('csv-parser');
 
 // A function to read and parse the CSV file, returning a promise that resolves to an array of objects.
-function parseCSV(filePath) {
+function parseSubSplashCSV(filePath) {
     return new Promise((resolve, reject) => {
         const results = [];
         const csvStream = fs.createReadStream(filePath)
@@ -37,8 +37,9 @@ function parseCSV(filePath) {
 
 const uploadSubsplashTransferFile = async (req, res) => {
     try {
+
         // Parse the CSV file
-        const parsedData = await parseCSV(req.file.path);
+        const parsedData = await parseSubSplashCSV(req.file.path);
 
         // Insert the parsed data into the database
         await SubsplashTransaction.insertMany(parsedData);
