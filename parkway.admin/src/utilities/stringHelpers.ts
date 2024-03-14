@@ -35,3 +35,22 @@ export const trimStrings = <T extends {}>(payload: T): T => {
 
   return trimmedPayload;
 };
+
+export const convertToStringArray = (input: string): string[] => {
+  if (!input) return [];
+
+  return input
+    .split('\n')
+    .map((value) => value.trim())
+    .filter((value) => value.length > 0);
+};
+
+export const convertFromStringArray = (input: string[] | undefined): string => {
+  if (!input) return '';
+
+  return input.reduce(
+    (prev, currentValue) =>
+      prev.length ? prev + '\n' + currentValue : currentValue,
+    ''
+  );
+};

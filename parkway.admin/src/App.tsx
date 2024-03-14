@@ -62,6 +62,10 @@ function App() {
               },
               {
                 key: 7,
+                label: <Link to="/songs">Songs</Link>
+              },
+              {
+                key: 8,
                 label: <Link to="/teams">Teams</Link>
               }
             ]}

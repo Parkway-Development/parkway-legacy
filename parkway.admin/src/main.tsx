@@ -38,6 +38,7 @@ import {
   AssetsPage,
   EditAssetPage
 } from './components/assets-page';
+import { AddSongPage, EditSongPage, SongsPage } from './components/songs-page';
 
 const queryClient = new QueryClient();
 
@@ -84,6 +85,11 @@ createRoot(document.getElementById('root')!).render(
                 <Route index element={<AccountsPage />} />
               </Route>
               <Route path="giving" element={<GivingPage />} />
+              <Route path="songs">
+                <Route path="add" element={<AddSongPage />} />
+                <Route path=":id/edit" element={<EditSongPage />} />
+                <Route index element={<SongsPage />} />
+              </Route>
               <Route path="teams">
                 <Route path="add" element={<AddTeamPage />} />
                 <Route path=":id/edit" element={<EditTeamPage />} />

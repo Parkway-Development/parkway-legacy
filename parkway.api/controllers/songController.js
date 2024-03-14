@@ -7,12 +7,14 @@ const upload = multer({ dest: 'uploads/' }); // Temporary storage
 //Add a song
 const addSong = async (req, res) => {
     try {
-        const song = await Song.save(req.body)
-        if(!song){
+        const song = new Song(req.body);
+        const savedSong = await song.save();
+        if(!savedSong){
             return res.status(404).json({message: "The save failed."})
         }   
-        return res.status(201).json(newSong)
+        return res.status(201).json(savedSong)
     } catch (error) {
+        console.log('error', error);
         res.status(400).json({ message: error })
     }
 }
@@ -89,7 +91,7 @@ const deleteSongById = async (req, res) => {
         if(!mongoose.Types.ObjectId.isValid(id)){
             return res.status(404).json({error: 'No such song.'})
         }
-        const song = await Song.findByIdAndRemove(id)
+        const song = await Song.findByIdAndDelete(id)
         if(!song){
             return res.status(404).json({message: "No such song found."})
         }
