@@ -40,6 +40,28 @@ class ValidationHelper {
         const sumOfAccounts = accounts.reduce((sum, record) => sum + record.amount, 0);
         return totalAmount === sumOfAccounts;
     };
+
+    // Convert all financial amounts to pennies for storage
+    static convertDollarsToPennies(dollarString) {
+        // Remove commas, parse the float value, and convert to pennies
+        const amountInDollars = parseFloat(dollarString.replace(/,/g, ''));
+        const amountInPennies = Math.round(amountInDollars * 100);
+        return amountInPennies;
+    };
+
+    static combineDateAndTime(date, time) {
+        let fullDateTime = `${date} ${time}`;
+        return new Date(fullDateTime);
+    }
 }
 
-module.exports = ValidationHelper;
+
+module.exports = {
+    sanitizeString: ValidationHelper.sanitizeString,
+    validateId: ValidationHelper.validateId,
+    validateAccountIds: ValidationHelper.validateAccountIds,
+    validateAccountSumMatchesAmount: ValidationHelper.validateAccountSumMatchesAmount,
+    convertDollarsToPennies: ValidationHelper.convertDollarsToPennies,
+    combineDateAndTime: ValidationHelper.combineDateAndTime
+};
+
