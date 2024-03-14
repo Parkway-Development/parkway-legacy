@@ -1,0 +1,12 @@
+.container {
+    margin-bottom: 1em;
+}
+
+.addButton {
+    margin-bottom: 0.5em;
+}
+
+.actionsColumn {
+    display: flex;
+    justify-content: space-evenly;
+}

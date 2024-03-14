@@ -18,9 +18,11 @@ const UserProfileSelect = ({
   const [value, setValue] = useState<string | string[] | undefined>(
     initialValue
   );
+
   const {
     usersApi: { getAll }
   } = useApi();
+
   const { isPending, data: response } = useQuery({
     queryFn: getAll,
     queryKey: buildQueryKey('profiles')
@@ -30,6 +32,10 @@ const UserProfileSelect = ({
     onChange(changeValue);
     setValue(changeValue);
   };
+
+  useEffect(() => {
+    setValue(initialValue);
+  }, [initialValue]);
 
   useEffect(() => {
     if (!excludedUserId) return;

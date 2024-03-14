@@ -9,6 +9,7 @@ import {
   BaseApiType,
   ContributionsApiType,
   GeneralApiType,
+  SongsApiType,
   TeamsApiType,
   UsersApiType,
   VendorsApiType
@@ -18,6 +19,7 @@ import {
   Asset,
   BaseEntity,
   Contribution,
+  Song,
   Team,
   UserProfile,
   Vendor
@@ -69,6 +71,7 @@ export type MockApiType = Partial<{
   assetsApi: Partial<AssetsApiType>;
   contributionsApi: Partial<ContributionsApiType>;
   generalApi: Partial<GeneralApiType>;
+  songsApi: Partial<SongsApiType>;
   teamsApi: Partial<TeamsApiType>;
   usersApi: Partial<UsersApiType>;
   vendorsApi: Partial<VendorsApiType>;
@@ -81,6 +84,7 @@ export const mockApi = (
     assetsApi,
     contributionsApi,
     generalApi,
+    songsApi,
     teamsApi,
     usersApi,
     vendorsApi,
@@ -99,6 +103,7 @@ export const mockApi = (
     accountsApi: mockBaseApi<Account>(accountsApi),
     assetsApi: mockBaseApi<Asset>(assetsApi),
     contributionsApi: mockBaseApi<Contribution>(contributionsApi),
+    songsApi: mockBaseApi<Song>(songsApi),
     teamsApi: mockBaseApi<Team>(teamsApi),
     generalApi: {
       getPasswordSettings: vi.fn(),

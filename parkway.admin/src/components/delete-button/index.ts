@@ -1,2 +1,2 @@
-import DeleteButton from './DeleteButton.tsx';
-export default DeleteButton;
+export * from './DeleteButton.tsx';
+export { default } from './DeleteButton.tsx';

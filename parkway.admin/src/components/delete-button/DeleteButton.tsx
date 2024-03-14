@@ -32,17 +32,33 @@ const DeleteButton = ({ id, deleteFn, onSuccess }: DeleteButtonProps) => {
   return (
     <>
       {contextHolder}
+      <BasicDeleteButton onDelete={handleClick} isLoading={isPending} />
+    </>
+  );
+};
+
+type BasicDeleteButtonProps = {
+  onDelete: () => void;
+  isLoading?: boolean;
+};
+
+export const BasicDeleteButton = ({
+  onDelete,
+  isLoading = false
+}: BasicDeleteButtonProps) => {
+  return (
+    <>
       <Popconfirm
         title="Delete"
         description="Are you sure to delete this?"
-        onConfirm={handleClick}
+        onConfirm={onDelete}
         onCancel={() => {}}
-        disabled={isPending}
+        disabled={isLoading}
         okText="Yes"
         cancelText="No"
       >
-        <Button type="primary" danger disabled={isPending} size="small">
-          <CloseOutlined spin={isPending} />
+        <Button type="primary" danger disabled={isLoading} size="small">
+          <CloseOutlined spin={isLoading} />
         </Button>
       </Popconfirm>
     </>
