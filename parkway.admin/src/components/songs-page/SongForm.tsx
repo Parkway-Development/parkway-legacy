@@ -4,6 +4,7 @@ import { Song } from '../../types';
 import { AddBaseApiFormProps, BaseFormFooter } from '../base-data-table-page';
 import TextArea from 'antd/lib/input/TextArea';
 import { convertFromStringArray, convertToStringArray } from '../../utilities';
+import SongArrangementsTable from './SongArrangementsTable.tsx';
 
 type SongWithoutId = Omit<Song, '_id'>;
 
@@ -37,12 +38,7 @@ const SongForm = ({
       ...values,
       artists: convertToStringArray(values.artists),
       copyrights: convertToStringArray(values.copyrights),
-      arrangements: [
-        {
-          arrangementName: 'Arrangement 1',
-          key: 'C'
-        }
-      ]
+      arrangements: values.arrangements ?? []
     };
 
     onSave(finalValues);
@@ -109,11 +105,15 @@ const SongForm = ({
         </Form.Item>
 
         <Form.Item<FlattenedSongWithoutId>
-          label="Arragnments"
+          label="Arrangements"
           name="arrangements"
-        >
-          <TextArea />
-        </Form.Item>
+        />
+        <SongArrangementsTable
+          songArrangements={initialValues?.arrangements}
+          onUpdate={(songArrangements) =>
+            form.setFieldsValue({ arrangements: songArrangements })
+          }
+        />
 
         <BaseFormFooter
           isDisabled={isSaving}

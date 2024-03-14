@@ -19,13 +19,13 @@ type LocalStorageColumnsType = {
   hidden: boolean;
 };
 
-type OrderedColumnType<T extends BaseEntity> = ColumnType<T> & {
+type OrderedColumnType<T> = ColumnType<T> & {
   displayOrder: number;
   dataIndex?: keyof T;
   key: string;
 };
 
-export type OrderedColumnsType<T extends BaseEntity> = OrderedColumnType<T>[];
+export type OrderedColumnsType<T> = OrderedColumnType<T>[];
 
 type DeleteAction = {
   deleteFn: (id: string) => GenericResponse;
