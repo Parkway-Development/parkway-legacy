@@ -107,7 +107,9 @@ const SongForm = ({
         <Form.Item<FlattenedSongWithoutId>
           label="Arrangements"
           name="arrangements"
-        />
+        >
+          <span></span>
+        </Form.Item>
         <SongArrangementsTable
           songArrangements={initialValues?.arrangements}
           onUpdate={(songArrangements) =>
