@@ -6,12 +6,14 @@ import {
   buildAccountsApi,
   buildAssetsApi,
   buildContributionsApi,
+  buildEventsApi,
   buildGeneralApi,
   buildSongsApi,
   buildTeamsApi,
   buildUsersApi,
   buildVendorsApi,
   ContributionsApiType,
+  EventsApiType,
   GeneralApiType,
   SongsApiType,
   TeamsApiType,
@@ -26,6 +28,7 @@ export type BaseApiTypes = {
   accountsApi: AccountsApiType;
   assetsApi: AssetsApiType;
   contributionsApi: ContributionsApiType;
+  eventsApi: EventsApiType;
   songsApi: SongsApiType;
   teamsApi: TeamsApiType;
   usersApi: UsersApiType;
@@ -41,6 +44,7 @@ export type QueryType =
   | 'accounts'
   | 'assets'
   | 'contributions'
+  | 'events'
   | 'passwordSettings'
   | 'profiles'
   | 'songs'
@@ -87,6 +91,7 @@ const useApi: () => ApiType = () => {
     accountsApi: buildAccountsApi(instance),
     assetsApi: buildAssetsApi(instance),
     contributionsApi: buildContributionsApi(instance),
+    eventsApi: buildEventsApi(instance),
     generalApi: buildGeneralApi(instance),
     songsApi: buildSongsApi(instance),
     teamsApi: buildTeamsApi(instance),

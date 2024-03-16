@@ -2,7 +2,7 @@ import { Breadcrumb, DatePicker, Form, Input } from 'antd';
 import { Link } from 'react-router-dom';
 import { Asset } from '../../types';
 import { AddBaseApiFormProps, BaseFormFooter } from '../base-data-table-page';
-import { transformDateForDatePicker } from '../../utilities';
+import { transformDateToDayjs } from '../../utilities';
 
 type AssetWithoutId = Omit<Asset, '_id'>;
 type AssetFields = Omit<AssetWithoutId, 'notes'> & {
@@ -22,8 +22,8 @@ const AssetForm = ({
   const [form] = Form.useForm<AssetFields>();
   const initialValues = {
     ...initialValuesProp,
-    purchaseDate: transformDateForDatePicker(initialValuesProp?.purchaseDate),
-    inServiceDate: transformDateForDatePicker(initialValuesProp?.inServiceDate),
+    purchaseDate: transformDateToDayjs(initialValuesProp?.purchaseDate),
+    inServiceDate: transformDateToDayjs(initialValuesProp?.inServiceDate),
     notes: initialValuesProp?.notes?.length ? initialValuesProp.notes[0] : ''
   };
 

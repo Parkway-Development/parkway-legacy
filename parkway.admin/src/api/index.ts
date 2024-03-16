@@ -2,6 +2,7 @@ export * from './accountsApi.ts';
 export * from './assetsApi.ts';
 export * from './baseApi.ts';
 export * from './contributionsApi.ts';
+export * from './eventsApi.ts';
 export * from './generalApi.ts';
 export * from './songsApi.ts';
 export * from './teamsApi.ts';
