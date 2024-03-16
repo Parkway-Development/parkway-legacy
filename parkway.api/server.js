@@ -23,6 +23,7 @@ const contributionRoutes = require('./routes/accounting/contributions');
 //const clientRoutes = require('./routes/client');
 const platformRoutes = require('./routes/platform');
 const songRoutes = require('./routes/songs');
+const eventRoutes = require('./routes/events');
 
 const { Profile } = require('./models/profileModel');
 
@@ -49,6 +50,7 @@ app.use('/api/settings', settingRoutes);
 app.use('/api/teams', teamRoutes);
 app.use('/api/platform', platformRoutes);
 app.use('/api/songs', songRoutes);
+app.use('/api/events', eventRoutes);
 //app.use('/api/clients', clientRoutes);
 
 //Accounting routes
