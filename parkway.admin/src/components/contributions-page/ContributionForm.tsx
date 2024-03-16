@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Contribution, ContributionAccount } from '../../types';
 import { AddBaseApiFormProps, BaseFormFooter } from '../base-data-table-page';
 import UserProfileSelect from '../user-profile-select';
-import { transformDateForDatePicker } from '../../utilities';
+import { transformDateToDayjs } from '../../utilities';
 import AccountsInput from './AccountsInput.tsx';
 import { useState } from 'react';
 
@@ -27,10 +27,10 @@ const ContributionForm = ({
   const initialValues = initialValuesProp
     ? {
         ...initialValuesProp,
-        transactionDate: transformDateForDatePicker(
+        transactionDate: transformDateToDayjs(
           initialValuesProp.transactionDate
         ),
-        depositDate: transformDateForDatePicker(initialValuesProp.depositDate)
+        depositDate: transformDateToDayjs(initialValuesProp.depositDate)
       }
     : undefined;
 

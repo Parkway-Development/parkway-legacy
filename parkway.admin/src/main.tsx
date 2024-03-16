@@ -39,6 +39,11 @@ import {
   EditAssetPage
 } from './components/assets-page';
 import { AddSongPage, EditSongPage, SongsPage } from './components/songs-page';
+import {
+  AddEventPage,
+  EditEventPage,
+  EventsPage
+} from './components/events-page';
 
 const queryClient = new QueryClient();
 
@@ -83,6 +88,11 @@ createRoot(document.getElementById('root')!).render(
                 <Route path="add" element={<AddAccountPage />} />
                 <Route path=":id/edit" element={<EditAccountPage />} />
                 <Route index element={<AccountsPage />} />
+              </Route>
+              <Route path="events">
+                <Route path="add" element={<AddEventPage />} />
+                <Route path=":id/edit" element={<EditEventPage />} />
+                <Route index element={<EventsPage />} />
               </Route>
               <Route path="giving" element={<GivingPage />} />
               <Route path="songs">

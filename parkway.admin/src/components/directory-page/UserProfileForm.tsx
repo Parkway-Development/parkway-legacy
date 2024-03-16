@@ -6,7 +6,7 @@ import {
 } from '../../types';
 import {
   buildSelectOptionsFromMapping,
-  transformDateForDatePicker,
+  transformDateToDayjs,
   trimStrings
 } from '../../utilities';
 import { AddBaseApiFormProps, BaseFormFooter } from '../base-data-table-page';
@@ -47,7 +47,7 @@ const UserProfileForm = ({
   const initial = initialValues
     ? {
         ...initialValues,
-        dateOfBirth: transformDateForDatePicker(initialValues.dateOfBirth)
+        dateOfBirth: transformDateToDayjs(initialValues.dateOfBirth)
       }
     : addProfileInitialValues;
 
