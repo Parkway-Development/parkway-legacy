@@ -17,6 +17,7 @@ import { Event } from '../../types';
 import { isSameDate, transformToTime } from '../../utilities';
 import DateDisplay from '../date-display';
 import { useNavigate } from 'react-router-dom';
+import { SyntheticEvent } from 'react';
 
 const Calendar = () => {
   const navigate = useNavigate();
@@ -38,8 +39,13 @@ const Calendar = () => {
     return <Spin />;
   }
 
-  const navigateToItem = (event: Event) => {
+  const navigateToItem = (e: SyntheticEvent<HTMLLIElement>, event: Event) => {
+    e.stopPropagation();
     navigate(`/events/${event._id}/edit`);
+  };
+
+  const createNewItem = (dayjs: Dayjs) => {
+    navigate(`/events/add?date=${dayjs.format('YYYY-MM-DD')}`);
   };
 
   const cellRenderer = (date: Dayjs) => {
@@ -47,11 +53,15 @@ const Calendar = () => {
       (x) => new Date(x.start).getDate() === date.date()
     );
 
+    if (!items.length) return undefined;
+
+    items.sort((a, b) => (a.start < b.start ? -1 : 1));
+
     return (
       <ul className={styles.events}>
         {items.map((item) => (
           <Tooltip key={item._id} title={<CalendarTooltip event={item} />}>
-            <li onClick={() => navigateToItem(item)}>{item.name}</li>
+            <li onClick={(e) => navigateToItem(e, item)}>{item.name}</li>
           </Tooltip>
         ))}
       </ul>
@@ -61,6 +71,7 @@ const Calendar = () => {
   return (
     <CalendarControl
       cellRender={cellRenderer}
+      onSelect={(date) => createNewItem(date)}
       headerRender={({
         value,
         onChange

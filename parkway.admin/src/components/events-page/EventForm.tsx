@@ -31,6 +31,12 @@ const EventForm = ({
 }: EventFormProps) => {
   const params = useParams();
   const id = params.id;
+  const searchParams = new URLSearchParams(window.location.search);
+  const date = searchParams.get('date');
+  const addDate = date
+    ? transformDateToDayjs(new Date(date.replace(/-/g, '/')))
+    : undefined;
+
   const {
     eventsApi: { delete: deleteFn }
   } = useApi();
@@ -50,7 +56,12 @@ const EventForm = ({
         endDate: transformDateToDayjs(initialValues.end),
         endTime: transformDateToDayjs(initialValues.end)
       }
-    : undefined;
+    : addDate
+      ? {
+          startDate: addDate,
+          endDate: addDate
+        }
+      : undefined;
 
   const handleSave = (values: EventFormFields) => {
     const { startDate, startTime, endDate, endTime, ...remaining } = values;
