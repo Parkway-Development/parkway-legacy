@@ -18,6 +18,7 @@ import { isSameDate, transformToTime } from '../../utilities';
 import DateDisplay from '../date-display';
 import { useNavigate } from 'react-router-dom';
 import { SyntheticEvent } from 'react';
+import { SelectInfo } from 'antd/lib/calendar/generateCalendar';
 
 const Calendar = () => {
   const navigate = useNavigate();
@@ -44,8 +45,10 @@ const Calendar = () => {
     navigate(`/events/${event._id}/edit`);
   };
 
-  const createNewItem = (dayjs: Dayjs) => {
-    navigate(`/events/add?date=${dayjs.format('YYYY-MM-DD')}`);
+  const createNewItem = (dayjs: Dayjs, selectInfo: SelectInfo) => {
+    if (selectInfo.source === 'date') {
+      navigate(`/events/add?date=${dayjs.format('YYYY-MM-DD')}`);
+    }
   };
 
   const cellRenderer = (date: Dayjs) => {
@@ -71,7 +74,7 @@ const Calendar = () => {
   return (
     <CalendarControl
       cellRender={cellRenderer}
-      onSelect={(date) => createNewItem(date)}
+      onSelect={createNewItem}
       headerRender={({
         value,
         onChange
