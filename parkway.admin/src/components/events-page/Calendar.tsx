@@ -52,9 +52,7 @@ const Calendar = () => {
   };
 
   const cellRenderer = (date: Dayjs) => {
-    const items = data?.data?.filter(
-      (x) => new Date(x.start).getDate() === date.date()
-    );
+    const items = data?.data?.filter((x) => isSameDate(x.start, date.toDate()));
 
     if (!items.length) return undefined;
 
