@@ -22,7 +22,7 @@ const addEvent = async (req, res) => {
 
 //Get all events
 const getAll = async (req, res) => {
-    const events = await Event.find({}).sort({start: 1});
+    const events = await Event.find({}).sort({start: 'desc'});
 
     if (!events) {
         return res.status(404).json({message: "No events were returned."})
