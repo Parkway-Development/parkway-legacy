@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import UserProfileSelect from '../user-profile-select';
 import { Event } from '../../types';
 import { AddBaseApiFormProps, BaseFormFooter } from '../base-data-table-page';
-import { transformDateToDayjs } from '../../utilities';
+import { isSameDate, transformDateToDayjs } from '../../utilities';
 import { Dayjs } from 'dayjs';
 import { useState } from 'react';
 import styles from './EventForm.module.css';
@@ -46,13 +46,18 @@ const EventForm = ({
     : undefined;
 
   const handleSave = (values: EventFormFields) => {
+    console.log('values', values);
     const { startDate, startTime, endDate, endTime, ...remaining } = values;
 
     const start = startDate.toDate();
-    start.setTime(startTime.toDate().getTime());
+    start.setHours(startTime.hour());
+    start.setMinutes(startTime.minute());
+    start.setSeconds(0);
 
     const end = endDate.toDate();
-    end.setTime(endTime.toDate().getTime());
+    end.setHours(endTime.hour());
+    end.setMinutes(endTime.minute());
+    end.setSeconds(0);
 
     const finalPayload: EventWithoutId = {
       ...remaining,
@@ -65,7 +70,7 @@ const EventForm = ({
 
   const validateEndDate = (_: any, value: Dayjs) => {
     const startDate: Dayjs = form.getFieldValue('startDate');
-    if (value && startDate && value.date() < startDate.date()) {
+    if (value && startDate && value < startDate) {
       return Promise.reject('End date cannot be before the start date');
     }
 
@@ -82,7 +87,7 @@ const EventForm = ({
       endDate &&
       startTime &&
       value &&
-      startDate.date() === endDate.date() &&
+      isSameDate(startDate.toDate(), endDate.toDate()) &&
       value < startTime
     ) {
       return Promise.reject('End time cannot be before the start time');
@@ -118,7 +123,7 @@ const EventForm = ({
           name="name"
           rules={[{ required: true, whitespace: true, message: 'Required' }]}
         >
-          <Input autoFocus />
+          <Input autoFocus autoComplete="off" />
         </Form.Item>
 
         <Form.Item<EventFormFields> label="Description" name="description">
