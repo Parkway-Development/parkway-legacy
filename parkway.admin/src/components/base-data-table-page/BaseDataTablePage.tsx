@@ -15,7 +15,7 @@ import { IsBaseEntityApi } from '../../api';
 
 type BaseDataTablePageProps<T extends BaseEntity> =
   BaseDataTableListProps<T> & {
-    title: string;
+    title?: string;
     addLink?: To;
     addLinkTitle?: string;
   };
@@ -34,12 +34,12 @@ export const BaseDataTablePage = <T extends BaseEntity>({
 }: BaseDataTablePageProps<T>) => {
   return (
     <>
-      <h2>{title}</h2>
+      {title && <h2>{title}</h2>}
       {addLink && (
         <nav className={styles.nav}>
           <Link to={addLink}>
             <Button type="primary">
-              {addLinkTitle ?? `Add ${title.slice(0, -1)}`}
+              {addLinkTitle ?? (title ? `Add ${title.slice(0, -1)}` : 'Add')}
             </Button>
           </Link>
         </nav>

@@ -1,12 +1,14 @@
 import { Breadcrumb, DatePicker, Form, Input, TimePicker } from 'antd';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import UserProfileSelect from '../user-profile-select';
 import { Event } from '../../types';
 import { AddBaseApiFormProps, BaseFormFooter } from '../base-data-table-page';
-import { transformDateToDayjs } from '../../utilities';
+import { isSameDate, transformDateToDayjs } from '../../utilities';
 import { Dayjs } from 'dayjs';
 import { useState } from 'react';
 import styles from './EventForm.module.css';
+import DeleteButton from '../delete-button';
+import useApi from '../../hooks/useApi.ts';
 
 type EventWithoutId = Omit<Event, '_id'>;
 
@@ -27,6 +29,17 @@ const EventForm = ({
   onSave,
   onCancel
 }: EventFormProps) => {
+  const params = useParams();
+  const id = params.id;
+  const searchParams = new URLSearchParams(window.location.search);
+  const date = searchParams.get('date');
+  const addDate = date
+    ? transformDateToDayjs(new Date(date.replace(/-/g, '/')))
+    : undefined;
+
+  const {
+    eventsApi: { delete: deleteFn }
+  } = useApi();
   const [form] = Form.useForm<EventFormFields>();
   const [endTimeOpen, setEndTimeOpen] = useState<boolean>(false);
 
@@ -43,16 +56,25 @@ const EventForm = ({
         endDate: transformDateToDayjs(initialValues.end),
         endTime: transformDateToDayjs(initialValues.end)
       }
-    : undefined;
+    : addDate
+      ? {
+          startDate: addDate,
+          endDate: addDate
+        }
+      : undefined;
 
   const handleSave = (values: EventFormFields) => {
     const { startDate, startTime, endDate, endTime, ...remaining } = values;
 
     const start = startDate.toDate();
-    start.setTime(startTime.toDate().getTime());
+    start.setHours(startTime.hour());
+    start.setMinutes(startTime.minute());
+    start.setSeconds(0);
 
     const end = endDate.toDate();
-    end.setTime(endTime.toDate().getTime());
+    end.setHours(endTime.hour());
+    end.setMinutes(endTime.minute());
+    end.setSeconds(0);
 
     const finalPayload: EventWithoutId = {
       ...remaining,
@@ -65,7 +87,7 @@ const EventForm = ({
 
   const validateEndDate = (_: any, value: Dayjs) => {
     const startDate: Dayjs = form.getFieldValue('startDate');
-    if (value && startDate && value.date() < startDate.date()) {
+    if (value && startDate && value < startDate) {
       return Promise.reject('End date cannot be before the start date');
     }
 
@@ -82,7 +104,7 @@ const EventForm = ({
       endDate &&
       startTime &&
       value &&
-      startDate.date() === endDate.date() &&
+      isSameDate(startDate.toDate(), endDate.toDate()) &&
       value < startTime
     ) {
       return Promise.reject('End time cannot be before the start time');
@@ -118,7 +140,7 @@ const EventForm = ({
           name="name"
           rules={[{ required: true, whitespace: true, message: 'Required' }]}
         >
-          <Input autoFocus />
+          <Input autoFocus autoComplete="off" />
         </Form.Item>
 
         <Form.Item<EventFormFields> label="Description" name="description">
@@ -219,7 +241,16 @@ const EventForm = ({
           isDisabled={isSaving}
           isLoading={isSaving}
           onCancel={onCancel}
-        />
+        >
+          {initialValues && id && (
+            <DeleteButton
+              id={id}
+              deleteFn={deleteFn}
+              onSuccess={onCancel}
+              isIconButton={false}
+            />
+          )}
+        </BaseFormFooter>
       </Form>
     </>
   );

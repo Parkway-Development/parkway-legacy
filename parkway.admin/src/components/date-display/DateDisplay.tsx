@@ -1,3 +1,5 @@
+import { transformToTime } from '../../utilities';
+
 const DateDisplay = ({
   date,
   displayTime = false
@@ -10,13 +12,7 @@ const DateDisplay = ({
   const finalDate = new Date(date);
 
   if (displayTime) {
-    return `${finalDate.toLocaleDateString()} ${finalDate.toLocaleTimeString(
-      [],
-      {
-        hour: 'numeric',
-        minute: '2-digit'
-      }
-    )}`;
+    return `${finalDate.toLocaleDateString()} ${transformToTime(finalDate)}`;
   }
 
   return finalDate.toLocaleDateString();

@@ -1,0 +1,23 @@
+.events {
+    margin: 0;
+    padding: 0;
+}
+
+.tooltip p {
+    margin: 0;
+    padding: 0;
+}
+
+.events li {
+    border: 1px solid #ccc;
+    border-radius: 2px;
+    padding: 0 0.5em;
+    margin-bottom: 2px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.events li:hover {
+    background-color: #eee;
+}

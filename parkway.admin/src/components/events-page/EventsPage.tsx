@@ -3,6 +3,9 @@ import { UserNameDisplayById } from '../user-name-display';
 import { BaseApiDataTablePage } from '../base-data-table-page';
 import { OrderedColumnsType } from '../../hooks/useColumns.tsx';
 import DateDisplay from '../date-display';
+import { useState } from 'react';
+import Calendar from './Calendar.tsx';
+import { Switch } from 'antd';
 
 const eventColumns: OrderedColumnsType<Event> = [
   {
@@ -58,13 +61,32 @@ const eventColumns: OrderedColumnsType<Event> = [
   }
 ];
 
-const EventsPage = () => (
-  <BaseApiDataTablePage
-    queryKey="events"
-    baseApiType="eventsApi"
-    columns={eventColumns}
-    title="Events"
-  />
-);
+const EventsPage = () => {
+  const [showCalendar, setShowCalendar] = useState<boolean>(true);
+
+  const content = showCalendar ? (
+    <Calendar />
+  ) : (
+    <BaseApiDataTablePage
+      queryKey="events"
+      baseApiType="eventsApi"
+      columns={eventColumns}
+    />
+  );
+
+  return (
+    <div>
+      <h2>Events</h2>
+      <Switch
+        title="Toggle Calendar"
+        onChange={setShowCalendar}
+        value={showCalendar}
+        checkedChildren={<span>Show List</span>}
+        unCheckedChildren={<span>Show Calendar</span>}
+      />
+      {content}
+    </div>
+  );
+};
 
 export default EventsPage;

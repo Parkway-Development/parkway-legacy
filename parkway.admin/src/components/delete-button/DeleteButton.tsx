@@ -7,9 +7,15 @@ interface DeleteButtonProps {
   id: string;
   deleteFn: (id: string) => GenericResponse;
   onSuccess?: () => void;
+  isIconButton?: boolean;
 }
 
-const DeleteButton = ({ id, deleteFn, onSuccess }: DeleteButtonProps) => {
+const DeleteButton = ({
+  id,
+  deleteFn,
+  onSuccess,
+  isIconButton = true
+}: DeleteButtonProps) => {
   const { formatError } = useApi();
   const { mutate, isPending } = useMutation({ mutationFn: deleteFn });
   const [api, contextHolder] = notification.useNotification();
@@ -32,7 +38,11 @@ const DeleteButton = ({ id, deleteFn, onSuccess }: DeleteButtonProps) => {
   return (
     <>
       {contextHolder}
-      <BasicDeleteButton onDelete={handleClick} isLoading={isPending} />
+      <BasicDeleteButton
+        onDelete={handleClick}
+        isLoading={isPending}
+        isIconButton={isIconButton}
+      />
     </>
   );
 };
@@ -40,11 +50,13 @@ const DeleteButton = ({ id, deleteFn, onSuccess }: DeleteButtonProps) => {
 type BasicDeleteButtonProps = {
   onDelete: () => void;
   isLoading?: boolean;
+  isIconButton: boolean;
 };
 
 export const BasicDeleteButton = ({
   onDelete,
-  isLoading = false
+  isLoading = false,
+  isIconButton
 }: BasicDeleteButtonProps) => {
   return (
     <>
@@ -57,8 +69,13 @@ export const BasicDeleteButton = ({
         okText="Yes"
         cancelText="No"
       >
-        <Button type="primary" danger disabled={isLoading} size="small">
-          <CloseOutlined spin={isLoading} />
+        <Button
+          type="primary"
+          danger
+          disabled={isLoading}
+          size={isIconButton ? 'small' : undefined}
+        >
+          {isIconButton ? <CloseOutlined spin={isLoading} /> : 'Delete'}
         </Button>
       </Popconfirm>
     </>
