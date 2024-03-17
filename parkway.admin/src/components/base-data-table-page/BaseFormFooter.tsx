@@ -1,5 +1,6 @@
 import { Button, Form } from 'antd';
 import styles from './BaseFormFooter.module.css';
+import { ReactNode } from 'react';
 
 export type BaseFormFooterType = {
   isDisabled: boolean;
@@ -7,6 +8,7 @@ export type BaseFormFooterType = {
   onCancel: () => void;
   submitText?: string;
   cancelText?: string;
+  children?: ReactNode;
 };
 
 export const BaseFormFooter = ({
@@ -14,11 +16,12 @@ export const BaseFormFooter = ({
   isLoading,
   onCancel,
   submitText = 'Submit',
-  cancelText = 'Close'
+  cancelText = 'Close',
+  children
 }: BaseFormFooterType) => {
   return (
     <Form.Item wrapperCol={{ offset: 3, span: 12 }}>
-      <div>
+      <div className={styles.container}>
         <Button
           type="primary"
           htmlType="submit"
@@ -27,13 +30,10 @@ export const BaseFormFooter = ({
         >
           {submitText}
         </Button>
-        <Button
-          className={styles.close}
-          disabled={isDisabled}
-          onClick={onCancel}
-        >
+        <Button disabled={isDisabled} onClick={onCancel}>
           {cancelText}
         </Button>
+        {children}
       </div>
     </Form.Item>
   );

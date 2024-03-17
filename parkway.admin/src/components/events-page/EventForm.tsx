@@ -1,5 +1,5 @@
 import { Breadcrumb, DatePicker, Form, Input, TimePicker } from 'antd';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import UserProfileSelect from '../user-profile-select';
 import { Event } from '../../types';
 import { AddBaseApiFormProps, BaseFormFooter } from '../base-data-table-page';
@@ -7,6 +7,8 @@ import { isSameDate, transformDateToDayjs } from '../../utilities';
 import { Dayjs } from 'dayjs';
 import { useState } from 'react';
 import styles from './EventForm.module.css';
+import DeleteButton from '../delete-button';
+import useApi from '../../hooks/useApi.ts';
 
 type EventWithoutId = Omit<Event, '_id'>;
 
@@ -27,6 +29,11 @@ const EventForm = ({
   onSave,
   onCancel
 }: EventFormProps) => {
+  const params = useParams();
+  const id = params.id;
+  const {
+    eventsApi: { delete: deleteFn }
+  } = useApi();
   const [form] = Form.useForm<EventFormFields>();
   const [endTimeOpen, setEndTimeOpen] = useState<boolean>(false);
 
@@ -46,7 +53,6 @@ const EventForm = ({
     : undefined;
 
   const handleSave = (values: EventFormFields) => {
-    console.log('values', values);
     const { startDate, startTime, endDate, endTime, ...remaining } = values;
 
     const start = startDate.toDate();
@@ -224,7 +230,16 @@ const EventForm = ({
           isDisabled={isSaving}
           isLoading={isSaving}
           onCancel={onCancel}
-        />
+        >
+          {initialValues && id && (
+            <DeleteButton
+              id={id}
+              deleteFn={deleteFn}
+              onSuccess={onCancel}
+              isIconButton={false}
+            />
+          )}
+        </BaseFormFooter>
       </Form>
     </>
   );
