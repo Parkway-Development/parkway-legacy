@@ -14,13 +14,17 @@ import useApi, { buildQueryKey } from '../../hooks/useApi.ts';
 import { useQuery } from '@tanstack/react-query';
 import styles from './Calendar.module.css';
 import { Event } from '../../types';
-import { isSameDate, transformToTime } from '../../utilities';
-import DateDisplay from '../date-display';
+import { isSameDate } from '../../utilities';
 import { useNavigate } from 'react-router-dom';
 import { SyntheticEvent } from 'react';
+import { SelectInfo } from 'antd/lib/calendar/generateCalendar';
+import CalendarTooltip from './CalendarTooltip.tsx';
+import DayViewCalendar from './DayViewCalendar.tsx';
 
 const Calendar = () => {
   const navigate = useNavigate();
+  const searchParams = new URLSearchParams(window.location.search);
+  const date = searchParams.get('date');
 
   const {
     eventsApi: { getAll },
@@ -39,19 +43,33 @@ const Calendar = () => {
     return <Spin />;
   }
 
-  const navigateToItem = (e: SyntheticEvent<HTMLLIElement>, event: Event) => {
-    e.stopPropagation();
+  const navigateToItem = (event: Event, e?: SyntheticEvent<HTMLLIElement>) => {
+    e?.stopPropagation();
     navigate(`/events/${event._id}/edit`);
   };
 
-  const createNewItem = (dayjs: Dayjs) => {
-    navigate(`/events/add?date=${dayjs.format('YYYY-MM-DD')}`);
+  if (date) {
+    const searchDate = new Date(date.replace(/-/g, '/'));
+    const items = data?.data?.filter((x) => isSameDate(x.start, searchDate));
+
+    return (
+      <DayViewCalendar
+        events={items ?? []}
+        date={searchDate}
+        dateParam={date}
+        onClickEvent={navigateToItem}
+      />
+    );
+  }
+
+  const navigateToDay = (dayjs: Dayjs, selectInfo: SelectInfo) => {
+    if (selectInfo.source === 'date') {
+      navigate(`/events?date=${dayjs.format('YYYY-MM-DD')}`);
+    }
   };
 
   const cellRenderer = (date: Dayjs) => {
-    const items = data?.data?.filter(
-      (x) => new Date(x.start).getDate() === date.date()
-    );
+    const items = data?.data?.filter((x) => isSameDate(x.start, date.toDate()));
 
     if (!items.length) return undefined;
 
@@ -61,7 +79,7 @@ const Calendar = () => {
       <ul className={styles.events}>
         {items.map((item) => (
           <Tooltip key={item._id} title={<CalendarTooltip event={item} />}>
-            <li onClick={(e) => navigateToItem(e, item)}>{item.name}</li>
+            <li onClick={(e) => navigateToItem(item, e)}>{item.name}</li>
           </Tooltip>
         ))}
       </ul>
@@ -71,7 +89,7 @@ const Calendar = () => {
   return (
     <CalendarControl
       cellRender={cellRenderer}
-      onSelect={(date) => createNewItem(date)}
+      onSelect={navigateToDay}
       headerRender={({
         value,
         onChange
@@ -144,34 +162,6 @@ const Calendar = () => {
         );
       }}
     />
-  );
-};
-
-type CalendarTooltipProps = {
-  event: Event;
-};
-
-const CalendarTooltip = ({ event }: CalendarTooltipProps) => {
-  const timeFormat = isSameDate(event.start, event.end) ? (
-    <p>
-      {transformToTime(event.start)} - {transformToTime(event.end)}
-    </p>
-  ) : (
-    <>
-      <p>
-        Start: <DateDisplay date={event.start} displayTime />
-      </p>
-      <p>
-        End: <DateDisplay date={event.end} displayTime />
-      </p>
-    </>
-  );
-
-  return (
-    <div className={styles.tooltip}>
-      <p>{event.name}</p>
-      {timeFormat}
-    </div>
   );
 };
 
