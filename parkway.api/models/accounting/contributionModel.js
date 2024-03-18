@@ -14,8 +14,16 @@ const contributionSchema = new mongoose.Schema({
     depositDate: {
         type: Date
     },
+    approvalDate: {
+        type: Date
+    },
+    approvedBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Profile'
+    },
     locked: {
         type: Boolean,
+        required: true,
         default: false
     },
     depositBatchId: {

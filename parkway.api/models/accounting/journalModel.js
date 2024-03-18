@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { validateAccountSumMatchesAmount } = require('../helpers/validationHelper');
+const { validateAccountSumMatchesAmount } = require('../../helpers/validationHelper');
 
 const journalSchema = new mongoose.Schema({
     date: {
@@ -47,10 +47,17 @@ const journalSchema = new mongoose.Schema({
     notes: [ 
         String 
     ]
-    });
+});
 
-    contributionSchema.path('accounts').validate(function (accounts) {
-        return validateAccountSumMatchesAmount(this.totalAmount, accounts);
-    }, 'The sum of accounts amounts must equal the total amount.');
+journalSchema.pre('save', async function(next) {
+    const totalDebits = this.debits.reduce((total, debit) => total + debit.amount, 0);
+    const totalCredits = this.credits.reduce((total, credit) => total + credit.amount, 0);
 
-module.exports = mongoose.model('Journal', journalSchema, 'journalentries')
+    if (totalDebits !== totalCredits) {
+        next(new Error('The sum of debits must equal the sum of credits.'));
+    } else {
+        next();
+    }
+});
+
+module.exports = mongoose.model('Journal', journalSchema, 'journalentries');
