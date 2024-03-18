@@ -9,15 +9,14 @@ const accountSchema = new mongoose.Schema({
         type: String,
         default: 'New Account'
     },
-    targetAmount: {
-        type: Number,
+    type: {
+        type: String,
         required: true,
-        default: 0
+        default: 'Undefined'
     },
-    currentAmount: {
-        type: Number,
-        required: true,
-        default: 0
+    custodian: {
+        type: mongoose.Schema.Types.ObjectId,
+        default: 'profile'
     },
     notes: [ 
         String 
