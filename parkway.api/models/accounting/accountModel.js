@@ -1,8 +1,5 @@
 const mongoose = require('mongoose');
 
-
-// test to track changes in git repo
-
 const accountSchema = new mongoose.Schema({
     name: {
         type: String,
