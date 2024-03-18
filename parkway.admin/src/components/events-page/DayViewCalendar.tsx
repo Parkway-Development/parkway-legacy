@@ -12,6 +12,13 @@ type DayViewCalendarProps = {
   onClickEvent: (event: Event) => void;
 };
 
+type EventGridPosition = {
+  event: Event;
+  gridRow: number;
+  gridRowSpan: number;
+  gridColumn: number;
+};
+
 const DayViewCalendar = ({
   events,
   date,
@@ -37,29 +44,96 @@ const DayViewCalendar = ({
     const endingHour = Math.max(0, latestHour + 1);
 
     const hours: number[] = [];
+    const emptyColumn: boolean[] = [];
 
     for (let i = startingHour; i <= endingHour; i++) {
       hours.push(i);
+      emptyColumn.push(false);
+      emptyColumn.push(false);
+      emptyColumn.push(false);
+      emptyColumn.push(false);
     }
 
-    const getGridRowValue = (event: Event): string => {
+    const usedPositions: boolean[][] = [[...emptyColumn]];
+    const eventPositions: EventGridPosition[] = [];
+
+    events.forEach((event) => {
       const startEvent = new Date(event.start);
       const endEvent = new Date(event.end);
-      const rowValue =
+      const gridRow =
         (startEvent.getHours() - startingHour) * 4 +
         1 +
         startEvent.getMinutes() / 15;
-      const rowSpan =
+      const gridRowSpan =
         (endEvent.valueOf() - startEvent.valueOf()) / 1000 / 60 / 15;
 
-      return `${rowValue} / span ${rowSpan}`;
-    };
+      let gridColumn: number | undefined = undefined;
+
+      for (let i = 0; i < usedPositions.length; i++) {
+        let canUse = true;
+        for (
+          let rowIndex = gridRow;
+          rowIndex < gridRow + gridRowSpan;
+          rowIndex++
+        ) {
+          if (usedPositions[i][rowIndex]) {
+            canUse = false;
+            break;
+          }
+        }
+
+        if (canUse) {
+          gridColumn = i;
+
+          // Consume grid positions
+          for (
+            let rowIndex = gridRow;
+            rowIndex < gridRow + gridRowSpan;
+            rowIndex++
+          ) {
+            usedPositions[i][rowIndex] = true;
+          }
+
+          break;
+        }
+      }
+
+      if (gridColumn === undefined) {
+        usedPositions.push([...emptyColumn]);
+
+        // Consume grid positions
+        for (
+          let rowIndex = gridRow;
+          rowIndex < gridRow + gridRowSpan;
+          rowIndex++
+        ) {
+          usedPositions[usedPositions.length - 1][rowIndex] = true;
+        }
+
+        gridColumn = usedPositions.length - 1;
+      }
+
+      const newPosition: EventGridPosition = {
+        event,
+        gridRow,
+        gridRowSpan,
+        gridColumn: gridColumn + 2
+      };
+
+      eventPositions.push(newPosition);
+    });
+
+    const maxColumn = eventPositions.reduce(
+      (prev, current) =>
+        prev >= current.gridColumn ? prev : current.gridColumn,
+      1
+    );
 
     content = (
       <div
         className={styles.dayViewContainer}
         style={{
-          gridTemplateColumns: '100px 1fr 1fr',
+          gridTemplateColumns: `100px repeat(${maxColumn - 1}, 1fr)`,
           gridTemplateRows: `repeat(${4 * (endingHour - startingHour + 1)}, 1em)`
         }}
       >
@@ -76,12 +150,15 @@ const DayViewCalendar = ({
                 : `${hour} AM`}
           </div>
         ))}
-        {events.map((event) => (
+        {eventPositions.map(({ event, gridRow, gridRowSpan, gridColumn }) => (
           <Tooltip key={event._id} title={<CalendarTooltip event={event} />}>
             <div
               onClick={() => onClickEvent(event)}
               className={styles.eventItem}
-              style={{ gridRow: getGridRowValue(event), gridColumn: 2 }}
+              style={{
+                gridRow: `${gridRow} / span ${gridRowSpan}`,
+                gridColumn: gridColumn
+              }}
             >
               {event.name}
             </div>
