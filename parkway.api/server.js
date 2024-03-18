@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const Multer = require('multer');
 const conn = mongoose.connection;
 const upload = Multer({ dest: 'uploads/' });
+const upload = Multer({ dest: 'uploads/' });
 
 const userRoutes = require('./routes/users');
 const profileRoutes = require('./routes/profiles');
@@ -28,6 +29,8 @@ const uploadRoutes = require('./routes/uploads');
 
 const { Profile } = require('./models/profileModel');
 
+// Grid.mongo = mongoose.mongo;
+// let gfs;
 // Grid.mongo = mongoose.mongo;
 // let gfs;
 
@@ -80,6 +83,8 @@ app.use('*', (req, res) => {
 mongoose.connect(process.env.DATABASE_URL)
     .then(() => {
         console.log('Database connected.')
+        // gfs = Grid(conn.db, mongoose.mongo);
+        // gfs.collection('uploads');
         // gfs = Grid(conn.db, mongoose.mongo);
         // gfs.collection('uploads');
         app.listen(process.env.PORT, () => {
