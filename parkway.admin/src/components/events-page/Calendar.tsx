@@ -14,14 +14,17 @@ import useApi, { buildQueryKey } from '../../hooks/useApi.ts';
 import { useQuery } from '@tanstack/react-query';
 import styles from './Calendar.module.css';
 import { Event } from '../../types';
-import { isSameDate, transformToTime } from '../../utilities';
-import DateDisplay from '../date-display';
+import { isSameDate } from '../../utilities';
 import { useNavigate } from 'react-router-dom';
 import { SyntheticEvent } from 'react';
 import { SelectInfo } from 'antd/lib/calendar/generateCalendar';
+import CalendarTooltip from './CalendarTooltip.tsx';
+import DayViewCalendar from './DayViewCalendar.tsx';
 
 const Calendar = () => {
   const navigate = useNavigate();
+  const searchParams = new URLSearchParams(window.location.search);
+  const date = searchParams.get('date');
 
   const {
     eventsApi: { getAll },
@@ -45,9 +48,22 @@ const Calendar = () => {
     navigate(`/events/${event._id}/edit`);
   };
 
-  const createNewItem = (dayjs: Dayjs, selectInfo: SelectInfo) => {
+  if (date) {
+    const searchDate = new Date(date.replace(/-/g, '/'));
+    const items = data?.data?.filter((x) => isSameDate(x.start, searchDate));
+
+    return (
+      <DayViewCalendar
+        events={items ?? []}
+        date={searchDate}
+        dateParam={date}
+      />
+    );
+  }
+
+  const navigateToDay = (dayjs: Dayjs, selectInfo: SelectInfo) => {
     if (selectInfo.source === 'date') {
-      navigate(`/events/add?date=${dayjs.format('YYYY-MM-DD')}`);
+      navigate(`/events?date=${dayjs.format('YYYY-MM-DD')}`);
     }
   };
 
@@ -72,7 +88,7 @@ const Calendar = () => {
   return (
     <CalendarControl
       cellRender={cellRenderer}
-      onSelect={createNewItem}
+      onSelect={navigateToDay}
       headerRender={({
         value,
         onChange
@@ -145,34 +161,6 @@ const Calendar = () => {
         );
       }}
     />
-  );
-};
-
-type CalendarTooltipProps = {
-  event: Event;
-};
-
-const CalendarTooltip = ({ event }: CalendarTooltipProps) => {
-  const timeFormat = isSameDate(event.start, event.end) ? (
-    <p>
-      {transformToTime(event.start)} - {transformToTime(event.end)}
-    </p>
-  ) : (
-    <>
-      <p>
-        Start: <DateDisplay date={event.start} displayTime />
-      </p>
-      <p>
-        End: <DateDisplay date={event.end} displayTime />
-      </p>
-    </>
-  );
-
-  return (
-    <div className={styles.tooltip}>
-      <p>{event.name}</p>
-      {timeFormat}
-    </div>
   );
 };
 

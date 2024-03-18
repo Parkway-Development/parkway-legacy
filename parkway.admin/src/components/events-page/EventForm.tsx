@@ -105,9 +105,9 @@ const EventForm = ({
       startTime &&
       value &&
       isSameDate(startDate.toDate(), endDate.toDate()) &&
-      value < startTime
+      value <= startTime
     ) {
-      return Promise.reject('End time cannot be before the start time');
+      return Promise.reject('End time cannot be after the start time');
     }
 
     return Promise.resolve();
