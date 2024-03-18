@@ -43,8 +43,8 @@ const Calendar = () => {
     return <Spin />;
   }
 
-  const navigateToItem = (e: SyntheticEvent<HTMLLIElement>, event: Event) => {
-    e.stopPropagation();
+  const navigateToItem = (event: Event, e?: SyntheticEvent<HTMLLIElement>) => {
+    e?.stopPropagation();
     navigate(`/events/${event._id}/edit`);
   };
 
@@ -57,6 +57,7 @@ const Calendar = () => {
         events={items ?? []}
         date={searchDate}
         dateParam={date}
+        onClickEvent={navigateToItem}
       />
     );
   }
@@ -78,7 +79,7 @@ const Calendar = () => {
       <ul className={styles.events}>
         {items.map((item) => (
           <Tooltip key={item._id} title={<CalendarTooltip event={item} />}>
-            <li onClick={(e) => navigateToItem(e, item)}>{item.name}</li>
+            <li onClick={(e) => navigateToItem(item, e)}>{item.name}</li>
           </Tooltip>
         ))}
       </ul>

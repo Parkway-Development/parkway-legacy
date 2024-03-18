@@ -9,9 +9,15 @@ type DayViewCalendarProps = {
   events: Event[];
   date: Date;
   dateParam: string;
+  onClickEvent: (event: Event) => void;
 };
 
-const DayViewCalendar = ({ events, date, dateParam }: DayViewCalendarProps) => {
+const DayViewCalendar = ({
+  events,
+  date,
+  dateParam,
+  onClickEvent
+}: DayViewCalendarProps) => {
   let content: ReactNode;
 
   if (!events.length) {
@@ -73,6 +79,7 @@ const DayViewCalendar = ({ events, date, dateParam }: DayViewCalendarProps) => {
         {events.map((event) => (
           <Tooltip key={event._id} title={<CalendarTooltip event={event} />}>
             <div
+              onClick={() => onClickEvent(event)}
               className={styles.eventItem}
               style={{ gridRow: getGridRowValue(event), gridColumn: 2 }}
             >
