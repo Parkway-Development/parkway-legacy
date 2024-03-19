@@ -1,4 +1,8 @@
 const express = require('express');
+const { requireAuthorization} = require("../auth");
+const router = express.Router();
+requireAuthorization(router);
+
 const {
     addProfile,
     getAll,
@@ -10,12 +14,6 @@ const {
     deleteProfile,
     connectUserAndProfile
 } = require('../controllers/profileController')
-
-const { requireAuthorization} = require("../auth");
-
-const router = express.Router();
-
-requireAuthorization(router);
 
 //Post a profile
 router.post('/', addProfile)

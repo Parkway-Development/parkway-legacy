@@ -5,7 +5,6 @@ const mongoose = require('mongoose');
 const Multer = require('multer');
 const conn = mongoose.connection;
 const upload = Multer({ dest: 'uploads/' });
-const upload = Multer({ dest: 'uploads/' });
 
 const userRoutes = require('./routes/users');
 const profileRoutes = require('./routes/profiles');
@@ -21,13 +20,15 @@ const payrollRoutes = require('./routes/accounting/payroll');
 const pledgeRoutes = require('./routes/accounting/pledges');
 const vendorRoutes = require('./routes/accounting/vendors');
 const contributionRoutes = require('./routes/accounting/contributions');
-//const clientRoutes = require('./routes/client');
 const platformRoutes = require('./routes/platform');
 const songRoutes = require('./routes/songs');
 const eventRoutes = require('./routes/events');
 const uploadRoutes = require('./routes/uploads');
+const wixRoutes = require('./routes/wix');
 
-const { Profile } = require('./models/profileModel');
+//const clientRoutes = require('./routes/client');
+
+//const { Profile } = require('./models/profileModel');
 
 // Grid.mongo = mongoose.mongo;
 // let gfs;
@@ -54,6 +55,7 @@ app.use('/api/platform', platformRoutes);
 app.use('/api/songs', songRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/uploads', uploadRoutes);
+app.use('/api/wix', wixRoutes);
 //app.use('/api/clients', clientRoutes);
 
 //Accounting routes

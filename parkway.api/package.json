@@ -2,9 +2,11 @@
   "name": "parkway.api",
   "version": "1.0.0",
   "description": "Backend API for access the data store on MongoDB Atlas",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
-    "start": "nodemon server.js"
+    "start": "NODE_ENV=production node -r dotenv/config server.js dotenv_config_path=./.env.production",
+    "start:dev": "NODE_ENV=development node -r dotenv/config server.js dotenv_config_path=./.env.development",
+    "start:local": "NODE_ENV=local node -r dotenv/config server.js dotenv_config_path=./.env.local"
   },
   "author": "Jay Davis",
   "license": "ISC",
