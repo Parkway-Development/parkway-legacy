@@ -1,19 +1,28 @@
 import styles from './EventCategoryDisplay.module.css';
 import { EventCategory } from '../../types';
 
-type EventCategoryDisplayProps = Pick<
+export type EventCategoryDisplayProps = Pick<
   EventCategory,
   'backgroundColor' | 'fontColor' | 'name'
->;
+> & {
+  isSmall?: boolean;
+};
 
 const EventCategoryDisplay = ({
   backgroundColor,
   fontColor,
-  name
+  name,
+  isSmall = false
 }: EventCategoryDisplayProps) => {
+  let classNames = styles.container;
+
+  if (isSmall) {
+    classNames += ` ${styles.isSmall}`;
+  }
+
   return (
     <div
-      className={styles.container}
+      className={classNames}
       style={{
         backgroundColor: backgroundColor,
         color: fontColor

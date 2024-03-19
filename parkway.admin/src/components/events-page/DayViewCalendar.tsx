@@ -4,6 +4,8 @@ import { Button, Empty, Tooltip } from 'antd';
 import styles from './DayViewCalendar.module.css';
 import { Link } from 'react-router-dom';
 import CalendarTooltip from './CalendarTooltip.tsx';
+import { useQuery } from '@tanstack/react-query';
+import useApi, { buildQueryKey } from '../../hooks/useApi.ts';
 
 type DayViewCalendarProps = {
   events: Event[];
@@ -25,6 +27,14 @@ const DayViewCalendar = ({
   dateParam,
   onClickEvent
 }: DayViewCalendarProps) => {
+  const {
+    eventCategoriesApi: { getAll: getAllEventCategories }
+  } = useApi();
+  const { data } = useQuery({
+    queryFn: getAllEventCategories,
+    queryKey: buildQueryKey('eventCategories')
+  });
+
   let content: ReactNode;
 
   if (!events.length) {
@@ -150,20 +160,32 @@ const DayViewCalendar = ({
                 : `${hour} AM`}
           </div>
         ))}
-        {eventPositions.map(({ event, gridRow, gridRowSpan, gridColumn }) => (
-          <Tooltip key={event._id} title={<CalendarTooltip event={event} />}>
-            <div
-              onClick={() => onClickEvent(event)}
-              className={styles.eventItem}
-              style={{
-                gridRow: `${gridRow} / span ${gridRowSpan}`,
-                gridColumn: gridColumn
-              }}
-            >
-              {event.name}
-            </div>
-          </Tooltip>
-        ))}
+        {eventPositions.map(({ event, gridRow, gridRowSpan, gridColumn }) => {
+          const eventCategory = data?.data?.find(
+            (x) => x._id === event.category
+          );
+          const backgroundColor = eventCategory
+            ? eventCategory.backgroundColor
+            : undefined;
+          const fontColor = eventCategory ? eventCategory.fontColor : undefined;
+
+          return (
+            <Tooltip key={event._id} title={<CalendarTooltip event={event} />}>
+              <div
+                onClick={() => onClickEvent(event)}
+                className={styles.eventItem}
+                style={{
+                  gridRow: `${gridRow} / span ${gridRowSpan}`,
+                  gridColumn: gridColumn,
+                  backgroundColor,
+                  color: fontColor
+                }}
+              >
+                {event.name}
+              </div>
+            </Tooltip>
+          );
+        })}
       </div>
     );
   }

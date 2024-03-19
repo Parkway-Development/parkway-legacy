@@ -9,6 +9,7 @@ import { useState } from 'react';
 import styles from './EventForm.module.css';
 import DeleteButton from '../delete-button';
 import useApi from '../../hooks/useApi.ts';
+import EventCategorySelect from '../event-category-select';
 
 type EventWithoutId = Omit<Event, '_id'>;
 
@@ -121,6 +122,12 @@ const EventForm = ({
     }
 
     return Promise.resolve();
+  };
+
+  const handleCategoryChange = (value?: string) => {
+    form.setFieldsValue({
+      category: value
+    });
   };
 
   return (
@@ -240,7 +247,10 @@ const EventForm = ({
         </Form.Item>
 
         <Form.Item<EventFormFields> label="Category" name="category">
-          <Input />
+          <EventCategorySelect
+            value={initialValues?.category}
+            onChange={handleCategoryChange}
+          />
         </Form.Item>
 
         <Form.Item<EventFormFields> label="Status" name="status">

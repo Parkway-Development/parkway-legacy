@@ -28,18 +28,29 @@ const Calendar = () => {
 
   const {
     eventsApi: { getAll },
+    eventCategoriesApi: { getAll: getAllEventCategories },
     formatError
   } = useApi();
   const { isPending, error, data } = useQuery({
     queryFn: getAll,
     queryKey: buildQueryKey('events')
   });
+  const {
+    isPending: isPendingCategories,
+    error: errorCategories,
+    data: eventCategoriesData
+  } = useQuery({
+    queryFn: getAllEventCategories,
+    queryKey: buildQueryKey('eventCategories')
+  });
 
-  if (error) {
-    return <Alert type="error" message={formatError(error)} />;
+  if (error || errorCategories) {
+    return (
+      <Alert type="error" message={formatError(error ?? errorCategories)} />
+    );
   }
 
-  if (isPending) {
+  if (isPending || isPendingCategories) {
     return <Spin />;
   }
 
@@ -77,11 +88,26 @@ const Calendar = () => {
 
     return (
       <ul className={styles.events}>
-        {items.map((item) => (
-          <Tooltip key={item._id} title={<CalendarTooltip event={item} />}>
-            <li onClick={(e) => navigateToItem(item, e)}>{item.name}</li>
-          </Tooltip>
-        ))}
+        {items.map((item) => {
+          const eventCategory = eventCategoriesData?.data?.find(
+            (x) => x._id === item.category
+          );
+          const backgroundColor = eventCategory
+            ? eventCategory.backgroundColor
+            : undefined;
+          const fontColor = eventCategory ? eventCategory.fontColor : undefined;
+
+          return (
+            <Tooltip key={item._id} title={<CalendarTooltip event={item} />}>
+              <li
+                onClick={(e) => navigateToItem(item, e)}
+                style={{ backgroundColor, color: fontColor }}
+              >
+                {item.name}
+              </li>
+            </Tooltip>
+          );
+        })}
       </ul>
     );
   };
