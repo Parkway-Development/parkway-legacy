@@ -8,6 +8,7 @@ import {
   AssetsApiType,
   BaseApiType,
   ContributionsApiType,
+  EventCategoriesApiType,
   EventsApiType,
   GeneralApiType,
   SongsApiType,
@@ -21,6 +22,7 @@ import {
   BaseEntity,
   Contribution,
   Event,
+  EventCategory,
   Song,
   Team,
   UserProfile,
@@ -72,6 +74,7 @@ export type MockApiType = Partial<{
   accountsApi: Partial<AccountsApiType>;
   assetsApi: Partial<AssetsApiType>;
   contributionsApi: Partial<ContributionsApiType>;
+  eventCategoriesApi: Partial<EventCategoriesApiType>;
   eventsApi: Partial<EventsApiType>;
   generalApi: Partial<GeneralApiType>;
   songsApi: Partial<SongsApiType>;
@@ -86,6 +89,7 @@ export const mockApi = (
     accountsApi,
     assetsApi,
     contributionsApi,
+    eventCategoriesApi,
     eventsApi,
     generalApi,
     songsApi,
@@ -107,6 +111,7 @@ export const mockApi = (
     accountsApi: mockBaseApi<Account>(accountsApi),
     assetsApi: mockBaseApi<Asset>(assetsApi),
     contributionsApi: mockBaseApi<Contribution>(contributionsApi),
+    eventCategoriesApi: mockBaseApi<EventCategory>(eventCategoriesApi),
     eventsApi: mockBaseApi<Event>(eventsApi),
     songsApi: mockBaseApi<Song>(songsApi),
     teamsApi: mockBaseApi<Team>(teamsApi),

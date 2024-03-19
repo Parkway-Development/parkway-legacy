@@ -44,6 +44,11 @@ import {
   EditEventPage,
   EventsPage
 } from './components/events-page';
+import {
+  AddEventCategoryPage,
+  EditEventCategoryPage,
+  EventCategoriesPage
+} from './components/event-categories-page';
 
 const queryClient = new QueryClient();
 
@@ -90,6 +95,11 @@ createRoot(document.getElementById('root')!).render(
                 <Route index element={<AccountsPage />} />
               </Route>
               <Route path="events">
+                <Route path="categories">
+                  <Route path="add" element={<AddEventCategoryPage />} />
+                  <Route path=":id/edit" element={<EditEventCategoryPage />} />
+                  <Route index element={<EventCategoriesPage />} />
+                </Route>
                 <Route path="add" element={<AddEventPage />} />
                 <Route path=":id/edit" element={<EditEventPage />} />
                 <Route index element={<EventsPage />} />
