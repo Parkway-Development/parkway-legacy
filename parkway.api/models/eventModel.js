@@ -28,7 +28,8 @@ const eventSchema = new mongoose.Schema({
     },
     category: {
         required: false,
-        type: String
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'EventCategory'
     },
     status: {
         required: true,

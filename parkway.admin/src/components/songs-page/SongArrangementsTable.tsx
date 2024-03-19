@@ -118,7 +118,7 @@ const SongArrangementsTable = ({
             <Button onClick={() => handleEdit(value)} size="small">
               <EditOutlined />
             </Button>
-            <BasicDeleteButton onDelete={() => handleDelete(value)} />
+            <BasicDeleteButton onDelete={() => handleDelete(value)} isIconButton />
           </div>
         )
       },

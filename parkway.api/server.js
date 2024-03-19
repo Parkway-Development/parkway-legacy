@@ -5,7 +5,6 @@ const mongoose = require('mongoose');
 const Multer = require('multer');
 const conn = mongoose.connection;
 const upload = Multer({ dest: 'uploads/' });
-const upload = Multer({ dest: 'uploads/' });
 
 const userRoutes = require('./routes/users');
 const profileRoutes = require('./routes/profiles');
@@ -25,6 +24,7 @@ const contributionRoutes = require('./routes/accounting/contributions');
 const platformRoutes = require('./routes/platform');
 const songRoutes = require('./routes/songs');
 const eventRoutes = require('./routes/events');
+const eventCategoryRoutes = require('./routes/eventCategories');
 const uploadRoutes = require('./routes/uploads');
 
 const { Profile } = require('./models/profileModel');
@@ -53,6 +53,7 @@ app.use('/api/teams', teamRoutes);
 app.use('/api/platform', platformRoutes);
 app.use('/api/songs', songRoutes);
 app.use('/api/events', eventRoutes);
+app.use('/api/eventCategories', eventCategoryRoutes);
 app.use('/api/uploads', uploadRoutes);
 //app.use('/api/clients', clientRoutes);
 

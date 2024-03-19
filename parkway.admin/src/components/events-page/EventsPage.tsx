@@ -6,6 +6,7 @@ import DateDisplay from '../date-display';
 import { useState } from 'react';
 import Calendar from './Calendar.tsx';
 import { Switch } from 'antd';
+import { EventCategoryDisplayById } from '../event-categories-page/EventCategoryDisplayById.tsx';
 
 const eventColumns: OrderedColumnsType<Event> = [
   {
@@ -51,6 +52,9 @@ const eventColumns: OrderedColumnsType<Event> = [
     title: 'Category',
     dataIndex: 'category',
     key: 'category',
+    render: (value: Event['category']) => (
+      <EventCategoryDisplayById id={value} isSmall />
+    ),
     displayOrder: 7
   },
   {

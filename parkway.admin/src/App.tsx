@@ -58,18 +58,24 @@ function App() {
               },
               {
                 key: 6,
-                label: <Link to="/events">Events</Link>
-              },
-              {
-                key: 7,
-                label: <Link to="/giving">Giving</Link>
+                label: <Link to="/events">Events</Link>,
+                children: [
+                  {
+                    key: 7,
+                    label: <Link to="/events/categories">Event Categories</Link>
+                  }
+                ]
               },
               {
                 key: 8,
-                label: <Link to="/songs">Songs</Link>
+                label: <Link to="/giving">Giving</Link>
               },
               {
                 key: 9,
+                label: <Link to="/songs">Songs</Link>
+              },
+              {
+                key: 10,
                 label: <Link to="/teams">Teams</Link>
               }
             ]}
