@@ -1,4 +1,4 @@
-import { Breadcrumb, DatePicker, Form, Input, TimePicker } from 'antd';
+import { Breadcrumb, DatePicker, Form, Input, Radio, TimePicker } from 'antd';
 import { Link, useParams } from 'react-router-dom';
 import UserProfileSelect from '../user-profile-select';
 import { Event } from '../../types';
@@ -43,6 +43,13 @@ const EventForm = ({
   const [form] = Form.useForm<EventFormFields>();
   const [endTimeOpen, setEndTimeOpen] = useState<boolean>(false);
 
+  const eventStatusMapping: Record<string, string> = {
+    Pending: 'Pending',
+    Active: 'Active',
+    Postponed: 'Postponed',
+    Canceled: 'Canceled'
+  };
+
   const handleLeaderChange = (value: string | undefined) =>
     form.setFieldsValue({
       organizer: value
@@ -59,9 +66,12 @@ const EventForm = ({
     : addDate
       ? {
           startDate: addDate,
-          endDate: addDate
+          endDate: addDate,
+          status: eventStatusMapping['Active']
         }
-      : undefined;
+      : {
+          status: eventStatusMapping['Active']
+        };
 
   const handleSave = (values: EventFormFields) => {
     const { startDate, startTime, endDate, endTime, ...remaining } = values;
@@ -234,7 +244,13 @@ const EventForm = ({
         </Form.Item>
 
         <Form.Item<EventFormFields> label="Status" name="status">
-          <Input />
+          <Radio.Group>
+            {Object.entries(eventStatusMapping).map(([value, label]) => (
+              <Radio.Button value={value} key={value}>
+                {label}
+              </Radio.Button>
+            ))}
+          </Radio.Group>
         </Form.Item>
 
         <BaseFormFooter
