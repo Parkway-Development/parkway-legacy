@@ -11,23 +11,10 @@ const{
     deleteVendor,
 } = require('../../controllers/accounting/vendorController')
 
-//Post a vendor
-router.post('/', addVendor)
+const { addNotFoundHandler, configureBaseApiRoutes } = require("../baseApiRouter");
 
-//Get all vendors
-router.get('/', getAllVendors)
+configureBaseApiRoutes(router, addVendor, getAllVendors, getVendorById, updateVendor, deleteVendor);
 
-//Get vendor by ID
-router.get('/:id', getVendorById)
-
-//Update a vendor by ID
-router.patch('/:id', updateVendor)
-
-//Delete a vendor by ID
-router.delete('/:id', deleteVendor)
-
-router.use('*', (req, res) => {
-    res.status(404).json({ message: 'Not Found' });
-});
+addNotFoundHandler(router);
 
 module.exports = router;

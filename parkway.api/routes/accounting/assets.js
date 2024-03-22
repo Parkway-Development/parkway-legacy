@@ -14,6 +14,8 @@ const{
     deleteAsset
 } = require('../../controllers/accounting/assetController')
 
+const { addNotFoundHandler, configureBaseApiRoutes } = require("../baseApiRouter");
+
 //Get assets by name
 router.get('/name/:name', getAssetsByName)
 
@@ -23,24 +25,8 @@ router.get('/type/:type', getAssetsByType)
 //Get assets by category
 router.get('/category/:category', getAssetsByCategory)
 
-//Get asset by ID
-router.get('/:id', getAssetById)
+configureBaseApiRoutes(router, addAsset, getAllAssets, getAssetById, updateAsset, deleteAsset);
 
-//Update an asset by ID
-router.patch('/:id', updateAsset)
-
-//Delete an asset by ID
-router.delete('/:id', deleteAsset)
-
-//Post an asset
-router.post('/', addAsset)
-
-//Get all assets
-router.get('/', getAllAssets)
-
-//Default route
-router.use('*', (req, res) => {
-    res.status(404).json({ error: 'Route Not Found' });
-});
+addNotFoundHandler(router);
 
 module.exports = router;

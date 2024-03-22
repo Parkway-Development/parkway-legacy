@@ -8,34 +8,19 @@ const{
     deleteDonation
 } = require('../../controllers/accounting/donationController')
 
+const { addNotFoundHandler, configureBaseApiRoutes } = require("../baseApiRouter");
+
 const { requireAuthorization} = require("../../auth");
 
 const router = express.Router();
 
 requireAuthorization(router);
 
-//Donations
-//Post a donation
-router.post('/', addDonation)
-
-//Get all donations
-router.get('/', getAllDonations)
-
-//Get donation by ID
-router.get('/:id', getDonationById)
-
 //Get donations by profile
 router.get('/profile/:id', getDonationsByProfile)
 
-//Update a donation by ID
-router.patch('/:id', updateDonation)
+configureBaseApiRoutes(router, addDonation, getAllDonations, getDonationById, updateDonation, deleteDonation);
 
-//Delete a donation by ID
-router.delete('/:id', deleteDonation)
-
-router.use('*', (req, res) => {
-    const requestedURL = req.originalUrl;
-    res.status(404).json({ message: 'Endpoint ' + req.originalUrl + ' not found' });
-});
+addNotFoundHandler(router);
 
 module.exports = router;

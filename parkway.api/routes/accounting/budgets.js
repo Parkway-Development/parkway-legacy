@@ -11,16 +11,9 @@ const{
     getBudgetsByFund,
     updateBudget,
     deleteBudget
-} = require('../../controllers/accounting/budgetController')
+} = require('../../controllers/accounting/budgetController');
 
-//Post a budget
-router.post('/budgets', addBudget)
-
-//Get all budgets
-router.get('/budgets', getAllBudgets)
-
-//Get budget by ID
-router.get('/budgets/:id', getBudgetById)
+const { addNotFoundHandler, configureBaseApiRoutes } = require("../baseApiRouter");
 
 //Get budgets by year
 router.get('/budgets/year/:year', getBudgetsByYear)
@@ -28,14 +21,8 @@ router.get('/budgets/year/:year', getBudgetsByYear)
 //Get budgets by fund
 router.get('/budgets/fund/:id', getBudgetsByFund)
 
-//Update a budget by ID
-router.patch('/budgets/:id', updateBudget)
+configureBaseApiRoutes(router, addBudget, getAllBudgets, getBudgetById, updateBudget, deleteBudget);
 
-//Delete a budget by ID
-router.delete('/budgets/:id', deleteBudget)
-
-router.use('*', (req, res) => {
-    res.status(404).json({ message: 'Not Found' });
-});
+addNotFoundHandler(router);
 
 module.exports = router;

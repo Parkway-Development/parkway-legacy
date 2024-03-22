@@ -3,14 +3,19 @@ const { requireAuthorization} = require("../auth");
 const router = express.Router();
 requireAuthorization(router);
 
-//Add a client
-router.post('/add', addClient)
+const{
+    addClient,
+    getAllClients,
+    getClientById,
+    getClientByName,
+    getClientByAccountNumber,
+    getClientByBusinessPhone,
+    getClientByBusinessEmail,
+    updateClient,
+    deleteClient
+} = require('../controllers/clientController')
 
-//Get all clients
-router.get('/all', getAllClients)
-
-//Get client by id
-router.get('/:id', getClientById)
+const { addNotFoundHandler, configureBaseApiRoutes } = require("./baseApiRouter");
 
 //Get client by name
 router.get('/name/:name', getClientByName)
@@ -24,20 +29,8 @@ router.get('/businessPhone/:businessPhone', getClientByBusinessPhone)
 //Get client by business email
 router.get('/businessEmail/:businessEmail', getClientByBusinessEmail)
 
-//Update client by id
-router.patch('/:id', updateClient)
+configureBaseApiRoutes(router, addClient, getAllClients, getClientById, updateClient, deleteClient);
 
-//Delete client by id
-router.delete('/:id', deleteClient)
+addNotFoundHandler(router);
 
-const{
-    addClient,
-    getAllClients,
-    getClientById,
-    getClientByName,
-    getClientByAccountNumber,
-    getClientByBusinessPhone,
-    getClientByBusinessEmail,
-    updateClient,
-    deleteClient
-} = require('../controllers/clientController')
+module.exports = router;

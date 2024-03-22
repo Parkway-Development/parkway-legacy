@@ -13,14 +13,7 @@ updateExpense,
 deleteExpense
 } = require('../../controllers/accounting/expenseController')
 
-//Post an expense
-router.post('/expense', addExpense)
-
-//Get all expenses
-router.get('/expenses', getAllExpenses)
-
-//Get expense by ID
-router.get('/expenses/:id', getExpenseById)
+const { addNotFoundHandler, configureBaseApiRoutes } = require("../baseApiRouter");
 
 //Get expenses by vendor
 router.get('/expenses/vendor/:id', getExpensesByVendor)
@@ -28,14 +21,8 @@ router.get('/expenses/vendor/:id', getExpensesByVendor)
 //Get expenses by fund
 router.get('/expenses/fund/:id', getExpensesByFund)
 
-//Update an expense by ID
-router.patch('/expenses/:id', updateExpense)
+configureBaseApiRoutes(router, addExpense, getAllExpenses, getExpenseById, updateExpense, deleteExpense);
 
-//Delete an expense by ID
-router.delete('/expenses/:id', deleteExpense)
-
-router.use('*', (req, res) => {
-    res.status(404).json({ message: 'Not Found' });
-});
+addNotFoundHandler(router);
 
 module.exports = router;

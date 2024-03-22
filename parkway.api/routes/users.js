@@ -10,6 +10,8 @@ const {
     getByEmail
 } = require('../controllers/userController');
 
+const { addNotFoundHandler} = require("./baseApiRouter");
+
 //login route
 router.post('/login', loginUser)
 
@@ -17,6 +19,7 @@ router.post('/login', loginUser)
 router.post('/connect', signupUser)
 
 const { requireAuthorization } = require("../auth");
+requireAuthorization(router);
 
 //get all users
 router.get('/', getAll)
@@ -27,8 +30,6 @@ router.get('/:id', getById)
 //get user by email
 router.get('/email/:email', getByEmail)
 
-router.use('*', (req, res) => {
-    res.status(404).json({ message: 'Not Found' });
-});
+addNotFoundHandler(router);
 
 module.exports = router;

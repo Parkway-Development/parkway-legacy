@@ -10,28 +10,15 @@ const {
     getSongById,
     updateSongById,
     deleteSongById
-} = require('../controllers/songController')
+} = require('../controllers/songController');
 
-//Add a song
-router.post('/', addSong)
+const { addNotFoundHandler, configureBaseApiRoutes } = require("./baseApiRouter");
 
-//Get all songs
-router.get('/', getAllSongs)
+configureBaseApiRoutes(router, addSong, getAllSongs, getSongById, updateSongById, deleteSongById);
 
 //Get songs by title
-router.get('/title/:title', getSongsByTitle)
+router.get('/title/:title', getSongsByTitle);
 
-//Get a song by id
-router.get('/:id', getSongById)
-
-//Update a song by id
-router.patch('/:id', updateSongById)
-
-//Delete a song by id
-router.delete('/:id', deleteSongById)
-
-router.use('*', (req, res) => {
-    res.status(404).json({ message: 'Not Found' });
-});
+addNotFoundHandler(router);
 
 module.exports = router;
