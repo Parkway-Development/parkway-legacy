@@ -89,7 +89,10 @@ const AccountsInput = ({
         <Button onClick={handleAddRow}>
           <PlusCircleOutlined />
         </Button>
-        <Button onClick={() => handleDeleteRow(index)}>
+        <Button
+          onClick={() => handleDeleteRow(index)}
+          disabled={accounts.length <= 1}
+        >
           <CloseOutlined />
         </Button>
       </div>

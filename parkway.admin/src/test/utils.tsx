@@ -8,6 +8,7 @@ import {
   AssetsApiType,
   BaseApiType,
   ContributionsApiType,
+  EnumsApiType,
   EventCategoriesApiType,
   EventsApiType,
   GeneralApiType,
@@ -21,6 +22,7 @@ import {
   Asset,
   BaseEntity,
   Contribution,
+  Enum,
   Event,
   EventCategory,
   Song,
@@ -74,6 +76,7 @@ export type MockApiType = Partial<{
   accountsApi: Partial<AccountsApiType>;
   assetsApi: Partial<AssetsApiType>;
   contributionsApi: Partial<ContributionsApiType>;
+  enumsApi: Partial<EnumsApiType>;
   eventCategoriesApi: Partial<EventCategoriesApiType>;
   eventsApi: Partial<EventsApiType>;
   generalApi: Partial<GeneralApiType>;
@@ -89,6 +92,7 @@ export const mockApi = (
     accountsApi,
     assetsApi,
     contributionsApi,
+    enumsApi,
     eventCategoriesApi,
     eventsApi,
     generalApi,
@@ -111,6 +115,7 @@ export const mockApi = (
     accountsApi: mockBaseApi<Account>(accountsApi),
     assetsApi: mockBaseApi<Asset>(assetsApi),
     contributionsApi: mockBaseApi<Contribution>(contributionsApi),
+    enumsApi: mockBaseApi<Enum>(enumsApi),
     eventCategoriesApi: mockBaseApi<EventCategory>(eventCategoriesApi),
     eventsApi: mockBaseApi<Event>(eventsApi),
     songsApi: mockBaseApi<Song>(songsApi),

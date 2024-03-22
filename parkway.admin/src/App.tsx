@@ -72,10 +72,14 @@ function App() {
               },
               {
                 key: 9,
-                label: <Link to="/songs">Songs</Link>
+                label: <Link to="/platform/enums">Platform Enums</Link>
               },
               {
                 key: 10,
+                label: <Link to="/songs">Songs</Link>
+              },
+              {
+                key: 11,
                 label: <Link to="/teams">Teams</Link>
               }
             ]}
