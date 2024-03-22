@@ -2,31 +2,30 @@ const express = require('express');
 const {
     getEnums,
     getEnumByName,
+    getEnumById,
     addEnum,
-    updateEnum,
-    deleteEnum
+    updateEnumById,
+    updateEnumByName,
+    deleteEnumById,
+    deleteEnumByName
 } = require('../controllers/platformController')
 const { requireAuthorization} = require("../auth");
 const router = express.Router();
 requireAuthorization(router);
 
-//Enums
-router.get('/enums', getEnums);
+const { addNotFoundHandler, configureBaseApiRoutes } = require("./baseApiRouter");
 
 //Get enum by name
-router.get('/enums/:name', getEnumByName);
-
-//Add enum
-router.post('/enums', addEnum);
+router.get('/name/:name', getEnumByName);
 
 //Update enum
-router.patch('/enums/:name', updateEnum);
+router.patch('/name/:name', updateEnumByName);
 
 //Delete enum
-router.delete('/enums/:name', deleteEnum);
+router.delete('/name/:name', deleteEnumByName);
 
-router.use('*', (req, res) => {
-    res.status(404).json({ message: 'Not Found' });
-});
+configureBaseApiRoutes(router, addEnum, getEnums, getEnumById, updateEnumById, deleteEnumById);
+
+addNotFoundHandler(router);
 
 module.exports = router;

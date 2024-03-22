@@ -12,26 +12,13 @@ const{
     deletePledge,
 } = require('../../controllers/accounting/pledgeController');
 
-//Post a pledge
-router.post('/pledges', addPledge)
-
-//Get all pledges
-router.get('/pledges', getAllPledges)
-
-//Get pledge by ID
-router.get('/pledges/:id', getPledgeById)
+const { addNotFoundHandler, configureBaseApiRoutes } = require("../baseApiRouter");
 
 //Get pledges by profile
 router.get('/pledges/profile/:id', getPledgesByProfile)
 
-//Update a pledge by ID
-router.patch('/pledges/:id', updatePledge)
+configureBaseApiRoutes(router, addPledge, getAllPledges, getPledgeById, updatePledge, deletePledge);
 
-//Delete a pledge by ID
-router.delete('/pledges/:id', deletePledge)
-
-router.use('*', (req, res) => {
-    res.status(404).json({ message: 'Not Found' });
-});
+addNotFoundHandler(router);
 
 module.exports = router;

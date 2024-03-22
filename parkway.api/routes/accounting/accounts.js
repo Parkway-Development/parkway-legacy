@@ -12,26 +12,13 @@ const{
     deleteAccount
 } = require('../../controllers/accounting/accountController')
 
-//Post a fund
-router.post('/', addAccount)
+const { addNotFoundHandler, configureBaseApiRoutes } = require("../baseApiRouter");
 
-//Get all funds
-router.get('/', getAllAccounts)
-
-//Get fund by ID
-router.get('/:id', getAccountById)
+configureBaseApiRoutes(router, addAccount, getAllAccounts, getAccountById, updateAccount, deleteAccount);
 
 //Get a fund by name
 router.get('/name/:name', getAccountByName)
 
-//Update a fund by ID
-router.patch('/:id', updateAccount)
-
-//Delete a fund by ID
-router.delete('/:id', deleteAccount)
-
-router.use('*', (req, res) => {
-    res.status(404).json({ message: 'Not Found' });
-});
+addNotFoundHandler(router);
 
 module.exports = router;

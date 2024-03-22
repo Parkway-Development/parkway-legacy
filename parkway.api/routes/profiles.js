@@ -10,6 +10,7 @@ const {
     deleteProfile,
     connectUserAndProfile
 } = require('../controllers/profileController')
+const { addNotFoundHandler, configureBaseApiRoutes } = require("./baseApiRouter");
 
 const { requireAuthorization} = require("../auth");
 
@@ -17,14 +18,7 @@ const router = express.Router();
 
 requireAuthorization(router);
 
-//Post a profile
-router.post('/', addProfile)
-
-//Get all profiles
-router.get('/', getAll)
-
-//Get profile by ID
-router.get('/:id', getById)
+configureBaseApiRoutes(router, addProfile, getAll, getById, updateProfile, deleteProfile);
 
 //Get profiles by last name
 router.get('/lastname/:lastName', getByLastName)
@@ -35,17 +29,9 @@ router.get('/mobilenumber/:mobileNumber', getByMobileNumber)
 //Get profiles by home number
 router.get('/homenumber/:homeNumber', getByHomeNumber)
 
-//Update a profile by id
-router.patch('/:id', updateProfile)
-
-//Delete profile by id
-router.delete('/:id', deleteProfile)
-
 //Join a profile with a user
 router.post('/join/:profileId', connectUserAndProfile)
 
-router.use('*', (req, res) => {
-    res.status(404).json({ message: 'Not Found' });
-});
+addNotFoundHandler(router);
 
 module.exports = router;
