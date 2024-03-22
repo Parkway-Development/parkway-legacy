@@ -7,27 +7,13 @@ const {
     updateEventCategory,
     deleteEventCategory
 } = require('../controllers/eventCategoryController')
+const { addNotFoundHandler, configureBaseApiRoutes } = require("./baseApiRouter");
 
 const { requireAuthorization} = require("../auth");
 requireAuthorization(router);
 
-//Post an event category
-router.post('/', addEventCategory)
+configureBaseApiRoutes(router, addEventCategory, getAll, getById, updateEventCategory, deleteEventCategory);
 
-//Get all event categories
-router.get('/', getAll)
-
-//Get event category by ID
-router.get('/:id', getById)
-
-//Update an event category by id
-router.patch('/:id', updateEventCategory)
-
-//Delete event category by id
-router.delete('/:id', deleteEventCategory)
-
-router.use('*', (req, res) => {
-    res.status(404).json({ message: 'Not Found' });
-});
+addNotFoundHandler(router);
 
 module.exports = router;
