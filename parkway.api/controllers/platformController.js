@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const Enum = require('../models/enumModel')
+const EventCategory = require("../models/eventCategoryModel");
 
 //Get all enums
 const getEnums = async (req, res) => {
@@ -21,6 +22,22 @@ const getEnumByName = async (req, res) => {
     }
 }
 
+//Get enum by ID
+const getEnumById = async (req, res) => {
+    const {id} = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(404).json({error: 'No such enum.'})
+    }
+    const enumValue = await Enum.findById(id);
+
+    if (!enumValue) {
+        return res.status(404).json({message: "No such enum found."})
+    }
+
+    res.status(200).json(enumValue)
+}
+
 //Add enum
 const addEnum = async (req, res) => {
     try {
@@ -34,7 +51,7 @@ const addEnum = async (req, res) => {
 }
 
 //Update enum
-const updateEnum = async (req, res) => {
+const updateEnumByName = async (req, res) => {
     try {
         const { name } = req.params;
         const updatedEnum = await Enum.findOneAndUpdate({name: name}, req.body, {new: true})
@@ -44,8 +61,23 @@ const updateEnum = async (req, res) => {
     }
 }
 
+//Update event category by ID
+const updateEnumById = async (req, res) => {
+    const {id} = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(404).json({error: 'No such enum.'})
+    }
+    const updatedEnum = await Enum.findByIdAndUpdate(id, req.body, {new: true});
+
+    if (!updatedEnum) {
+        return res.status(404).json({message: "No such enum found."})
+    }
+    res.status(200).json(updatedEnum)
+}
+
 //Delete enum
-const deleteEnum = async (req, res) => {
+const deleteEnumByName = async (req, res) => {
     try {
         const { name } = req.params;
         await Enum.findOneAndDelete({name: name})
@@ -55,10 +87,29 @@ const deleteEnum = async (req, res) => {
     }
 }
 
+//Delete enum by ID
+const deleteEnumById = async (req, res) => {
+    const {id} = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(404).json({error: 'No such enum.'})
+    }
+
+    const deletedEnum = await Enum.findByIdAndDelete(id);
+
+    if (!deletedEnum) {
+        return res.status(404).json({message: "No such enum found."})
+    }
+    res.status(200).json(deletedEnum)
+}
+
 module.exports = { 
     getEnums,
+    getEnumById,
     getEnumByName,
     addEnum,
-    updateEnum,
-    deleteEnum
+    updateEnumById,
+    updateEnumByName,
+    deleteEnumById,
+    deleteEnumByName
 }
