@@ -1,9 +1,9 @@
-const configureBaseApiRoutes = (router, addHandler, getAllHandler, getByIdHandler, updateHandler, deleteHandler) => {
-    router.post('/', addHandler);
-    router.get('/', getAllHandler);
-    router.get('/:id', getByIdHandler);
-    router.patch('/:id', updateHandler);
-    router.delete('/:id', deleteHandler);
+const configureBaseApiRoutes = (router, addHandler, getAllHandler, getByIdHandler, updateHandler, deleteHandler, basePath = '') => {
+    router.post(`${basePath}/`, addHandler);
+    router.get(`${basePath}/`, getAllHandler);
+    router.get(`${basePath}/:id`, getByIdHandler);
+    router.patch(`${basePath}/:id`, updateHandler);
+    router.delete(`${basePath}/:id`, deleteHandler);
 };
 
 const addNotFoundHandler = (router) => {
