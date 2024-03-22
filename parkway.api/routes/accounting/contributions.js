@@ -17,15 +17,6 @@ const router = express.Router();
 
 requireAuthorization(router);
 
-//Post a contribution
-router.post('/', addContribution)
-
-//Get all contributions
-router.get('/', getAllContributions)
-
-//Get contribution by ID
-router.get('/:id', getContributionById)
-
 //Get contributions by type
 router.get('/type/:type', getContributionsByType)
 
@@ -35,10 +26,8 @@ router.get('/profile/:id', getContributionsByProfileId)
 //Get contributions by Account ID
 router.get('/account/:id', getContributionsByAccountId)
 
-//Update a contribution by ID
-router.patch('/:id', updateContribution)
+configureBaseApiRoutes(router, addContribution, getAllContributions, getContributionById, updateContribution, deleteContribution);
 
-//Delete a contribution by ID
-router.delete('/:id', deleteContribution)
+addNotFoundHandler(router);
 
 module.exports = router;

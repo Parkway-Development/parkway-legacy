@@ -1,6 +1,5 @@
 const mongoose = require('mongoose')
 const Enum = require('../models/enumModel')
-const EventCategory = require("../models/eventCategoryModel");
 
 //Get all enums
 const getEnums = async (req, res) => {
