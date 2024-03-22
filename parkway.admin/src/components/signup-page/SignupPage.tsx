@@ -1,7 +1,7 @@
 import styles from './SignupPage.module.css';
 import { Alert, Button, Card, Form, Input } from 'antd';
 import { InternalLoginResponse, useAuth } from '../../hooks/useAuth';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import useApi, { buildQueryKey } from '../../hooks/useApi';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { PasswordSettings } from '../../api';
@@ -37,7 +37,6 @@ const PasswordRequirement = ({ count, display }: PasswordRequirementProps) => {
 };
 
 const SignupPage = () => {
-  const navigate = useNavigate();
   const { login } = useAuth();
   const {
     generalApi: { getPasswordSettings },
@@ -62,7 +61,7 @@ const SignupPage = () => {
           const result = login(data);
 
           if (result.hasValidProfile) {
-            navigate('/', { replace: true });
+            window.location.href = '/';
           } else {
             setLoginResponse(result);
           }

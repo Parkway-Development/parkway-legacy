@@ -1,18 +1,19 @@
 import { App as AntdApp, Button, Image, Layout, Menu, theme } from 'antd';
 import styles from './App.module.css';
-import { Link, Outlet, useNavigate } from 'react-router-dom';
+import { Link, Outlet } from 'react-router-dom';
 import { useAuth } from './hooks/useAuth.tsx';
 import { SyntheticEvent } from 'react';
 import { LogoutOutlined, UserOutlined } from '@ant-design/icons';
 
 function App() {
   const { isLoggedIn, logout } = useAuth();
-  const navigate = useNavigate();
   const {
     token: { colorBgContainer, borderRadiusLG }
   } = theme.useToken();
 
-  if (!isLoggedIn) navigate('/login', { replace: true });
+  if (!isLoggedIn) {
+    window.location.href = '/login';
+  }
 
   const handleLogout = (e: SyntheticEvent) => {
     e.preventDefault();

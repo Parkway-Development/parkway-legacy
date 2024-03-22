@@ -1,7 +1,6 @@
 import { createContext, ReactNode, useContext, useMemo } from 'react';
 import { useLocalStorage } from './useLocalStorage';
 import { jwtDecode } from 'jwt-decode';
-import { useNavigate } from 'react-router-dom';
 import { UserProfile } from '../types';
 
 export interface AuthUser {
@@ -39,8 +38,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     undefined
   );
 
-  const navigate = useNavigate();
-
   const value = useMemo(() => {
     const login = (data: LoginResponse): InternalLoginResponse => {
       const { profile, token, message } = data;
@@ -73,7 +70,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     const logout = () => {
       clearState();
-      navigate('/login', { replace: true });
+      window.location.href = '/login';
     };
 
     const expiration = token ? jwtDecode(token).exp ?? 0 : 0;
