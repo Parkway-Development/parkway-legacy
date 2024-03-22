@@ -2,6 +2,7 @@ export * from './Account.ts';
 export * from './Asset.ts';
 export * from './BaseEntity.ts';
 export * from './Contribution.ts';
+export * from './Enum.ts';
 export * from './Event.ts';
 export * from './EventCategory.ts';
 export * from './Song.ts';

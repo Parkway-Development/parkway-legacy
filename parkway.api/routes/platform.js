@@ -16,15 +16,15 @@ requireAuthorization(router);
 const { addNotFoundHandler, configureBaseApiRoutes } = require("./baseApiRouter");
 
 //Get enum by name
-router.get('/name/:name', getEnumByName);
+router.get('/enums/name/:name', getEnumByName);
 
 //Update enum
-router.patch('/name/:name', updateEnumByName);
+router.patch('/enums/name/:name', updateEnumByName);
 
 //Delete enum
-router.delete('/name/:name', deleteEnumByName);
+router.delete('/enums/name/:name', deleteEnumByName);
 
-configureBaseApiRoutes(router, addEnum, getEnums, getEnumById, updateEnumById, deleteEnumById);
+configureBaseApiRoutes(router, addEnum, getEnums, getEnumById, updateEnumById, deleteEnumById, '/enums');
 
 addNotFoundHandler(router);
 

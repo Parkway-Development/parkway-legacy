@@ -49,6 +49,7 @@ import {
   EditEventCategoryPage,
   EventCategoriesPage
 } from './components/event-categories-page';
+import { AddEnumPage, EditEnumPage, EnumsPage } from './components/enums-page';
 
 const queryClient = new QueryClient();
 
@@ -109,6 +110,13 @@ createRoot(document.getElementById('root')!).render(
                 <Route path="add" element={<AddSongPage />} />
                 <Route path=":id/edit" element={<EditSongPage />} />
                 <Route index element={<SongsPage />} />
+              </Route>
+              <Route path="platform">
+                <Route path="enums">
+                  <Route path="add" element={<AddEnumPage />} />
+                  <Route path=":id/edit" element={<EditEnumPage />} />
+                  <Route index element={<EnumsPage />} />
+                </Route>
               </Route>
               <Route path="teams">
                 <Route path="add" element={<AddTeamPage />} />
