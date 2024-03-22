@@ -6,6 +6,7 @@ const Multer = require('multer');
 const conn = mongoose.connection;
 const upload = Multer({ dest: 'uploads/' });
 
+const healthRoutes = require('./routes/health');
 const userRoutes = require('./routes/users');
 const profileRoutes = require('./routes/profiles');
 const settingRoutes = require('./routes/settings');
@@ -46,6 +47,7 @@ app.use((req, res, next)  => {
 app.use(express.json());
 
 //Routes
+app.use('/api/health', healthRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/profiles', profileRoutes);
 app.use('/api/settings', settingRoutes);
