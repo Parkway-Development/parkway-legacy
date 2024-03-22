@@ -19,6 +19,7 @@ const EventCategoriesPage = () => (
     baseApiType="eventCategoriesApi"
     columns={eventCategoryColumns}
     title="Event Categories"
+    addLinkTitle="Add Event Category"
   />
 );
 
