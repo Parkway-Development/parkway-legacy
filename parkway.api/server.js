@@ -2,8 +2,8 @@ require('dotenv').config();
 
 const express = require('express');
 const mongoose = require('mongoose');
-const Multer = require('multer');
 const conn = mongoose.connection;
+const Multer = require('multer');
 const upload = Multer({ dest: 'uploads/' });
 
 const userRoutes = require('./routes/users');
