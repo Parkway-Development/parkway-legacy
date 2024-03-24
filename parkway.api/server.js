@@ -46,6 +46,10 @@ app.use((req, res, next)  => {
 
 app.use(express.json());
 
+app.get ('/', (req, res) => {
+    res.send('Welcome to the Parkway API');
+});
+
 //Routes
 app.use('/api/users', userRoutes);
 app.use('/api/profiles', profileRoutes);
@@ -70,7 +74,6 @@ app.use('/api/accounting/payroll', payrollRoutes);
 app.use('/api/accounting/pledges', pledgeRoutes);
 app.use('/api/accounting/vendors', vendorRoutes);
 app.use('/api/accounting/contributions', contributionRoutes);
-
 
 // Catch-all route for undefined paths
 //TODO: Add logging.....lots and lots of logging
