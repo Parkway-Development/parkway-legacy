@@ -6,10 +6,10 @@ name: Build and deploy Node.js app to Azure WebApp
 on:
   push:
     branches:
-      - main  # Set this to your default branch
+      - dev  # Set this to your default branch
   pull_request:
     branches:
-      - main  # Set this to your default branch
+      - dev  # Set this to your default branch
 
 jobs:
   build-and-deploy:
