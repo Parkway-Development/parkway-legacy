@@ -1,40 +1,36 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Build and deploy Node.js app to Azure Web App - pkwy-backend-dev
+name: Build and deploy Node.js app to Azure WebApp
 
 on:
   push:
     branches:
-      - dev
+      - main  # Set this to your default branch
+  pull_request:
+    branches:
+      - main  # Set this to your default branch
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Download Source
-        uses: actions/checkout@v4
+    - uses: actions/checkout@v2
 
-      - name: Set up Node.js version
-        uses: actions/setup-node@v3
-        with:
-          node-version: '20.x'
+    - name: Set up Node.js version
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'  # Set this to your Node.js version
 
-      - name: npm install, build, and test
-        run: |
-          cd parkway.api
-          npm install
-     
-      - name: Login to Azure
-        uses: azure/login@v1
-        with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_46EA11797AC44AFFA6F343D76E7CDCF3 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_F1958947E3364C2AB1CCBB021AC1FE01 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_FF8632E77CE1438E8BBF7BED115D2F68 }}
+    - name: npm install, build, and test
+      run: |
+        cd parkway.api
+        npm install
 
-      - name: 'Deploy to Azure Web App'
-        uses: azure/webapps-deploy@v2
-        with:
-          app-name: 'pkwy-backend-dev'
-          package: .
-          
+    - name: 'Deploy to Azure WebApp'
+      uses: azure/webapps-deploy@v3
+      with:
+        app-name: ${{ secrets.BACKEND_AZURE_APP_NAME }}
+        publish-profile: ${{ secrets.BACKEND_AZURE_CREDENTIALS }}
+        package: '.'
