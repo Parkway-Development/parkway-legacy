@@ -33,4 +33,4 @@ jobs:
       with:
         app-name: ${{ secrets.BACKEND_AZURE_APP_NAME }}
         publish-profile: ${{ secrets.BACKEND_AZURE_CREDENTIALS }}
-        package: '.'
+        package: 'parkway.api'
