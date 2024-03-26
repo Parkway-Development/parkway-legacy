@@ -1,5 +1,11 @@
 {
     "cSpell.words": [
         "journalentries"
-    ]
+    ],
+    "appService.zipIgnorePattern": [
+        "node_modules{,/**}",
+        ".vscode{,/**}"
+    ],
+    "appService.defaultWebAppToDeploy": "/subscriptions/9fb670b5-b0e0-4087-9527-dac945f82b22/resourceGroups/dev-pkwy/providers/Microsoft.Web/sites/pkwy-backend-dev",
+    "appService.deploySubpath": "parkway.api"
 }
