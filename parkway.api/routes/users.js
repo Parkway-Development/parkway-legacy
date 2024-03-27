@@ -18,6 +18,9 @@ router.post('/login', loginUser)
 //connect (or signup) route
 router.post('/connect', signupUser)
 
+//Wix connect route
+router.post('/wixConnect', signupWixUser)
+
 const { requireAuthorization } = require("../auth");
 requireAuthorization(router);
 

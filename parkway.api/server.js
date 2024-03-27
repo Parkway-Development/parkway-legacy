@@ -89,12 +89,8 @@ app.use('*', (req, res) => {
 mongoose.connect(process.env.DATABASE_URL)
     .then(() => {
         console.log('Database connected.')
-        // gfs = Grid(conn.db, mongoose.mongo);
-        // gfs.collection('uploads');
-        // gfs = Grid(conn.db, mongoose.mongo);
-        // gfs.collection('uploads');
-        app.listen(process.env.PORT, () => {
-            console.log('Listening for requests on port', process.env.PORT)
+        app.listen(PORT, () => {
+            console.log('Listening for requests on port ${PORT}')
         })
     })
     .catch((err) => {

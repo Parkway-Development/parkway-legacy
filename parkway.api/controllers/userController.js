@@ -91,6 +91,11 @@ const signupUser = async (req, res) => {
     }
 }
 
+// Sign up a Wix user
+const signupWixUser = async (req, res) => {
+    return res.status(200).json({message: 'Wix User Signup'})
+}
+
 //Get all users
 const getAll = async (req, res) => {
     try {
@@ -140,5 +145,6 @@ module.exports = {
     loginUser,
     getAll,
     getById,
-    getByEmail
+    getByEmail,
+    signupWixUser
 }
