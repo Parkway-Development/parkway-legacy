@@ -79,6 +79,12 @@ app.use('/api/accounting/pledges', pledgeRoutes);
 app.use('/api/accounting/vendors', vendorRoutes);
 app.use('/api/accounting/contributions', contributionRoutes);
 
+app.post('/api/count', (req, resp) => {
+    const { count } = req.body;
+    io.emit('count', count);
+    resp.status(201).json();
+});
+
 // Catch-all route for undefined paths
 //TODO: Add logging.....lots and lots of logging
 app.use('*', (req, res) => {

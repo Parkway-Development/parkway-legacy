@@ -50,6 +50,7 @@ import {
   EventCategoriesPage
 } from './components/event-categories-page';
 import { AddEnumPage, EditEnumPage, EnumsPage } from './components/enums-page';
+import CountPage from './components/count-page/CountPage.tsx';
 
 const queryClient = new QueryClient();
 
@@ -69,6 +70,7 @@ createRoot(document.getElementById('root')!).render(
                 </ProtectedRoute>
               }
             >
+              <Route path="count" element={<CountPage />} />
               <Route path="profiles">
                 <Route path="add" element={<AddUserProfilePage />} />
                 <Route path="me" element={<MyProfilePage />} />
