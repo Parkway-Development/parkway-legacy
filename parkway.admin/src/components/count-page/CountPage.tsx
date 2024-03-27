@@ -3,8 +3,10 @@ import { useEffect, useState } from 'react';
 import { Button } from 'antd';
 import { useMutation } from '@tanstack/react-query';
 import useApi from '../../hooks/useApi.ts';
+import { useAuth } from '../../hooks/useAuth.tsx';
 
 const CountPage = () => {
+  const { token } = useAuth();
   const [currentCount, setCurrentCount] = useState<number>(0);
   const {
     generalApi: { count }
@@ -16,6 +18,7 @@ const CountPage = () => {
 
   useEffect(() => {
     const socket = io('ws://127.0.0.1:3000', {
+      auth: { token },
       transports: ['websocket']
     });
 

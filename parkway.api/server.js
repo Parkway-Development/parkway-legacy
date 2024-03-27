@@ -31,6 +31,7 @@ const uploadRoutes = require('./routes/uploads');
 const healhRoutes = require('./routes/health');
 
 const { Profile } = require('./models/profileModel');
+const jwt = require("jsonwebtoken");
 
 // Grid.mongo = mongoose.mongo;
 // let gfs;
@@ -41,6 +42,28 @@ const { Profile } = require('./models/profileModel');
 const app = express();
 const httpServer = createServer(app);
 const io = new Server(httpServer, {});
+
+io.use((socket, next) => {
+    const token = socket.handshake.auth.token;
+    let err = undefined;
+
+    if (!token) {
+        err = new Error("Connection requires valid authentication");
+    } else {
+        try {
+            socket.data.user = jwt.verify(token, process.env.JWT_SECRET);
+        } catch (error) {
+            console.log('Error authenticating token for web socket', error);
+            err = new Error("Invalid authentication token");
+        }
+    }
+
+    if (err) {
+        next(err);
+    } else {
+        next();
+    }
+});
 
 //Middleware
 app.use((req, res, next)  => {
