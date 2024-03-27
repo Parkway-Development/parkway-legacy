@@ -7,7 +7,8 @@ const {
     loginUser,
     getAll, 
     getById,
-    getByEmail
+    getByEmail,
+    signupWixUser
 } = require('../controllers/userController');
 
 const { addNotFoundHandler} = require("./baseApiRouter");
@@ -19,7 +20,7 @@ router.post('/login', loginUser)
 router.post('/connect', signupUser)
 
 //Wix connect route
-router.post('/wixConnect', signupWixUser)
+router.post('/wixconnect', signupWixUser)
 
 const { requireAuthorization } = require("../auth");
 requireAuthorization(router);
