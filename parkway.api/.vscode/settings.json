@@ -25,7 +25,8 @@
         ".env.preprod.local",
         ".env.prod",
         "uploads/**",
-        "localstuff/**"
+        "localstuff/**",
+        "parkway.api.code-workspace"
     ],
     "cSpell.words": [
         "gettoken",
