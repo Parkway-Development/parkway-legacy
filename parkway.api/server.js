@@ -1,6 +1,8 @@
 require('dotenv').config();
 const PORT = process.env.PORT || 3000;
 const express = require('express');
+const { createServer } = require('http');
+const { Server } = require('socket.io');
 const mongoose = require('mongoose');
 const conn = mongoose.connection;
 const Multer = require('multer');
@@ -37,6 +39,8 @@ const { Profile } = require('./models/profileModel');
 
 //express app
 const app = express();
+const httpServer = createServer(app);
+const io = new Server(httpServer, {});
 
 //Middleware
 app.use((req, res, next)  => {
@@ -93,7 +97,7 @@ mongoose.connect(process.env.DATABASE_URL)
         // gfs.collection('uploads');
         // gfs = Grid(conn.db, mongoose.mongo);
         // gfs.collection('uploads');
-        app.listen(process.env.PORT, () => {
+        httpServer.listen(process.env.PORT, () => {
             console.log('Listening for requests on port', process.env.PORT)
         })
     })
