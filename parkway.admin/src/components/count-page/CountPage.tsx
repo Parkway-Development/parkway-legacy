@@ -17,17 +17,9 @@ const CountPage = () => {
   });
 
   useEffect(() => {
-    const socket = io('ws://127.0.0.1:3000', {
+    const socket = io(import.meta.env.VITE_API_WS_URL, {
       auth: { token },
       transports: ['websocket']
-    });
-
-    socket.on('connect', () => {
-      console.log('client connected');
-    });
-
-    socket.on('disconnect', () => {
-      console.log('client disconnected');
     });
 
     socket.on('count', (newCount) => {
