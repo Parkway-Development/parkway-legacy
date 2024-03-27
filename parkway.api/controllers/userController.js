@@ -93,6 +93,8 @@ const signupUser = async (req, res) => {
 
 // Sign up a Wix user
 const signupWixUser = async (req, res) => {
+    
+    const wixUser = req.body;
     return res.status(200).json({message: 'Wix User Signup'})
 }
 
