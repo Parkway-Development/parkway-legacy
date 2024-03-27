@@ -24,13 +24,11 @@
         ".env.preprod",
         ".env.preprod.local",
         ".env.prod",
-        "parkway-dev.profiles.json",
         "uploads/**",
+        "localstuff/**"
     ],
     "cSpell.words": [
         "gettoken",
         "Gpoe"
-    ],
-    "appService.defaultWebAppToDeploy": "/subscriptions/9fb670b5-b0e0-4087-9527-dac945f82b22/resourceGroups/dev-rg/providers/Microsoft.Web/sites/pkwy-backend",
-    "appService.deploySubpath": "."
+    ]
 }
