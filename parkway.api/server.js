@@ -39,18 +39,12 @@ const { Profile } = require('./models/profileModel');
 const app = express();
 
 //Middleware
-app.use((req, res, next)  => {
-    console.log(req.path, req.method)
-    next();
-}) 
-
+app.use((req, res, next)  => { console.log(req.path, req.method), next(); }) 
 app.use(express.json());
 
-app.get ('/', (req, res) => {
-    res.send('Welcome to the Parkway API');
-});
 
 //Routes
+app.get ('/', (req, res) => { res.send('Welcome to the Parkway API'); });
 app.use('/api/users', userRoutes);
 app.use('/api/profiles', profileRoutes);
 app.use('/api/settings', settingRoutes);
