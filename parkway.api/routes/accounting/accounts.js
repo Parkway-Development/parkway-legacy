@@ -1,7 +1,5 @@
 const express = require('express');
-const { requireAuthorization} = require("../../auth");
 const router = express.Router();
-requireAuthorization(router);
 
 const{
     addAccount,
@@ -15,6 +13,9 @@ const{
 const { addNotFoundHandler, configureBaseApiRoutes } = require("../baseApiRouter");
 
 configureBaseApiRoutes(router, addAccount, getAllAccounts, getAccountById, updateAccount, deleteAccount);
+
+const { requireAuthorization} = require("../../middleware/auth");
+requireAuthorization(router);
 
 //Get a fund by name
 router.get('/name/:name', getAccountByName)

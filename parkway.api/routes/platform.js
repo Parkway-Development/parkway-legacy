@@ -9,11 +9,13 @@ const {
     deleteEnumById,
     deleteEnumByName
 } = require('../controllers/platformController')
-const { requireAuthorization} = require("../auth");
+
 const router = express.Router();
-requireAuthorization(router);
 
 const { addNotFoundHandler, configureBaseApiRoutes } = require("./baseApiRouter");
+
+const { requireAuthorization} = require("../middleware/auth");
+requireAuthorization(router);
 
 //Get enum by name
 router.get('/enums/name/:name', getEnumByName);

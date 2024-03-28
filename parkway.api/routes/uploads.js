@@ -1,8 +1,6 @@
 const express = require('express');
 const Multer = require('multer');
-const { requireAuthorization } = require("../auth");
 const router = express.Router();
-requireAuthorization(router);
 
 // Initialize Multer storage settings
 const storage = Multer.diskStorage({
@@ -20,6 +18,9 @@ const upload = Multer({ storage: storage });
 const {
     uploadSubsplashTransferFile
 } = require('../controllers/uploadController');
+
+const { requireAuthorization} = require("../middleware/auth");
+requireAuthorization(router);
 
 // Upload a CSV File
 router.post('/subsplash', upload.single('file'), uploadSubsplashTransferFile);

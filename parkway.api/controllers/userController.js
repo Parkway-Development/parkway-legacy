@@ -126,7 +126,7 @@ const getById = async (req, res) => {
     }
     const userObj = user.toObject();
     delete userObj.password;
-    return res.status(200).json(user)
+    return res.status(200).json(userObj)
 }
 
 //Get user by email

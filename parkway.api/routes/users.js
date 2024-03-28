@@ -22,7 +22,7 @@ router.post('/connect', signupUser)
 //Wix connect route
 router.post('/wixconnect', signupWixUser)
 
-const { requireAuthorization } = require("../auth");
+const { requireAuthorization } = require("../middleware/auth");
 requireAuthorization(router);
 
 //get all users

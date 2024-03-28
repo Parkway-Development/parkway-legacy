@@ -1,7 +1,5 @@
 const express = require('express');
-const { requireAuthorization} = require("../../auth");
 const router = express.Router();
-requireAuthorization(router);
 
 const{
     addVendor,
@@ -14,6 +12,9 @@ const{
 const { addNotFoundHandler, configureBaseApiRoutes } = require("../baseApiRouter");
 
 configureBaseApiRoutes(router, addVendor, getAllVendors, getVendorById, updateVendor, deleteVendor);
+
+const { requireAuthorization} = require("../../middleware/auth");
+requireAuthorization(router);
 
 addNotFoundHandler(router);
 

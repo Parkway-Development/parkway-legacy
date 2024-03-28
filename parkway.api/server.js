@@ -27,6 +27,7 @@ const eventRoutes = require('./routes/events');
 const eventCategoryRoutes = require('./routes/eventCategories');
 const uploadRoutes = require('./routes/uploads');
 const healhRoutes = require('./routes/health');
+const applicationClaimsRoutes = require('./routes/applicationClaims');
 
 const { Profile } = require('./models/profileModel');
 
@@ -55,6 +56,7 @@ app.use('/api/events', eventRoutes);
 app.use('/api/eventCategories', eventCategoryRoutes);
 app.use('/api/uploads', uploadRoutes);
 app.use('/api/health', healhRoutes);
+app.use('/api/applicationclaims', applicationClaimsRoutes);
 //app.use('/api/clients', clientRoutes);
 
 //Accounting routes

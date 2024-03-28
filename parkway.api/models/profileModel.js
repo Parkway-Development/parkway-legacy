@@ -66,19 +66,6 @@ const profileSchema = new mongoose.Schema({
         default: false,
         type: Boolean
     },
-    memberStatus:{
-        type: String,
-        required: false,
-        enum: ['active','inactive','deceased','visitor','child','guest'],
-        lowercase: true
-    },
-    applicationRole: {
-        type: String,
-        required: true,
-        default: 'none',
-        enum: ['super','owner','admin', 'lead', 'contributor', 'viewer','none'],
-        lowercase: true
-    },
     teams: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Team',
@@ -87,11 +74,6 @@ const profileSchema = new mongoose.Schema({
     family: {
         type:mongoose.Schema.Types.ObjectId,
         ref: 'Family',
-        required: false
-    },
-    permissions: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Permissions',
         required: false
     },
     preferences: {

@@ -1,7 +1,5 @@
 const express = require('express');
-const { requireAuthorization} = require("../../auth");
 const router = express.Router();
-requireAuthorization(router);
 
 const{
     addLiability,
@@ -14,6 +12,9 @@ const{
 } = require('../../controllers/accounting/liabilityController')
 
 const { addNotFoundHandler, configureBaseApiRoutes } = require("../baseApiRouter");
+
+const { requireAuthorization} = require("../../middleware/auth");
+requireAuthorization(router);
 
 //Get liabilities by fund
 router.get('/liabilities/fund/:id', getLiabilitiesByFund)

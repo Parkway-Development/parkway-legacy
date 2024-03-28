@@ -1,4 +1,6 @@
 const express = require('express');
+const router = express.Router();
+
 const{
     addDonation,
     getAllDonations,
@@ -10,10 +12,7 @@ const{
 
 const { addNotFoundHandler, configureBaseApiRoutes } = require("../baseApiRouter");
 
-const { requireAuthorization} = require("../../auth");
-
-const router = express.Router();
-
+const { requireAuthorization} = require("../../middleware/auth");
 requireAuthorization(router);
 
 //Get donations by profile
