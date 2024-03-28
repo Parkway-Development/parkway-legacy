@@ -1,4 +1,6 @@
 const express = require('express');
+const router = express.Router();
+
 const{
     addContribution,
     getAllContributions,
@@ -12,9 +14,7 @@ const{
 
 const { addNotFoundHandler, configureBaseApiRoutes } = require("../baseApiRouter");
 
-const { requireAuthorization } = require("../../auth");
-const router = express.Router();
-
+const { requireAuthorization} = require("../../middleware/auth");
 requireAuthorization(router);
 
 //Get contributions by type

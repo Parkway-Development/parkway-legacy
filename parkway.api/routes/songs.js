@@ -1,7 +1,5 @@
 const express = require('express');
-const { requireAuthorization} = require("../auth");
 const router = express.Router();
-requireAuthorization(router);
 
 const {
     addSong,
@@ -15,6 +13,9 @@ const {
 const { addNotFoundHandler, configureBaseApiRoutes } = require("./baseApiRouter");
 
 configureBaseApiRoutes(router, addSong, getAllSongs, getSongById, updateSongById, deleteSongById);
+
+const { requireAuthorization} = require("../middleware/auth");
+requireAuthorization(router);
 
 //Get songs by title
 router.get('/title/:title', getSongsByTitle);

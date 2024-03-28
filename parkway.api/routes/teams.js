@@ -15,7 +15,7 @@ const {
 
 const { addNotFoundHandler, configureBaseApiRoutes } = require("./baseApiRouter");
 
-const { requireAuthorization} = require("../auth");
+const { requireAuthorization} = require("../middleware/auth");
 requireAuthorization(router);
 
 configureBaseApiRoutes(router, addTeam, getAll, getById, updateTeam, deleteTeam);

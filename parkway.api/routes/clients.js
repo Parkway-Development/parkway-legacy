@@ -17,6 +17,9 @@ const{
 
 const { addNotFoundHandler, configureBaseApiRoutes } = require("./baseApiRouter");
 
+const { requireAuthorization} = require("../middleware/auth");
+requireAuthorization(router);
+
 //Get client by name
 router.get('/name/:name', getClientByName)
 

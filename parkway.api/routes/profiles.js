@@ -12,7 +12,7 @@ const {
 } = require('../controllers/profileController')
 const { addNotFoundHandler, configureBaseApiRoutes } = require("./baseApiRouter");
 
-const { requireAuthorization} = require("../auth");
+const { requireAuthorization} = require("../middleware/auth");
 
 const router = express.Router();
 

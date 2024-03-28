@@ -1,7 +1,5 @@
 const express = require('express');
-const { requireAuthorization} = require("../../auth");
 const router = express.Router();
-requireAuthorization(router);
 
 const{
     addAsset,
@@ -15,6 +13,9 @@ const{
 } = require('../../controllers/accounting/assetController')
 
 const { addNotFoundHandler, configureBaseApiRoutes } = require("../baseApiRouter");
+
+const { requireAuthorization} = require("../../middleware/auth");
+requireAuthorization(router);
 
 //Get assets by name
 router.get('/name/:name', getAssetsByName)

@@ -1,7 +1,5 @@
 const express = require('express');
-const { requireAuthorization} = require("../../auth");
 const router = express.Router();
-requireAuthorization(router);
 
 const{
     addBudget,
@@ -14,6 +12,9 @@ const{
 } = require('../../controllers/accounting/budgetController');
 
 const { addNotFoundHandler, configureBaseApiRoutes } = require("../baseApiRouter");
+
+const { requireAuthorization} = require("../../middleware/auth");
+requireAuthorization(router);
 
 //Get budgets by year
 router.get('/budgets/year/:year', getBudgetsByYear)

@@ -9,7 +9,7 @@ const {
 } = require('../controllers/eventController');
 const { addNotFoundHandler, configureBaseApiRoutes } = require("./baseApiRouter");
 
-const { requireAuthorization} = require("../auth");
+const { requireAuthorization} = require("../middleware/auth");
 requireAuthorization(router);
 
 configureBaseApiRoutes(router, addEvent, getAll, getById, updateEvent, deleteEvent);

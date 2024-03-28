@@ -1,7 +1,5 @@
 const express = require('express');
-const { requireAuthorization} = require("../../auth");
 const router = express.Router();
-requireAuthorization(router);
 
 const{
     addPledge,
@@ -13,6 +11,9 @@ const{
 } = require('../../controllers/accounting/pledgeController');
 
 const { addNotFoundHandler, configureBaseApiRoutes } = require("../baseApiRouter");
+
+const { requireAuthorization} = require("../../middleware/auth");
+requireAuthorization(router);
 
 //Get pledges by profile
 router.get('/pledges/profile/:id', getPledgesByProfile)
