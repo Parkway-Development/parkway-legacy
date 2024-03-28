@@ -1,5 +1,6 @@
 const User = require('../models/userModel')
 const Profile = require('../models/profileModel')
+const ApplicationClaim = require('../models/applicationClaimModel')
 const bcrypt = require('bcrypt');
 const validator = require('validator');
 const jwt = require('jsonwebtoken');
@@ -142,11 +143,50 @@ const getByEmail = async (req, res) => {
     return res.status(200).json(userObj)
 }
 
+// Add an ApplicationClaim to a User
+const addApplicationClaim = async (req, res) => {
+    try{
+        const { id } = req.params;
+        const { name, value } = req.body
+        
+        console.log('id: ', id);
+        console.log('name: ', name);
+        console.log('value: ', value);
+
+        // is it a legit claim
+        const applicationClaim = await ApplicationClaim.findOne({name: name});
+        if(!applicationClaim){
+            return res.status(404).json({message: "No such application claim found."})
+        }
+        
+        const user = await User.findById(id);
+        if(!user){
+            return res.status(404).json({message: "No such user found."})
+        }
+
+        const valueExists = applicationClaim.values.includes(value);
+        if(!valueExists){
+            return res.status(400).json({message: "Invalid value for the application claim."})
+        }
+        
+        user.applicationClaims.push({ name, value });
+        await user.save({new: true});
+
+        const userObj = user.toObject();
+        delete userObj.password;
+
+        return res.status(200).json(userObj);
+    } catch (error) {
+        return res.status(400).json({message: error.message});
+    }
+}
+
 module.exports = { 
     signupUser, 
     loginUser,
     getAll,
     getById,
     getByEmail,
-    signupWixUser
+    signupWixUser,
+    addApplicationClaim
 }

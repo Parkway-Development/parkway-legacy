@@ -15,13 +15,20 @@ const userSchema = new mongoose.Schema({
         ref: 'Profile'
     },    
     applicationClaims: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'ApplicationClaim',
-        required: true
+        name: {
+            type: String,
+            required: true
+        },
+        value: {
+            type: String,
+            required: true
+        },
+        _id: false
     }],
     apiKey:{
         type: String,
-        unique: true
+        unique: true,
+        
     }
 }, {timestamps: true})
 

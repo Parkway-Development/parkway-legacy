@@ -8,10 +8,11 @@ const {
     getAll, 
     getById,
     getByEmail,
+    addApplicationClaim,
     signupWixUser
 } = require('../controllers/userController');
 
-const { addNotFoundHandler} = require("./baseApiRouter");
+const { addNotFoundHandler } = require("./baseApiRouter");
 
 //login route
 router.post('/login', loginUser)
@@ -33,6 +34,9 @@ router.get('/:id', getById)
 
 //get user by email
 router.get('/email/:email', getByEmail)
+
+//add application claim to user
+router.patch('/:id/applicationclaim', addApplicationClaim)
 
 addNotFoundHandler(router);
 
