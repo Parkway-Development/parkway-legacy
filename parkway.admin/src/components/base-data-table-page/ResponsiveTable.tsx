@@ -1,11 +1,18 @@
 import { Card } from 'antd';
 import styles from './ResponsiveTable.module.css';
-import { OrderedColumnsType } from '../../hooks/useColumns.tsx';
+import { DeleteAction, OrderedColumnsType } from '../../hooks/useColumns.tsx';
+import { ReactNode } from 'react';
+import { Link } from 'react-router-dom';
+import { EditOutlined } from '@ant-design/icons';
+import { BaseEntity } from '../../types';
+import DeleteButton from '../delete-button';
 
-type ResponsiveTableProps<T> = {
+export type ResponsiveTableProps<T extends BaseEntity> = {
   data: T[];
   columns: OrderedColumnsType<T>;
   rowKey: (record: T) => string;
+  cardTitleRenderFn: (item: T) => ReactNode;
+  deleteAction: DeleteAction;
 };
 
 const renderValue = <T,>(value: T[keyof T]) => {
@@ -14,17 +21,60 @@ const renderValue = <T,>(value: T[keyof T]) => {
   return '';
 };
 
-const ResponsiveTable = <T,>({
+type CardTitleProps<T extends BaseEntity> = Pick<
+  ResponsiveTableProps<T>,
+  'cardTitleRenderFn' | 'deleteAction'
+> & {
+  item: T;
+};
+
+const CardTitle = <T extends BaseEntity>({
+  item,
+  cardTitleRenderFn,
+  deleteAction
+}: CardTitleProps<T>) => {
+  return (
+    <div className={styles.cardTitle}>
+      <span>{cardTitleRenderFn(item)}</span>
+      <Link to={`./${item._id}/edit`} key="edit">
+        <EditOutlined />
+      </Link>
+      <DeleteButton
+        key="delete"
+        id={item._id}
+        deleteFn={deleteAction.deleteFn}
+        onSuccess={deleteAction.handleDelete}
+      />
+    </div>
+  );
+};
+
+const ResponsiveTable = <T extends BaseEntity>({
   data,
   columns,
-  rowKey
+  rowKey,
+  cardTitleRenderFn,
+  deleteAction
 }: ResponsiveTableProps<T>) => {
   return (
     <div className={styles.container}>
       {data.map((item) => (
-        <Card key={rowKey(item)} title={rowKey(item)} className={styles.card}>
+        <Card
+          key={rowKey(item)}
+          title={
+            <CardTitle
+              item={item}
+              cardTitleRenderFn={cardTitleRenderFn}
+              deleteAction={deleteAction}
+            />
+          }
+          className={styles.card}
+        >
           {columns
-            .filter((column) => column.dataIndex !== undefined)
+            .filter(
+              (column) =>
+                !column.isPartOfCardTitle && column.dataIndex !== undefined
+            )
             .map((column, index) => {
               const value = item[column.dataIndex!];
 

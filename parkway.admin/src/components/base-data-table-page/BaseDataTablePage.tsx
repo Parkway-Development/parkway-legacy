@@ -9,10 +9,13 @@ import useApi, {
 } from '../../hooks/useApi.ts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { BaseEntity } from '../../types';
-import useColumns, { OrderedColumnsType } from '../../hooks/useColumns.tsx';
+import useColumns, {
+  DeleteAction,
+  OrderedColumnsType
+} from '../../hooks/useColumns.tsx';
 import { IsBaseEntityApi } from '../../api';
 import useResponsive from '../../hooks/useResponsive.ts';
-import ResponsiveTable from './ResponsiveTable.tsx';
+import ResponsiveTable, { ResponsiveTableProps } from './ResponsiveTable.tsx';
 
 type BaseDataTablePageProps<T extends BaseEntity> =
   BaseDataTableListProps<T> & {
@@ -21,7 +24,10 @@ type BaseDataTablePageProps<T extends BaseEntity> =
     addLinkTitle?: string;
   };
 
-type BaseDataTableListProps<T extends BaseEntity> = {
+type BaseDataTableListProps<T extends BaseEntity> = Pick<
+  ResponsiveTableProps<T>,
+  'cardTitleRenderFn' | 'deleteAction'
+> & {
   queryFn: () => TypedResponse<T[]>;
   queryKey: any[];
   columns: OrderedColumnsType<T>;
@@ -53,7 +59,9 @@ export const BaseDataTablePage = <T extends BaseEntity>({
 const BaseDataTableList = <T extends BaseEntity>({
   queryFn,
   queryKey,
-  columns
+  columns,
+  cardTitleRenderFn,
+  deleteAction
 }: BaseDataTableListProps<T>) => {
   const { aboveBreakpoint } = useResponsive();
   const { formatError } = useApi();
@@ -94,6 +102,8 @@ const BaseDataTableList = <T extends BaseEntity>({
       data={data}
       columns={columns}
       rowKey={(record: T) => record._id}
+      cardTitleRenderFn={cardTitleRenderFn}
+      deleteAction={deleteAction}
     />
   );
 
@@ -108,7 +118,10 @@ const BaseDataTableList = <T extends BaseEntity>({
 type BaseApiDataTablePageProps<
   T extends BaseEntity,
   TBaseApiKey extends keyof BaseApiTypes
-> = Pick<BaseDataTablePageProps<T>, 'title' | 'addLinkTitle'> & {
+> = Pick<
+  BaseDataTablePageProps<T>,
+  'title' | 'addLinkTitle' | 'cardTitleRenderFn'
+> & {
   queryKey: QueryType;
   columns: OrderedColumnsType<T>;
   baseApiType: TBaseApiKey;
@@ -142,10 +155,12 @@ export const BaseApiDataTablePage = <
     });
   };
 
+  const deleteAction: DeleteAction = { deleteFn, handleDelete };
+
   const { columns } = useColumns({
     columns: columnsProp,
     columnType: `${queryKeyProp}Page`,
-    deleteAction: { deleteFn, handleDelete },
+    deleteAction,
     editLink: ({ _id }) => `./${_id}/edit`
   });
 
@@ -155,6 +170,7 @@ export const BaseApiDataTablePage = <
       queryFn={getAll}
       queryKey={queryKey}
       columns={columns}
+      deleteAction={deleteAction}
       {...props}
     />
   );
