@@ -11,10 +11,10 @@ const{
 
 const { addNotFoundHandler, configureBaseApiRoutes } = require("../baseApiRouter");
 
-configureBaseApiRoutes(router, addVendor, getAllVendors, getVendorById, updateVendor, deleteVendor);
-
 const { requireAuthorization} = require("../../middleware/auth");
 requireAuthorization(router);
+
+configureBaseApiRoutes(router, addVendor, getAllVendors, getVendorById, updateVendor, deleteVendor);
 
 addNotFoundHandler(router);
 
