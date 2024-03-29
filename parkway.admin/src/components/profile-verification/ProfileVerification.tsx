@@ -219,7 +219,7 @@ const ProfileVerification = ({ loginResponse }: ProfileVerificationProps) => {
         className={styles.card}
         title="Complete Registration"
         bordered={false}
-        style={{ width: 500 }}
+        style={{ width: '90vw', maxWidth: 500 }}
       >
         <div className={styles.createProfile}>
           <Spin size="large" />
