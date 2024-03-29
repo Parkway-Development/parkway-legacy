@@ -23,9 +23,17 @@ function App() {
     logout();
   };
 
-  const ResponsiveLink = useCallback(({ ...props }: LinkProps) => {
-    return <Link onClick={() => setSideCollapsed(true)} {...props} />;
-  }, []);
+  const ResponsiveLink = useCallback(
+    ({ ...props }: LinkProps) => {
+      return (
+        <Link
+          onClick={aboveBreakpoint ? undefined : () => setSideCollapsed(true)}
+          {...props}
+        />
+      );
+    },
+    [aboveBreakpoint]
+  );
 
   return (
     <AntdApp>

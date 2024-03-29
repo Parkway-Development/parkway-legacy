@@ -4,7 +4,7 @@ import useBreakpoint from 'antd/lib/grid/hooks/useBreakpoint';
 const MainBreakpoint: Breakpoint = 'md';
 
 const useResponsive = () => {
-  const breakpoints = useBreakpoint();
+  const breakpoints = useBreakpoint(true);
   const aboveBreakpoint = !!breakpoints[MainBreakpoint];
 
   return {
