@@ -1,12 +1,19 @@
 import { App as AntdApp, Button, Image, Layout, Menu, theme } from 'antd';
 import styles from './App.module.css';
-import { Link, Outlet } from 'react-router-dom';
+import { Link, LinkProps, Outlet } from 'react-router-dom';
 import { useAuth } from './hooks/useAuth.tsx';
-import { SyntheticEvent } from 'react';
+import { SyntheticEvent, useCallback, useState } from 'react';
 import { LogoutOutlined, UserOutlined } from '@ant-design/icons';
+import useBreakpoint from 'antd/lib/grid/hooks/useBreakpoint';
+import { Breakpoint } from 'antd/lib/_util/responsiveObserver';
+
+const MainBreakpoint: Breakpoint = 'md';
 
 function App() {
   const { isLoggedIn, logout } = useAuth();
+  const breakpoints = useBreakpoint();
+  const aboveBreakpoint = !!breakpoints[MainBreakpoint];
+  const [sideCollapsed, setSideCollapsed] = useState<boolean>(true);
   const {
     token: { colorBgContainer, borderRadiusLG }
   } = theme.useToken();
@@ -20,14 +27,24 @@ function App() {
     logout();
   };
 
+  const ResponsiveLink = useCallback(({ ...props }: LinkProps) => {
+    return <Link onClick={() => setSideCollapsed(true)} {...props} />;
+  }, []);
+
   return (
     <AntdApp>
       <Layout className={styles.container}>
-        <Layout.Sider className={styles.sidebar}>
+        <Layout.Sider
+          className={styles.sidebar}
+          breakpoint={MainBreakpoint}
+          collapsedWidth={0}
+          collapsed={sideCollapsed}
+          onCollapse={(collapsed) => setSideCollapsed(collapsed)}
+        >
           <div className={styles.logo}>
-            <Link to="/">
+            <ResponsiveLink to="/">
               <Image src="/logo.png" preview={false} alt="Parkway Ministries" />
-            </Link>
+            </ResponsiveLink>
           </div>
           <Menu
             theme="dark"
@@ -35,67 +52,96 @@ function App() {
             items={[
               {
                 key: 1,
-                label: <Link to="/accounts">Accounts</Link>,
+                label: (
+                  <ResponsiveLink
+                    to="/accounts"
+                    onClick={() => setSideCollapsed(true)}
+                  >
+                    Accounts
+                  </ResponsiveLink>
+                ),
                 children: [
                   {
                     key: 2,
-                    label: <Link to="/accounts/assets">Assets</Link>
+                    label: (
+                      <ResponsiveLink to="/accounts/assets">
+                        Assets
+                      </ResponsiveLink>
+                    )
                   },
                   {
                     key: 3,
                     label: (
-                      <Link to="/accounts/contributions">Contributions</Link>
+                      <ResponsiveLink to="/accounts/contributions">
+                        Contributions
+                      </ResponsiveLink>
                     )
                   },
                   {
                     key: 4,
-                    label: <Link to="/accounts/vendors">Vendors</Link>
+                    label: (
+                      <ResponsiveLink to="/accounts/vendors">
+                        Vendors
+                      </ResponsiveLink>
+                    )
                   }
                 ]
               },
               {
                 key: 5,
-                label: <Link to="/profiles">Directory</Link>
+                label: <ResponsiveLink to="/profiles">Directory</ResponsiveLink>
               },
               {
                 key: 6,
-                label: <Link to="/events">Events</Link>,
+                label: <ResponsiveLink to="/events">Events</ResponsiveLink>,
                 children: [
                   {
                     key: 7,
-                    label: <Link to="/events/categories">Event Categories</Link>
+                    label: (
+                      <ResponsiveLink to="/events/categories">
+                        Event Categories
+                      </ResponsiveLink>
+                    )
                   }
                 ]
               },
               {
                 key: 8,
-                label: <Link to="/giving">Giving</Link>
+                label: <ResponsiveLink to="/giving">Giving</ResponsiveLink>
               },
               {
                 key: 9,
-                label: <Link to="/platform/enums">Platform Enums</Link>
+                label: (
+                  <ResponsiveLink to="/platform/enums">
+                    Platform Enums
+                  </ResponsiveLink>
+                )
               },
               {
                 key: 10,
-                label: <Link to="/songs">Songs</Link>
+                label: <ResponsiveLink to="/songs">Songs</ResponsiveLink>
               },
               {
                 key: 11,
-                label: <Link to="/teams">Teams</Link>
+                label: <ResponsiveLink to="/teams">Teams</ResponsiveLink>
               }
             ]}
           />
         </Layout.Sider>
-        <Layout>
+        <Layout
+          style={{
+            display: !aboveBreakpoint && !sideCollapsed ? 'none' : undefined
+          }}
+        >
           <Layout.Header style={{ padding: 0, background: colorBgContainer }}>
             <div className={styles.header}>
               <span className={styles.title}>Admin Portal</span>
               <span className={styles.userSection}>
-                <Link to="/profiles/me">
+                <ResponsiveLink to="/profiles/me">
                   <Button type="text" title="User Profile">
                     <UserOutlined />
                   </Button>
-                </Link>
+                </ResponsiveLink>
                 <Button onClick={handleLogout} type="text" title="Logout">
                   <LogoutOutlined />
                 </Button>
