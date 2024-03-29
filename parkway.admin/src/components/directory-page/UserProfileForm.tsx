@@ -1,14 +1,6 @@
-import { DatePicker, Form, Input, Radio, Select, Switch } from 'antd';
-import {
-  applicationRoleMapping,
-  memberStatusMapping,
-  UserProfile
-} from '../../types';
-import {
-  buildSelectOptionsFromMapping,
-  transformDateToDayjs,
-  trimStrings
-} from '../../utilities';
+import { DatePicker, Form, Input, Radio, Switch } from 'antd';
+import { UserProfile } from '../../types';
+import { transformDateToDayjs, trimStrings } from '../../utilities';
 import { AddBaseApiFormProps, BaseFormFooter } from '../base-data-table-page';
 
 export type UserProfileFormFields = Omit<
@@ -28,8 +20,6 @@ const FormItem = Form.Item<UserProfileFormFields>;
 export const addProfileInitialValues: UserProfileFormFields = {
   firstName: '',
   lastName: '',
-  applicationRole: 'none',
-  memberStatus: 'active',
   member: false
 };
 
@@ -58,9 +48,7 @@ const UserProfileForm = ({
       payload = {
         ...payload,
         user: initial.user,
-        member: initial.member,
-        memberStatus: initial.memberStatus,
-        applicationRole: initial.applicationRole
+        member: initial.member
       };
     }
 
@@ -150,27 +138,9 @@ const UserProfileForm = ({
         </FormItem>
 
         {!isMyProfile && (
-          <>
-            <FormItem label="Member" name="member">
-              <Switch />
-            </FormItem>
-
-            <FormItem label="Member Status" name="memberStatus">
-              <Radio.Group>
-                {Object.entries(memberStatusMapping).map(([value, label]) => (
-                  <Radio.Button value={value} key={value}>
-                    {label}
-                  </Radio.Button>
-                ))}
-              </Radio.Group>
-            </FormItem>
-
-            <FormItem label="Application Role" name="applicationRole">
-              <Select
-                options={buildSelectOptionsFromMapping(applicationRoleMapping)}
-              />
-            </FormItem>
-          </>
+          <FormItem label="Member" name="member">
+            <Switch />
+          </FormItem>
         )}
 
         <BaseFormFooter

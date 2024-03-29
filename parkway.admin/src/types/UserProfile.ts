@@ -17,24 +17,8 @@ export type UserProfile = BaseEntity & {
   state?: string;
   zip?: string;
   member: boolean;
-  memberStatus:
-    | 'active'
-    | 'inactive'
-    | 'deceased'
-    | 'visitor'
-    | 'child'
-    | 'guest';
-  applicationRole:
-    | 'super'
-    | 'owner'
-    | 'admin'
-    | 'lead'
-    | 'contributor'
-    | 'viewer'
-    | 'none';
   teams?: string[];
   family?: string;
-  permissions?: string;
   preferences?: string;
 };
 
@@ -44,27 +28,4 @@ export const genderMapping: Record<
 > = {
   male: 'Male',
   female: 'Female'
-};
-
-export const memberStatusMapping: Record<UserProfile['memberStatus'], string> =
-  {
-    active: 'Active',
-    inactive: 'Inactive',
-    deceased: 'Deceased',
-    visitor: 'Visitor',
-    child: 'Child',
-    guest: 'Guest'
-  };
-
-export const applicationRoleMapping: Record<
-  UserProfile['applicationRole'],
-  string
-> = {
-  none: 'None',
-  super: 'Super',
-  owner: 'Owner',
-  admin: 'Admin',
-  lead: 'Lead',
-  contributor: 'Contributor',
-  viewer: 'Viewer'
 };
