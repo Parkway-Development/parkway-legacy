@@ -12,10 +12,10 @@ const {
 
 const { addNotFoundHandler, configureBaseApiRoutes } = require("./baseApiRouter");
 
-configureBaseApiRoutes(router, addSong, getAllSongs, getSongById, updateSongById, deleteSongById);
-
 const { requireAuthorization} = require("../middleware/auth");
 requireAuthorization(router);
+
+configureBaseApiRoutes(router, addSong, getAllSongs, getSongById, updateSongById, deleteSongById);
 
 //Get songs by title
 router.get('/title/:title', getSongsByTitle);
