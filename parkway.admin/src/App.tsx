@@ -4,15 +4,11 @@ import { Link, LinkProps, Outlet } from 'react-router-dom';
 import { useAuth } from './hooks/useAuth.tsx';
 import { SyntheticEvent, useCallback, useState } from 'react';
 import { LogoutOutlined, UserOutlined } from '@ant-design/icons';
-import useBreakpoint from 'antd/lib/grid/hooks/useBreakpoint';
-import { Breakpoint } from 'antd/lib/_util/responsiveObserver';
-
-const MainBreakpoint: Breakpoint = 'md';
+import useResponsive from './hooks/useResponsive.ts';
 
 function App() {
   const { isLoggedIn, logout } = useAuth();
-  const breakpoints = useBreakpoint();
-  const aboveBreakpoint = !!breakpoints[MainBreakpoint];
+  const { aboveBreakpoint, mainBreakpoint } = useResponsive();
   const [sideCollapsed, setSideCollapsed] = useState<boolean>(true);
   const {
     token: { colorBgContainer, borderRadiusLG }
@@ -36,7 +32,7 @@ function App() {
       <Layout className={styles.container}>
         <Layout.Sider
           className={styles.sidebar}
-          breakpoint={MainBreakpoint}
+          breakpoint={mainBreakpoint}
           collapsedWidth={0}
           collapsed={sideCollapsed}
           onCollapse={(collapsed) => setSideCollapsed(collapsed)}
