@@ -50,18 +50,14 @@ describe('Directory Page', () => {
         firstName: 'John',
         lastName: 'Doe',
         mobilePhone: '123-456-7890',
-        member: true,
-        memberStatus: 'active',
-        applicationRole: 'none'
+        member: true
       },
       {
         _id: '2',
         firstName: 'Jane',
         lastName: 'Smith',
         mobilePhone: '444-456-7890',
-        member: true,
-        memberStatus: 'active',
-        applicationRole: 'none'
+        member: true
       }
     ];
 

@@ -1,9 +1,4 @@
-import {
-  applicationRoleMapping,
-  genderMapping,
-  memberStatusMapping,
-  UserProfile
-} from '../../types';
+import { genderMapping, UserProfile } from '../../types';
 import { BaseApiDataTablePage } from '../base-data-table-page';
 import { CheckCircleOutlined } from '@ant-design/icons';
 import { translateMapping } from '../../utilities';
@@ -119,34 +114,18 @@ const userProfileColumns: OrderedColumnsType<UserProfile> = [
     displayOrder: 16
   },
   {
-    title: 'Member Status',
-    dataIndex: 'memberStatus',
-    render: (value: UserProfile['memberStatus']) =>
-      translateMapping(memberStatusMapping, value),
-    key: 'memberStatus',
-    displayOrder: 17
-  },
-  {
-    title: 'App Role',
-    dataIndex: 'applicationRole',
-    render: (value: UserProfile['applicationRole']) =>
-      translateMapping(applicationRoleMapping, value),
-    key: 'applicationRole',
-    displayOrder: 18
-  },
-  {
     title: 'Teams',
     dataIndex: 'teams',
     render: (value: UserProfile['teams']) => value?.length ?? 0,
     align: 'center',
     key: 'teams',
-    displayOrder: 19
+    displayOrder: 17
   },
   {
     title: 'Family',
     dataIndex: 'family',
     key: 'family',
-    displayOrder: 20
+    displayOrder: 18
   }
 ];
 
