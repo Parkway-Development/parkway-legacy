@@ -1,5 +1,4 @@
 import { Alert, Button, Empty, Spin, Table } from 'antd';
-import { ColumnsType } from 'antd/lib/table';
 import styles from './BaseDataTablePage.module.css';
 import { Link, To } from 'react-router-dom';
 import useApi, {
@@ -12,6 +11,8 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { BaseEntity } from '../../types';
 import useColumns, { OrderedColumnsType } from '../../hooks/useColumns.tsx';
 import { IsBaseEntityApi } from '../../api';
+import useResponsive from '../../hooks/useResponsive.ts';
+import ResponsiveTable from './ResponsiveTable.tsx';
 
 type BaseDataTablePageProps<T extends BaseEntity> =
   BaseDataTableListProps<T> & {
@@ -23,7 +24,7 @@ type BaseDataTablePageProps<T extends BaseEntity> =
 type BaseDataTableListProps<T extends BaseEntity> = {
   queryFn: () => TypedResponse<T[]>;
   queryKey: any[];
-  columns: ColumnsType<T>;
+  columns: OrderedColumnsType<T>;
 };
 
 export const BaseDataTablePage = <T extends BaseEntity>({
@@ -54,6 +55,7 @@ const BaseDataTableList = <T extends BaseEntity>({
   queryKey,
   columns
 }: BaseDataTableListProps<T>) => {
+  const { aboveBreakpoint } = useResponsive();
   const { formatError } = useApi();
   const {
     isPending,
@@ -78,17 +80,27 @@ const BaseDataTableList = <T extends BaseEntity>({
 
   const { data } = response;
 
+  const content = aboveBreakpoint ? (
+    <Table
+      dataSource={data}
+      columns={columns}
+      rowKey={(record: T) => record._id}
+      size="small"
+      bordered
+      scroll={{ x: 'auto' }}
+    />
+  ) : (
+    <ResponsiveTable
+      data={data}
+      columns={columns}
+      rowKey={(record: T) => record._id}
+    />
+  );
+
   return (
     <div className={styles.dataContainer}>
       <p>Total Count: {data.length}</p>
-      <Table
-        dataSource={data}
-        columns={columns}
-        rowKey={(record: T) => record._id}
-        size="small"
-        bordered
-        scroll={{ x: 'auto' }}
-      />
+      {content}
     </div>
   );
 };
