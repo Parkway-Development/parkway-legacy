@@ -11,13 +11,15 @@ const userProfileColumns: OrderedColumnsType<UserProfile> = [
     title: 'First Name',
     dataIndex: 'firstName',
     key: 'firstName',
-    displayOrder: 1
+    displayOrder: 1,
+    isPartOfCardTitle: true
   },
   {
     title: 'Last Name',
     dataIndex: 'lastName',
     key: 'lastName',
-    displayOrder: 2
+    displayOrder: 2,
+    isPartOfCardTitle: true
   },
   {
     title: 'Middle Initial',
@@ -136,6 +138,7 @@ const DirectoryPage = () => (
     columns={userProfileColumns}
     title="Directory"
     addLinkTitle="Add User Profile"
+    cardTitleRenderFn={(profile) => `${profile.firstName} ${profile.lastName}`}
   />
 );
 

@@ -39,7 +39,7 @@ const LoginPage = () => {
       <Card
         title="Parkway Ministries Admin Login"
         bordered={false}
-        style={{ width: 500 }}
+        style={{ width: '90vw', maxWidth: 500 }}
       >
         <Form
           name="basic"

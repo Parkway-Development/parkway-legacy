@@ -9,7 +9,8 @@ const eventCategoryColumns: OrderedColumnsType<EventCategory> = [
     dataIndex: 'name',
     key: 'name',
     render: (_, eventCategory) => <EventCategoryDisplay {...eventCategory} />,
-    displayOrder: 1
+    displayOrder: 1,
+    isPartOfCardTitle: true
   }
 ];
 
@@ -20,6 +21,7 @@ const EventCategoriesPage = () => (
     columns={eventCategoryColumns}
     title="Event Categories"
     addLinkTitle="Add Event Category"
+    cardTitleRenderFn={(item) => item.name}
   />
 );
 

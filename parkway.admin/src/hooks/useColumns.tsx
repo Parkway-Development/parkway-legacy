@@ -19,15 +19,18 @@ type LocalStorageColumnsType = {
   hidden: boolean;
 };
 
-type OrderedColumnType<T> = ColumnType<T> & {
+type OrderedColumnType<T> = Omit<ColumnType<T>, 'render' | 'title'> & {
   displayOrder: number;
   dataIndex?: keyof T;
   key: string;
+  title: ReactNode;
+  render?: (value: any, record: T, index: number) => React.ReactNode;
+  isPartOfCardTitle?: boolean;
 };
 
 export type OrderedColumnsType<T> = OrderedColumnType<T>[];
 
-type DeleteAction = {
+export type DeleteAction = {
   deleteFn: (id: string) => GenericResponse;
   handleDelete: () => void;
 };

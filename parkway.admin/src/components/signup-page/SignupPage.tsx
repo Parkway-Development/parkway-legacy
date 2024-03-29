@@ -86,7 +86,7 @@ const SignupPage = () => {
       <Card
         title="Parkway Ministries Admin Signup"
         bordered={false}
-        style={{ width: 500 }}
+        style={{ width: '90vw', maxWidth: 500 }}
       >
         <Form
           name="basic"

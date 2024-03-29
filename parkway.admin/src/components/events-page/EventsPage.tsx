@@ -13,7 +13,8 @@ const eventColumns: OrderedColumnsType<Event> = [
     title: 'Name',
     dataIndex: 'name',
     key: 'name',
-    displayOrder: 1
+    displayOrder: 1,
+    isPartOfCardTitle: true
   },
   {
     title: 'Description',
@@ -75,6 +76,7 @@ const EventsPage = () => {
       queryKey="events"
       baseApiType="eventsApi"
       columns={eventColumns}
+      cardTitleRenderFn={(item) => item.name}
     />
   );
 

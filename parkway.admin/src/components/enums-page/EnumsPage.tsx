@@ -7,7 +7,8 @@ const enumColumns: OrderedColumnsType<Enum> = [
     title: 'Name',
     dataIndex: 'name',
     key: 'name',
-    displayOrder: 1
+    displayOrder: 1,
+    isPartOfCardTitle: true
   },
   {
     title: 'Values',
@@ -24,6 +25,7 @@ const EnumsPage = () => (
     baseApiType="enumsApi"
     columns={enumColumns}
     title="Enums"
+    cardTitleRenderFn={(item) => item.name}
   />
 );
 

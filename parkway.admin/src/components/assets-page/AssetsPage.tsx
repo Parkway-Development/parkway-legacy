@@ -9,7 +9,8 @@ const assetColumns: OrderedColumnsType<Asset> = [
     title: 'Name',
     dataIndex: 'name',
     key: 'name',
-    displayOrder: 1
+    displayOrder: 1,
+    isPartOfCardTitle: true
   },
   {
     title: 'Description',
@@ -96,6 +97,7 @@ const AssetsPage = () => (
     baseApiType="assetsApi"
     columns={assetColumns}
     title="Assets"
+    cardTitleRenderFn={(asset) => asset.name}
   />
 );
 

@@ -82,6 +82,10 @@ const ContributionsPage = () => (
     baseApiType="contributionsApi"
     columns={contributionColumns}
     title="Contributions"
+    cardTitleRenderFn={(contribution) => (
+      // TODO: This probably isn't enough
+      <DateDisplay date={contribution.transactionDate} />
+    )}
   />
 );
 
