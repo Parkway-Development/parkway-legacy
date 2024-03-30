@@ -75,7 +75,9 @@ const BaseDisplayPage = <T extends BaseEntity>({
   return (
     <>
       <div className={styles.header}>
-        <Button onClick={handleCancel}>Close</Button>
+        <Button onClick={handleCancel} type="primary">
+          Close
+        </Button>
         <Button onClick={handleEdit}>Edit</Button>
         <DeleteButton
           id={id}
