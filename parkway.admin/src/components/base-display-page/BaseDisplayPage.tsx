@@ -1,4 +1,4 @@
-import { Alert, Spin } from 'antd';
+import { Alert, Button, Spin } from 'antd';
 import { useQuery } from '@tanstack/react-query';
 import useApi, { buildQueryKey } from '../../hooks/useApi.ts';
 import { BaseEntity } from '../../types';
@@ -7,7 +7,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { AxiosResponse } from 'axios';
 import { ReactNode } from 'react';
 import { SharedBasePageProps } from '../base-data-table-page/types.ts';
-import './BaseDisplayPage.module.css';
+import styles from './BaseDisplayPage.module.css';
 
 type BaseDisplayPageProps<T extends BaseEntity> = SharedBasePageProps & {
   render: (item: T) => ReactNode;
@@ -69,7 +69,14 @@ const BaseDisplayPage = <T extends BaseEntity>({
   // @ts-ignore
   const handleCancel = () => navigate(mainPage);
 
-  return <>{render(response.data)}</>;
+  return (
+    <>
+      <div className={styles.header}>
+        <Button onClick={handleCancel}>Close</Button>
+      </div>
+      {render(response.data)}
+    </>
+  );
 };
 
 export { BaseDisplayPage };
