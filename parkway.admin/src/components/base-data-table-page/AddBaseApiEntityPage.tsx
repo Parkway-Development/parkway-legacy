@@ -1,15 +1,12 @@
 import { notification } from 'antd';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import useApi, {
-  BaseApiTypes,
-  buildQueryKey,
-  QueryType
-} from '../../hooks/useApi.ts';
+import useApi, { buildQueryKey } from '../../hooks/useApi.ts';
 import { BaseEntity } from '../../types';
 import { IsBaseEntityApi } from '../../api';
 import { ReactNode } from 'react';
-import { To, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { trimStrings } from '../../utilities';
+import { SharedBasePageProps } from './types.ts';
 
 export type AddBaseApiFormProps<T extends BaseEntity> = {
   isSaving: boolean;
@@ -17,25 +14,16 @@ export type AddBaseApiFormProps<T extends BaseEntity> = {
   onCancel: () => void;
 };
 
-type AddBaseApiEntityPageProps<
-  T extends BaseEntity,
-  TBaseApiKey extends keyof BaseApiTypes
-> = {
-  queryKey: QueryType;
-  baseApiType: TBaseApiKey;
+type AddBaseApiEntityPageProps<T extends BaseEntity> = SharedBasePageProps & {
   addForm: (props: AddBaseApiFormProps<T>) => ReactNode;
-  mainPage: To;
 };
 
-const AddBaseApiEntityPage = <
-  T extends BaseEntity,
-  TBaseApi extends keyof BaseApiTypes
->({
+const AddBaseApiEntityPage = <T extends BaseEntity>({
   queryKey: queryKeyProp,
   baseApiType,
   addForm: AddForm,
   mainPage
-}: AddBaseApiEntityPageProps<T, TBaseApi>) => {
+}: AddBaseApiEntityPageProps<T>) => {
   const queryClient = useQueryClient();
   const { formatError, ...apiResult } = useApi();
   const baseApiEntity = apiResult[baseApiType];

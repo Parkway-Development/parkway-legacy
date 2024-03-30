@@ -1,16 +1,13 @@
 import { Alert, notification, Spin } from 'antd';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import useApi, {
-  BaseApiTypes,
-  buildQueryKey,
-  QueryType
-} from '../../hooks/useApi.ts';
+import useApi, { buildQueryKey } from '../../hooks/useApi.ts';
 import { BaseEntity } from '../../types';
 import { BaseApiType, IsBaseEntityApi } from '../../api';
 import { ReactNode } from 'react';
-import { To, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { AxiosResponse } from 'axios';
 import { trimStrings } from '../../utilities';
+import { SharedBasePageProps } from './types.ts';
 
 export type EditBaseApiFormProps<T extends BaseEntity> = {
   isSaving: boolean;
@@ -19,14 +16,8 @@ export type EditBaseApiFormProps<T extends BaseEntity> = {
   initialValues: Omit<T, '_id'>;
 };
 
-type EditBaseApiEntityPageProps<
-  T extends BaseEntity,
-  TBaseApiKey extends keyof BaseApiTypes
-> = {
-  queryKey: QueryType;
-  baseApiType: TBaseApiKey;
+type EditBaseApiEntityPageProps<T extends BaseEntity> = SharedBasePageProps & {
   editForm: (props: EditBaseApiFormProps<T>) => ReactNode;
-  mainPage: To;
 };
 
 const buildQueryFn = <T extends BaseEntity>(
@@ -36,15 +27,12 @@ const buildQueryFn = <T extends BaseEntity>(
   return baseApi.getById(id);
 };
 
-const EditBaseApiEntityPage = <
-  T extends BaseEntity,
-  TBaseApi extends keyof BaseApiTypes
->({
+const EditBaseApiEntityPage = <T extends BaseEntity>({
   queryKey: queryKeyProp,
   baseApiType,
   editForm: EditForm,
   mainPage
-}: EditBaseApiEntityPageProps<T, TBaseApi>) => {
+}: EditBaseApiEntityPageProps<T>) => {
   const params = useParams();
   const id = params.id;
   const queryClient = useQueryClient();

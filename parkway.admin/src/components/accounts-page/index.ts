@@ -1,5 +1,6 @@
-import AccountsPage from './AccountsPage.tsx';
-import AddAccountPage from './AddAccountPage.tsx';
-import EditAccountPage from './EditAccountPage.tsx';
-
-export { AccountsPage, AddAccountPage, EditAccountPage };
+export {
+  AddAccountPage,
+  EditAccountPage,
+  AccountsPage,
+  AccountPage
+} from './AccountPages.tsx';
