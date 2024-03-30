@@ -10,8 +10,7 @@ const vendorColumns: OrderedColumnsType<Vendor> = [
     dataIndex: 'name',
     width: 200,
     key: 'name',
-    displayOrder: 1,
-    isPartOfCardTitle: true
+    displayOrder: 1
   },
   {
     title: 'Address',
@@ -90,7 +89,7 @@ const VendorsPage = () => (
     baseApiType="vendorsApi"
     columns={vendorColumns}
     title="Vendors"
-    cardTitleRenderFn={(item) => item.name}
+    responsiveCardRenderer={(item) => item.name}
   />
 );
 

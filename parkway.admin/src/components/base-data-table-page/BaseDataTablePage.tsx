@@ -26,7 +26,7 @@ type BaseDataTablePageProps<T extends BaseEntity> =
 
 type BaseDataTableListProps<T extends BaseEntity> = Pick<
   ResponsiveTableProps<T>,
-  'cardTitleRenderFn' | 'deleteAction'
+  'responsiveCardRenderer'
 > & {
   queryFn: () => TypedResponse<T[]>;
   queryKey: any[];
@@ -60,8 +60,7 @@ const BaseDataTableList = <T extends BaseEntity>({
   queryFn,
   queryKey,
   columns,
-  cardTitleRenderFn,
-  deleteAction
+  responsiveCardRenderer
 }: BaseDataTableListProps<T>) => {
   const { aboveBreakpoint } = useResponsive();
   const { formatError } = useApi();
@@ -100,10 +99,8 @@ const BaseDataTableList = <T extends BaseEntity>({
   ) : (
     <ResponsiveTable
       data={data}
-      columns={columns}
       rowKey={(record: T) => record._id}
-      cardTitleRenderFn={cardTitleRenderFn}
-      deleteAction={deleteAction}
+      responsiveCardRenderer={responsiveCardRenderer}
     />
   );
 
@@ -120,7 +117,7 @@ type BaseApiDataTablePageProps<
   TBaseApiKey extends keyof BaseApiTypes
 > = Pick<
   BaseDataTablePageProps<T>,
-  'title' | 'addLinkTitle' | 'cardTitleRenderFn'
+  'title' | 'addLinkTitle' | 'responsiveCardRenderer'
 > & {
   queryKey: QueryType;
   columns: OrderedColumnsType<T>;
@@ -170,7 +167,6 @@ export const BaseApiDataTablePage = <
       queryFn={getAll}
       queryKey={queryKey}
       columns={columns}
-      deleteAction={deleteAction}
       {...props}
     />
   );

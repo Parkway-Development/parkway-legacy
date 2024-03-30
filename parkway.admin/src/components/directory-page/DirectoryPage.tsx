@@ -11,15 +11,13 @@ const userProfileColumns: OrderedColumnsType<UserProfile> = [
     title: 'First Name',
     dataIndex: 'firstName',
     key: 'firstName',
-    displayOrder: 1,
-    isPartOfCardTitle: true
+    displayOrder: 1
   },
   {
     title: 'Last Name',
     dataIndex: 'lastName',
     key: 'lastName',
-    displayOrder: 2,
-    isPartOfCardTitle: true
+    displayOrder: 2
   },
   {
     title: 'Middle Initial',
@@ -138,8 +136,12 @@ const DirectoryPage = () => (
     columns={userProfileColumns}
     title="Directory"
     addLinkTitle="Add User Profile"
-    cardTitleRenderFn={(profile) => `${profile.firstName} ${profile.lastName}`}
+    responsiveCardRenderer={UserProfileCard}
   />
 );
+
+const UserProfileCard = (profile: UserProfile) => {
+  return `${profile.firstName} ${profile.lastName}`;
+};
 
 export default DirectoryPage;

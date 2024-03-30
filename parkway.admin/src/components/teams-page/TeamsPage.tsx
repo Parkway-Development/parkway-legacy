@@ -9,8 +9,7 @@ const teamColumns: OrderedColumnsType<Team> = [
     dataIndex: 'name',
     width: 200,
     key: 'name',
-    displayOrder: 1,
-    isPartOfCardTitle: true
+    displayOrder: 1
   },
   {
     title: 'Leader',
@@ -43,7 +42,7 @@ const TeamsPage = () => (
     baseApiType="teamsApi"
     columns={teamColumns}
     title="Teams"
-    cardTitleRenderFn={(item) => item.name}
+    responsiveCardRenderer={(item) => item.name}
   />
 );
 

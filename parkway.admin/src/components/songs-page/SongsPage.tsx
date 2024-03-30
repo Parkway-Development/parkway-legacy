@@ -7,8 +7,7 @@ const songsColumns: OrderedColumnsType<Song> = [
     title: 'Title',
     dataIndex: 'title',
     key: 'title',
-    displayOrder: 1,
-    isPartOfCardTitle: true
+    displayOrder: 1
   },
   {
     title: 'Subtitle',
@@ -63,7 +62,7 @@ const SongsPage = () => (
     baseApiType="songsApi"
     columns={songsColumns}
     title="Songs"
-    cardTitleRenderFn={(item) => item.title}
+    responsiveCardRenderer={(item) => item.title}
   />
 );
 

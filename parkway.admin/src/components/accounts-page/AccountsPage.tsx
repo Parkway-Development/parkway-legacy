@@ -8,8 +8,7 @@ const accountColumns: OrderedColumnsType<Account> = [
     title: 'Name',
     dataIndex: 'name',
     key: 'name',
-    displayOrder: 1,
-    isPartOfCardTitle: true
+    displayOrder: 1
   },
   {
     title: 'Description',
@@ -48,7 +47,7 @@ const AccountsPage = () => (
     baseApiType="accountsApi"
     columns={accountColumns}
     title="Accounts"
-    cardTitleRenderFn={(account) => account.name}
+    responsiveCardRenderer={(account) => account.name}
   />
 );
 
