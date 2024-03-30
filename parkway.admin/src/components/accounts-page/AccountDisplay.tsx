@@ -22,7 +22,6 @@ const AccountDisplay = (account: Account) => {
     {
       key: 4,
       label: 'Notes',
-      span: 3,
       children: (
         <>{account.notes?.map((note, index) => <p key={index}>{note}</p>)}</>
       )

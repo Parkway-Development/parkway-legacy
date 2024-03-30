@@ -1,10 +1,9 @@
 import { Asset } from '../../types';
-import { BaseApiDataTablePage } from '../base-data-table-page';
 import { OrderedColumnsType } from '../../hooks/useColumns.tsx';
 import MoneyDisplay from '../money-display';
 import DateDisplay from '../date-display';
 
-const assetColumns: OrderedColumnsType<Asset> = [
+export const assetColumns: OrderedColumnsType<Asset> = [
   {
     title: 'Name',
     dataIndex: 'name',
@@ -89,15 +88,3 @@ const assetColumns: OrderedColumnsType<Asset> = [
     render: (value: Asset['notes']) => value?.length ?? 0
   }
 ];
-
-const AssetsPage = () => (
-  <BaseApiDataTablePage
-    queryKey="assets"
-    baseApiType="assetsApi"
-    columns={assetColumns}
-    title="Assets"
-    responsiveCardRenderer={(asset) => asset.name}
-  />
-);
-
-export default AssetsPage;

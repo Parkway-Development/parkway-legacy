@@ -36,6 +36,7 @@ import {
 } from './components/vendors-page';
 import {
   AddAssetPage,
+  AssetPage,
   AssetsPage,
   EditAssetPage
 } from './components/assets-page';
@@ -79,6 +80,7 @@ createRoot(document.getElementById('root')!).render(
               <Route path="accounts">
                 <Route path="assets">
                   <Route path="add" element={<AddAssetPage />} />
+                  <Route path=":id" element={<AssetPage />} />
                   <Route path=":id/edit" element={<EditAssetPage />} />
                   <Route index element={<AssetsPage />} />
                 </Route>
