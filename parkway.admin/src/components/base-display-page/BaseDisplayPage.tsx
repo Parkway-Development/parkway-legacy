@@ -8,6 +8,7 @@ import { AxiosResponse } from 'axios';
 import { ReactNode } from 'react';
 import { SharedBasePageProps } from '../base-data-table-page/types.ts';
 import styles from './BaseDisplayPage.module.css';
+import DeleteButton from '../delete-button';
 
 type BaseDisplayPageProps<T extends BaseEntity> = SharedBasePageProps & {
   render: (item: T) => ReactNode;
@@ -43,6 +44,7 @@ const BaseDisplayPage = <T extends BaseEntity>({
   }
 
   const queryFn = buildQueryFn(baseApiEntity, id);
+  const { delete: deletefn } = baseApiEntity;
 
   const {
     isPending: isLoading,
@@ -66,13 +68,21 @@ const BaseDisplayPage = <T extends BaseEntity>({
     return <Spin />;
   }
 
-  // @ts-ignore
   const handleCancel = () => navigate(mainPage);
+
+  const handleEdit = () => navigate('./edit');
 
   return (
     <>
       <div className={styles.header}>
         <Button onClick={handleCancel}>Close</Button>
+        <Button onClick={handleEdit}>Edit</Button>
+        <DeleteButton
+          id={id}
+          deleteFn={deletefn}
+          isIconButton={false}
+          onSuccess={handleCancel}
+        />
       </div>
       {render(response.data)}
     </>
