@@ -39,6 +39,7 @@ import {
 import {
   AddVendorPage,
   EditVendorPage,
+  VendorPage,
   VendorsPage
 } from './components/vendors-page';
 import {
@@ -111,6 +112,7 @@ createRoot(document.getElementById('root')!).render(
                 </Route>
                 <Route path="vendors">
                   <Route path="add" element={<AddVendorPage />} />
+                  <Route path=":id" element={<VendorPage />} />
                   <Route path=":id/edit" element={<EditVendorPage />} />
                   <Route index element={<VendorsPage />} />
                 </Route>
