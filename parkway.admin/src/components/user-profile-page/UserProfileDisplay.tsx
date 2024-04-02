@@ -5,15 +5,17 @@ import { InfoRow } from '../base-display-page';
 
 type UserProfileDisplay = {
   profile: UserProfile;
-  onEdit: () => void;
+  onEdit?: () => void;
 };
 
 const UserProfileDisplay = ({ profile, onEdit }: UserProfileDisplay) => {
   return (
     <>
-      <Button onClick={onEdit} type="primary">
-        Edit
-      </Button>
+      {onEdit && (
+        <Button onClick={onEdit} type="primary">
+          Edit
+        </Button>
+      )}
       <Card title="User Info" className={styles.card}>
         <p className={styles.name}>
           {profile.firstName} {profile.lastName}

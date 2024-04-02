@@ -1,5 +1,5 @@
 import { expect, test, describe, vi } from 'vitest';
-import DirectoryPage from './DirectoryPage';
+import { DirectoryPage } from './DirectoryPages.tsx';
 import {
   buildMocks,
   mockApi,
@@ -68,9 +68,8 @@ describe('Directory Page', () => {
     expect(await screen.findByText('Total Count: 2')).toBeVisible();
 
     data.forEach((user) => {
-      expect(screen.getByText(user.firstName!)).toBeVisible();
-      expect(screen.getByText(user.lastName!)).toBeVisible();
-      expect(screen.getByText(user.mobilePhone!)).toBeVisible();
+      expect(screen.getByText(new RegExp(user.firstName!))).toBeVisible();
+      expect(screen.getByText(new RegExp(user.lastName!))).toBeVisible();
     });
   });
 });

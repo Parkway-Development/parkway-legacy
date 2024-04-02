@@ -7,7 +7,7 @@ import { BaseDisplayPage } from '../base-display-page/BaseDisplayPage.tsx';
 import { SharedBasePageProps } from '../base-data-table-page/types.ts';
 import ContributionDisplay from './ContributionDisplay.tsx';
 import ContributionForm from './ContributionForm.tsx';
-import { contributionColumns } from './ContributionsPage.tsx';
+import { contributionColumns } from './columns.tsx';
 import ContributionTitle from './ContributionTitle.tsx';
 
 const sharedProps: SharedBasePageProps = {

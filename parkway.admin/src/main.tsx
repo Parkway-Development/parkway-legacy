@@ -7,7 +7,8 @@ import GivingPage from './components/giving-page';
 import {
   AddUserProfilePage,
   DirectoryPage,
-  EditUserProfilePage
+  EditUserProfilePage,
+  UserProfilePage
 } from './components/directory-page';
 import HomePage from './components/home-page';
 import { AuthProvider } from './hooks/useAuth.tsx';
@@ -75,6 +76,7 @@ createRoot(document.getElementById('root')!).render(
               <Route path="profiles">
                 <Route path="add" element={<AddUserProfilePage />} />
                 <Route path="me" element={<MyProfilePage />} />
+                <Route path=":id" element={<UserProfilePage />} />
                 <Route path=":id/edit" element={<EditUserProfilePage />} />
                 <Route index element={<DirectoryPage />} />
               </Route>
