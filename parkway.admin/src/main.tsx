@@ -26,6 +26,7 @@ import {
 } from './components/accounts-page';
 import {
   AddContributionPage,
+  ContributionPage,
   ContributionsPage,
   EditContributionPage
 } from './components/contributions-page';
@@ -86,6 +87,7 @@ createRoot(document.getElementById('root')!).render(
                 </Route>
                 <Route path="contributions">
                   <Route path="add" element={<AddContributionPage />} />
+                  <Route path=":id" element={<ContributionPage />} />
                   <Route path=":id/edit" element={<EditContributionPage />} />
                   <Route index element={<ContributionsPage />} />
                 </Route>
