@@ -1,9 +1,8 @@
 import { Team } from '../../types';
 import { UserNameDisplayById } from '../user-name-display';
-import { BaseApiDataTablePage } from '../base-data-table-page';
 import { OrderedColumnsType } from '../../hooks/useColumns.tsx';
 
-const teamColumns: OrderedColumnsType<Team> = [
+export const teamColumns: OrderedColumnsType<Team> = [
   {
     title: 'Name',
     dataIndex: 'name',
@@ -35,15 +34,3 @@ const teamColumns: OrderedColumnsType<Team> = [
     displayOrder: 4
   }
 ];
-
-const TeamsPage = () => (
-  <BaseApiDataTablePage
-    queryKey="teams"
-    baseApiType="teamsApi"
-    columns={teamColumns}
-    title="Teams"
-    responsiveCardRenderer={(item) => item.name}
-  />
-);
-
-export default TeamsPage;
