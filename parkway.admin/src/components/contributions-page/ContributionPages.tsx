@@ -7,9 +7,8 @@ import { BaseDisplayPage } from '../base-display-page/BaseDisplayPage.tsx';
 import { SharedBasePageProps } from '../base-data-table-page/types.ts';
 import ContributionDisplay from './ContributionDisplay.tsx';
 import ContributionForm from './ContributionForm.tsx';
-import DateDisplay from '../date-display';
-import { UserNameDisplayById } from '../user-name-display';
 import { contributionColumns } from './ContributionsPage.tsx';
+import ContributionTitle from './ContributionTitle.tsx';
 
 const sharedProps: SharedBasePageProps = {
   queryKey: 'contributions',
@@ -23,10 +22,7 @@ const ContributionsPage = () => (
     columns={contributionColumns}
     title="Contributions"
     responsiveCardRenderer={(contribution) => (
-      <>
-        <DateDisplay date={contribution.transactionDate} />
-        <UserNameDisplayById id={contribution.profile} />
-      </>
+      <ContributionTitle contribution={contribution} />
     )}
   />
 );

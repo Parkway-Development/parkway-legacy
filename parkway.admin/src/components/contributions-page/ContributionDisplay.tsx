@@ -1,70 +1,80 @@
-import { Asset } from '../../types';
+import { Contribution } from '../../types';
 import { Descriptions, DescriptionsProps } from 'antd';
 import MoneyDisplay from '../money-display';
 import DateDisplay from '../date-display';
+import { UserNameDisplayById } from '../user-name-display';
+import ContributionTitle from './ContributionTitle.tsx';
+import { AccountNameDisplayById } from '../account-name-display';
+import styles from './ContributionDisplay.module.css';
 
-const AssetDisplay = (asset: Asset) => {
+const ContributionDisplay = (contribution: Contribution) => {
   const items: DescriptionsProps['items'] = [
     {
       key: 1,
-      label: 'Description',
-      children: asset.description
+      label: 'Total Amount',
+      children: <MoneyDisplay money={contribution.totalAmount} />
     },
     {
       key: 2,
-      label: 'Value',
-      children: <MoneyDisplay money={asset.value} />
+      label: 'Transaction Date',
+      children: <DateDisplay date={contribution.transactionDate} />
     },
     {
       key: 3,
-      label: 'Purchase Date',
-      children: <DateDisplay date={asset.purchaseDate} />
+      label: 'Deposit Date',
+      children: <DateDisplay date={contribution.depositDate} />
     },
     {
       key: 4,
-      label: 'Depreciation Type',
-      children: asset.depreciationType
+      label: 'Locked',
+      children: contribution.locked ? 'Y' : 'N'
     },
     {
       key: 5,
-      label: 'In Service Date',
-      children: <DateDisplay date={asset.inServiceDate} />
+      label: 'Deposit Batch Id',
+      children: contribution.depositBatchId
     },
     {
       key: 6,
-      label: 'Useful Life in Days',
-      children: asset.usefulLifeInDays
+      label: 'Type',
+      children: contribution.type
     },
     {
       key: 7,
-      label: 'Type',
-      children: asset.assetType
+      label: 'User Profile',
+      children: <UserNameDisplayById id={contribution.profile} />
     },
     {
       key: 8,
-      label: 'Category',
-      children: asset.assetCategory
-    },
-    {
-      key: 9,
-      label: 'Location',
-      children: asset.assetLocation
-    },
-    {
-      key: 10,
-      label: 'Status',
-      children: asset.assetStatus
-    },
-    {
-      key: 12,
-      label: 'Condition',
-      children: asset.assetCondition
-    },
-    {
-      key: 12,
-      label: 'Notes',
+      label: 'Accounts',
       children: (
-        <>{asset.notes?.map((note, index) => <p key={index}>{note}</p>)}</>
+        <table className={styles.accountsTable}>
+          <thead>
+            <tr>
+              <th>Account</th>
+              <th>Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            {contribution.accounts?.map(({ account, amount }, index) => (
+              <tr key={index}>
+                <td>
+                  <AccountNameDisplayById id={account} />:
+                </td>
+                <td>
+                  <MoneyDisplay money={amount} />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colSpan={2}>
+                <MoneyDisplay money={contribution.totalAmount} />
+              </td>
+            </tr>
+          </tfoot>
+        </table>
       )
     }
   ];
@@ -72,7 +82,7 @@ const AssetDisplay = (asset: Asset) => {
   return (
     <Descriptions
       size="small"
-      title={asset.name}
+      title={<ContributionTitle contribution={contribution} />}
       items={items}
       bordered
       column={1}
@@ -80,4 +90,4 @@ const AssetDisplay = (asset: Asset) => {
   );
 };
 
-export default AssetDisplay;
+export default ContributionDisplay;

@@ -1,0 +1,20 @@
+.accountsTable {
+    border-collapse: collapse;
+
+    thead th {
+        font-weight: normal;
+    }
+
+    tbody tr {
+        border-top: 1px solid #ccc;
+
+        td:last-child {
+            text-align: right;
+        }
+    }
+
+    tfoot td {
+        border-top: 1px solid #ccc;
+        text-align: right;
+    }
+}
