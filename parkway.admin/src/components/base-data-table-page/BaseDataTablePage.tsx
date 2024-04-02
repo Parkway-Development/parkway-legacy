@@ -1,12 +1,7 @@
 import { Alert, Button, Empty, Spin, Table } from 'antd';
 import styles from './BaseDataTablePage.module.css';
 import { Link, To } from 'react-router-dom';
-import useApi, {
-  BaseApiTypes,
-  buildQueryKey,
-  QueryType,
-  TypedResponse
-} from '../../hooks/useApi.ts';
+import useApi, { buildQueryKey, TypedResponse } from '../../hooks/useApi.ts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { BaseEntity } from '../../types';
 import useColumns, {
@@ -16,6 +11,7 @@ import useColumns, {
 import { IsBaseEntityApi } from '../../api';
 import useResponsive from '../../hooks/useResponsive.ts';
 import ResponsiveTable, { ResponsiveTableProps } from './ResponsiveTable.tsx';
+import { SharedBasePageProps } from './types.ts';
 
 type BaseDataTablePageProps<T extends BaseEntity> =
   BaseDataTableListProps<T> & {
@@ -26,7 +22,7 @@ type BaseDataTablePageProps<T extends BaseEntity> =
 
 type BaseDataTableListProps<T extends BaseEntity> = Pick<
   ResponsiveTableProps<T>,
-  'cardTitleRenderFn' | 'deleteAction'
+  'responsiveCardRenderer'
 > & {
   queryFn: () => TypedResponse<T[]>;
   queryKey: any[];
@@ -60,8 +56,7 @@ const BaseDataTableList = <T extends BaseEntity>({
   queryFn,
   queryKey,
   columns,
-  cardTitleRenderFn,
-  deleteAction
+  responsiveCardRenderer
 }: BaseDataTableListProps<T>) => {
   const { aboveBreakpoint } = useResponsive();
   const { formatError } = useApi();
@@ -100,10 +95,8 @@ const BaseDataTableList = <T extends BaseEntity>({
   ) : (
     <ResponsiveTable
       data={data}
-      columns={columns}
       rowKey={(record: T) => record._id}
-      cardTitleRenderFn={cardTitleRenderFn}
-      deleteAction={deleteAction}
+      responsiveCardRenderer={responsiveCardRenderer}
     />
   );
 
@@ -115,27 +108,20 @@ const BaseDataTableList = <T extends BaseEntity>({
   );
 };
 
-type BaseApiDataTablePageProps<
-  T extends BaseEntity,
-  TBaseApiKey extends keyof BaseApiTypes
-> = Pick<
-  BaseDataTablePageProps<T>,
-  'title' | 'addLinkTitle' | 'cardTitleRenderFn'
-> & {
-  queryKey: QueryType;
-  columns: OrderedColumnsType<T>;
-  baseApiType: TBaseApiKey;
-};
+type BaseApiDataTablePageProps<T extends BaseEntity> = SharedBasePageProps &
+  Pick<
+    BaseDataTablePageProps<T>,
+    'title' | 'addLinkTitle' | 'responsiveCardRenderer'
+  > & {
+    columns: OrderedColumnsType<T>;
+  };
 
-export const BaseApiDataTablePage = <
-  T extends BaseEntity,
-  TBaseApiKey extends keyof BaseApiTypes
->({
+export const BaseApiDataTablePage = <T extends BaseEntity>({
   queryKey: queryKeyProp,
   columns: columnsProp,
   baseApiType,
   ...props
-}: BaseApiDataTablePageProps<T, TBaseApiKey>) => {
+}: BaseApiDataTablePageProps<T>) => {
   const queryClient = useQueryClient();
   const queryKey = buildQueryKey(queryKeyProp);
   const apiResult = useApi();
@@ -170,7 +156,6 @@ export const BaseApiDataTablePage = <
       queryFn={getAll}
       queryKey={queryKey}
       columns={columns}
-      deleteAction={deleteAction}
       {...props}
     />
   );

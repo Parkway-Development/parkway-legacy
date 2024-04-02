@@ -1,12 +1,11 @@
 import { Contribution } from '../../types';
-import { BaseApiDataTablePage } from '../base-data-table-page';
 import { OrderedColumnsType } from '../../hooks/useColumns.tsx';
 import { UserNameDisplayById } from '../user-name-display';
 import { LockOutlined } from '@ant-design/icons';
 import DateDisplay from '../date-display';
 import MoneyDisplay from '../money-display';
 
-const contributionColumns: OrderedColumnsType<Contribution> = [
+export const contributionColumns: OrderedColumnsType<Contribution> = [
   {
     title: 'Total',
     dataIndex: 'totalAmount',
@@ -75,18 +74,3 @@ const contributionColumns: OrderedColumnsType<Contribution> = [
     displayOrder: 8
   }
 ];
-
-const ContributionsPage = () => (
-  <BaseApiDataTablePage
-    queryKey="contributions"
-    baseApiType="contributionsApi"
-    columns={contributionColumns}
-    title="Contributions"
-    cardTitleRenderFn={(contribution) => (
-      // TODO: This probably isn't enough
-      <DateDisplay date={contribution.transactionDate} />
-    )}
-  />
-);
-
-export default ContributionsPage;

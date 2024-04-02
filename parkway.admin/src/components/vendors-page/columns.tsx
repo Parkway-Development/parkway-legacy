@@ -1,17 +1,15 @@
-import { BaseApiDataTablePage } from '../base-data-table-page';
 import { OrderedColumnsType } from '../../hooks/useColumns.tsx';
 import { Vendor } from '../../types';
 import EmailDisplay from '../email-display';
 import WebsiteDisplay from '../website-display';
 
-const vendorColumns: OrderedColumnsType<Vendor> = [
+export const vendorColumns: OrderedColumnsType<Vendor> = [
   {
     title: 'Name',
     dataIndex: 'name',
     width: 200,
     key: 'name',
-    displayOrder: 1,
-    isPartOfCardTitle: true
+    displayOrder: 1
   },
   {
     title: 'Address',
@@ -83,15 +81,3 @@ const vendorColumns: OrderedColumnsType<Vendor> = [
     displayOrder: 12
   }
 ];
-
-const VendorsPage = () => (
-  <BaseApiDataTablePage
-    queryKey="vendors"
-    baseApiType="vendorsApi"
-    columns={vendorColumns}
-    title="Vendors"
-    cardTitleRenderFn={(item) => item.name}
-  />
-);
-
-export default VendorsPage;

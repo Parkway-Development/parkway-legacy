@@ -1,29 +1,21 @@
 import { UserProfile } from '../../types';
 import { Button, Card } from 'antd';
 import styles from './UserProfileDisplay.module.css';
+import { InfoRow } from '../base-display-page';
 
 type UserProfileDisplay = {
   profile: UserProfile;
-  onEdit: () => void;
-};
-
-const InfoRow = ({ label, value }: { label: string; value?: string }) => {
-  const displayValue = value && value.trim().length > 0 ? value : '-';
-
-  return (
-    <div className={styles.infoRow}>
-      <span>{label}:</span>
-      <span>{displayValue}</span>
-    </div>
-  );
+  onEdit?: () => void;
 };
 
 const UserProfileDisplay = ({ profile, onEdit }: UserProfileDisplay) => {
   return (
     <>
-      <Button onClick={onEdit} type="primary">
-        Edit
-      </Button>
+      {onEdit && (
+        <Button onClick={onEdit} type="primary">
+          Edit
+        </Button>
+      )}
       <Card title="User Info" className={styles.card}>
         <p className={styles.name}>
           {profile.firstName} {profile.lastName}

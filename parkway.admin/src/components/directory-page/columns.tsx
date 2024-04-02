@@ -1,25 +1,22 @@
 import { genderMapping, UserProfile } from '../../types';
-import { BaseApiDataTablePage } from '../base-data-table-page';
 import { CheckCircleOutlined } from '@ant-design/icons';
 import { translateMapping } from '../../utilities';
 import { OrderedColumnsType } from '../../hooks/useColumns.tsx';
 import DateDisplay from '../date-display';
 import EmailDisplay from '../email-display';
 
-const userProfileColumns: OrderedColumnsType<UserProfile> = [
+export const directoryColumns: OrderedColumnsType<UserProfile> = [
   {
     title: 'First Name',
     dataIndex: 'firstName',
     key: 'firstName',
-    displayOrder: 1,
-    isPartOfCardTitle: true
+    displayOrder: 1
   },
   {
     title: 'Last Name',
     dataIndex: 'lastName',
     key: 'lastName',
-    displayOrder: 2,
-    isPartOfCardTitle: true
+    displayOrder: 2
   },
   {
     title: 'Middle Initial',
@@ -130,16 +127,3 @@ const userProfileColumns: OrderedColumnsType<UserProfile> = [
     displayOrder: 18
   }
 ];
-
-const DirectoryPage = () => (
-  <BaseApiDataTablePage
-    queryKey="profiles"
-    baseApiType="usersApi"
-    columns={userProfileColumns}
-    title="Directory"
-    addLinkTitle="Add User Profile"
-    cardTitleRenderFn={(profile) => `${profile.firstName} ${profile.lastName}`}
-  />
-);
-
-export default DirectoryPage;

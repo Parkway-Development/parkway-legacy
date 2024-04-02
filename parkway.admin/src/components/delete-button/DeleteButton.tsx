@@ -70,7 +70,7 @@ export const BasicDeleteButton = ({
         cancelText="No"
       >
         <Button
-          type="primary"
+          type={isIconButton ? 'primary' : 'default'}
           danger
           disabled={isLoading}
           size={isIconButton ? 'small' : undefined}

@@ -1,7 +1,8 @@
-import { DatePicker, Form, Input, Radio, Switch } from 'antd';
+import { Breadcrumb, DatePicker, Form, Input, Radio, Switch } from 'antd';
 import { UserProfile } from '../../types';
 import { transformDateToDayjs, trimStrings } from '../../utilities';
 import { AddBaseApiFormProps, BaseFormFooter } from '../base-data-table-page';
+import { Link } from 'react-router-dom';
 
 export type UserProfileFormFields = Omit<
   UserProfile,
@@ -58,6 +59,16 @@ const UserProfileForm = ({
 
   return (
     <>
+      <Breadcrumb
+        items={[
+          {
+            title: <Link to="/profiles">Directory</Link>
+          },
+          {
+            title: initialValues ? 'Edit Profile' : 'Add Profile'
+          }
+        ]}
+      />
       <Form<UserProfileFormFields>
         form={form}
         name="basic"

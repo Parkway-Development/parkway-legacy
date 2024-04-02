@@ -1,15 +1,13 @@
 import { Account } from '../../types';
-import { BaseApiDataTablePage } from '../base-data-table-page';
 import { OrderedColumnsType } from '../../hooks/useColumns.tsx';
 import MoneyDisplay from '../money-display';
 
-const accountColumns: OrderedColumnsType<Account> = [
+export const accountColumns: OrderedColumnsType<Account> = [
   {
     title: 'Name',
     dataIndex: 'name',
     key: 'name',
-    displayOrder: 1,
-    isPartOfCardTitle: true
+    displayOrder: 1
   },
   {
     title: 'Description',
@@ -41,15 +39,3 @@ const accountColumns: OrderedColumnsType<Account> = [
     render: (value: Account['notes']) => value?.length ?? 0
   }
 ];
-
-const AccountsPage = () => (
-  <BaseApiDataTablePage
-    queryKey="accounts"
-    baseApiType="accountsApi"
-    columns={accountColumns}
-    title="Accounts"
-    cardTitleRenderFn={(account) => account.name}
-  />
-);
-
-export default AccountsPage;

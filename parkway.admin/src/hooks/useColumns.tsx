@@ -19,13 +19,10 @@ type LocalStorageColumnsType = {
   hidden: boolean;
 };
 
-type OrderedColumnType<T> = Omit<ColumnType<T>, 'render' | 'title'> & {
+type OrderedColumnType<T> = ColumnType<T> & {
   displayOrder: number;
   dataIndex?: keyof T;
   key: string;
-  title: ReactNode;
-  render?: (value: any, record: T, index: number) => React.ReactNode;
-  isPartOfCardTitle?: boolean;
 };
 
 export type OrderedColumnsType<T> = OrderedColumnType<T>[];

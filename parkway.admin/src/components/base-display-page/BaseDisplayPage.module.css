@@ -1,0 +1,17 @@
+:global(.ant-descriptions-view) table {
+    table-layout: auto;
+}
+
+:global(.ant-descriptions-item-label) {
+    white-space: nowrap;
+}
+
+:global(.ant-descriptions-item-content) {
+    width: 100%;
+}
+
+.header {
+    display: flex;
+    gap: 2em;
+    margin-bottom: 1em;
+}

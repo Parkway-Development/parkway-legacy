@@ -1,32 +1,39 @@
-import { Enum } from '../../types';
-import { BaseApiDataTablePage } from '../base-data-table-page';
-import { OrderedColumnsType } from '../../hooks/useColumns.tsx';
+import {
+  AddBaseApiEntityPage,
+  BaseApiDataTablePage,
+  EditBaseApiEntityPage
+} from '../base-data-table-page';
+import { BaseDisplayPage } from '../base-display-page/BaseDisplayPage.tsx';
+import { SharedBasePageProps } from '../base-data-table-page/types.ts';
+import EnumDisplay from './EnumDisplay.tsx';
+import EnumForm from './EnumForm.tsx';
+import { enumColumns } from './columns.tsx';
 
-const enumColumns: OrderedColumnsType<Enum> = [
-  {
-    title: 'Name',
-    dataIndex: 'name',
-    key: 'name',
-    displayOrder: 1,
-    isPartOfCardTitle: true
-  },
-  {
-    title: 'Values',
-    dataIndex: 'values',
-    key: 'values',
-    displayOrder: 2,
-    render: (value: Enum['values']) => value.length
-  }
-];
+const sharedProps: SharedBasePageProps = {
+  queryKey: 'enums',
+  baseApiType: 'enumsApi',
+  mainPage: '/platform/enums'
+};
 
 const EnumsPage = () => (
   <BaseApiDataTablePage
-    queryKey="enums"
-    baseApiType="enumsApi"
+    {...sharedProps}
     columns={enumColumns}
     title="Enums"
-    cardTitleRenderFn={(item) => item.name}
+    responsiveCardRenderer={(item) => item.name}
   />
 );
 
-export default EnumsPage;
+const EnumPage = () => (
+  <BaseDisplayPage {...sharedProps} render={EnumDisplay} />
+);
+
+const AddEnumPage = () => (
+  <AddBaseApiEntityPage {...sharedProps} addForm={EnumForm} />
+);
+
+const EditEnumPage = () => (
+  <EditBaseApiEntityPage {...sharedProps} editForm={EnumForm} />
+);
+
+export { AddEnumPage, EditEnumPage, EnumsPage, EnumPage };
