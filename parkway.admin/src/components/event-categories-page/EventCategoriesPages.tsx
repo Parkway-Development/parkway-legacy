@@ -7,7 +7,7 @@ import { BaseDisplayPage } from '../base-display-page/BaseDisplayPage.tsx';
 import { SharedBasePageProps } from '../base-data-table-page/types.ts';
 import EventCategoryDisplay from './EventCategoryDisplay.tsx';
 import EventCategoryForm from './EventCategoryForm.tsx';
-import { eventCategoryColumns } from './EventCategoriesPage.tsx';
+import { eventCategoryColumns } from './columns.tsx';
 import { EventCategory } from '../../types';
 
 const sharedProps: SharedBasePageProps = {

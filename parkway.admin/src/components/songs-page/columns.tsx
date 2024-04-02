@@ -1,8 +1,7 @@
 import { Song } from '../../types';
-import { BaseApiDataTablePage } from '../base-data-table-page';
 import { OrderedColumnsType } from '../../hooks/useColumns.tsx';
 
-const songsColumns: OrderedColumnsType<Song> = [
+export const songsColumns: OrderedColumnsType<Song> = [
   {
     title: 'Title',
     dataIndex: 'title',
@@ -55,15 +54,3 @@ const songsColumns: OrderedColumnsType<Song> = [
     render: (value: Song['arrangements']) => value.length
   }
 ];
-
-const SongsPage = () => (
-  <BaseApiDataTablePage
-    queryKey="songs"
-    baseApiType="songsApi"
-    columns={songsColumns}
-    title="Songs"
-    responsiveCardRenderer={(item) => item.title}
-  />
-);
-
-export default SongsPage;

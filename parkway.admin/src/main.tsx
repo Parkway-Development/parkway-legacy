@@ -42,7 +42,12 @@ import {
   AssetsPage,
   EditAssetPage
 } from './components/assets-page';
-import { AddSongPage, EditSongPage, SongsPage } from './components/songs-page';
+import {
+  AddSongPage,
+  EditSongPage,
+  SongPage,
+  SongsPage
+} from './components/songs-page';
 import {
   AddEventPage,
   EditEventPage,
@@ -123,6 +128,7 @@ createRoot(document.getElementById('root')!).render(
               <Route path="giving" element={<GivingPage />} />
               <Route path="songs">
                 <Route path="add" element={<AddSongPage />} />
+                <Route path=":id" element={<SongPage />} />
                 <Route path=":id/edit" element={<EditSongPage />} />
                 <Route index element={<SongsPage />} />
               </Route>
