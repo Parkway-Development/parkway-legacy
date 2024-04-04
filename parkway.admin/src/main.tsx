@@ -3,7 +3,6 @@ import { createRoot } from 'react-dom/client';
 import App from './App';
 import './index.css';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import GivingPage from './components/giving-page';
 import {
   AddUserProfilePage,
   DirectoryPage,
@@ -142,7 +141,6 @@ createRoot(document.getElementById('root')!).render(
                 <Route path=":id/edit" element={<EditEventPage />} />
                 <Route index element={<EventsPage />} />
               </Route>
-              <Route path="giving" element={<GivingPage />} />
               <Route path="songs">
                 <Route path="add" element={<AddSongPage />} />
                 <Route path=":id" element={<SongPage />} />

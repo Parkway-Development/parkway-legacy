@@ -110,10 +110,6 @@ function App() {
                 ]
               },
               {
-                key: 8,
-                label: <ResponsiveLink to="/giving">Giving</ResponsiveLink>
-              },
-              {
                 key: 9,
                 label: (
                   <ResponsiveLink to="/platform/enums">
