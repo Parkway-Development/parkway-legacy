@@ -71,6 +71,7 @@ import {
   EnumsPage,
   EnumPage
 } from './components/enums-page';
+import ClaimRoute from './components/claim-route/ClaimRoute.tsx';
 
 const queryClient = new QueryClient();
 
@@ -90,14 +91,20 @@ createRoot(document.getElementById('root')!).render(
                 </ProtectedRoute>
               }
             >
-              <Route path="profiles">
+              <Route path="profiles/me" element={<MyProfilePage />} />
+              <Route
+                path="profiles"
+                element={<ClaimRoute claim="userManagement" />}
+              >
                 <Route path="add" element={<AddUserProfilePage />} />
-                <Route path="me" element={<MyProfilePage />} />
                 <Route path=":id" element={<UserProfilePage />} />
                 <Route path=":id/edit" element={<EditUserProfilePage />} />
                 <Route index element={<DirectoryPage />} />
               </Route>
-              <Route path="accounts">
+              <Route
+                path="accounts"
+                element={<ClaimRoute claim="accounting" />}
+              >
                 <Route path="assets">
                   <Route path="add" element={<AddAssetPage />} />
                   <Route path=":id" element={<AssetPage />} />
@@ -121,7 +128,10 @@ createRoot(document.getElementById('root')!).render(
                 <Route path=":id/edit" element={<EditAccountPage />} />
                 <Route index element={<AccountsPage />} />
               </Route>
-              <Route path="events">
+              <Route
+                path="events"
+                element={<ClaimRoute claim="calendarManagement" />}
+              >
                 <Route path="categories">
                   <Route path="add" element={<AddEventCategoryPage />} />
                   <Route path=":id" element={<EventCategoryPage />} />
@@ -139,7 +149,10 @@ createRoot(document.getElementById('root')!).render(
                 <Route path=":id/edit" element={<EditSongPage />} />
                 <Route index element={<SongsPage />} />
               </Route>
-              <Route path="platform">
+              <Route
+                path="platform"
+                element={<ClaimRoute claim="systemSettings" />}
+              >
                 <Route path="enums">
                   <Route path="add" element={<AddEnumPage />} />
                   <Route path=":id" element={<EnumPage />} />
@@ -147,7 +160,10 @@ createRoot(document.getElementById('root')!).render(
                   <Route index element={<EnumsPage />} />
                 </Route>
               </Route>
-              <Route path="teams">
+              <Route
+                path="teams"
+                element={<ClaimRoute claim="teamManagement" />}
+              >
                 <Route path="add" element={<AddTeamPage />} />
                 <Route path=":id" element={<TeamPage />} />
                 <Route path=":id/edit" element={<EditTeamPage />} />

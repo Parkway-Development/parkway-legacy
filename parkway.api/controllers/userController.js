@@ -5,17 +5,31 @@ const validator = require('validator');
 const jwt = require('jsonwebtoken');
 
 const createToken = (activeUser) => {
-    const claims = new Set();
+    const claims = {
+        systemSettings: false,
+        memberVetting: false,
+        userManagement: false,
+        accounting: false,
+        budgeting: false,
+        teamManagement: false,
+        calendarManagement: false,
+        prayerManagement: false,
+        mediaManagement: false,
+        socialMediaManagement: false,
+        teams: []
+    };
 
     activeUser.applicationClaims?.forEach((claim) => {
         claim.values?.forEach((value) => {
-            claims.add(value);
+            claims[value] = true;
         });
     });
 
+    // TODO: populate teams
+
     const payload = {
         _id: activeUser._id,
-        claims: [...claims]
+        claims
     };
 
     return jwt.sign(payload,
