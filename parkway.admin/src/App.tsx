@@ -138,37 +138,35 @@ function App() {
           </div>
           <Menu theme="dark" mode="inline" items={items} />
         </Layout.Sider>
-        <Layout
-          style={{
-            display: !aboveBreakpoint && !sideCollapsed ? 'none' : undefined
-          }}
-        >
-          <Layout.Header style={{ padding: 0, background: colorBgContainer }}>
-            <div className={styles.header}>
-              <span className={styles.title}>Admin Portal</span>
-              <span className={styles.userSection}>
-                <ResponsiveLink to="/profiles/me">
-                  <Button type="text" title="User Profile">
-                    <UserOutlined />
+        {(aboveBreakpoint || sideCollapsed) && (
+          <Layout>
+            <Layout.Header style={{ padding: 0, background: colorBgContainer }}>
+              <div className={styles.header}>
+                <span className={styles.title}>Admin Portal</span>
+                <span className={styles.userSection}>
+                  <ResponsiveLink to="/profiles/me">
+                    <Button type="text" title="User Profile">
+                      <UserOutlined />
+                    </Button>
+                  </ResponsiveLink>
+                  <Button onClick={handleLogout} type="text" title="Logout">
+                    <LogoutOutlined />
                   </Button>
-                </ResponsiveLink>
-                <Button onClick={handleLogout} type="text" title="Logout">
-                  <LogoutOutlined />
-                </Button>
-              </span>
-            </div>
-          </Layout.Header>
-          <Layout.Content
-            className={styles.mainContent}
-            style={{
-              minHeight: 280,
-              background: colorBgContainer,
-              borderRadius: borderRadiusLG
-            }}
-          >
-            <Outlet />
-          </Layout.Content>
-        </Layout>
+                </span>
+              </div>
+            </Layout.Header>
+            <Layout.Content
+              className={styles.mainContent}
+              style={{
+                minHeight: 280,
+                background: colorBgContainer,
+                borderRadius: borderRadiusLG
+              }}
+            >
+              <Outlet />
+            </Layout.Content>
+          </Layout>
+        )}
       </Layout>
     </AntdApp>
   );

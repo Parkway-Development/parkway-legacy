@@ -5,7 +5,7 @@ const MainBreakpoint: Breakpoint = 'md';
 
 const useResponsive = () => {
   const breakpoints = useBreakpoint(true);
-  const aboveBreakpoint = !!breakpoints[MainBreakpoint];
+  const aboveBreakpoint = breakpoints[MainBreakpoint] !== false;
 
   return {
     aboveBreakpoint,
