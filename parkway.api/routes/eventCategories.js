@@ -10,7 +10,7 @@ const {
 const { addNotFoundHandler, configureBaseApiRoutes } = require("./baseApiRouter");
 
 const { requireAuthorization} = require("../middleware/auth");
-requireAuthorization(router);
+requireAuthorization(router, 'calendarManagement');
 
 configureBaseApiRoutes(router, addEventCategory, getAll, getById, updateEventCategory, deleteEventCategory);
 
