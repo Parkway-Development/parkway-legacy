@@ -71,8 +71,27 @@ import {
   EnumPage
 } from './components/enums-page';
 import ClaimRoute from './components/claim-route/ClaimRoute.tsx';
+import { isAxiosError } from 'axios';
 
-const queryClient = new QueryClient();
+const MAX_RETRIES = 6;
+const HTTP_STATUS_TO_NOT_RETRY = [400, 401, 403, 404];
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: (failureCount, error) => {
+        if (failureCount > MAX_RETRIES) {
+          return false;
+        }
+
+        return !(
+          isAxiosError(error) &&
+          HTTP_STATUS_TO_NOT_RETRY.includes(error.response?.status ?? 0)
+        );
+      }
+    }
+  }
+});
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

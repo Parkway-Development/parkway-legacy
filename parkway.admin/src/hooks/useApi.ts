@@ -78,9 +78,11 @@ const useApi: () => ApiType = () => {
 
   const formatError = (error: Error | null) => {
     if (error instanceof AxiosError) {
-      if (error.response?.status === 401 || error.response?.status === 403) {
+      if (error.response?.status === 401) {
         logout();
         return 'Invalid session';
+      } else if (error.response?.status === 403) {
+        return 'You do not have access to perform that action';
       }
 
       const message =
