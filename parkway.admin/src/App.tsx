@@ -109,10 +109,12 @@ function App() {
   }
 
   // TODO: What app claim is required for this
-  items.push({
-    key: itemKey++,
-    label: <ResponsiveLink to="/songs">Songs</ResponsiveLink>
-  });
+  if (hasClaim('mediaManagement')) {
+    items.push({
+      key: itemKey++,
+      label: <ResponsiveLink to="/songs">Songs</ResponsiveLink>
+    });
+  }
 
   if (hasClaim('teamManagement')) {
     items.push({
