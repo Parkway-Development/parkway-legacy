@@ -17,7 +17,7 @@ import useResponsive from './hooks/useResponsive.ts';
 function App() {
   const { isLoggedIn, logout, hasClaim } = useAuth();
   const { aboveBreakpoint, mainBreakpoint } = useResponsive();
-  const [sideCollapsed, setSideCollapsed] = useState<boolean>(true);
+  const [sideCollapsed, setSideCollapsed] = useState<boolean>(false);
   const {
     token: { colorBgContainer, borderRadiusLG }
   } = theme.useToken();
