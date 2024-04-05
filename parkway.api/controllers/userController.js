@@ -6,16 +6,6 @@ const jwt = require('jsonwebtoken');
 
 const createToken = (activeUser) => {
     const claims = {
-        systemSettings: false,
-        memberVetting: false,
-        userManagement: false,
-        accounting: false,
-        budgeting: false,
-        teamManagement: false,
-        calendarManagement: false,
-        prayerManagement: false,
-        mediaManagement: false,
-        socialMediaManagement: false,
         teams: []
     };
 
