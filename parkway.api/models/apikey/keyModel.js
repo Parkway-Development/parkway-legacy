@@ -6,9 +6,9 @@ const apiKeySchema = new mongoose.Schema({
     required: true,
     unique: true
   },
-  user: {
+  application: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
+    ref: 'Application',
     required: true
   },
   // Optional fields

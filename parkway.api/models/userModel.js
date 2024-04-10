@@ -24,12 +24,7 @@ const userSchema = new mongoose.Schema({
             required: true
         },
         _id: false
-    }],
-    apiKey:{
-        type: String,
-        unique: true,
-        
-    }
+    }]
 }, {timestamps: true})
 
 module.exports = mongoose.model('User', userSchema, 'users')

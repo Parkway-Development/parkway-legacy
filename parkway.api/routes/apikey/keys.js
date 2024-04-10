@@ -7,7 +7,7 @@ const{
     renewApiKey
 } = require('../controllers/apiKeyController');
 
-const { addNotFoundHandler , configureBaseApiRoutes} = require("./baseApiRouter");
+const { addNotFoundHandler , configureBaseApiRoutes} = require("../baseApiRouter");
 
 const { requireAuthorization} = require("../auth");
 
