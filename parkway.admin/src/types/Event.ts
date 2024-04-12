@@ -9,4 +9,5 @@ export type Event = BaseEntity & {
   location?: string;
   category?: string;
   status: string;
+  teams: string[];
 };

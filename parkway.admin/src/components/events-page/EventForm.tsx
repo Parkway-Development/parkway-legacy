@@ -10,6 +10,7 @@ import styles from './EventForm.module.css';
 import DeleteButton from '../delete-button';
 import useApi from '../../hooks/useApi.ts';
 import EventCategorySelect from '../event-category-select';
+import TeamSelect from '../team-select';
 
 type EventWithoutId = Omit<Event, '_id'>;
 
@@ -127,6 +128,12 @@ const EventForm = ({
   const handleCategoryChange = (value?: string) => {
     form.setFieldsValue({
       category: value
+    });
+  };
+
+  const handleTeamsChange = (values?: string[]) => {
+    form.setFieldsValue({
+      teams: values
     });
   };
 
@@ -261,6 +268,14 @@ const EventForm = ({
               </Radio.Button>
             ))}
           </Radio.Group>
+        </Form.Item>
+
+        <Form.Item<EventFormFields> label="Teams" name="teams">
+          <TeamSelect
+            isMultiSelect
+            value={initialValues?.teams}
+            onChange={handleTeamsChange}
+          />
         </Form.Item>
 
         <BaseFormFooter

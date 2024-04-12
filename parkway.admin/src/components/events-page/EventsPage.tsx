@@ -62,6 +62,13 @@ const eventColumns: OrderedColumnsType<Event> = [
     dataIndex: 'status',
     key: 'status',
     displayOrder: 8
+  },
+  {
+    title: 'Teams',
+    dataIndex: 'teams',
+    key: 'teams',
+    displayOrder: 9,
+    render: (value: Event['teams']) => value?.length ?? 0
   }
 ];
 
@@ -76,6 +83,7 @@ const EventsPage = () => {
       baseApiType="eventsApi"
       columns={eventColumns}
       responsiveCardRenderer={(item) => item.name}
+      mainPage="/events"
     />
   );
 
