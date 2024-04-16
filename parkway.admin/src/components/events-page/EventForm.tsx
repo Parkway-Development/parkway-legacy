@@ -12,6 +12,7 @@ import useApi from '../../hooks/useApi.ts';
 import EventCategorySelect from '../event-category-select';
 import TeamSelect from '../team-select';
 import { useAuth } from '../../hooks/useAuth.tsx';
+import EventStatus from './EventStatus.tsx';
 
 type EventWithoutId = Omit<Event, '_id'>;
 
@@ -171,6 +172,15 @@ const EventForm = ({
         >
           <Input autoFocus autoComplete="off" />
         </Form.Item>
+
+        {initialValues && (
+          <Form.Item<EventFormFields> label="Status" name="status">
+            <EventStatus
+              status={initial.status}
+              isCalendarAdmin={isCalendarAdmin}
+            />
+          </Form.Item>
+        )}
 
         <Form.Item<EventFormFields> label="Description" name="description">
           <Input />
