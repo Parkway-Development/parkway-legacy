@@ -1,4 +1,4 @@
-import { Breadcrumb, DatePicker, Form, Input, Radio, TimePicker } from 'antd';
+import { Breadcrumb, DatePicker, Form, Input, TimePicker } from 'antd';
 import { Link, useParams } from 'react-router-dom';
 import UserProfileSelect from '../user-profile-select';
 import { Event } from '../../types';
@@ -11,6 +11,7 @@ import DeleteButton from '../delete-button';
 import useApi from '../../hooks/useApi.ts';
 import EventCategorySelect from '../event-category-select';
 import TeamSelect from '../team-select';
+import { useAuth } from '../../hooks/useAuth.tsx';
 
 type EventWithoutId = Omit<Event, '_id'>;
 
@@ -31,6 +32,7 @@ const EventForm = ({
   onSave,
   onCancel
 }: EventFormProps) => {
+  const { hasClaim, user } = useAuth();
   const params = useParams();
   const id = params.id;
   const searchParams = new URLSearchParams(window.location.search);
@@ -68,11 +70,15 @@ const EventForm = ({
       ? {
           startDate: addDate,
           endDate: addDate,
-          status: eventStatusMapping['Tentative']
+          status: eventStatusMapping['Tentative'],
+          organizer: user!.profileId
         }
       : {
-          status: eventStatusMapping['Tentative']
+          status: eventStatusMapping['Tentative'],
+          organizer: user!.profileId
         };
+
+  const isCalendarAdmin = hasClaim('calendarManagement');
 
   const handleSave = (values: EventFormFields) => {
     const { startDate, startTime, endDate, endTime, ...remaining } = values;
@@ -170,12 +176,14 @@ const EventForm = ({
           <Input />
         </Form.Item>
 
-        <Form.Item<EventFormFields> label="Organizer" name="organizer">
-          <UserProfileSelect
-            onChange={handleLeaderChange}
-            initialValue={initialValues?.organizer}
-          />
-        </Form.Item>
+        {isCalendarAdmin && (
+          <Form.Item<EventFormFields> label="Organizer" name="organizer">
+            <UserProfileSelect
+              onChange={handleLeaderChange}
+              initialValue={initial?.organizer}
+            />
+          </Form.Item>
+        )}
 
         <div className={styles.dateContainer}>
           <div>
@@ -257,16 +265,6 @@ const EventForm = ({
             value={initialValues?.category}
             onChange={handleCategoryChange}
           />
-        </Form.Item>
-
-        <Form.Item<EventFormFields> label="Status" name="status">
-          <Radio.Group>
-            {Object.entries(eventStatusMapping).map(([value, label]) => (
-              <Radio.Button value={value} key={value}>
-                {label}
-              </Radio.Button>
-            ))}
-          </Radio.Group>
         </Form.Item>
 
         <Form.Item<EventFormFields> label="Teams" name="teams">
