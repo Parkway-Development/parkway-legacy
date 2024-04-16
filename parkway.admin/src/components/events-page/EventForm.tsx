@@ -46,10 +46,9 @@ const EventForm = ({
   const [endTimeOpen, setEndTimeOpen] = useState<boolean>(false);
 
   const eventStatusMapping: Record<string, string> = {
-    Pending: 'Pending',
+    Tentative: 'Tentative',
     Active: 'Active',
-    Postponed: 'Postponed',
-    Canceled: 'Canceled'
+    Rejected: 'Rejected'
   };
 
   const handleLeaderChange = (value: string | undefined) =>
@@ -69,10 +68,10 @@ const EventForm = ({
       ? {
           startDate: addDate,
           endDate: addDate,
-          status: eventStatusMapping['Active']
+          status: eventStatusMapping['Tentative']
         }
       : {
-          status: eventStatusMapping['Active']
+          status: eventStatusMapping['Tentative']
         };
 
   const handleSave = (values: EventFormFields) => {

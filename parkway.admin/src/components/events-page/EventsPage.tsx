@@ -7,6 +7,7 @@ import { useState } from 'react';
 import Calendar from './Calendar.tsx';
 import { Switch } from 'antd';
 import { EventCategoryDisplayById } from '../event-categories-page/EventCategoryDisplayById.tsx';
+import styles from './EventsPage.module.css';
 
 const eventColumns: OrderedColumnsType<Event> = [
   {
@@ -96,6 +97,7 @@ const EventsPage = () => {
         value={showCalendar}
         checkedChildren={<span>Show List</span>}
         unCheckedChildren={<span>Show Calendar</span>}
+        className={styles.switch}
       />
       {content}
     </div>

@@ -34,7 +34,7 @@ const eventSchema = new mongoose.Schema({
     status: {
         required: true,
         type: String,
-        default: 'Active'
+        default: 'Tentative'
     },
     teams: [{
         required: true,
