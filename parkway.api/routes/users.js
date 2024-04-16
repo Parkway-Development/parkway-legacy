@@ -27,7 +27,7 @@ router.post('/wixconnect', signupWixUser)
 // const { requireAuthorization } = require("../middleware/auth");
 // requireAuthorization(router);
 
-router.use(validateApiKey)
+//router.use(validateApiKey)
 
 //get all users
 router.get('/', getAll)

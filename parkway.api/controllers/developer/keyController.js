@@ -1,13 +1,13 @@
 const mongoose = require('mongoose');
-const Key = require('../../models/apikey/keyModel');
-const Application = require('../../models/apikey/applicationModel');
+const Key = require('../../models/developer/keyModel');
+const Application = require('../../models/developer/applicationModel');
 
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
 const { generateApiKey } = require('../../helpers/apiKeyGen');
 
 //Get all api keys
-const getAllApiKeys = async (req, res) => {
+const getAllKeys = async (req, res) => {
     try{
         const keys = await Key.find({});
         if(!keys){
@@ -39,7 +39,7 @@ const getKeyById = async (req, res) => {
 //TODO:Get api key by application secret
 
 //Add api key
-const addApiKey = async (req, res) => {
+const addKey = async (req, res) => {
     try{
         const rawKey = generateApiKey();
         const hashedKey = await bcrypt.hash(rawKey, saltRounds);
@@ -55,7 +55,7 @@ const addApiKey = async (req, res) => {
 
 
 
-const deleteApiKey = async (req, res) => {
+const deleteKey = async (req, res) => {
     const { id } = req.params;
     try{
         const apiKey = await ApiKey.findByIdAndDelete(id);
@@ -69,7 +69,7 @@ const deleteApiKey = async (req, res) => {
     }
 }
 
-const renewApiKey = async (req, res) => {
+const renewKey = async (req, res) => {
     const { id } = req.params;
     try{
         const apiKey = await ApiKey.findById(id);
@@ -88,9 +88,9 @@ const renewApiKey = async (req, res) => {
 }
 
 module.exports = {
-    addApiKey,
-    getAllApiKeys,
-    getApiKeyById,
-    deleteApiKey,
-    renewApiKey
+    addKey,
+    getAllKeys,
+    getKeyById,
+    deleteKey,
+    renewKey
 }

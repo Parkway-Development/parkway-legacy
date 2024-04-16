@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const userModel = require('../userModel');
 
 const applicationSchema = new mongoose.Schema({
     name: {
@@ -14,10 +15,16 @@ const applicationSchema = new mongoose.Schema({
         required: true,
         unique: true
     },
-    isExternal: [{
+    isExternal: {
         type: Boolean,
         default: true
-    }]
+    },
+    owner: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    }
+
 });
 
 module.exports = mongoose.model('Application', applicationSchema, 'applications');

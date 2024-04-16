@@ -1,4 +1,4 @@
-const ApiKey = require('../models/apikey/keyModel');
+const ApiKey = require('../models/developer/keyModel');
 
 // Middleware to validate API Key
 const validateApiKey = async (req, res, next) => {
