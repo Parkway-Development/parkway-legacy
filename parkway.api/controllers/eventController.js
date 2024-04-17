@@ -94,6 +94,33 @@ const approveEvent = async (req, res) => {
     res.status(200).json(updatedEvent);
 }
 
+//Reject an event
+const rejectEvent = async (req, res) => {
+    if (!authenticateToken(req, res, 'calendarManagement')) {
+        return res;
+    }
+
+    const {id} = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(404).json({error: 'No such event.'})
+    }
+
+    const update = {
+        rejectedBy: req.body.rejectedBy,
+        rejectedDate: req.body.rejectedDate,
+        status: 'Rejected'
+    };
+
+    const updatedEvent = await Event.findByIdAndUpdate(id, update, {new: true});
+
+    if (!updatedEvent) {
+        return res.status(404).json({message: "No such event found."})
+    }
+
+    res.status(200).json(updatedEvent);
+}
+
 //Delete event by ID
 const deleteEvent = async (req, res) => {
     const {id} = req.params;
@@ -111,5 +138,5 @@ const deleteEvent = async (req, res) => {
 }
 
 module.exports = {
-    addEvent, getAll, getById, updateEvent, deleteEvent, approveEvent
+    addEvent, getAll, getById, updateEvent, deleteEvent, approveEvent, rejectEvent
 };

@@ -12,6 +12,8 @@ export type Event = BaseEntity & {
   teams: string[];
   approvedBy?: string;
   approvedDate?: Date;
+  rejectedBy?: string;
+  rejectedDate?: Date;
 };
 
 export type EventStatus = 'Active' | 'Tentative' | 'Rejected';

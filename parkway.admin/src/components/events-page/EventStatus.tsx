@@ -4,7 +4,7 @@ import { Event } from '../../types';
 import { useState } from 'react';
 import useApi from '../../hooks/useApi.ts';
 import { useMutation } from '@tanstack/react-query';
-import { ApproveEventPayload } from '../../api';
+import { ApproveEventPayload, RejectEventPayload } from '../../api';
 
 type EventStatusProps = {
   status: Event['status'];
@@ -21,10 +21,13 @@ const EventStatus = ({
 }: EventStatusProps) => {
   const [status, setStatus] = useState<Event['status']>(initialStatus);
   const {
-    eventsApi: { approve }
+    eventsApi: { approve, reject }
   } = useApi();
   const { isPending: approvePending, mutate: performApprove } = useMutation({
     mutationFn: approve
+  });
+  const { isPending: rejectPending, mutate: performReject } = useMutation({
+    mutationFn: reject
   });
 
   const handleApproveClick = async () => {
@@ -34,10 +37,21 @@ const EventStatus = ({
       approvedDate: new Date()
     };
 
-    try {
-      await performApprove(payload);
-      setStatus('Active');
-    } catch (e) {}
+    performApprove(payload, {
+      onSuccess: () => setStatus('Active')
+    });
+  };
+
+  const handleRejectClick = async () => {
+    const payload: RejectEventPayload = {
+      _id: eventId,
+      rejectedBy: userId,
+      rejectedDate: new Date()
+    };
+
+    performReject(payload, {
+      onSuccess: () => setStatus('Rejected')
+    });
   };
 
   let approveButton = null;
@@ -57,7 +71,11 @@ const EventStatus = ({
     }
 
     if (status !== 'Rejected') {
-      rejectButton = <Button danger>Reject</Button>;
+      rejectButton = (
+        <Button danger loading={rejectPending} onClick={handleRejectClick}>
+          Reject
+        </Button>
+      );
     }
   }
 

@@ -49,6 +49,15 @@ const eventSchema = new mongoose.Schema({
     approvedDate: {
         required: false,
         type: Date
+    },
+    rejectedBy: {
+        required: false,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Profile'
+    },
+    rejectedDate: {
+        required: false,
+        type: Date
     }
 });
 
