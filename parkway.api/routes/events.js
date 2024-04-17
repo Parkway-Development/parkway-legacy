@@ -5,7 +5,8 @@ const {
     getAll,
     getById,
     updateEvent,
-    deleteEvent
+    deleteEvent,
+    approveEvent
 } = require('../controllers/eventController');
 const { addNotFoundHandler, configureBaseApiRoutes } = require("./baseApiRouter");
 
@@ -13,6 +14,8 @@ const { requireAuthorization} = require("../middleware/auth");
 requireAuthorization(router);
 
 configureBaseApiRoutes(router, addEvent, getAll, getById, updateEvent, deleteEvent);
+
+router.patch('/:id/approve', approveEvent);
 
 addNotFoundHandler(router);
 

@@ -38,5 +38,6 @@ const requireAuthorization = (router, requiredClaim) => {
 };
 
 module.exports = {
-    requireAuthorization
+    requireAuthorization,
+    authenticateToken
 };

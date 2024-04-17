@@ -40,7 +40,16 @@ const eventSchema = new mongoose.Schema({
         required: true,
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Team'
-    }]
+    }],
+    approvedBy: {
+        required: false,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Profile'
+    },
+    approvedDate: {
+        required: false,
+        type: Date
+    }
 });
 
 module.exports = mongoose.model('Event', eventSchema, 'events')

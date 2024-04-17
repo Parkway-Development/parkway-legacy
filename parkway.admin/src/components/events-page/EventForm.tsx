@@ -178,6 +178,8 @@ const EventForm = ({
             <EventStatus
               status={initial.status}
               isCalendarAdmin={isCalendarAdmin}
+              eventId={id!}
+              userId={user!.profileId!}
             />
           </Form.Item>
         )}

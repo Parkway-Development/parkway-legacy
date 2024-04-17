@@ -10,4 +10,6 @@ export type Event = BaseEntity & {
   category?: string;
   status: string;
   teams: string[];
+  approvedBy?: string;
+  approvedDate?: Date;
 };

@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const Event = require('../models/eventModel');
+const { authenticateToken } = require("../middleware/auth");
 
 //Post an event
 const addEvent = async (req, res) => {
@@ -54,12 +55,43 @@ const updateEvent = async (req, res) => {
     if (!mongoose.Types.ObjectId.isValid(id)) {
         return res.status(404).json({error: 'No such event.'})
     }
-    const updatedEvent = await Event.findByIdAndUpdate(id, req.body, {new: true});
+
+    // Exclude fields that shouldn't be updated using this method
+    const { status, approvedBy, approvedDate, ...update } = req.body;
+
+    const updatedEvent = await Event.findByIdAndUpdate(id, update, {new: true});
 
     if (!updatedEvent) {
         return res.status(404).json({message: "No such event found."})
     }
     res.status(200).json(updatedEvent)
+}
+
+//Approve an event
+const approveEvent = async (req, res) => {
+    if (!authenticateToken(req, res, 'calendarManagement')) {
+        return res;
+    }
+
+    const {id} = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(404).json({error: 'No such event.'})
+    }
+
+    const update = {
+        approvedBy: req.body.approvedBy,
+        approvedDate: req.body.approvedDate,
+        status: 'Active'
+    };
+
+    const updatedEvent = await Event.findByIdAndUpdate(id, update, {new: true});
+
+    if (!updatedEvent) {
+        return res.status(404).json({message: "No such event found."})
+    }
+
+    res.status(200).json(updatedEvent);
 }
 
 //Delete event by ID
@@ -79,5 +111,5 @@ const deleteEvent = async (req, res) => {
 }
 
 module.exports = {
-    addEvent, getAll, getById, updateEvent, deleteEvent
+    addEvent, getAll, getById, updateEvent, deleteEvent, approveEvent
 };
