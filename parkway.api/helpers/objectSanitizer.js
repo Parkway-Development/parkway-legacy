@@ -9,7 +9,13 @@ function removeSensitiveData(obj, seen = new WeakSet()) {
     seen.add(obj); // Mark this object as seen
 
     Object.keys(obj).forEach(key => {
-      if (key.toLowerCase() === 'password' || key.toLowerCase() === 'secret' || key.toLowerCase() === 'applicationsecret') {
+      if (key.toLowerCase() === 'password' || 
+          key.toLowerCase() === 'secret' || 
+          key.toLowerCase() === 'applicationsecret' ||
+          key.toLowerCase() === 'currentsecret' ||
+          key.toLowerCase() === 'previoussecrets' ||
+          key.toLowerCase() === 'currentkey' ||
+          key.toLowerCase() === 'previouskeys') {
         delete obj[key]; // Remove sensitive properties
       } else if (typeof obj[key] === 'object') {
         // Recurse into nested objects

@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const userModel = require('../userModel');
 
 const applicationSchema = new mongoose.Schema({
     name: {
@@ -10,20 +9,46 @@ const applicationSchema = new mongoose.Schema({
     description: {
         type: String
     },
-    applicationSecret: {
+    currentSecret: {
         type: String,
         required: true,
         unique: true
     },
+    previousSecrets: [{
+        type: String
+    }],
     isExternal: {
         type: Boolean,
         default: true
     },
+    currentKey: {
+        type: String
+    },
+    queryRateLimit: {
+        type: Number,
+        default: 1000,
+    },
+    queryRateInterval: {
+        type: String,
+        enum: ['minute', 'hour', 'day', 'unlimited'],
+        default: 'day'
+    },
+    keyExpiration: {
+        type: Date,
+        default: Date.now
+    },
+    previousKeys: [{
+        type: String
+    }],
     owner: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true
-    }
+    },
+    isActive: {
+        type: Boolean,
+        default: true
+    },
 
 });
 

@@ -26,18 +26,8 @@ const eventRoutes = require('./routes/events');
 const eventCategoryRoutes = require('./routes/eventCategories');
 const uploadRoutes = require('./routes/uploads');
 const healhRoutes = require('./routes/health');
-const applicationRoutes = require('./routes/developer/applications');
-//const keyRoutes = require('./routes/developer/keys');
-// const developerRoutes = require('./routes/developer');
+const developerRoutes = require('./routes/developer');
 const applicationClaimsRoutes = require('./routes/applicationClaims');
-//const clientRoutes = require('./routes/client');
-
-//const { Profile } = require('./models/profileModel');
-
-// Grid.mongo = mongoose.mongo;
-// let gfs;
-// Grid.mongo = mongoose.mongo;
-// let gfs;
 
 //express app
 const app = express();
@@ -59,11 +49,8 @@ app.use('/api/events', eventRoutes);
 app.use('/api/eventCategories', eventCategoryRoutes);
 app.use('/api/uploads', uploadRoutes);
 app.use('/api/health', healhRoutes);
-app.use('/api/developer/applications', applicationRoutes);
-//app.use('/api/developer/keys', keyRoutes);
-// app.use('/api/developer', developerRoutes);
+app.use('/api/developer', developerRoutes);
 app.use('/api/applicationclaims', applicationClaimsRoutes);
-//app.use('/api/clients', clientRoutes);
 
 //Accounting routes
 app.use('/api/accounting/assets', assetRoutes);

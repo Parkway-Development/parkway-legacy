@@ -1,34 +1,29 @@
-const ApiKey = require('../models/developer/keyModel');
 
 // Middleware to validate API Key
 const validateApiKey = async (req, res, next) => {
-  const apiKeyHeader = req.headers['x-api-key'];
-  const applicationIdHeader = req.headers['x-application-id'];
+  const keyHeader = req.headers['x-key'];
+  const appHeader = req.headers['x-app'];
 
-  if (!apiKeyHeader || !applicationIdHeader) {
-      return res.status(401).json({ message: 'API Key and Application Id are required' });
+  if (!keyHeader || !appHeader) {
+      return res.status(401).json({ message: 'Missing header information.' });
   }
   try {
-        const application = await Application.findById(applicationIdHeader);
+        const application = await Application.findOne({ currentSecret: appHeader });
         if (!application) {
             return res.status(404).json({ message: 'Application not found' });
         }
 
-        const apiKeyObj = await ApiKey.findOne({application:application._id}).populate('application');
-        if(!apiKeyObj){
-            return res.status(403).json({message: "API Key not associated with the iven application"});
+        const validate = bcrypt.compare(keyHeader, application.currentKey);
+        if (!validate) {
+            return res.status(401).json({ message: 'Invalid API Key' });
         }
 
-        // Validate the API key
-        const match = await bcrypt.compare(apiKeyHeader, apiKeyObj.key);
-        if (!match) {
-            return res.status(403).json({ message: 'Invalid API Key' });
+        if(!application.isActive){
+            return res.status(403).json({message: 'Application is not active'});
         }
 
-        // Check if the API key is expired
-        const now = new Date();
-        if (apiKeyObj.expiresAt < now) {
-            return res.status(403).json({ message: 'API Key expired' });
+        if(application.keyExpiration < new Date()){
+            return res.status(403).json({message: 'API Key expired'});
         }
 
         //TODO: Implement rate limiting
