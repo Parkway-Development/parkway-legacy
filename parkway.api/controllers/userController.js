@@ -4,9 +4,10 @@ const bcrypt = require('bcrypt');
 const validator = require('validator');
 const jwt = require('jsonwebtoken');
 
-const createToken = (activeUser) => {
+const createToken = (activeUser, profile) => {
     const claims = {
-        teams: []
+        teams: [],
+        teamsLed: []
     };
 
     activeUser.applicationClaims?.forEach((claim) => {
@@ -15,7 +16,15 @@ const createToken = (activeUser) => {
         });
     });
 
-    // TODO: populate teams
+    if (profile?.teams) {
+        profile.teams.forEach((team) => {
+            if (team.leader && team.leader.equals(profile._id)) {
+                claims.teamsLed.push(team._id);
+            }
+
+            claims.teams.push(team._id);
+        });
+    }
 
     const payload = {
         _id: activeUser._id,
@@ -44,16 +53,18 @@ const loginUser = async (req, res) => {
         if(!authenticate) {
             throw Error('Invalid credentials.')
         }
-    
-        const token = createToken(activeUser)
         
         const profile = await Profile.findOne({email})
-            .populate('family','preferences','teams');
+            .populate('teams')
+            .populate('family')
+            .populate('preferences');
 
-        if(profile){
+        if (profile) {
+            const token = createToken(activeUser, profile);
             return res.status(200).json({email: email, token: token, profile: profile});
         }
 
+        const token = createToken(activeUser);
         return res.status(200).json({email: email, token: token, message: 'No profile found'});
     } catch (error) {
         return res.status(400).json({error: error.message})
