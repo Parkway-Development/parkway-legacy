@@ -24,6 +24,7 @@ interface AuthContextType {
   token: string | undefined;
   user: AuthUser | undefined;
   hasClaim: (claimKey: AppClaimKeys) => boolean;
+  teamsLed: string[];
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -71,6 +72,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       return tokenPayload.claims[claimKey];
     };
 
+    const teamsLed =
+      tokenPayload?.claims?.teamsLed && tokenPayload.claims.teamsLed.length > 0
+        ? tokenPayload.claims.teamsLed
+        : [];
+
     const clearState = () => {
       clearUser();
       clearToken();
@@ -103,6 +109,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       storeProfileId: (profileId: string, user: AuthUser) =>
         setUser({ ...user, profileId }),
       hasClaim,
+      teamsLed,
       token
     };
   }, [user, setUser, token]);
@@ -135,7 +142,11 @@ type TokenPayload = {
     mediaManagement: boolean;
     socialMediaManagement: boolean;
     teams: string[];
+    teamsLed: string[];
   };
 };
 
-export type AppClaimKeys = Exclude<keyof TokenPayload['claims'], 'teams'>;
+export type AppClaimKeys = Exclude<
+  keyof TokenPayload['claims'],
+  'teams' | 'teamsLed'
+>;

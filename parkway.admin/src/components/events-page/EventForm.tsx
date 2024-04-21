@@ -48,7 +48,7 @@ const EventForm = ({
   const [form] = Form.useForm<EventFormFields>();
   const [endTimeOpen, setEndTimeOpen] = useState<boolean>(false);
 
-  const eventStatusMapping: Record<string, string> = {
+  const eventStatusMapping: Record<string, Event['status']> = {
     Tentative: 'Tentative',
     Active: 'Active',
     Rejected: 'Rejected'
