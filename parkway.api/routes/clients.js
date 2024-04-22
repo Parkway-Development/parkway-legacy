@@ -1,8 +1,5 @@
 const express = require('express');
-const { requireAuthorization} = require("../auth");
 const router = express.Router();
-requireAuthorization(router);
-
 const{
     addClient,
     getAllClients,
@@ -17,8 +14,10 @@ const{
 
 const { addNotFoundHandler, configureBaseApiRoutes } = require("./baseApiRouter");
 
-const { requireAuthorization} = require("../middleware/auth");
-requireAuthorization(router);
+// const { requireAuthorization} = require("../../middleware/auth");
+// requireAuthorization(router);
+const { requireAppAndKeyValidation } = require('../middleware/validateApiKey');
+requireAppAndKeyValidation(router);
 
 //Get client by name
 router.get('/name/:name', getClientByName)

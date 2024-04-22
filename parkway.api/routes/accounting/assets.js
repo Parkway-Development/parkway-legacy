@@ -14,8 +14,11 @@ const{
 
 const { addNotFoundHandler, configureBaseApiRoutes } = require("../baseApiRouter");
 
-const { requireAuthorization} = require("../../middleware/auth");
-requireAuthorization(router);
+// const { requireAuthorization} = require("../../middleware/auth");
+// requireAuthorization(router);
+const { requireAppAndKeyValidation } = require('../../middleware/validateApiKey');
+requireAppAndKeyValidation(router);
+configureBaseApiRoutes(router, addAsset, getAllAssets, getAssetById, updateAsset, deleteAsset);
 
 //Get assets by name
 router.get('/name/:name', getAssetsByName)
@@ -25,8 +28,6 @@ router.get('/type/:type', getAssetsByType)
 
 //Get assets by category
 router.get('/category/:category', getAssetsByCategory)
-
-configureBaseApiRoutes(router, addAsset, getAllAssets, getAssetById, updateAsset, deleteAsset);
 
 addNotFoundHandler(router);
 

@@ -3,9 +3,11 @@ const router = express.Router();
 
 const { addNotFoundHandler } = require("../baseApiRouter");
 
-addNotFoundHandler(router);
+// const { requireAuthorization} = require("../../middleware/auth");
+// requireAuthorization(router);
+const { requireAppAndKeyValidation } = require('../../middleware/validateApiKey');
+requireAppAndKeyValidation(router);
 
-const { requireAuthorization} = require("../../middleware/auth");
-requireAuthorization(router);
+addNotFoundHandler(router);
 
 module.exports = router;

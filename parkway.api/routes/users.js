@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const validateApiKey = require('../middleware/validateApiKey');
 
 //controller functions
 const {
@@ -27,7 +26,8 @@ router.post('/wixconnect', signupWixUser)
 // const { requireAuthorization } = require("../middleware/auth");
 // requireAuthorization(router);
 
-//router.use(validateApiKey)
+const { requireAppAndKeyValidation } = require('../middleware/validateApiKey');
+requireAppAndKeyValidation(router);
 
 //get all users
 router.get('/', getAll)

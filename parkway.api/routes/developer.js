@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-
 const {
     getAllApplications,
     getApplicationById,
@@ -12,11 +11,11 @@ const {
 } = require('../controllers/developerController'); // Added semicolon here
 
 const { addNotFoundHandler } = require('./baseApiRouter');
-const { requireAuthorization } = require("../middleware/auth");
+// const { requireAuthorization} = require("../../middleware/auth");
+// requireAuthorization(router);
+const { requireAppAndKeyValidation } = require('../middleware/validateApiKey');
+requireAppAndKeyValidation(router);
 
-requireAuthorization(router); // Changed to use middleware properly, if applicable
-
-// Register routes
 router.get('/applications', getAllApplications);
 router.post('/applications', addApplication);
 router.delete('/applications/:id', deleteApplication);

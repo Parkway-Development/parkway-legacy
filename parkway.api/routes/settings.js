@@ -1,9 +1,13 @@
 const express = require('express');
 const router = express.Router();
-
-//controller functions
 const { password } = require('../controllers/settingController');
+
 const { addNotFoundHandler } = require("./baseApiRouter");
+
+// const { requireAuthorization} = require("../../middleware/auth");
+// requireAuthorization(router);
+const { requireAppAndKeyValidation } = require('../middleware/validateApiKey');
+requireAppAndKeyValidation(router);
 
 //password route
 router.get('/password', password);

@@ -1,4 +1,5 @@
 const express = require('express');
+const router = express.Router();
 const {
     getEnums,
     getEnumByName,
@@ -10,12 +11,13 @@ const {
     deleteEnumByName
 } = require('../controllers/platformController')
 
-const router = express.Router();
-
 const { addNotFoundHandler, configureBaseApiRoutes } = require("./baseApiRouter");
 
-const { requireAuthorization} = require("../middleware/auth");
-requireAuthorization(router);
+// const { requireAuthorization} = require("../../middleware/auth");
+// requireAuthorization(router);
+const { requireAppAndKeyValidation } = require('../middleware/validateApiKey');
+requireAppAndKeyValidation(router);
+configureBaseApiRoutes(router, addEnum, getEnums, getEnumById, updateEnumById, deleteEnumById, '/enums');
 
 //Get enum by name
 router.get('/enums/name/:name', getEnumByName);
@@ -25,8 +27,6 @@ router.patch('/enums/name/:name', updateEnumByName);
 
 //Delete enum
 router.delete('/enums/name/:name', deleteEnumByName);
-
-configureBaseApiRoutes(router, addEnum, getEnums, getEnumById, updateEnumById, deleteEnumById, '/enums');
 
 addNotFoundHandler(router);
 

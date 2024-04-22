@@ -45,6 +45,8 @@ const addApplication = async (req, res) => {
         //generate key
         const rawKey = await generateApiKey();
         const hashedKey = await bcrypt.hash(rawKey, saltRounds);
+        const keyExpiration = new Date(new Date().setFullYear(new Date().getFullYear() + 1));
+
 
 
         const application = new Application({name: name, 
@@ -52,6 +54,7 @@ const addApplication = async (req, res) => {
             isExternal: isExternal, 
             currentSecret: secret,  
             currentKey: hashedKey, 
+            keyExpiration: keyExpiration,
             owner: owner,
             queryRateLimit: queryRateLimit,
             queryRateInterval: queryRateInterval});
