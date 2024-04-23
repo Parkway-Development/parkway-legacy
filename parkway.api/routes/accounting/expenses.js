@@ -13,16 +13,17 @@ deleteExpense
 
 const { addNotFoundHandler, configureBaseApiRoutes } = require("../baseApiRouter");
 
-const { requireAuthorization} = require("../../middleware/auth");
-requireAuthorization(router);
+// const { requireAuthorization} = require("../../middleware/auth");
+// requireAuthorization(router);
+const { requireAppAndKeyValidation } = require('../../middleware/validateApiKey');
+requireAppAndKeyValidation(router);
+configureBaseApiRoutes(router, addExpense, getAllExpenses, getExpenseById, updateExpense, deleteExpense);
 
 //Get expenses by vendor
 router.get('/expenses/vendor/:id', getExpensesByVendor)
 
 //Get expenses by fund
 router.get('/expenses/fund/:id', getExpensesByFund)
-
-configureBaseApiRoutes(router, addExpense, getAllExpenses, getExpenseById, updateExpense, deleteExpense);
 
 addNotFoundHandler(router);
 

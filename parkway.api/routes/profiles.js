@@ -1,4 +1,5 @@
 const express = require('express');
+const router = express.Router();
 const {
     addProfile,
     getAll,
@@ -10,14 +11,13 @@ const {
     deleteProfile,
     connectUserAndProfile
 } = require('../controllers/profileController')
+
 const { addNotFoundHandler, configureBaseApiRoutes } = require("./baseApiRouter");
 
-const { requireAuthorization} = require("../middleware/auth");
-
-const router = express.Router();
-
-requireAuthorization(router);
-
+// const { requireAuthorization} = require("../../middleware/auth");
+// requireAuthorization(router);
+const { requireAppAndKeyValidation } = require('../middleware/validateApiKey');
+requireAppAndKeyValidation(router);
 configureBaseApiRoutes(router, addProfile, getAll, getById, updateProfile, deleteProfile);
 
 //Get profiles by last name

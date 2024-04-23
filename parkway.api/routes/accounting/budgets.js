@@ -13,16 +13,17 @@ const{
 
 const { addNotFoundHandler, configureBaseApiRoutes } = require("../baseApiRouter");
 
-const { requireAuthorization} = require("../../middleware/auth");
-requireAuthorization(router);
+// const { requireAuthorization} = require("../../middleware/auth");
+// requireAuthorization(router);
+const { requireAppAndKeyValidation } = require('../../middleware/validateApiKey');
+requireAppAndKeyValidation(router);
+configureBaseApiRoutes(router, addBudget, getAllBudgets, getBudgetById, updateBudget, deleteBudget);
 
 //Get budgets by year
 router.get('/budgets/year/:year', getBudgetsByYear)
 
 //Get budgets by fund
 router.get('/budgets/fund/:id', getBudgetsByFund)
-
-configureBaseApiRoutes(router, addBudget, getAllBudgets, getBudgetById, updateBudget, deleteBudget);
 
 addNotFoundHandler(router);
 

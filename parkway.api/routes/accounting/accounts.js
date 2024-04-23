@@ -12,9 +12,10 @@ const{
 
 const { addNotFoundHandler, configureBaseApiRoutes } = require("../baseApiRouter");
 
-const { requireAuthorization} = require("../../middleware/auth");
-requireAuthorization(router);
-
+// const { requireAuthorization} = require("../../middleware/auth");
+// requireAuthorization(router);
+const { requireAppAndKeyValidation } = require('../../middleware/validateApiKey');
+requireAppAndKeyValidation(router);
 configureBaseApiRoutes(router, addAccount, getAllAccounts, getAccountById, updateAccount, deleteAccount);
 
 //Get a fund by name

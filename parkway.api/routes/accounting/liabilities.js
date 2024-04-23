@@ -13,16 +13,17 @@ const{
 
 const { addNotFoundHandler, configureBaseApiRoutes } = require("../baseApiRouter");
 
-const { requireAuthorization} = require("../../middleware/auth");
-requireAuthorization(router);
+// const { requireAuthorization} = require("../../middleware/auth");
+// requireAuthorization(router);
+const { requireAppAndKeyValidation } = require('../../middleware/validateApiKey');
+requireAppAndKeyValidation(router);
+configureBaseApiRoutes(router, addLiability, getAllLiabilities, getLiabilityById, updateLiability, deleteLiability);
 
 //Get liabilities by fund
 router.get('/liabilities/fund/:id', getLiabilitiesByFund)
 
 //Get liabilities by category
 router.get('/liabilities/category/:category', getLiabilitiesByCategory)
-
-configureBaseApiRoutes(router, addLiability, getAllLiabilities, getLiabilityById, updateLiability, deleteLiability);
 
 addNotFoundHandler(router);
 

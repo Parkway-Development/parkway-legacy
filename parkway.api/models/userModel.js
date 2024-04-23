@@ -15,14 +15,16 @@ const userSchema = new mongoose.Schema({
         ref: 'Profile'
     },    
     applicationClaims: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'ApplicationClaim',
-        required: true
-    }],
-    apiKey:{
-        type: String,
-        unique: true
-    }
+        name: {
+            type: String,
+            required: true
+        },
+        value: {
+            type: String,
+            required: true
+        },
+        _id: false
+    }]
 }, {timestamps: true})
 
 module.exports = mongoose.model('User', userSchema, 'users')

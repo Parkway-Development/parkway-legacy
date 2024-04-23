@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 
-const authenticateToken = (req, res, requiredClaim) => {
+const authenticateToken = (req, res) => {
     const authHeader = req.header('Authorization');
     const token = authHeader && authHeader.split(' ')[1]
 
@@ -8,30 +8,19 @@ const authenticateToken = (req, res, requiredClaim) => {
         res.status(401).send('Access denied. No token provided.');
     } else {
         try {
-            const payload = jwt.verify(token, process.env.JWT_SECRET);
-            req.user = payload._id;
-
-            if (requiredClaim) {
-                const claimValue = payload.claims ? payload.claims[requiredClaim] : undefined;
-
-                if (claimValue !== true) {
-                    res.status(403).send('Access denied. Claim not found.');
-                    return false;
-                }
-            }
-
+            req.user = jwt.verify(token, process.env.JWT_SECRET);
             return true;
         } catch (error) {
-            res.status(401).send('Invalid token.');
+            res.status(403).send('Invalid token.');
         }
     }
 
     return false;
 };
 
-const requireAuthorization = (router, requiredClaim) => {
+const requireAuthorization = (router) => {
     router.use((req, res, next) => {
-        if (authenticateToken(req, res, requiredClaim)) {
+        if (authenticateToken(req, res)) {
             next();
         }
     });

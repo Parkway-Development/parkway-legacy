@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 
+const router = express.Router();
+
 const{
     addContribution,
     getAllContributions,
@@ -14,8 +16,11 @@ const{
 
 const { addNotFoundHandler, configureBaseApiRoutes } = require("../baseApiRouter");
 
-const { requireAuthorization} = require("../../middleware/auth");
-requireAuthorization(router);
+// const { requireAuthorization} = require("../../middleware/auth");
+// requireAuthorization(router);
+const { requireAppAndKeyValidation } = require('../../middleware/validateApiKey');
+requireAppAndKeyValidation(router);
+configureBaseApiRoutes(router, addContribution, getAllContributions, getContributionById, updateContribution, deleteContribution);
 
 //Get contributions by type
 router.get('/type/:type', getContributionsByType)
@@ -25,8 +30,6 @@ router.get('/profile/:id', getContributionsByProfileId)
 
 //Get contributions by Account ID
 router.get('/account/:id', getContributionsByAccountId)
-
-configureBaseApiRoutes(router, addContribution, getAllContributions, getContributionById, updateContribution, deleteContribution);
 
 addNotFoundHandler(router);
 

@@ -12,9 +12,10 @@ const {
 
 const { addNotFoundHandler, configureBaseApiRoutes } = require("./baseApiRouter");
 
-const { requireAuthorization} = require("../middleware/auth");
-requireAuthorization(router);
-
+// const { requireAuthorization} = require("../../middleware/auth");
+// requireAuthorization(router);
+const { requireAppAndKeyValidation } = require('../middleware/validateApiKey');
+requireAppAndKeyValidation(router);
 configureBaseApiRoutes(router, addApplicationClaim, getAllApplicationClaims, getApplicationClaimById, updateApplicationClaim, deleteApplicationClaim); 
 
 router.get('/name/:name', getApplicationClaimByName)

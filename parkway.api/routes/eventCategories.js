@@ -9,9 +9,10 @@ const {
 } = require('../controllers/eventCategoryController')
 const { addNotFoundHandler, configureBaseApiRoutes } = require("./baseApiRouter");
 
-const { requireAuthorization} = require("../middleware/auth");
-requireAuthorization(router, 'calendarManagement');
-
+// const { requireAuthorization} = require("../../middleware/auth");
+// requireAuthorization(router);
+const { requireAppAndKeyValidation } = require('../middleware/validateApiKey');
+requireAppAndKeyValidation(router);
 configureBaseApiRoutes(router, addEventCategory, getAll, getById, updateEventCategory, deleteEventCategory);
 
 addNotFoundHandler(router);
