@@ -1,0 +1,31 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+}
+
+.card :global(.ant-card-head) {
+    padding: 0 1em;
+}
+
+.cardTitle {
+    display: flex;
+    gap: 0.5em;
+}
+
+.cardTitle :first-child {
+    flex: 1;
+}
+
+.card :global(.ant-card-body) {
+    padding: 1em;
+}
+
+.dataRow {
+    display: flex;
+    gap: 1em;
+}
+
+.dataRow :first-child {
+    min-width: 35%;
+}

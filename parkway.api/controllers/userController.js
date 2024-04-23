@@ -7,8 +7,27 @@ const jwt = require('jsonwebtoken');
 const removeSensitiveData = require('../helpers/objectSanitizer');
 
 
-const createToken = (_id) => {
-    return jwt.sign({_id}, process.env.JWT_SECRET, {expiresIn: process.env.JWT_EXPIRATION})    
+const createToken = (activeUser) => {
+    const claims = {
+        teams: []
+    };
+
+    activeUser.applicationClaims?.forEach((claim) => {
+        claim.values?.forEach((value) => {
+            claims[value] = true;
+        });
+    });
+
+    // TODO: populate teams
+
+    const payload = {
+        _id: activeUser._id,
+        claims
+    };
+
+    return jwt.sign(payload,
+        process.env.JWT_SECRET,
+        {expiresIn: process.env.JWT_EXPIRATION})
 }
 
 //login user
@@ -21,16 +40,18 @@ const loginUser = async (req, res) => {
         }
     
         const activeUser = await User.findOne({email})
+            .populate('applicationClaims');
+
         const authenticate = await bcrypt.compare(password, activeUser.password)
 
         if(!authenticate) {
             throw Error('Invalid credentials.')
         }
     
-        const token = createToken(activeUser._id)
+        const token = createToken(activeUser)
         
         const profile = await Profile.findOne({email})
-            .populate('family', 'permissions','preferences','teams');
+            .populate('family','preferences','teams');
 
         if(profile){
             return res.status(200).json({email: email, token: token, profile: profile});
@@ -79,7 +100,7 @@ const signupUser = async (req, res) => {
         const hash = await bcrypt.hash(password, salt)
         const newUser = await User.create({email, password: hash});
         
-        const token = createToken(newUser._id)
+        const token = createToken(newUser)
 
         //check to see if there is a matching profile
         const profile = await Profile.findOne({email})

@@ -27,7 +27,7 @@ type OrderedColumnType<T> = ColumnType<T> & {
 
 export type OrderedColumnsType<T> = OrderedColumnType<T>[];
 
-type DeleteAction = {
+export type DeleteAction = {
   deleteFn: (id: string) => GenericResponse;
   handleDelete: () => void;
 };

@@ -1,5 +1,6 @@
-import AddTeamPage from './AddTeamPage.tsx';
-import EditTeamPage from './EditTeamPage.tsx';
-import TeamsPage from './TeamsPage.tsx';
-
-export { AddTeamPage, EditTeamPage, TeamsPage };
+export {
+  AddTeamPage,
+  EditTeamPage,
+  TeamsPage,
+  TeamPage
+} from './TeamsPages.tsx';

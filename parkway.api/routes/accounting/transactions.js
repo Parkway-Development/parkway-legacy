@@ -10,4 +10,7 @@ requireAppAndKeyValidation(router);
 
 addNotFoundHandler(router);
 
+const { requireAuthorization} = require("../../middleware/auth");
+requireAuthorization(router);
+
 module.exports = router;

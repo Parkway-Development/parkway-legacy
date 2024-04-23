@@ -2,7 +2,6 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import useApi, { buildQueryKey } from '../../hooks/useApi.ts';
 import { Alert, notification, Spin } from 'antd';
 import { UserProfileForm, UserProfileFormFields } from '../directory-page';
-import { UserProfile } from '../../types';
 import { useAuth } from '../../hooks/useAuth.tsx';
 import { useState } from 'react';
 import UserProfileDisplay from './UserProfileDisplay.tsx';
@@ -22,6 +21,8 @@ export const MyProfilePage = () => {
     mutationFn: update
   });
 
+  const queryKey = buildQueryKey('profiles', profileId ?? '');
+
   const {
     isPending: isLoading,
     data: response,
@@ -29,7 +30,7 @@ export const MyProfilePage = () => {
   } = useQuery({
     enabled: profileId !== undefined,
     queryFn: getById(profileId!),
-    queryKey: buildQueryKey('profiles', profileId ?? '')
+    queryKey
   });
 
   const [api, contextHolder] = notification.useNotification();
@@ -76,8 +77,8 @@ export const MyProfilePage = () => {
     mutate(
       { ...payload, _id: profileId },
       {
-        onSuccess: ({ data }: { data: UserProfile }) => {
-          queryClient.setQueryData(buildQueryKey('profiles', data._id), data);
+        onSuccess: (response) => {
+          queryClient.setQueryData(queryKey, response);
           finishEditing();
         },
         onError: (error: Error | null) =>
