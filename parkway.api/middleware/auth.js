@@ -27,7 +27,6 @@ const requireSpecOpsClaim = (req, res, next) => {
     }
 };
 
-
 const requireAuthorization = (router) => {
     router.use((req, res, next) => {
         if (authenticateToken(req, res)) {
