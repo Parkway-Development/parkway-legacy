@@ -4,9 +4,8 @@ const removeSensitiveData = require('../helpers/objectSanitizer');
 
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
-const { generateApplicationSecret } = require('../helpers/applicationSecretGen');
-const { generateApiKey } = require('../helpers/apiKeyGen');
 
+//Does not require an app secret or api key
 //Add an application
 const addApplication = async (req, res) => {
 
@@ -76,6 +75,11 @@ const addApplication = async (req, res) => {
         });
     }
 }
+
+const { generateApplicationSecret } = require('../helpers/applicationSecretGen');
+const { generateApiKey } = require('../helpers/apiKeyGen');
+
+//TODO: Require the isspecops claim to access these routes
 
 //Get all applications
 const getAllApplications = async (req, res) => {

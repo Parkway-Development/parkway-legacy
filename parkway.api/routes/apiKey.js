@@ -1,4 +1,5 @@
 const express = require('express');
+const router = express.Router();
 const{
     addApiKey,
     getAllApiKeys,
@@ -7,14 +8,12 @@ const{
     renewApiKey
 } = require('../controllers/apiKeyController');
 
-const { addNotFoundHandler , configureBaseApiRoutes} = require("./baseApiRouter");
-
+// Require authorization for all routes below this point
 const { requireAuthorization} = require("../auth");
-
-const router = express.Router();
-
 requireAuthorization(router);
 
+// Set up base API routes
+const { addNotFoundHandler , configureBaseApiRoutes} = require("./baseApiRouter");
 configureBaseApiRoutes(router, addApiKey, getAllApiKeys, getApiKeyById, deleteApiKey);
 
 router.post('/renew/:id', renewApiKey);

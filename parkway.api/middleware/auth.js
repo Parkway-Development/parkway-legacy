@@ -6,17 +6,27 @@ const authenticateToken = (req, res) => {
 
     if (!token) {
         res.status(401).send('Access denied. No token provided.');
-    } else {
-        try {
-            req.user = jwt.verify(token, process.env.JWT_SECRET);
-            return true;
-        } catch (error) {
-            res.status(403).send('Invalid token.');
-        }
-    }
+    } 
+    
+    try {
+        const decode = jwt.verify(token, process.env.JWT_SECRET);
+        req.user = decoded;
 
-    return false;
+        next();
+    }
+    catch (error) {
+        res.status(403).send('Invalid token.');
+    }
 };
+
+const requireSpecOpsClaim = (req, res, next) => {
+    if (req.user && req.user.isspecops) {
+        next();
+    } else {
+        res.status(403).send('Access denied. Special operations claim is required.');
+    }
+};
+
 
 const requireAuthorization = (router) => {
     router.use((req, res, next) => {
@@ -27,5 +37,6 @@ const requireAuthorization = (router) => {
 };
 
 module.exports = {
-    requireAuthorization
+    requireAuthorization,
+    requireSpecOpsClaim
 };

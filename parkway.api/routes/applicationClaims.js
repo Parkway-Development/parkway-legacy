@@ -10,12 +10,16 @@ const {
     updateApplicationClaimValues
 } = require('../controllers/applicationClaimController');
 
-const { addNotFoundHandler, configureBaseApiRoutes } = require("./baseApiRouter");
+// Require authorization for all routes below this point
+const { requireAuthorization} = require("../auth");
+requireAuthorization(router);
 
-// const { requireAuthorization} = require("../../middleware/auth");
-// requireAuthorization(router);
+// Require api key for all routes below this point
 const { requireAppAndKeyValidation } = require('../middleware/validateApiKey');
 requireAppAndKeyValidation(router);
+
+// Set up base API routes
+const { addNotFoundHandler, configureBaseApiRoutes } = require("./baseApiRouter");
 configureBaseApiRoutes(router, addApplicationClaim, getAllApplicationClaims, getApplicationClaimById, updateApplicationClaim, deleteApplicationClaim); 
 
 router.get('/name/:name', getApplicationClaimByName)
