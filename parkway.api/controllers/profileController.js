@@ -44,7 +44,6 @@ const addProfile = async (req, res) => {
 const getAll = async (req, res) => {
     const profiles = await Profile.find({})
         .populate('family')
-        .populate('permissions')
         .populate('preferences')
         .populate('teams')
         .sort({lastname: 1, firstname: 1});
@@ -64,7 +63,6 @@ const getById = async (req, res) => {
     }
     const profile = await Profile.findById(id)
         .populate('family')
-        .populate('permissions')
         .populate('preferences')
         .populate('teams');
 
@@ -82,7 +80,6 @@ const getByLastName = async (req, res) => {
 
     const profiles = await Profile.find({$text: {$search: lastName}})
         .populate('family')
-        .populate('permissions')
         .populate('preferences')
         .populate('teams');
 
@@ -97,7 +94,6 @@ const getByMobileNumber = async (req, res) => {
     const { mobileNumber } = req.params;
     const profiles = await Profile.find({mobileNumber: req.params.mobileNumber})
         .populate('family')
-        .populate('permissions')
         .populate('preferences')
         .populate('teams');
 
@@ -112,7 +108,6 @@ const getByHomeNumber = async (req, res) => {
     const { homeNumber } = req.params;
     const profiles = await Profile.find({homeNumber: req.params.homeNumber})
         .populate('family')
-        .populate('permissions')
         .populate('preferences')
         .populate('teams');
 
@@ -137,7 +132,7 @@ const updateProfile = async (req, res) => {
         );
 
         if (profile) {
-            profile = await Profile.populate(profile, [{ path: 'family' }, { path: 'permissions' }, { path: 'preferences' }, { path: 'teams' }]);
+            profile = await Profile.populate(profile, [{ path: 'family' }, { path: 'preferences' }, { path: 'teams' }]);
             return res.status(200).json(profile);
         } else {
             return res.status(404).json({ error: "There was a problem updating the profile." });
@@ -201,7 +196,7 @@ const connectUserAndProfile = async (req, res) => {
         return res.status(404).json({error: 'There was a problem connecting the profile to the user.  The profile object was not returned.'})
     }
 
-    profile = await Profile.findById(profile._id).populate('user','family permissions preferences teams').exec()
+    profile = await Profile.findById(profile._id).populate('user','family preferences teams').exec()
 
     const cleanedProfile = profile.toObject();
     if(cleanedProfile.user){

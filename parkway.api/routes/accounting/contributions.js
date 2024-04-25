@@ -1,4 +1,5 @@
 const express = require('express');
+const router = express.Router();
 const{
     addContribution,
     getAllContributions,
@@ -10,33 +11,16 @@ const{
     deleteContribution
 } = require('../../controllers/accounting/contributionController');
 
-const { requireAuthorization } = require("../../auth");
-const router = express.Router();
-
+const { addNotFoundHandler, configureBaseApiRoutes } = require('../baseApiRouter');
+const { requireAppAndKeyValidation } = require('../../middleware/validateApiKey');
+const { requireAuthorization} = require("../../middleware/auth");
 requireAuthorization(router);
+requireAppAndKeyValidation(router);
+addNotFoundHandler(router);
+configureBaseApiRoutes(router, addContribution, getAllContributions, getContributionById, updateContribution, deleteContribution);
 
-//Post a contribution
-router.post('/', addContribution)
-
-//Get all contributions
-router.get('/', getAllContributions)
-
-//Get contribution by ID
-router.get('/:id', getContributionById)
-
-//Get contributions by type
 router.get('/type/:type', getContributionsByType)
-
-//Get contributions by Profile ID
 router.get('/profile/:id', getContributionsByProfileId)
-
-//Get contributions by Account ID
 router.get('/account/:id', getContributionsByAccountId)
-
-//Update a contribution by ID
-router.patch('/:id', updateContribution)
-
-//Delete a contribution by ID
-router.delete('/:id', deleteContribution)
 
 module.exports = router;

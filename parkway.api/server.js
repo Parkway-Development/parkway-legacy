@@ -1,9 +1,9 @@
 require('dotenv').config();
-
+const PORT = process.env.PORT || 3000;
 const express = require('express');
 const mongoose = require('mongoose');
-const Multer = require('multer');
 const conn = mongoose.connection;
+const Multer = require('multer');
 const upload = Multer({ dest: 'uploads/' });
 
 const userRoutes = require('./routes/users');
@@ -20,32 +20,25 @@ const payrollRoutes = require('./routes/accounting/payroll');
 const pledgeRoutes = require('./routes/accounting/pledges');
 const vendorRoutes = require('./routes/accounting/vendors');
 const contributionRoutes = require('./routes/accounting/contributions');
-//const clientRoutes = require('./routes/client');
 const platformRoutes = require('./routes/platform');
 const songRoutes = require('./routes/songs');
 const eventRoutes = require('./routes/events');
 const eventCategoryRoutes = require('./routes/eventCategories');
 const uploadRoutes = require('./routes/uploads');
-
-const { Profile } = require('./models/profileModel');
-
-// Grid.mongo = mongoose.mongo;
-// let gfs;
-// Grid.mongo = mongoose.mongo;
-// let gfs;
+const healhRoutes = require('./routes/health');
+const developerRoutes = require('./routes/developer');
+const applicationClaimsRoutes = require('./routes/applicationClaims');
 
 //express app
 const app = express();
 
 //Middleware
-app.use((req, res, next)  => {
-    console.log(req.path, req.method)
-    next();
-}) 
-
+app.use((req, res, next)  => { console.log(req.path, req.method), next(); }) 
 app.use(express.json());
 
+
 //Routes
+app.get ('/', (req, res) => { res.send('Welcome to the Parkway API'); });
 app.use('/api/users', userRoutes);
 app.use('/api/profiles', profileRoutes);
 app.use('/api/settings', settingRoutes);
@@ -55,7 +48,9 @@ app.use('/api/songs', songRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/eventCategories', eventCategoryRoutes);
 app.use('/api/uploads', uploadRoutes);
-//app.use('/api/clients', clientRoutes);
+app.use('/api/health', healhRoutes);
+app.use('/api/developer', developerRoutes);
+app.use('/api/applicationclaims', applicationClaimsRoutes);
 
 //Accounting routes
 app.use('/api/accounting/assets', assetRoutes);
@@ -68,7 +63,6 @@ app.use('/api/accounting/payroll', payrollRoutes);
 app.use('/api/accounting/pledges', pledgeRoutes);
 app.use('/api/accounting/vendors', vendorRoutes);
 app.use('/api/accounting/contributions', contributionRoutes);
-
 
 // Catch-all route for undefined paths
 //TODO: Add logging.....lots and lots of logging
@@ -84,12 +78,8 @@ app.use('*', (req, res) => {
 mongoose.connect(process.env.DATABASE_URL)
     .then(() => {
         console.log('Database connected.')
-        // gfs = Grid(conn.db, mongoose.mongo);
-        // gfs.collection('uploads');
-        // gfs = Grid(conn.db, mongoose.mongo);
-        // gfs.collection('uploads');
-        app.listen(process.env.PORT, () => {
-            console.log('Listening for requests on port', process.env.PORT)
+        app.listen(PORT, () => {
+            console.log(`Listening for requests on port ${PORT}`)
         })
     })
     .catch((err) => {

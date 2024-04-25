@@ -75,6 +75,7 @@ const EventsPage = () => {
       queryKey="events"
       baseApiType="eventsApi"
       columns={eventColumns}
+      responsiveCardRenderer={(item) => item.name}
     />
   );
 

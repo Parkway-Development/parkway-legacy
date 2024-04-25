@@ -1,0 +1,28 @@
+const express = require('express');
+const router = express.Router();
+const {
+    getAllApplications,
+    getApplicationById,
+    getApplicationByName,
+    getApplicationsByType,
+    addApplication,
+    deleteApplication,
+    replaceKey
+} = require('../controllers/developerController'); // Added semicolon here
+
+const { addNotFoundHandler, configureBaseApiRoutes } = require("./baseApiRouter");
+const { requireAppAndKeyValidation } = require('../middleware/validateApiKey');
+const { requireAuthorization} = require("../middleware/auth");
+requireAuthorization(router);
+requireAppAndKeyValidation(router);
+addNotFoundHandler(router);
+
+router.get('/applications', getAllApplications);
+router.post('/applications', addApplication);
+router.delete('/applications/:id', deleteApplication);
+router.get('/applications/:id', getApplicationById);
+router.get('/applications/type/:type', getApplicationsByType);
+router.get('/applications/name/:name', getApplicationByName);
+router.get('/keys/replace/:id', replaceKey);
+
+module.exports = router;

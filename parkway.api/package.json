@@ -4,7 +4,8 @@
   "description": "Backend API for access the data store on MongoDB Atlas",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon server.js"
+    "start": "node server.js",
+    "start:local": "nodemon server.js"
   },
   "author": "Jay Davis",
   "license": "ISC",

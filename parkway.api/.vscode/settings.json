@@ -1,6 +1,36 @@
 {
+    "appService.zipIgnorePattern": [
+        ".vscode",
+        ".git",
+        ".github",
+        ".gitignore",
+        ".gitattributes",
+        ".vscodeignore",
+        ".editorconfig",
+        ".env",
+        ".env.local",
+        ".env.development",
+        ".env.development.local",
+        ".env.test",
+        ".env.test.local",
+        ".env.production",
+        ".env.production.local",
+        ".env.staging",
+        ".env.staging.local",
+        ".env.qa",
+        ".env.qa.local",
+        ".env.uat",
+        ".env.uat.local",
+        ".env.preprod",
+        ".env.preprod.local",
+        ".env.prod",
+        "uploads/**",
+        "localstuff/**",
+        "parkway.api.code-workspace"
+    ],
     "cSpell.words": [
         "gettoken",
         "Gpoe"
-    ]
+    ],
+    "appService.defaultWebAppToDeploy": "None"
 }

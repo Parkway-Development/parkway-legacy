@@ -1,0 +1,7 @@
+.infoRow {
+    span:first-of-type {
+        width: 100px;
+        display: inline-block;
+        padding-right: 1em;
+    }
+}

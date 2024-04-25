@@ -1,7 +1,7 @@
 import styles from './LoginPage.module.css';
 import { Alert, Button, Card, Form, Input } from 'antd';
 import { InternalLoginResponse, useAuth } from '../../hooks/useAuth.tsx';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import useApi from '../../hooks/useApi.ts';
 import { useMutation } from '@tanstack/react-query';
 import { LoginFields } from '../../api';
@@ -9,7 +9,6 @@ import { useState } from 'react';
 import ProfileVerification from '../profile-verification';
 
 const LoginPage = () => {
-  const navigate = useNavigate();
   const { login } = useAuth();
   const {
     usersApi: { login: loginFn },
@@ -24,7 +23,7 @@ const LoginPage = () => {
         const result = login(data);
 
         if (result.hasValidProfile) {
-          navigate('/', { replace: true });
+          window.location.href = '/';
         } else {
           setLoginResponse(result);
         }
@@ -40,7 +39,7 @@ const LoginPage = () => {
       <Card
         title="Parkway Ministries Admin Login"
         bordered={false}
-        style={{ width: 500 }}
+        style={{ width: '90vw', maxWidth: 500 }}
       >
         <Form
           name="basic"

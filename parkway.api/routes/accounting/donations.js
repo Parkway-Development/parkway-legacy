@@ -1,4 +1,5 @@
 const express = require('express');
+const router = express.Router();
 const{
     addDonation,
     getAllDonations,
@@ -8,34 +9,14 @@ const{
     deleteDonation
 } = require('../../controllers/accounting/donationController')
 
-const { requireAuthorization} = require("../../auth");
-
-const router = express.Router();
-
+const { addNotFoundHandler, configureBaseApiRoutes } = require('../baseApiRouter');
+const { requireAppAndKeyValidation } = require('../../middleware/validateApiKey');
+const { requireAuthorization} = require('../../middleware/auth');
 requireAuthorization(router);
+requireAppAndKeyValidation(router);
+addNotFoundHandler(router);
+configureBaseApiRoutes(router, addDonation, getAllDonations, getDonationById, updateDonation, deleteDonation);
 
-//Donations
-//Post a donation
-router.post('/', addDonation)
-
-//Get all donations
-router.get('/', getAllDonations)
-
-//Get donation by ID
-router.get('/:id', getDonationById)
-
-//Get donations by profile
 router.get('/profile/:id', getDonationsByProfile)
-
-//Update a donation by ID
-router.patch('/:id', updateDonation)
-
-//Delete a donation by ID
-router.delete('/:id', deleteDonation)
-
-router.use('*', (req, res) => {
-    const requestedURL = req.originalUrl;
-    res.status(404).json({ message: 'Endpoint ' + req.originalUrl + ' not found' });
-});
 
 module.exports = router;

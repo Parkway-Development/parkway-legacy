@@ -1,7 +1,6 @@
 import { createContext, ReactNode, useContext, useMemo } from 'react';
 import { useLocalStorage } from './useLocalStorage';
 import { jwtDecode } from 'jwt-decode';
-import { useNavigate } from 'react-router-dom';
 import { UserProfile } from '../types';
 
 export interface AuthUser {
@@ -24,6 +23,7 @@ interface AuthContextType {
   storeProfileId: (profileId: string, user: AuthUser) => void;
   token: string | undefined;
   user: AuthUser | undefined;
+  hasClaim: (claimKey: AppClaimKeys) => boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -38,8 +38,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     'token',
     undefined
   );
-
-  const navigate = useNavigate();
 
   const value = useMemo(() => {
     const login = (data: LoginResponse): InternalLoginResponse => {
@@ -66,6 +64,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       };
     };
 
+    const tokenPayload = token ? jwtDecode<TokenPayload>(token) : undefined;
+
+    const hasClaim = (claimKey: AppClaimKeys): boolean => {
+      if (!tokenPayload) return false;
+      return tokenPayload.claims[claimKey];
+    };
+
     const clearState = () => {
       clearUser();
       clearToken();
@@ -73,7 +78,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     const logout = () => {
       clearState();
-      navigate('/login', { replace: true });
+      window.location.href = '/login';
     };
 
     const expiration = token ? jwtDecode(token).exp ?? 0 : 0;
@@ -97,6 +102,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       isLoggedIn,
       storeProfileId: (profileId: string, user: AuthUser) =>
         setUser({ ...user, profileId }),
+      hasClaim,
       token
     };
   }, [user, setUser, token]);
@@ -115,6 +121,21 @@ export interface LoginResponse {
   message?: string;
 }
 
-interface TokenPayload {
+type TokenPayload = {
   _id: string;
-}
+  claims: {
+    systemSettings: boolean;
+    memberVetting: boolean;
+    userManagement: boolean;
+    accounting: boolean;
+    budgeting: boolean;
+    teamManagement: boolean;
+    calendarManagement: boolean;
+    prayerManagement: boolean;
+    mediaManagement: boolean;
+    socialMediaManagement: boolean;
+    teams: string[];
+  };
+};
+
+export type AppClaimKeys = Exclude<keyof TokenPayload['claims'], 'teams'>;

@@ -1,8 +1,5 @@
 const express = require('express');
-const { requireAuthorization} = require("../auth");
 const router = express.Router();
-requireAuthorization(router);
-
 const {
     addSong,
     getAllSongs,
@@ -10,28 +7,16 @@ const {
     getSongById,
     updateSongById,
     deleteSongById
-} = require('../controllers/songController')
+} = require('../controllers/songController');
 
-//Add a song
-router.post('/', addSong)
+const { addNotFoundHandler, configureBaseApiRoutes } = require("./baseApiRouter");
+const { requireAppAndKeyValidation } = require('../middleware/validateApiKey');
+const { requireAuthorization} = require("../middleware/auth");
+requireAuthorization(router);
+requireAppAndKeyValidation(router);
+addNotFoundHandler(router);
+configureBaseApiRoutes(router, addSong, getAllSongs, getSongById, updateSongById, deleteSongById);
 
-//Get all songs
-router.get('/', getAllSongs)
-
-//Get songs by title
-router.get('/title/:title', getSongsByTitle)
-
-//Get a song by id
-router.get('/:id', getSongById)
-
-//Update a song by id
-router.patch('/:id', updateSongById)
-
-//Delete a song by id
-router.delete('/:id', deleteSongById)
-
-router.use('*', (req, res) => {
-    res.status(404).json({ message: 'Not Found' });
-});
+router.get('/title/:title', getSongsByTitle);
 
 module.exports = router;

@@ -11,11 +11,3 @@
     font-size: 1.25em;
     font-weight: 500;
 }
-
-.infoRow {
-    span:first-of-type {
-        width: 100px;
-        display: inline-block;
-        padding-right: 1em;
-    }
-}

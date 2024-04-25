@@ -109,7 +109,11 @@ const ContributionForm = ({
           <Input />
         </Form.Item>
 
-        <Form.Item<ContributionWithoutId> label="Type" name="type">
+        <Form.Item<ContributionWithoutId>
+          label="Type"
+          name="type"
+          rules={[{ required: true, message: 'Type is required.' }]}
+        >
           <Input />
         </Form.Item>
 

@@ -1,5 +1,5 @@
 import { expect, test, describe, vi } from 'vitest';
-import DirectoryPage from './DirectoryPage';
+import { DirectoryPage } from './DirectoryPages.tsx';
 import {
   buildMocks,
   mockApi,
@@ -50,18 +50,14 @@ describe('Directory Page', () => {
         firstName: 'John',
         lastName: 'Doe',
         mobilePhone: '123-456-7890',
-        member: true,
-        memberStatus: 'active',
-        applicationRole: 'none'
+        member: true
       },
       {
         _id: '2',
         firstName: 'Jane',
         lastName: 'Smith',
         mobilePhone: '444-456-7890',
-        member: true,
-        memberStatus: 'active',
-        applicationRole: 'none'
+        member: true
       }
     ];
 
@@ -72,9 +68,8 @@ describe('Directory Page', () => {
     expect(await screen.findByText('Total Count: 2')).toBeVisible();
 
     data.forEach((user) => {
-      expect(screen.getByText(user.firstName!)).toBeVisible();
-      expect(screen.getByText(user.lastName!)).toBeVisible();
-      expect(screen.getByText(user.mobilePhone!)).toBeVisible();
+      expect(screen.getByText(new RegExp(user.firstName!))).toBeVisible();
+      expect(screen.getByText(new RegExp(user.lastName!))).toBeVisible();
     });
   });
 });

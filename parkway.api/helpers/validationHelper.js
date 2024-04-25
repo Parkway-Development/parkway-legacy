@@ -52,7 +52,7 @@ class ValidationHelper {
     static combineDateAndTime(date, time) {
         let fullDateTime = `${date} ${time}`;
         return new Date(fullDateTime);
-    }
+    };
 }
 
 

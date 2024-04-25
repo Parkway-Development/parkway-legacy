@@ -1,32 +1,26 @@
 const express = require('express');
+const router = express.Router();
 const {
     getEnums,
     getEnumByName,
+    getEnumById,
     addEnum,
-    updateEnum,
-    deleteEnum
+    updateEnumById,
+    updateEnumByName,
+    deleteEnumById,
+    deleteEnumByName
 } = require('../controllers/platformController')
-const { requireAuthorization} = require("../auth");
-const router = express.Router();
+
+const { addNotFoundHandler, configureBaseApiRoutes } = require("./baseApiRouter");
+const { requireAppAndKeyValidation } = require('../middleware/validateApiKey');
+const { requireAuthorization} = require("../middleware/auth");
 requireAuthorization(router);
+requireAppAndKeyValidation(router);
+addNotFoundHandler(router);
+configureBaseApiRoutes(router, addEnum, getEnums, getEnumById, updateEnumById, deleteEnumById, '/enums');
 
-//Enums
-router.get('/enums', getEnums);
-
-//Get enum by name
-router.get('/enums/:name', getEnumByName);
-
-//Add enum
-router.post('/enums', addEnum);
-
-//Update enum
-router.patch('/enums/:name', updateEnum);
-
-//Delete enum
-router.delete('/enums/:name', deleteEnum);
-
-router.use('*', (req, res) => {
-    res.status(404).json({ message: 'Not Found' });
-});
+router.get('/enums/name/:name', getEnumByName);
+router.patch('/enums/name/:name', updateEnumByName);
+router.delete('/enums/name/:name', deleteEnumByName);
 
 module.exports = router;

@@ -6,6 +6,7 @@ import {
   buildAccountsApi,
   buildAssetsApi,
   buildContributionsApi,
+  buildEnumsApi,
   buildEventCategoriesApi,
   buildEventsApi,
   buildGeneralApi,
@@ -14,6 +15,7 @@ import {
   buildUsersApi,
   buildVendorsApi,
   ContributionsApiType,
+  EnumsApiType,
   EventCategoriesApiType,
   EventsApiType,
   GeneralApiType,
@@ -30,6 +32,7 @@ export type BaseApiTypes = {
   accountsApi: AccountsApiType;
   assetsApi: AssetsApiType;
   contributionsApi: ContributionsApiType;
+  enumsApi: EnumsApiType;
   eventCategoriesApi: EventCategoriesApiType;
   eventsApi: EventsApiType;
   songsApi: SongsApiType;
@@ -47,6 +50,7 @@ export type QueryType =
   | 'accounts'
   | 'assets'
   | 'contributions'
+  | 'enums'
   | 'eventCategories'
   | 'events'
   | 'passwordSettings'
@@ -74,9 +78,11 @@ const useApi: () => ApiType = () => {
 
   const formatError = (error: Error | null) => {
     if (error instanceof AxiosError) {
-      if (error.response?.status === 401 || error.response?.status === 403) {
+      if (error.response?.status === 401) {
         logout();
         return 'Invalid session';
+      } else if (error.response?.status === 403) {
+        return 'You do not have access to perform that action';
       }
 
       const message =
@@ -95,6 +101,7 @@ const useApi: () => ApiType = () => {
     accountsApi: buildAccountsApi(instance),
     assetsApi: buildAssetsApi(instance),
     contributionsApi: buildContributionsApi(instance),
+    enumsApi: buildEnumsApi(instance),
     eventCategoriesApi: buildEventCategoriesApi(instance),
     eventsApi: buildEventsApi(instance),
     generalApi: buildGeneralApi(instance),

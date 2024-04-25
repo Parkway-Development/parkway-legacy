@@ -10,7 +10,6 @@ import {
 } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import useApi from '../../hooks/useApi.ts';
-import { useNavigate } from 'react-router-dom';
 import { addProfileInitialValues } from '../directory-page';
 import { UserProfile } from '../../types';
 import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
@@ -43,7 +42,6 @@ const stringComparison = (
 };
 
 const ProfileVerification = ({ loginResponse }: ProfileVerificationProps) => {
-  const navigate = useNavigate();
   const { storeProfileId } = useAuth();
   const { errorMessage, profile, user } = loginResponse;
   const [inputComparisons, setInputComparison] = useState<InputComparison[]>(
@@ -155,7 +153,7 @@ const ProfileVerification = ({ loginResponse }: ProfileVerificationProps) => {
       {
         onSuccess: () => {
           storeProfileId(profileId, user);
-          navigate('/profiles/me', { replace: true });
+          window.location.href = '/profiles/me';
         }
       }
     );
@@ -221,7 +219,7 @@ const ProfileVerification = ({ loginResponse }: ProfileVerificationProps) => {
         className={styles.card}
         title="Complete Registration"
         bordered={false}
-        style={{ width: 500 }}
+        style={{ width: '90vw', maxWidth: 500 }}
       >
         <div className={styles.createProfile}>
           <Spin size="large" />

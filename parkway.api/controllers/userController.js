@@ -1,11 +1,33 @@
 const User = require('../models/userModel')
 const Profile = require('../models/profileModel')
+const ApplicationClaim = require('../models/applicationClaimModel')
 const bcrypt = require('bcrypt');
 const validator = require('validator');
 const jwt = require('jsonwebtoken');
+const removeSensitiveData = require('../helpers/objectSanitizer');
 
-const createToken = (_id) => {
-    return jwt.sign({_id}, process.env.JWT_SECRET, {expiresIn: process.env.JWT_EXPIRATION})    
+
+const createToken = (activeUser) => {
+    const claims = {
+        teams: []
+    };
+
+    activeUser.applicationClaims?.forEach((claim) => {
+        claim.values?.forEach((value) => {
+            claims[value] = true;
+        });
+    });
+
+    // TODO: populate teams
+
+    const payload = {
+        _id: activeUser._id,
+        claims
+    };
+
+    return jwt.sign(payload,
+        process.env.JWT_SECRET,
+        {expiresIn: process.env.JWT_EXPIRATION})
 }
 
 //login user
@@ -18,16 +40,18 @@ const loginUser = async (req, res) => {
         }
     
         const activeUser = await User.findOne({email})
+            .populate('applicationClaims');
+
         const authenticate = await bcrypt.compare(password, activeUser.password)
 
         if(!authenticate) {
             throw Error('Invalid credentials.')
         }
     
-        const token = createToken(activeUser._id)
+        const token = createToken(activeUser)
         
         const profile = await Profile.findOne({email})
-            .populate('family', 'permissions','preferences','teams');
+            .populate('family','preferences','teams');
 
         if(profile){
             return res.status(200).json({email: email, token: token, profile: profile});
@@ -76,7 +100,7 @@ const signupUser = async (req, res) => {
         const hash = await bcrypt.hash(password, salt)
         const newUser = await User.create({email, password: hash});
         
-        const token = createToken(newUser._id)
+        const token = createToken(newUser)
 
         //check to see if there is a matching profile
         const profile = await Profile.findOne({email})
@@ -91,6 +115,13 @@ const signupUser = async (req, res) => {
     }
 }
 
+// Sign up a Wix user
+const signupWixUser = async (req, res) => {
+    
+    const wixUser = req.body;
+    return res.status(200).json({message: 'Wix User Signup'})
+}
+
 //Get all users
 const getAll = async (req, res) => {
     try {
@@ -99,12 +130,8 @@ const getAll = async (req, res) => {
         if(users.length === 0){
             return res.status(404).json({message: "No users found."});
         }
-        const modifiedUsers = users.map(user => {
-            const userObj = user.toObject(); 
-            delete userObj.password;         
-            return userObj;                  
-        });
-        return res.status(200).json(modifiedUsers);
+
+        return res.status(200).json(removeSensitiveData(users));
     } catch (error) {
         return res.status(400).json({error: error.message});
     }
@@ -117,9 +144,7 @@ const getById = async (req, res) => {
     if(!user){
         return res.status(404).json({message: "No such user found."})
     }
-    const userObj = user.toObject();
-    delete userObj.password;
-    return res.status(200).json(user)
+    return res.status(200).json(removeSensitiveData(user))
 }
 
 //Get user by email
@@ -130,9 +155,42 @@ const getByEmail = async (req, res) => {
         return res.status(404).json({message: "No such user found."})
     }
 
-    const userObj = user.toObject();
-    delete userObj.password;
-    return res.status(200).json(userObj)
+    return res.status(200).json(removeSensitiveData(user))
+}
+
+// Add an ApplicationClaim to a User
+const addApplicationClaim = async (req, res) => {
+    try{
+        const { id } = req.params;
+        const { name, value } = req.body
+        
+        console.log('id: ', id);
+        console.log('name: ', name);
+        console.log('value: ', value);
+
+        // is it a legit claim
+        const applicationClaim = await ApplicationClaim.findOne({name: name});
+        if(!applicationClaim){
+            return res.status(404).json({message: "No such application claim found."})
+        }
+        
+        const user = await User.findById(id);
+        if(!user){
+            return res.status(404).json({message: "No such user found."})
+        }
+
+        const valueExists = applicationClaim.values.includes(value);
+        if(!valueExists){
+            return res.status(400).json({message: "Invalid value for the application claim."})
+        }
+        
+        user.applicationClaims.push({ name, value });
+        await user.save({new: true});
+
+        return res.status(200).json(removeSensitiveData(user));
+    } catch (error) {
+        return res.status(400).json({message: error.message});
+    }
 }
 
 module.exports = { 
@@ -140,5 +198,7 @@ module.exports = {
     loginUser,
     getAll,
     getById,
-    getByEmail
+    getByEmail,
+    signupWixUser,
+    addApplicationClaim
 }
