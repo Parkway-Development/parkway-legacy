@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-
 const{
     addPledge,
     getAllPledges,
@@ -10,17 +9,14 @@ const{
     deletePledge,
 } = require('../../controllers/accounting/pledgeController');
 
-const { addNotFoundHandler, configureBaseApiRoutes } = require("../baseApiRouter");
-
-// const { requireAuthorization} = require("../../middleware/auth");
-// requireAuthorization(router);
+const { addNotFoundHandler, configureBaseApiRoutes } = require('../baseApiRouter');
 const { requireAppAndKeyValidation } = require('../../middleware/validateApiKey');
+const { requireAuthorization} = require('../../middleware/auth');
+requireAuthorization(router);
 requireAppAndKeyValidation(router);
+addNotFoundHandler(router);
 configureBaseApiRoutes(router, addPledge, getAllPledges, getPledgeById, updatePledge, deletePledge);
 
-//Get pledges by profile
 router.get('/pledges/profile/:id', getPledgesByProfile)
-
-addNotFoundHandler(router);
 
 module.exports = router;

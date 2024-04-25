@@ -12,22 +12,15 @@ const {
 } = require('../controllers/platformController')
 
 const { addNotFoundHandler, configureBaseApiRoutes } = require("./baseApiRouter");
-
-// const { requireAuthorization} = require("../../middleware/auth");
-// requireAuthorization(router);
 const { requireAppAndKeyValidation } = require('../middleware/validateApiKey');
+const { requireAuthorization} = require("../middleware/auth");
+requireAuthorization(router);
 requireAppAndKeyValidation(router);
+addNotFoundHandler(router);
 configureBaseApiRoutes(router, addEnum, getEnums, getEnumById, updateEnumById, deleteEnumById, '/enums');
 
-//Get enum by name
 router.get('/enums/name/:name', getEnumByName);
-
-//Update enum
 router.patch('/enums/name/:name', updateEnumByName);
-
-//Delete enum
 router.delete('/enums/name/:name', deleteEnumByName);
-
-addNotFoundHandler(router);
 
 module.exports = router;

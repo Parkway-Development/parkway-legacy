@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-
 const{
 addExpense,
 getAllExpenses,
@@ -11,20 +10,14 @@ updateExpense,
 deleteExpense
 } = require('../../controllers/accounting/expenseController')
 
-const { addNotFoundHandler, configureBaseApiRoutes } = require("../baseApiRouter");
-
-// const { requireAuthorization} = require("../../middleware/auth");
-// requireAuthorization(router);
+const { addNotFoundHandler, configureBaseApiRoutes } = require('../baseApiRouter');
 const { requireAppAndKeyValidation } = require('../../middleware/validateApiKey');
+const { requireAuthorization} = require('../../middleware/auth');
+requireAuthorization(router);
 requireAppAndKeyValidation(router);
-configureBaseApiRoutes(router, addExpense, getAllExpenses, getExpenseById, updateExpense, deleteExpense);
+addNotFoundHandler(router);configureBaseApiRoutes(router, addExpense, getAllExpenses, getExpenseById, updateExpense, deleteExpense);
 
-//Get expenses by vendor
 router.get('/expenses/vendor/:id', getExpensesByVendor)
-
-//Get expenses by fund
 router.get('/expenses/fund/:id', getExpensesByFund)
-
-addNotFoundHandler(router);
 
 module.exports = router;
