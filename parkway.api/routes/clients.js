@@ -12,27 +12,17 @@ const{
     deleteClient
 } = require('../controllers/clientController')
 
-const { addNotFoundHandler, configureBaseApiRoutes } = require("./baseApiRouter");
-
-// const { requireAuthorization} = require("../../middleware/auth");
-// requireAuthorization(router);
+const { addNotFoundHandler } = require("../baseApiRouter");
 const { requireAppAndKeyValidation } = require('../middleware/validateApiKey');
+const { requireAuthorization} = require("../middleware/auth");
+requireAuthorization(router);
 requireAppAndKeyValidation(router);
-
-//Get client by name
-router.get('/name/:name', getClientByName)
-
-//Get client by account number
-router.get('/accountNumber/:accountNumber', getClientByAccountNumber)
-
-//Get client by business phone
-router.get('/businessPhone/:businessPhone', getClientByBusinessPhone)
-
-//Get client by business email
-router.get('/businessEmail/:businessEmail', getClientByBusinessEmail)
-
+addNotFoundHandler(router);
 configureBaseApiRoutes(router, addClient, getAllClients, getClientById, updateClient, deleteClient);
 
-addNotFoundHandler(router);
+router.get('/name/:name', getClientByName)
+router.get('/accountNumber/:accountNumber', getClientByAccountNumber)
+router.get('/businessPhone/:businessPhone', getClientByBusinessPhone)
+router.get('/businessEmail/:businessEmail', getClientByBusinessEmail)
 
 module.exports = router;

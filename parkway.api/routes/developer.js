@@ -10,11 +10,12 @@ const {
     replaceKey
 } = require('../controllers/developerController'); // Added semicolon here
 
-const { addNotFoundHandler } = require('./baseApiRouter');
-// const { requireAuthorization} = require("../../middleware/auth");
-// requireAuthorization(router);
+const { addNotFoundHandler, configureBaseApiRoutes } = require("./baseApiRouter");
 const { requireAppAndKeyValidation } = require('../middleware/validateApiKey');
+const { requireAuthorization} = require("../middleware/auth");
+requireAuthorization(router);
 requireAppAndKeyValidation(router);
+addNotFoundHandler(router);
 
 router.get('/applications', getAllApplications);
 router.post('/applications', addApplication);
@@ -23,7 +24,5 @@ router.get('/applications/:id', getApplicationById);
 router.get('/applications/type/:type', getApplicationsByType);
 router.get('/applications/name/:name', getApplicationByName);
 router.get('/keys/replace/:id', replaceKey);
-
-addNotFoundHandler(router);
 
 module.exports = router;

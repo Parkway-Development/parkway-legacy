@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-
 const{
     addAsset,
     getAllAssets,
@@ -12,23 +11,16 @@ const{
     deleteAsset
 } = require('../../controllers/accounting/assetController')
 
-const { addNotFoundHandler, configureBaseApiRoutes } = require("../baseApiRouter");
-
-// const { requireAuthorization} = require("../../middleware/auth");
-// requireAuthorization(router);
+const { addNotFoundHandler, configureBaseApiRoutes } = require('../baseApiRouter');
 const { requireAppAndKeyValidation } = require('../../middleware/validateApiKey');
+const { requireAuthorization} = require('../../middleware/auth');
+requireAuthorization(router);
 requireAppAndKeyValidation(router);
+addNotFoundHandler(router);
 configureBaseApiRoutes(router, addAsset, getAllAssets, getAssetById, updateAsset, deleteAsset);
 
-//Get assets by name
 router.get('/name/:name', getAssetsByName)
-
-//Get assets by type
 router.get('/type/:type', getAssetsByType)
-
-//Get assets by category
 router.get('/category/:category', getAssetsByCategory)
-
-addNotFoundHandler(router);
 
 module.exports = router;

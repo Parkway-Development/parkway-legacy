@@ -19,10 +19,12 @@ const storage = Multer.diskStorage({
 const upload = Multer({ storage: storage });
 
 
-// const { requireAuthorization} = require("../../middleware/auth");
-// requireAuthorization(router);
+const { addNotFoundHandler, configureBaseApiRoutes } = require("./baseApiRouter");
 const { requireAppAndKeyValidation } = require('../middleware/validateApiKey');
+const { requireAuthorization} = require("../middleware/auth");
+requireAuthorization(router);
 requireAppAndKeyValidation(router);
+addNotFoundHandler(router);
 
 // Upload a CSV File
 router.post('/subsplash', upload.single('file'), uploadSubsplashTransferFile);

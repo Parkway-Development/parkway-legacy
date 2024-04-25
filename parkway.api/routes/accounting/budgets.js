@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-
 const{
     addBudget,
     getAllBudgets,
@@ -11,20 +10,15 @@ const{
     deleteBudget
 } = require('../../controllers/accounting/budgetController');
 
-const { addNotFoundHandler, configureBaseApiRoutes } = require("../baseApiRouter");
-
-// const { requireAuthorization} = require("../../middleware/auth");
-// requireAuthorization(router);
+const { addNotFoundHandler, configureBaseApiRoutes } = require('../baseApiRouter');
 const { requireAppAndKeyValidation } = require('../../middleware/validateApiKey');
+const { requireAuthorization} = require('../../middleware/auth');
+requireAuthorization(router);
 requireAppAndKeyValidation(router);
+addNotFoundHandler(router);
 configureBaseApiRoutes(router, addBudget, getAllBudgets, getBudgetById, updateBudget, deleteBudget);
 
-//Get budgets by year
 router.get('/budgets/year/:year', getBudgetsByYear)
-
-//Get budgets by fund
 router.get('/budgets/fund/:id', getBudgetsByFund)
-
-addNotFoundHandler(router);
 
 module.exports = router;
