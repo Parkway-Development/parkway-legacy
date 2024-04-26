@@ -2,33 +2,15 @@ const User = require('../models/userModel')
 const Profile = require('../models/profileModel')
 const ApplicationClaim = require('../models/applicationClaimModel')
 const bcrypt = require('bcrypt');
-const validator = require('validator');
-const jwt = require('jsonwebtoken');
 const removeSensitiveData = require('../helpers/objectSanitizer');
-
-
-const createToken = (activeUser) => {
-    const claims = {
-        teams: []
-    };
-
-    activeUser.applicationClaims?.forEach((claim) => {
-        claim.values?.forEach((value) => {
-            claims[value] = true;
-        });
-    });
-
-    // TODO: populate teams
-
-    const payload = {
-        _id: activeUser._id,
-        claims
-    };
-
-    return jwt.sign(payload,
-        process.env.JWT_SECRET,
-        {expiresIn: process.env.JWT_EXPIRATION})
-}
+const crypto = require('crypto');
+const { sendPasswordResetEmail } = require('../helpers/sendgdrid');
+const { validatePassword, 
+    hashPassword, 
+    validateEmail,
+    createToken,
+    generatePasswordResetToken
+ } = require('../helpers/accountValidation');
 
 //login user
 const loginUser = async (req, res) => {
@@ -71,7 +53,7 @@ const signupUser = async (req, res) => {
             throw Error('All fields are required.')
         }
     
-        if(!validator.isEmail(email)) {
+        if(!validateEmail(email)) {
             throw Error('Invalid email')
         }
     
@@ -80,25 +62,11 @@ const signupUser = async (req, res) => {
             throw Error('Email already exists')
         }
     
-        const pLength = process.env.MINIMUM_PASSWORD_LENGTH;
-        const pLowercase = process.env.MINIMUM_PASSWORD_LOWERCASE;
-        const pUppercase = process.env.MINIMUM_PASSWORD_UPPERCASE;
-        const pNumbers = process.env.MINIMUM_PASSWORD_NUMBERS;
-        const pSymbols = process.env.MINIMUM_PASSWORD_SYMBOLS;
-    
-        if (!validator.isStrongPassword(password, { 
-            minLength: parseInt(pLength, 10), 
-            minLowercase: parseInt(pLowercase, 10), 
-            minUppercase: parseInt(pUppercase, 10), 
-            minNumbers: parseInt(pNumbers, 10), 
-            minSymbols: parseInt(pSymbols, 10) 
-        })) {
+        if (!validatePassword(password)) {
             throw Error('Password is not strong enough');
         }
 
-        const salt = await bcrypt.genSalt(10)
-        const hash = await bcrypt.hash(password, salt)
-        const newUser = await User.create({email, password: hash});
+        const newUser = await User.create({email, password: await hashPassword(password) });
         
         const token = createToken(newUser)
 
@@ -193,9 +161,65 @@ const addApplicationClaim = async (req, res) => {
     }
 }
 
+const requestPasswordReset = async (req, res) => {
+    console.log('Password Reset');
+    console.log('req.body: ', req.body);
+
+    const toEmail = req.body.email;
+    try {
+        const user = await User.findOne({ email: toEmail});
+        if (!user) {
+            throw Error('There was a problem resetting your password.');
+        }
+
+        const resetToken = await generatePasswordResetToken(user);
+
+        // Send email with reset token
+        await sendPasswordResetEmail(toEmail, resetToken);
+
+        res.status(200).json({ message: 'If we found an account that matched your email, instructions on resetting your password were forwarded to that address.' });
+    } catch (error) {
+        console.log('Error: ', error.message)
+        res.status(400).json({ message: 'Check the logs for any issues.'});
+    }
+};
+
+// Reset Password
+const passwordReset = async (req, res) => {
+    const { token, email, password } = req.body;
+
+    try {
+        const user = await User.findOne({ email }).select('+resetPasswordToken +resetPasswordExpires');
+
+        if (!user) {
+            return res.status(404).json({ error: 'User not found. Please contact support.' });
+        }
+
+        const tokenIsValid = await bcrypt.compare(token, user.resetPasswordToken);
+        const tokenNotExpired = user.resetPasswordExpires > Date.now();
+
+        if (!tokenIsValid || !tokenNotExpired) {
+            const errorMessage = !tokenIsValid ? 'Invalid reset token.' : 'Reset token has expired.';
+            return res.status(400).json({ error: errorMessage });
+        }
+
+        user.password = await bcrypt.hash(password, 10);
+        user.resetPasswordToken = undefined;
+        user.resetPasswordExpires = undefined;
+        await user.save();
+
+        res.status(200).json({ message: 'Password successfully reset.' });
+    } catch (error) {
+        res.status(500).json({ error: 'Internal server error. Please try again later.' });
+    }
+};
+
+
 module.exports = { 
     signupUser, 
     loginUser,
+    requestPasswordReset,
+    passwordReset,
     getAll,
     getById,
     getByEmail,

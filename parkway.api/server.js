@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const conn = mongoose.connection;
 const Multer = require('multer');
 const upload = Multer({ dest: 'uploads/' });
+const { validateAppAndKey } = require('./middleware/validateAppAndKey');
 
 const userRoutes = require('./routes/users');
 const profileRoutes = require('./routes/profiles');
@@ -33,7 +34,8 @@ const applicationClaimsRoutes = require('./routes/applicationClaims');
 const app = express();
 
 //Middleware
-app.use((req, res, next)  => { console.log(req.path, req.method), next(); }) 
+app.use((req, res, next)  => { console.log(req.path, req.method, req.body), next(); }) 
+app.use(validateAppAndKey);
 app.use(express.json());
 
 

@@ -11,14 +11,11 @@ const{
 } = require('../../controllers/accounting/budgetController');
 
 const { addNotFoundHandler, configureBaseApiRoutes } = require('../baseApiRouter');
-const { requireAppAndKeyValidation } = require('../../middleware/validateApiKey');
-const { requireAuthorization} = require('../../middleware/auth');
-requireAuthorization(router);
-requireAppAndKeyValidation(router);
-addNotFoundHandler(router);
 configureBaseApiRoutes(router, addBudget, getAllBudgets, getBudgetById, updateBudget, deleteBudget);
 
+//add additional routes here
 router.get('/budgets/year/:year', getBudgetsByYear)
 router.get('/budgets/fund/:id', getBudgetsByFund)
 
+addNotFoundHandler(router);
 module.exports = router;

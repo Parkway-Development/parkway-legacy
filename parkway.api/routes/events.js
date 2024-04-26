@@ -7,13 +7,11 @@ const {
     updateEvent,
     deleteEvent
 } = require('../controllers/eventController');
-
 const { addNotFoundHandler, configureBaseApiRoutes } = require("./baseApiRouter");
-const { requireAppAndKeyValidation } = require('../middleware/validateApiKey');
-const { requireAuthorization} = require("../middleware/auth");
-requireAuthorization(router);
-requireAppAndKeyValidation(router);
-addNotFoundHandler(router);
+
 configureBaseApiRoutes(router, addEvent, getAll, getById, updateEvent, deleteEvent);
 
+//add additional routes here
+
+addNotFoundHandler(router);
 module.exports = router;

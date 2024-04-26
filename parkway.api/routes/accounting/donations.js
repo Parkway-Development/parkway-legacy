@@ -10,13 +10,10 @@ const{
 } = require('../../controllers/accounting/donationController')
 
 const { addNotFoundHandler, configureBaseApiRoutes } = require('../baseApiRouter');
-const { requireAppAndKeyValidation } = require('../../middleware/validateApiKey');
-const { requireAuthorization} = require('../../middleware/auth');
-requireAuthorization(router);
-requireAppAndKeyValidation(router);
-addNotFoundHandler(router);
 configureBaseApiRoutes(router, addDonation, getAllDonations, getDonationById, updateDonation, deleteDonation);
 
+//add additional routes here
 router.get('/profile/:id', getDonationsByProfile)
 
+addNotFoundHandler(router);
 module.exports = router;
