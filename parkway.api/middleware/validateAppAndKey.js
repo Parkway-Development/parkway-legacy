@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt');
 const Application = require('../models/applicationModel'); // Make sure to require your Application model
 
-const validateApiKey = async (req, res, next) => {
+const validateAppAndKey = async (req, res, next) => {
   const keyHeader = req.headers['x-key'];
   const appHeader = req.headers['x-app'];
 
@@ -29,18 +29,18 @@ const validateApiKey = async (req, res, next) => {
 
     //TODO: Implement rate limiting
 
-    // API Key is valid, proceed with the request
     next();
   }
   catch (error) {
+    console.error('Error validating API key: ', error);
     return res.status(500).json({ message: 'Server error during API key validation', error: error });
   }
 };
 
-const requireAppAndKeyValidation = (router) => {
-    router.use(async (req, res, next) => {
-        await validateApiKey(req, res, next); // Ensure async handling is correct
-    });
-};
+// const requireAppAndKeyValidation = (router) => {
+//     router.use(async (req, res, next) => {
+//         await validateAppAndKey(req, res, next); // Ensure async handling is correct
+//     });
+// };
 
-module.exports = { requireAppAndKeyValidation };
+module.exports = { validateAppAndKey };

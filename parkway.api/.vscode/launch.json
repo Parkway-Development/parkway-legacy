@@ -11,6 +11,8 @@
             "name": "Launch Backend API",
             "skipFiles": [ "<node_internals>/**"],
             "program": "${workspaceFolder}/server.js",
+            "restart": true,
+            "runtimeExecutable": "nodemon",
             "envFile": "${workspaceFolder}/.env",
             "console": "integratedTerminal"
         }

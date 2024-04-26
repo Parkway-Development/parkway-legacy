@@ -11,14 +11,12 @@ const{
 } = require('../../controllers/accounting/liabilityController')
 
 const { addNotFoundHandler, configureBaseApiRoutes } = require('../baseApiRouter');
-const { requireAppAndKeyValidation } = require('../../middleware/validateApiKey');
-const { requireAuthorization} = require('../../middleware/auth');
-requireAuthorization(router);
-requireAppAndKeyValidation(router);
-addNotFoundHandler(router);
+
 configureBaseApiRoutes(router, addLiability, getAllLiabilities, getLiabilityById, updateLiability, deleteLiability);
 
+//add additional routes here
 router.get('/liabilities/fund/:id', getLiabilitiesByFund)
 router.get('/liabilities/category/:category', getLiabilitiesByCategory)
 
+addNotFoundHandler(router);
 module.exports = router;

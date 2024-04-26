@@ -6,17 +6,14 @@ const{
     deleteApiKey,
     renewApiKey
 } = require('../controllers/apiKeyController');
-
 const { addNotFoundHandler } = require("../baseApiRouter");
-const { requireAppAndKeyValidation } = require('../middleware/validateApiKey');
-const { requireAuthorization} = require("../middleware/auth");
-requireAuthorization(router);
-requireAppAndKeyValidation(router);
-addNotFoundHandler(router);
+
 configureBaseApiRoutes(router, addApiKey, getAllApiKeys, getApiKeyById, deleteApiKey);
 
+//add additional routes here
 router.post('/renew/:id', renewApiKey);
 
+addNotFoundHandler(router);
 module.exports = router;
 
 
