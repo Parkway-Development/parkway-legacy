@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-
 const{
     addPayroll,
     getAllPayrolls,
@@ -10,16 +9,12 @@ const{
     deletePayroll
 } = require('../../controllers/accounting/payrollController')
 
-const { addNotFoundHandler, configureBaseApiRoutes } = require("../baseApiRouter");
+const { addNotFoundHandler, configureBaseApiRoutes } = require('../baseApiRouter');
 
-const { requireAuthorization} = require("../../middleware/auth");
-requireAuthorization(router);
+addNotFoundHandler(router);configureBaseApiRoutes(router, addPayroll, getAllPayrolls, getPayrollById, updatePayroll, deletePayroll);
 
-//Get payrolls by employee
+//add additional routes here
 router.get('/payrolls/employee/:id', getPayrollsByEmployee)
 
-configureBaseApiRoutes(router, addPayroll, getAllPayrolls, getPayrollById, updatePayroll, deletePayroll);
-
 addNotFoundHandler(router);
-
 module.exports = router;

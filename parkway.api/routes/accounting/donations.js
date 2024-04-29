@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-
 const{
     addDonation,
     getAllDonations,
@@ -10,16 +9,11 @@ const{
     deleteDonation
 } = require('../../controllers/accounting/donationController')
 
-const { addNotFoundHandler, configureBaseApiRoutes } = require("../baseApiRouter");
-
-const { requireAuthorization} = require("../../middleware/auth");
-requireAuthorization(router);
-
-//Get donations by profile
-router.get('/profile/:id', getDonationsByProfile)
-
+const { addNotFoundHandler, configureBaseApiRoutes } = require('../baseApiRouter');
 configureBaseApiRoutes(router, addDonation, getAllDonations, getDonationById, updateDonation, deleteDonation);
 
-addNotFoundHandler(router);
+//add additional routes here
+router.get('/profile/:id', getDonationsByProfile)
 
+addNotFoundHandler(router);
 module.exports = router;

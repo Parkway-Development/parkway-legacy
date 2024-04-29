@@ -1,8 +1,8 @@
 const crypto = require('crypto');
 
 // Function to generate a random API key
-function generateApiKey() {
+function generateApplicationSecret() {
     return crypto.randomBytes(30).toString('hex'); // Generates a 60-character hex string
 }
 
-module.exports = { generateApiKey };
+module.exports = { generateApplicationSecret };

@@ -1,39 +1,31 @@
 const express = require('express');
 const router = express.Router();
-
-//controller functions
 const {
+    requestPasswordReset,
+    passwordReset,
     signupUser, 
     loginUser,
+    signupWixUser,
     getAll, 
     getById,
     getByEmail,
-    signupWixUser
+    addApplicationClaim
 } = require('../controllers/userController');
+const { addNotFoundHandler } = require("./baseApiRouter");
+const { authenticateToken } = require('../middleware/auth');
+const { requireSpecOpsClaim } = require('../middleware/claimsValidation');
 
-const { addNotFoundHandler} = require("./baseApiRouter");
-
-//login route
 router.post('/login', loginUser)
-
-//connect (or signup) route
 router.post('/connect', signupUser)
-
-//Wix connect route
 router.post('/wixconnect', signupWixUser)
+router.post('/requestpasswordreset', requestPasswordReset)
+router.post('/passwordreset', passwordReset)
 
-const { requireAuthorization } = require("../middleware/auth");
-requireAuthorization(router);
-
-//get all users
+router.use(authenticateToken)
 router.get('/', getAll)
-
-//get user by id
 router.get('/:id', getById)
-
-//get user by email
 router.get('/email/:email', getByEmail)
+router.patch('/:id/applicationclaim', addApplicationClaim)
 
 addNotFoundHandler(router);
-
 module.exports = router;

@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-
 const{
     addAccount,
     getAllAccounts,
@@ -9,17 +8,12 @@ const{
     updateAccount,
     deleteAccount
 } = require('../../controllers/accounting/accountController')
-
-const { addNotFoundHandler, configureBaseApiRoutes } = require("../baseApiRouter");
-
-const { requireAuthorization} = require("../../middleware/auth");
-requireAuthorization(router);
+const { addNotFoundHandler, configureBaseApiRoutes } = require('../baseApiRouter');
 
 configureBaseApiRoutes(router, addAccount, getAllAccounts, getAccountById, updateAccount, deleteAccount);
 
-//Get a fund by name
+//add additional routes here
 router.get('/name/:name', getAccountByName)
 
 addNotFoundHandler(router);
-
 module.exports = router;

@@ -1,13 +1,11 @@
 const express = require('express');
 const router = express.Router();
-
-//controller functions
 const { password } = require('../controllers/settingController');
-const { addNotFoundHandler } = require("./baseApiRouter");
 
-//password route
+const { addNotFoundHandler, configureBaseApiRoutes } = require('./baseApiRouter');
+
+//add additional routes here
 router.get('/password', password);
 
 addNotFoundHandler(router);
-
 module.exports = router;

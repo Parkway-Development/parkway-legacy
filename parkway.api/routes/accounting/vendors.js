@@ -8,14 +8,11 @@ const{
     updateVendor,
     deleteVendor,
 } = require('../../controllers/accounting/vendorController')
-
-const { addNotFoundHandler, configureBaseApiRoutes } = require("../baseApiRouter");
-
-const { requireAuthorization} = require("../../middleware/auth");
-requireAuthorization(router);
+const { addNotFoundHandler, configureBaseApiRoutes } = require('../baseApiRouter');
 
 configureBaseApiRoutes(router, addVendor, getAllVendors, getVendorById, updateVendor, deleteVendor);
 
-addNotFoundHandler(router);
+//add additional routes here
 
+addNotFoundHandler(router);
 module.exports = router;

@@ -1,11 +1,10 @@
 const express = require('express');
 const router = express.Router();
 
-const { addNotFoundHandler } = require("../baseApiRouter");
+const { addNotFoundHandler, configureBaseApiRoutes } = require('../baseApiRouter');
+
+
+//add additional routes here
 
 addNotFoundHandler(router);
-
-const { requireAuthorization} = require("../../middleware/auth");
-requireAuthorization(router);
-
 module.exports = router;
