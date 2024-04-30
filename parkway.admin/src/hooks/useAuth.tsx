@@ -69,7 +69,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     const hasClaim = (claimKey: AppClaimKeys): boolean => {
       if (!tokenPayload) return false;
-      return tokenPayload.claims[claimKey];
+      const claimValue = tokenPayload.claims[claimKey];
+      return claimValue === true || claimValue === 'true';
     };
 
     const teamsLed =
@@ -131,16 +132,16 @@ export interface LoginResponse {
 type TokenPayload = {
   _id: string;
   claims: {
-    systemSettings: boolean;
-    memberVetting: boolean;
-    userManagement: boolean;
-    accounting: boolean;
-    budgeting: boolean;
-    teamManagement: boolean;
-    calendarManagement: boolean;
-    prayerManagement: boolean;
-    mediaManagement: boolean;
-    socialMediaManagement: boolean;
+    systemSettings: boolean | string;
+    memberVetting: boolean | string;
+    userManagement: boolean | string;
+    accounting: boolean | string;
+    budgeting: boolean | string;
+    teamManagement: boolean | string;
+    calendarManagement: boolean | string;
+    prayerManagement: boolean | string;
+    mediaManagement: boolean | string;
+    socialMediaManagement: boolean | string;
     teams: string[];
     teamsLed: string[];
   };

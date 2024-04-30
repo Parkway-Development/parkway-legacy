@@ -4,12 +4,16 @@ import { Result } from 'antd';
 
 type ClaimRouteProps = RouteProps & {
   claim: AppClaimKeys;
+  allowTeamLeads?: boolean;
 };
 
-const ClaimRoute = ({ claim }: ClaimRouteProps) => {
-  const { isLoggedIn, hasClaim } = useAuth();
+const ClaimRoute = ({ claim, allowTeamLeads = false }: ClaimRouteProps) => {
+  const { isLoggedIn, hasClaim, teamsLed } = useAuth();
 
-  if (!isLoggedIn || !hasClaim(claim)) {
+  const isAuthorized =
+    hasClaim(claim) || (allowTeamLeads && teamsLed.length > 0);
+
+  if (!isLoggedIn || !isAuthorized) {
     return (
       <Result
         status="403"

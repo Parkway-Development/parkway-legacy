@@ -148,7 +148,9 @@ createRoot(document.getElementById('root')!).render(
               </Route>
               <Route
                 path="events"
-                element={<ClaimRoute claim="calendarManagement" />}
+                element={
+                  <ClaimRoute claim="calendarManagement" allowTeamLeads />
+                }
               >
                 <Route path="categories">
                   <Route path="add" element={<AddEventCategoryPage />} />
