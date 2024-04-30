@@ -68,7 +68,9 @@ export const buildQueryKey = (queryType: QueryType, id?: string) => {
 const createInstance = (token: string | undefined) =>
   axios.create({
     headers: {
-      Authorization: token ? `Bearer ${token}` : undefined
+      Authorization: token ? `Bearer ${token}` : undefined,
+      'x-key': import.meta.env.VITE_APP_KEY,
+      'x-app': import.meta.env.VITE_APP_SECRET
     },
     baseURL: import.meta.env.VITE_API_URL
   });
@@ -78,7 +80,7 @@ const useApi: () => ApiType = () => {
 
   const formatError = (error: Error | null) => {
     if (error instanceof AxiosError) {
-      if (error.response?.status === 401) {
+      if (error.response?.status === 401 && token) {
         logout();
         return 'Invalid session';
       } else if (error.response?.status === 403) {
