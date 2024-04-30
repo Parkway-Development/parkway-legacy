@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const Event = require('../models/eventModel');
-const { authenticateToken } = require("../middleware/auth");
+const { requireClaim } = require("../middleware/auth");
 
 //Post an event
 const addEvent = async (req, res) => {
@@ -69,7 +69,7 @@ const updateEvent = async (req, res) => {
 
 //Approve an event
 const approveEvent = async (req, res) => {
-    if (!authenticateToken(req, res, 'calendarManagement')) {
+    if (!requireClaim(req, res, 'calendarManagement')) {
         return res;
     }
 
@@ -96,7 +96,7 @@ const approveEvent = async (req, res) => {
 
 //Reject an event
 const rejectEvent = async (req, res) => {
-    if (!authenticateToken(req, res, 'calendarManagement')) {
+    if (!requireClaim(req, res, 'calendarManagement')) {
         return res;
     }
 
