@@ -34,18 +34,25 @@ const validateEmail = (email) => {
     return false;
 }
 
-const createToken = (activeUser) => {
+const createToken = (activeUser, profile) => {
     const claims = {
-        teams: []
+        teams: [],
+        teamsLed: []
     };
 
-    activeUser.applicationClaims?.forEach((claim) => {
-        claim.values?.forEach((value) => {
-            claims[value] = true;
-        });
+    activeUser.applicationClaims?.forEach(({ name, value}) => {
+        claims[name] = value;
     });
 
-    // TODO: populate teams
+    if (profile?.teams) {
+        profile.teams.forEach((team) => {
+            if (team.leader && team.leader.equals(profile._id)) {
+                claims.teamsLed.push(team._id);
+            }
+
+            claims.teams.push(team._id);
+        });
+    }
 
     const payload = {
         _id: activeUser._id,

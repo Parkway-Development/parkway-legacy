@@ -34,7 +34,30 @@ const eventSchema = new mongoose.Schema({
     status: {
         required: true,
         type: String,
-        default: 'Active'
+        default: 'Tentative'
+    },
+    teams: [{
+        required: true,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Team'
+    }],
+    approvedBy: {
+        required: false,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Profile'
+    },
+    approvedDate: {
+        required: false,
+        type: Date
+    },
+    rejectedBy: {
+        required: false,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Profile'
+    },
+    rejectedDate: {
+        required: false,
+        type: Date
     }
 });
 

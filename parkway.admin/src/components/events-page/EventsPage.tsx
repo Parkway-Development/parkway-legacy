@@ -7,6 +7,7 @@ import { useState } from 'react';
 import Calendar from './Calendar.tsx';
 import { Switch } from 'antd';
 import { EventCategoryDisplayById } from '../event-categories-page/EventCategoryDisplayById.tsx';
+import styles from './EventsPage.module.css';
 
 const eventColumns: OrderedColumnsType<Event> = [
   {
@@ -62,6 +63,13 @@ const eventColumns: OrderedColumnsType<Event> = [
     dataIndex: 'status',
     key: 'status',
     displayOrder: 8
+  },
+  {
+    title: 'Teams',
+    dataIndex: 'teams',
+    key: 'teams',
+    displayOrder: 9,
+    render: (value: Event['teams']) => value?.length ?? 0
   }
 ];
 
@@ -76,6 +84,7 @@ const EventsPage = () => {
       baseApiType="eventsApi"
       columns={eventColumns}
       responsiveCardRenderer={(item) => item.name}
+      mainPage="/events"
     />
   );
 
@@ -88,6 +97,7 @@ const EventsPage = () => {
         value={showCalendar}
         checkedChildren={<span>Show List</span>}
         unCheckedChildren={<span>Show Calendar</span>}
+        className={styles.switch}
       />
       {content}
     </div>

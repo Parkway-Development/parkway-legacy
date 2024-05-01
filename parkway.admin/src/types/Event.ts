@@ -8,5 +8,12 @@ export type Event = BaseEntity & {
   end: Date;
   location?: string;
   category?: string;
-  status: string;
+  status: EventStatus;
+  teams: string[];
+  approvedBy?: string;
+  approvedDate?: Date;
+  rejectedBy?: string;
+  rejectedDate?: Date;
 };
+
+export type EventStatus = 'Active' | 'Tentative' | 'Rejected';

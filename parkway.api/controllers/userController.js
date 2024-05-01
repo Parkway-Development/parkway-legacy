@@ -29,16 +29,18 @@ const loginUser = async (req, res) => {
         if(!authenticate) {
             throw Error('Invalid credentials.')
         }
-    
-        const token = createToken(activeUser)
-        
-        const profile = await Profile.findOne({email})
-            .populate('family','preferences','teams');
 
-        if(profile){
+        const profile = await Profile.findOne({email})
+            .populate('teams')
+            .populate('family')
+            .populate('preferences');
+
+        if (profile) {
+            const token = createToken(activeUser, profile);
             return res.status(200).json({email: email, token: token, profile: profile});
         }
 
+        const token = createToken(activeUser);
         return res.status(200).json({email: email, token: token, message: 'No profile found'});
     } catch (error) {
         return res.status(400).json({error: error.message})

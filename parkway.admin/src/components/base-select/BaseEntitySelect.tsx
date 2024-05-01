@@ -24,6 +24,7 @@ type BaseEntitySelectProps<
   queryKey: QueryType;
   baseApiType: TBaseApiKey;
   renderer: (value: T) => string;
+  enabledIds?: string[];
 };
 
 export const BaseEntitySelect = <
@@ -33,6 +34,7 @@ export const BaseEntitySelect = <
   queryKey: queryKeyProp,
   baseApiType,
   renderer,
+  enabledIds,
   ...props
 }: BaseEntitySelectProps<T, TBaseApiKey>) => {
   const queryKey = buildQueryKey(queryKeyProp);
@@ -66,9 +68,11 @@ export const BaseEntitySelect = <
     const { data } = response;
 
     if (data.length) {
-      options = data.map((profile) => ({
-        value: profile._id,
-        label: renderer(profile)
+      options = data.map((baseEntity) => ({
+        value: baseEntity._id,
+        label: renderer(baseEntity),
+        disabled:
+          !enabledIds || enabledIds.includes(baseEntity._id) ? undefined : true
       }));
     }
   }
