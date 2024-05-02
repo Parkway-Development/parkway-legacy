@@ -25,7 +25,7 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY)
       to: toEmail,
       from: process.env.SENDGRID_FROM_EMAIL,
       subject: process.env.SENDGRID_PASSWORD_RESET_SUBJECT,
-      text: `Click the following link to reset your password: ${process.env.CLIENT_URL}/resetpassword/${resetToken}`,
+      text: `Click the following link to reset your password: ${process.env.PASSWORD_RESET_BASE_URL}/${resetToken}`,
     }
     
     try {

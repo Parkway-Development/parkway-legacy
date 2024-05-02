@@ -12,7 +12,6 @@ const { validatePassword,
     generatePasswordResetToken
  } = require('../helpers/accountValidation');
 
-//login user
 const loginUser = async (req, res) => {
     const {email, password} = req.body
 
@@ -47,28 +46,26 @@ const loginUser = async (req, res) => {
     }
 }
 
-//signup user
 const signupUser = async (req, res) => {
     const {email, password} = req.body
     try {
-        if(!email || !password) {
-            throw Error('All fields are required.')
-        }
+        if(!email || !password) { throw Error('All fields are required.') }
     
-        if(!validateEmail(email)) {
-            throw Error('Invalid email')
-        }
+        if(!validateEmail(email)) { throw Error('Invalid email') }
     
         const exists = await User.findOne({email})
-        if(exists) {
-            throw Error('Email already exists')
-        }
+        if(exists) { throw Error('Email already exists') }
     
-        if (!validatePassword(password)) {
-            throw Error('Password is not strong enough');
-        }
+        const isValid = validatePassword(password)
+        if (!isValid) { throw Error('Password is not strong enough'); }
 
-        const newUser = await User.create({email, password: await hashPassword(password) });
+        let newUser = new User({
+            email: email,
+            password: await hashPassword(password),
+            applicationClaims: [{ name: 'role', value: 'user' }]  // Manually setting the claim here
+        });
+
+        await newUser.save();
         
         const token = createToken(newUser)
 
@@ -80,19 +77,20 @@ const signupUser = async (req, res) => {
         }
 
         return res.status(200).json({email: email, token: token, message: 'No profile found'});
+    
     } catch (error) {
+    
         return res.status(400).json({error: error.message})
+    
     }
 }
 
-// Sign up a Wix user
 const signupWixUser = async (req, res) => {
     
     const wixUser = req.body;
     return res.status(200).json({message: 'Wix User Signup'})
 }
 
-//Get all users
 const getAll = async (req, res) => {
     try {
         const users = await User.find({});
@@ -107,7 +105,6 @@ const getAll = async (req, res) => {
     }
 };
 
-//Get user by ID
 const getById = async (req, res) => {
     const { id } = req.params;
     const user = await User.findById(id)
@@ -117,7 +114,6 @@ const getById = async (req, res) => {
     return res.status(200).json(removeSensitiveData(user))
 }
 
-//Get user by email
 const getByEmail = async (req, res) => {
     const { email } = req.params;
     const user = await User.findOne({email})
@@ -128,7 +124,6 @@ const getByEmail = async (req, res) => {
     return res.status(200).json(removeSensitiveData(user))
 }
 
-// Add an ApplicationClaim to a User
 const addApplicationClaim = async (req, res) => {
     try{
         const { id } = req.params;
@@ -164,15 +159,13 @@ const addApplicationClaim = async (req, res) => {
 }
 
 const requestPasswordReset = async (req, res) => {
-    console.log('Password Reset');
-    console.log('req.body: ', req.body);
 
-    const toEmail = req.body.email;
     try {
+        const toEmail = req.body.email;
+        if (!toEmail) { throw new Error('Email is required.'); }
+
         const user = await User.findOne({ email: toEmail});
-        if (!user) {
-            throw Error('There was a problem resetting your password.');
-        }
+        if (!user) { throw new Error('There was a problem resetting your password.'); }
 
         const resetToken = await generatePasswordResetToken(user);
 
@@ -186,7 +179,6 @@ const requestPasswordReset = async (req, res) => {
     }
 };
 
-// Reset Password
 const passwordReset = async (req, res) => {
     const { token, email, password } = req.body;
 
@@ -205,7 +197,7 @@ const passwordReset = async (req, res) => {
             return res.status(400).json({ error: errorMessage });
         }
 
-        user.password = await bcrypt.hash(password, 10);
+        user.password = await hashPassword(password);
         user.resetPasswordToken = undefined;
         user.resetPasswordExpires = undefined;
         await user.save();
@@ -215,7 +207,6 @@ const passwordReset = async (req, res) => {
         res.status(500).json({ error: 'Internal server error. Please try again later.' });
     }
 };
-
 
 module.exports = { 
     signupUser, 
