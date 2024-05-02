@@ -1,6 +1,7 @@
 const validator = require('validator');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 
 const validatePassword = (password) => {
 
@@ -19,12 +20,13 @@ const validatePassword = (password) => {
     })) {
         return false;
     }
+    return true;
 }
 
 const hashPassword = async (password) => {
     const salt = await bcrypt.genSalt(10);
     const hash = await bcrypt.hash(password, salt);
-    const newUser = await User.create({email, password: hash});
+    return hash;
 };
 
 const validateEmail = (email) => {
