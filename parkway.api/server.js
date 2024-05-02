@@ -41,30 +41,30 @@ app.use(express.json());
 
 //Routes
 app.get ('/', (req, res) => { res.send('Welcome to the Parkway API'); });
-app.use('/api/users', userRoutes);
-app.use('/api/profiles', profileRoutes);
-app.use('/api/settings', settingRoutes);
-app.use('/api/teams', teamRoutes);
-app.use('/api/platform', platformRoutes);
-app.use('/api/songs', songRoutes);
-app.use('/api/events', eventRoutes);
-app.use('/api/eventCategories', eventCategoryRoutes);
-app.use('/api/uploads', uploadRoutes);
-app.use('/api/health', healhRoutes);
-app.use('/api/developer', developerRoutes);
-app.use('/api/applicationclaims', applicationClaimsRoutes);
+app.use('/users', userRoutes);
+app.use('/profiles', profileRoutes);
+app.use('/settings', settingRoutes);
+app.use('/teams', teamRoutes);
+app.use('/platform', platformRoutes);
+app.use('/songs', songRoutes);
+app.use('/events', eventRoutes);
+app.use('/eventCategories', eventCategoryRoutes);
+app.use('/uploads', uploadRoutes);
+app.use('/health', healhRoutes);
+app.use('/developer', developerRoutes);
+app.use('/applicationclaims', applicationClaimsRoutes);
 
 //Accounting routes
-app.use('/api/accounting/assets', assetRoutes);
-app.use('/api/accounting/budgets', budgetRoutes);
-app.use('/api/accounting/donations', donationRoutes);
-app.use('/api/accounting/expenses', expenseRoutes);
-app.use('/api/accounting/accounts', accountRoutes);
-app.use('/api/accounting/liabilities', liabilityRoutes);
-app.use('/api/accounting/payroll', payrollRoutes);
-app.use('/api/accounting/pledges', pledgeRoutes);
-app.use('/api/accounting/vendors', vendorRoutes);
-app.use('/api/accounting/contributions', contributionRoutes);
+app.use('/accounting/assets', assetRoutes);
+app.use('/accounting/budgets', budgetRoutes);
+app.use('/accounting/donations', donationRoutes);
+app.use('/accounting/expenses', expenseRoutes);
+app.use('/accounting/accounts', accountRoutes);
+app.use('/accounting/liabilities', liabilityRoutes);
+app.use('/accounting/payroll', payrollRoutes);
+app.use('/accounting/pledges', pledgeRoutes);
+app.use('/accounting/vendors', vendorRoutes);
+app.use('/accounting/contributions', contributionRoutes);
 
 // Catch-all route for undefined paths
 //TODO: Add logging.....lots and lots of logging
