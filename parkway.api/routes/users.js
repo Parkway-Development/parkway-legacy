@@ -21,7 +21,7 @@ router.post('/wixconnect', signupWixUser)
 router.post('/requestpasswordreset', requestPasswordReset)
 router.post('/passwordreset', passwordReset)
 
-router.use(authenticateToken)
+router.use(authenticateToken, requireSpecOpsClaim)
 router.get('/', getAll)
 router.get('/:id', getById)
 router.get('/email/:email', getByEmail)
