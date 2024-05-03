@@ -8,15 +8,14 @@ const searchForAProfile = async (inboundProfile) => {
     const inProfile = inboundProfile;
 
     let profile = null;
-    if(inProfile.firstName && inProfile.lastName){
-        profile = await Profile.findOne({firstName: inProfile.firstName, lastName: inProfile.lastName})} 
-    else if(inProfile.mobilePhone){
-        profile = Profile.findOne({mobilePhone: inProfile.mobilePhone}) }
-    else if(inProfile.homePhone){
-        profile = Profile.findOne({homePhone: inProfile.homePhone}) }
+    if(inProfile.firstName && inProfile.lastName){ profile = await Profile.findOne({firstName: inProfile.firstName, lastName: inProfile.lastName}) } 
+    else if(inProfile.mobilePhone){ profile = Profile.findOne({mobilePhone: inProfile.mobilePhone}) }
+    else if(inProfile.homePhone){ profile = Profile.findOne({homePhone: inProfile.homePhone}) }
 
-    if(!profile){
-        return null}
+    if(!profile){ return null}
+
+    profile = await Profile.populate(profile, [{ path: 'family' }, { path: 'preferences' }, { path: 'teams' }]);
+    
     return profile
 }
 
@@ -33,6 +32,8 @@ const addProfile = async (req, res) => {
     }
 
     const savedProfile = await submittedProfile.save();
+
+    savedProfile = await Profile.populate(savedProfile, [{ path: 'family' }, { path: 'preferences' }, { path: 'teams' }]);
 
     if(!savedProfile){
     return res.status(404).json({message: "The save failed."})}
