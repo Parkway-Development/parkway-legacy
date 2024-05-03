@@ -11,13 +11,11 @@ deleteExpense
 } = require('../../controllers/accounting/expenseController')
 
 const { addNotFoundHandler, configureBaseApiRoutes } = require('../baseApiRouter');
-const { requireAppAndKeyValidation } = require('../../middleware/validateApiKey');
-const { requireAuthorization} = require('../../middleware/auth');
-requireAuthorization(router);
-requireAppAndKeyValidation(router);
-addNotFoundHandler(router);configureBaseApiRoutes(router, addExpense, getAllExpenses, getExpenseById, updateExpense, deleteExpense);
+configureBaseApiRoutes(router, addExpense, getAllExpenses, getExpenseById, updateExpense, deleteExpense);
 
+//add additional routes here
 router.get('/expenses/vendor/:id', getExpensesByVendor)
 router.get('/expenses/fund/:id', getExpensesByFund)
 
+addNotFoundHandler(router);
 module.exports = router;

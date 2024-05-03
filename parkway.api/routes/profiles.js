@@ -11,18 +11,15 @@ const {
     deleteProfile,
     connectUserAndProfile
 } = require('../controllers/profileController')
-
 const { addNotFoundHandler, configureBaseApiRoutes } = require("./baseApiRouter");
-const { requireAppAndKeyValidation } = require('../middleware/validateApiKey');
-const { requireAuthorization} = require("../middleware/auth");
-requireAuthorization(router);
-requireAppAndKeyValidation(router);
-addNotFoundHandler(router);
+
 configureBaseApiRoutes(router, addProfile, getAll, getById, updateProfile, deleteProfile);
 
+//add additional routes here
 router.get('/lastname/:lastName', getByLastName)
 router.get('/mobilenumber/:mobileNumber', getByMobileNumber)
 router.get('/homenumber/:homeNumber', getByHomeNumber)
 router.post('/join/:profileId', connectUserAndProfile)
 
+addNotFoundHandler(router);
 module.exports = router;

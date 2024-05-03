@@ -11,18 +11,15 @@ const{
     updateClient,
     deleteClient
 } = require('../controllers/clientController')
-
 const { addNotFoundHandler } = require("../baseApiRouter");
-const { requireAppAndKeyValidation } = require('../middleware/validateApiKey');
-const { requireAuthorization} = require("../middleware/auth");
-requireAuthorization(router);
-requireAppAndKeyValidation(router);
-addNotFoundHandler(router);
+
 configureBaseApiRoutes(router, addClient, getAllClients, getClientById, updateClient, deleteClient);
 
+//add additional routes here
 router.get('/name/:name', getClientByName)
 router.get('/accountNumber/:accountNumber', getClientByAccountNumber)
 router.get('/businessPhone/:businessPhone', getClientByBusinessPhone)
 router.get('/businessEmail/:businessEmail', getClientByBusinessEmail)
 
+addNotFoundHandler(router);
 module.exports = router;

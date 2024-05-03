@@ -15,7 +15,7 @@ import { LogoutOutlined, UserOutlined } from '@ant-design/icons';
 import useResponsive from './hooks/useResponsive.ts';
 
 function App() {
-  const { isLoggedIn, logout, hasClaim } = useAuth();
+  const { isLoggedIn, logout, hasClaim, teamsLed } = useAuth();
   const { aboveBreakpoint, mainBreakpoint } = useResponsive();
   const [sideCollapsed, setSideCollapsed] = useState<boolean>(false);
   const {
@@ -82,20 +82,25 @@ function App() {
     });
   }
 
-  if (hasClaim('calendarManagement')) {
+  const hasCalendarManagement = hasClaim('calendarManagement');
+  const isTeamLeader = teamsLed.length > 0;
+
+  if (hasCalendarManagement || isTeamLeader) {
     items.push({
       key: itemKey++,
       label: <ResponsiveLink to="/events">Events</ResponsiveLink>,
-      children: [
-        {
-          key: itemKey++,
-          label: (
-            <ResponsiveLink to="/events/categories">
-              Event Categories
-            </ResponsiveLink>
-          )
-        }
-      ]
+      children: hasCalendarManagement
+        ? [
+            {
+              key: itemKey++,
+              label: (
+                <ResponsiveLink to="/events/categories">
+                  Event Categories
+                </ResponsiveLink>
+              )
+            }
+          ]
+        : undefined
     });
   }
 

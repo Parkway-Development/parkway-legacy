@@ -1,4 +1,4 @@
-import { Breadcrumb, DatePicker, Form, Input, Radio, TimePicker } from 'antd';
+import { Breadcrumb, DatePicker, Form, Input, TimePicker } from 'antd';
 import { Link, useParams } from 'react-router-dom';
 import UserProfileSelect from '../user-profile-select';
 import { Event } from '../../types';
@@ -10,6 +10,9 @@ import styles from './EventForm.module.css';
 import DeleteButton from '../delete-button';
 import useApi from '../../hooks/useApi.ts';
 import EventCategorySelect from '../event-category-select';
+import TeamSelect from '../team-select';
+import { useAuth } from '../../hooks/useAuth.tsx';
+import EventStatus from './EventStatus.tsx';
 
 type EventWithoutId = Omit<Event, '_id'>;
 
@@ -30,6 +33,7 @@ const EventForm = ({
   onSave,
   onCancel
 }: EventFormProps) => {
+  const { hasClaim, user } = useAuth();
   const params = useParams();
   const id = params.id;
   const searchParams = new URLSearchParams(window.location.search);
@@ -44,11 +48,10 @@ const EventForm = ({
   const [form] = Form.useForm<EventFormFields>();
   const [endTimeOpen, setEndTimeOpen] = useState<boolean>(false);
 
-  const eventStatusMapping: Record<string, string> = {
-    Pending: 'Pending',
+  const eventStatusMapping: Record<string, Event['status']> = {
+    Tentative: 'Tentative',
     Active: 'Active',
-    Postponed: 'Postponed',
-    Canceled: 'Canceled'
+    Rejected: 'Rejected'
   };
 
   const handleLeaderChange = (value: string | undefined) =>
@@ -68,11 +71,15 @@ const EventForm = ({
       ? {
           startDate: addDate,
           endDate: addDate,
-          status: eventStatusMapping['Active']
+          status: eventStatusMapping['Tentative'],
+          organizer: user!.profileId
         }
       : {
-          status: eventStatusMapping['Active']
+          status: eventStatusMapping['Tentative'],
+          organizer: user!.profileId
         };
+
+  const isCalendarAdmin = hasClaim('calendarManagement');
 
   const handleSave = (values: EventFormFields) => {
     const { startDate, startTime, endDate, endTime, ...remaining } = values;
@@ -130,6 +137,12 @@ const EventForm = ({
     });
   };
 
+  const handleTeamsChange = (values?: string[]) => {
+    form.setFieldsValue({
+      teams: values
+    });
+  };
+
   return (
     <>
       <Breadcrumb
@@ -160,16 +173,29 @@ const EventForm = ({
           <Input autoFocus autoComplete="off" />
         </Form.Item>
 
+        {initialValues && (
+          <Form.Item<EventFormFields> label="Status" name="status">
+            <EventStatus
+              status={initial.status}
+              isCalendarAdmin={isCalendarAdmin}
+              eventId={id!}
+              userId={user!.profileId!}
+            />
+          </Form.Item>
+        )}
+
         <Form.Item<EventFormFields> label="Description" name="description">
           <Input />
         </Form.Item>
 
-        <Form.Item<EventFormFields> label="Organizer" name="organizer">
-          <UserProfileSelect
-            onChange={handleLeaderChange}
-            initialValue={initialValues?.organizer}
-          />
-        </Form.Item>
+        {isCalendarAdmin && (
+          <Form.Item<EventFormFields> label="Organizer" name="organizer">
+            <UserProfileSelect
+              onChange={handleLeaderChange}
+              initialValue={initial?.organizer}
+            />
+          </Form.Item>
+        )}
 
         <div className={styles.dateContainer}>
           <div>
@@ -253,14 +279,12 @@ const EventForm = ({
           />
         </Form.Item>
 
-        <Form.Item<EventFormFields> label="Status" name="status">
-          <Radio.Group>
-            {Object.entries(eventStatusMapping).map(([value, label]) => (
-              <Radio.Button value={value} key={value}>
-                {label}
-              </Radio.Button>
-            ))}
-          </Radio.Group>
+        <Form.Item<EventFormFields> label="Teams" name="teams">
+          <TeamSelect
+            isMultiSelect
+            value={initialValues?.teams}
+            onChange={handleTeamsChange}
+          />
         </Form.Item>
 
         <BaseFormFooter

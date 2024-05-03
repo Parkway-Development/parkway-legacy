@@ -9,16 +9,13 @@ const {
     deleteApplicationClaim,
     updateApplicationClaimValues
 } = require('../controllers/applicationClaimController');
-
 const { addNotFoundHandler, configureBaseApiRoutes } = require("./baseApiRouter");
-const { requireAppAndKeyValidation } = require('../middleware/validateApiKey');
-const { requireAuthorization} = require("../middleware/auth");
-requireAuthorization(router);
-requireAppAndKeyValidation(router);
-addNotFoundHandler(router);
+
 configureBaseApiRoutes(router, addApplicationClaim, getAllApplicationClaims, getApplicationClaimById, updateApplicationClaim, deleteApplicationClaim); 
 
+//add additional routes here
 router.get('/name/:name', getApplicationClaimByName)
 router.patch('/values/:id', updateApplicationClaimValues)
 
+addNotFoundHandler(router);
 module.exports = router;
