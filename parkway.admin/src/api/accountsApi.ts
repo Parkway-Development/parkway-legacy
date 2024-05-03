@@ -5,4 +5,4 @@ import { Account } from '../types';
 export type AccountsApiType = BaseApiType<Account>;
 
 export const buildAccountsApi = (instance: AxiosInstance): AccountsApiType =>
-  buildBaseApi<Account>(instance, '/api/accounting/accounts');
+  buildBaseApi<Account>(instance, '/accounting/accounts');

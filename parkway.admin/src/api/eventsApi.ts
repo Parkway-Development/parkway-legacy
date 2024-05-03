@@ -18,7 +18,7 @@ export type EventsApiType = BaseApiType<Event> & {
   reject: (payload: RejectEventPayload) => TypedResponse<Event>;
 };
 
-const basePath = '/api/events';
+const basePath = '/events';
 
 export const buildEventsApi = (instance: AxiosInstance): EventsApiType => ({
   ...buildBaseApi<Event>(instance, basePath),
