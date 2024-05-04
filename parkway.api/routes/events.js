@@ -7,7 +7,8 @@ const {
     updateEvent,
     deleteEvent,
     approveEvent,
-    rejectEvent
+    rejectEvent,
+    addEventMessage
 } = require('../controllers/eventController');
 const { addNotFoundHandler, configureBaseApiRoutes } = require("./baseApiRouter");
 
@@ -15,6 +16,7 @@ configureBaseApiRoutes(router, addEvent, getAll, getById, updateEvent, deleteEve
 
 router.patch('/:id/approve', approveEvent);
 router.patch('/:id/reject', rejectEvent);
+router.post('/:id/message', addEventMessage);
 
 addNotFoundHandler(router);
 module.exports = router;

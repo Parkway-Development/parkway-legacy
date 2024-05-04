@@ -13,6 +13,7 @@ import EventCategorySelect from '../event-category-select';
 import TeamSelect from '../team-select';
 import { useAuth } from '../../hooks/useAuth.tsx';
 import EventStatus from './EventStatus.tsx';
+import EventMessages from './EventMessages.tsx';
 
 type EventWithoutId = Omit<Event, '_id'>;
 
@@ -302,6 +303,9 @@ const EventForm = ({
           )}
         </BaseFormFooter>
       </Form>
+      {initialValues && id && (
+        <EventMessages eventId={id} messages={initialValues.messages} />
+      )}
     </>
   );
 };
