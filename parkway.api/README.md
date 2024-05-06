@@ -15,6 +15,7 @@ MINIMUM_PASSWORD_NUMBERS=1
 MINIMUM_PASSWORD_SYMBOLS=1
 JWT_SECRET="super secret jwt secret"
 JWT_EXPIRATION="20m"
+ALLOWED_ORIGINS=http://localhost:5173 -- this value is used for local, this can be a comma-delimited list for deployed environments
 ```
 
 ## Development

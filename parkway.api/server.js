@@ -1,6 +1,7 @@
 require('dotenv').config();
 const PORT = process.env.PORT || 3000;
 const express = require('express');
+const cors = require('cors');
 const mongoose = require('mongoose');
 const conn = mongoose.connection;
 const Multer = require('multer');
@@ -32,6 +33,22 @@ const applicationClaimsRoutes = require('./routes/applicationClaims');
 
 //express app
 const app = express();
+
+if (process.env.ALLOWED_ORIGINS) {
+    const allowedOrigins = process.env.ALLOWED_ORIGINS.split(',');
+
+    const corsOptions = {
+        origin: (origin, callback) => {
+            if (allowedOrigins.includes(origin) || !origin) {
+                callback(null, true);
+            } else {
+                callback(new Error(`Not allowed by CORS for origin [${origin}]`));
+            }
+        },
+    };
+
+    app.use(cors(corsOptions));
+}
 
 //Middleware
 app.use((req, res, next)  => { console.log(req.path, req.method, req.body), next(); }) 

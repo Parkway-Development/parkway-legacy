@@ -5,4 +5,4 @@ import { BaseApiType, buildBaseApi } from './baseApi.ts';
 export type TeamsApiType = BaseApiType<Team>;
 
 export const buildTeamsApi = (instance: AxiosInstance): TeamsApiType =>
-  buildBaseApi<Team>(instance, '/api/teams');
+  buildBaseApi<Team>(instance, '/teams');
