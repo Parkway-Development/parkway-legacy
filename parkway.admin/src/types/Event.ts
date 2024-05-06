@@ -14,6 +14,13 @@ export type Event = BaseEntity & {
   approvedDate?: Date;
   rejectedBy?: string;
   rejectedDate?: Date;
+  messages?: EventMessage[];
+};
+
+export type EventMessage = {
+  profile: string;
+  messageDate: Date;
+  message: string;
 };
 
 export type EventStatus = 'Active' | 'Tentative' | 'Rejected';

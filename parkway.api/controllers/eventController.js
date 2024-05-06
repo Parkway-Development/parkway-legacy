@@ -134,9 +134,36 @@ const deleteEvent = async (req, res) => {
     if (!deletedEvent) {
         return res.status(404).json({message: "No such event found."})
     }
-    res.status(200).json(deletedEvent)
+    res.status(200).json(deletedEvent);
+}
+
+//Add event message
+const addEventMessage = async (req, res) => {
+    const {id} = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(404).json({error: 'No such event.'})
+    }
+
+    const { profile, messageDate, message } = req.body;
+
+    if (!profile || !messageDate || !message) {
+        return res.status(400).json({error: 'Invalid request body.'})
+    }
+
+    const newMessage = {
+        profile,
+        messageDate,
+        message
+    };
+
+    const updatedEvent = await Event.findByIdAndUpdate({_id: id},{$addToSet: {messages: newMessage}},{new: true})
+
+    if(!updatedEvent){ return res.status(404).json({message: "No such event found."}) }
+
+    res.status(201).json(updatedEvent);
 }
 
 module.exports = {
-    addEvent, getAll, getById, updateEvent, deleteEvent, approveEvent, rejectEvent
+    addEvent, getAll, getById, updateEvent, deleteEvent, approveEvent, rejectEvent, addEventMessage
 };

@@ -58,7 +58,22 @@ const eventSchema = new mongoose.Schema({
     rejectedDate: {
         required: false,
         type: Date
-    }
+    },
+    messages: [{
+        profile: {
+            required: true,
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Profile'
+        },
+        messageDate: {
+            required: true,
+            type: Date
+        },
+        message: {
+            required: true,
+            type: String
+        }
+    }]
 });
 
 module.exports = mongoose.model('Event', eventSchema, 'events')
