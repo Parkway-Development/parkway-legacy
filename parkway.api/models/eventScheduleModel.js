@@ -31,7 +31,15 @@ const eventScheduleSchema = new mongoose.Schema({
         required: false,
         type: [Number]
     },
-    end: {
+    start_date: {
+        required: true,
+        type: Date
+    },
+    last_schedule_date: {
+        required: true,
+        type: Date
+    },
+    end_date: {
         required: false,
         type: Date
     }

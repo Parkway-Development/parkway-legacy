@@ -1,4 +1,5 @@
 import { BaseEntity } from './BaseEntity.ts';
+import { EventSchedule } from './EventSchedule.ts';
 
 export type Event = BaseEntity & {
   name: string;
@@ -15,6 +16,7 @@ export type Event = BaseEntity & {
   rejectedBy?: string;
   rejectedDate?: Date;
   messages?: EventMessage[];
+  schedule?: EventSchedule;
 };
 
 export type EventMessage = {
