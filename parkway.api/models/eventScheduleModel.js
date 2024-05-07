@@ -1,0 +1,40 @@
+const mongoose = require('mongoose');
+
+const eventScheduleSchema = new mongoose.Schema({
+    // weekly, monthly, yearly
+    frequency: {
+        required: true,
+        type: String
+    },
+    // Number at which the interval repeats
+    interval: {
+        required: true,
+        type: Number
+    },
+    // 0-6 for Sunday-Saturday
+    week_days: {
+        required: false,
+        type: [Number]
+    },
+    // Used for yearly events
+    month: {
+        required: false,
+        type: Number
+    },
+    // Days of the month for repeat
+    month_days: {
+        required: false,
+        type: [Number]
+    },
+    // Weeks of the month for repeat, to support first and third Wednesday of the month as an example
+    month_weeks: {
+        required: false,
+        type: [Number]
+    },
+    end: {
+        required: false,
+        type: Date
+    }
+});
+
+module.exports = mongoose.model('EventSchedule', eventScheduleSchema, 'eventSchedules');

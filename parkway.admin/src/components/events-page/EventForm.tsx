@@ -1,4 +1,11 @@
-import { Breadcrumb, DatePicker, Form, Input, TimePicker } from 'antd';
+import {
+  Breadcrumb,
+  Checkbox,
+  DatePicker,
+  Form,
+  Input,
+  TimePicker
+} from 'antd';
 import { Link, useParams } from 'react-router-dom';
 import UserProfileSelect from '../user-profile-select';
 import { Event } from '../../types';
@@ -14,6 +21,7 @@ import TeamSelect from '../team-select';
 import { useAuth } from '../../hooks/useAuth.tsx';
 import EventStatus from './EventStatus.tsx';
 import EventMessages from './EventMessages.tsx';
+import { BaseSelect, BaseSelectionProps } from '../base-select';
 
 type EventWithoutId = Omit<Event, '_id'>;
 
@@ -27,6 +35,79 @@ type EventFormFields = Omit<EventWithoutId, 'start' | 'end'> & {
 type EventFormProps = AddBaseApiFormProps<Event> & {
   initialValues?: EventWithoutId;
 };
+
+const frequencyOptions: BaseSelectionProps['options'] = [
+  {
+    label: 'Weekly',
+    value: 'weekly'
+  },
+  {
+    label: 'Monthly',
+    value: 'monthly'
+  },
+  {
+    label: 'Yearly',
+    value: 'yearly'
+  },
+  {
+    label: 'Custom',
+    value: 'custom'
+  }
+];
+
+const weekDayOptions: BaseSelectionProps['options'] = [
+  {
+    label: 'Sunday',
+    value: '0'
+  },
+  {
+    label: 'Monday',
+    value: '1'
+  },
+  {
+    label: 'Tuesday',
+    value: '2'
+  },
+  {
+    label: 'Wednesday',
+    value: '3'
+  },
+  {
+    label: 'Thursday',
+    value: '4'
+  },
+  {
+    label: 'Friday',
+    value: '5'
+  },
+  {
+    label: 'Saturday',
+    value: '6'
+  }
+];
+
+const monthWeekOptions: BaseSelectionProps['options'] = [
+  {
+    label: 'First',
+    value: '1'
+  },
+  {
+    label: 'Second',
+    value: '2'
+  },
+  {
+    label: 'Third',
+    value: '3'
+  },
+  {
+    label: 'Fourth',
+    value: '4'
+  },
+  {
+    label: 'Fifth',
+    value: '5'
+  }
+];
 
 const EventForm = ({
   isSaving,
@@ -48,6 +129,12 @@ const EventForm = ({
   } = useApi();
   const [form] = Form.useForm<EventFormFields>();
   const [endTimeOpen, setEndTimeOpen] = useState<boolean>(false);
+  const [repeats, setRepeats] = useState<boolean>(false);
+  const [frequency, setFrequency] = useState<string>();
+  const [weekDays, setWeekDays] = useState<string[]>();
+  const [eventInterval, setEventInterval] = useState<string>('1');
+  const [repeatUntil, setRepeatUntil] = useState<Dayjs>();
+  const [monthWeeks, setMonthWeeks] = useState<string[]>();
 
   const eventStatusMapping: Record<string, Event['status']> = {
     Tentative: 'Tentative',
@@ -268,6 +355,59 @@ const EventForm = ({
             </Form.Item>
           </div>
         </div>
+
+        <Form.Item<EventFormFields> label="Repeats">
+          <Checkbox
+            checked={repeats}
+            onChange={() => setRepeats((prev) => !prev)}
+          />
+        </Form.Item>
+
+        {repeats && (
+          <>
+            <Form.Item<EventFormFields> label="Frequency">
+              <BaseSelect
+                value={frequency}
+                onChange={setFrequency}
+                options={frequencyOptions}
+              />
+            </Form.Item>
+            {frequency && frequency !== 'custom' && (
+              <Form.Item<EventFormFields> label="Repeat Interval">
+                <Input
+                  type="number"
+                  value={eventInterval}
+                  onChange={(e) => {
+                    setEventInterval(e.currentTarget.value);
+                  }}
+                />
+              </Form.Item>
+            )}
+            {frequency === 'custom' && (
+              <>
+                <Form.Item<EventFormFields> label="Month Weeks">
+                  <BaseSelect
+                    isMultiSelect
+                    value={monthWeeks}
+                    onChange={setMonthWeeks}
+                    options={monthWeekOptions}
+                  />
+                </Form.Item>
+                <Form.Item<EventFormFields> label="Week Days">
+                  <BaseSelect
+                    isMultiSelect
+                    value={weekDays}
+                    onChange={setWeekDays}
+                    options={weekDayOptions}
+                  />
+                </Form.Item>
+              </>
+            )}
+            <Form.Item<EventFormFields> label="Repeat Until">
+              <DatePicker value={repeatUntil} onChange={setRepeatUntil} />
+            </Form.Item>
+          </>
+        )}
 
         <Form.Item<EventFormFields> label="Location" name="location">
           <Input />
