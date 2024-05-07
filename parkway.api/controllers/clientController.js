@@ -1,40 +1,40 @@
 const mongoose = require('mongoose')
 const Client = require('../models/clientModel')
 
-//Add a client
 const addClient = async (req, res) => {
-    const client = new Client(req.body)
-
     try {
+        const client = new Client(req.body)
+        if (!client) { throw new Error("Please provide a client.")}
+
         const newClient = await client.save()
-        if (!newClient) {
-            return res.status(400).json({ message: "The save failed." })
-        }
+        if (!newClient) { throw new Error("The save failed.")}
+
         return res.status(201).json(client)
     } catch (error) {
         return res.status(400).json(error)
     }
 }
 
-//Get all clients
 const getAllClients = async (req, res) => {
     try {
         const clients = await Client.find({})
+        if (clients.length === 0) { throw new Error("No clients found.")}
+
         return res.status(200).json(clients)
     } catch (error) {
         return res.status(500).json(error)
     }
 }
 
-//Get client by id
 const getClientById = async (req, res) => {
-    const _id = req.params.id
-
     try {
-        const client = await Client.findById(_id)
-        if (!client) {
-            return res.status(404).json({message: "No such client found."})
-        }
+        const {id} = req.params.id
+        if(!id) { throw new Error("Please provide an id.")}
+        if (!mongoose.Types.ObjectId.isValid(id)) { throw new Error("Invalid ID.")}
+
+        const client = await Client.findById(_id = id)
+        if (!client) { throw new Error("No such client found.")}
+
         return res.status(200).json(client)
     }
     catch (error) {
@@ -42,15 +42,14 @@ const getClientById = async (req, res) => {
     }
 }
 
-//Get client by name
 const getClientByName = async (req, res) => {
-    const clientName = req.params.name
-
     try {
-        const client = await Client.findOne({ clientName })
-        if (!client) {
-            return res.status(404).json({message: "No such client found."})
-        }
+        const clientName = req.params.name
+        if (!clientName) { throw new Error("Please provide a client name.")}
+
+        const client = await Client.findOne(clientName)
+        if (!client) { throw new Error("No such client found.")}
+
         return res.status(200).json(client)
     }
     catch (error) {
@@ -58,15 +57,14 @@ const getClientByName = async (req, res) => {
     }
 }
 
-//Get client by account number
 const getClientByAccountNumber = async (req, res) => {
-    const accountNumber = req.params.accountNumber
-
     try {
-        const client = await Client.findOne({ accountNumber })
-        if (!client) {
-            return res.status(404).json({message: "No such client found."})
-        }
+        const accountNumber = req.params.accountNumber
+        if (!accountNumber) { throw new Error("Please provide an account number.")}
+
+        const client = await Client.findOne(accountNumber)
+        if (!client) { throw new Error("No such client found.")}
+
         return res.status(200).json(client)
     }
     catch (error) {
@@ -74,15 +72,14 @@ const getClientByAccountNumber = async (req, res) => {
     }
 }
 
-//Get client by business phone
 const getClientByBusinessPhone = async (req, res) => {
-    const businessPhone = req.params.businessPhone
-
     try {
-        const client = await Client.findOne({ businessPhone })
-        if (!client) {
-            return res.status(404).json({message: "No such client found."})
-        }
+        const businessPhone = req.params.businessPhone
+        if (!businessPhone) { throw new Error("Please provide a business phone.")}
+
+        const client = await Client.findOne(businessPhone)
+        if (!client) { throw new Error("No such client found.")}
+
         return res.status(200).json(client)
     }
     catch (error) {
@@ -90,15 +87,13 @@ const getClientByBusinessPhone = async (req, res) => {
     }
 }
 
-//Get client by business email
 const getClientByBusinessEmail = async (req, res) => {
-    const businessEmail = req.params.businessEmail
-
     try {
+        const businessEmail = req.params.businessEmail
+        if (!businessEmail) { throw new Error("Please provide a business email.")}
+
         const client = await Client.findOne({ businessEmail })
-        if (!client) {
-            return res.status(404).json({message: "No such client found."})
-        }
+        if (!client) { throw new Error("No such client found.")}
         return res.status(200).json(client)
     }
     catch (error) {
@@ -106,51 +101,43 @@ const getClientByBusinessEmail = async (req, res) => {
     }
 }
 
-//Update client by id
 const updateClient = async (req, res) => {
     try {
-        const _id = req.params.id
-        if (!mongoose.Types.ObjectId.isValid(_id)) {
-            return res.status(404).json({ message: 'No such client.' })
-        }
+        const {id} = req.params.id
+        if(!id) { throw new Error("Please provide an ID.")}
+        if (!mongoose.Types.ObjectId.isValid(_id)) { throw new Error("Invalid ID.")}
 
-        const client = await Client.findByIdAndUpdate({ _id: _id} ,
+        const client = await Client.findByIdAndUpdate( _id= id ,
             { ...req.body },
             { new: true }
         );
 
-        if (client) {
-            return res.status(200).json(client)
-        } else {
-            return res.status(404).json({ message: "There was a problem updating the client." })
-        }
+        if (!client) { throw new Error("No such client found.")}
+
+        return res.status(200).json(client)
     }
     catch (error) {
+        console.log(error)
         return res.status(500).json(error)
     }
 }
 
 //Delete client by id
 const deleteClient = async (req, res) => {
-    const _id = req.params.id
-
-    if (!mongoose.Types.ObjectId.isValid(_id)) {
-        return res.status(404).json({ message: 'No such client.' })
-    }
-
     try {
-        const client = await Client.findByIdAndDelete(_id)
-        if (!client) {
-            return res.status(404).json({ message: "No such client found." })
-        }
+        const {id} = req.params.id
+        if (!id) { throw new Error("Please provide an ID.")}
+        if (!mongoose.Types.ObjectId.isValid(_id)) { throw new Error("Invalid ID.")}
+    
+        const client = await Client.findByIdAndDelete(_id = id)
+        if (!client) { throw new Error("No such client found.")}
+
         return res.status(200).json({ message: "Client deleted successfully." })
     }
     catch (error) {
         return res.status(500).json(error)
     }
 }
-
-
 
 module.exports = { 
     addClient,

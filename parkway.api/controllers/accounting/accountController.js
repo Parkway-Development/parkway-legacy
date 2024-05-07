@@ -4,14 +4,14 @@ const ValidationHelper = require('../../helpers/validationHelper');
 
 //Post an account
 const addAccount = async (req, res) => {
-    if(req.body.name){ req.body.name = ValidationHelper.sanitizeString(req.body.name); }
-
-    const account = new Account(req.body);
-
-    const validationError = account.validateSync();
-    if(validationError){ return res.status(400).json({message: validationError.message}) }
-
     try {
+        if(req.body.name){ req.body.name = ValidationHelper.sanitizeString(req.body.name); }
+
+        const account = new Account(req.body);
+
+        const validationError = account.validateSync();
+        if(validationError){ return res.status(400).json({message: validationError.message}) }
+
         await account.save();
         return res.status(201).json(account);
     } catch (error) {
