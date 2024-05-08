@@ -7,17 +7,12 @@ const saltRounds = 10;
 const { generateApplicationSecret } = require('../helpers/applicationSecretGen');
 const { generateApiKey } = require('../helpers/apiKeyGen');
 
-//Add an application
 const addApplication = async (req, res) => {
-
     try {
-        console.log(req.body)
-
         let isExternal = req.body.isExternal !== 'false';
         let queryRateLimit = req.body.queryRateLimit || 1000
         let queryRateInterval = req.body.queryRateInterval || 'day';
         
-        // if (req.body.isExternal === false) { isExternal = req.body.isExternal }
         if(req.body.queryRateLimit) { queryRateLimit = req.body.queryRateLimit }
         if (req.body.queryRateInterval) { queryRateInterval = req.body.queryRateInterval }
 
@@ -28,16 +23,10 @@ const addApplication = async (req, res) => {
 
         const { name, description, owner } = req.body;
 
-        console.log("Name:", name, " | Description:", description, " | Owner:", owner, " | isExternal:", isExternal, " | queryRateLimit", queryRateLimit, " | queryRateInterval", queryRateInterval)
-
-        if(!name || !owner){
-            return res.status(400).json({message: "Application name and owner are required.  If not specified, the application will be set to external by default."})
-        }
+        if(!name || !owner){ throw new Error("Application name and owner are required.  If not specified, the application will be set to external by default.")}
 
         const existingApplication = await Application.findOne({name: name});
-        if(existingApplication){
-            return res.status(409).json({message: "An application with that name already exists.  Names must be unique.  Please try again."})
-        }
+        if(existingApplication){ throw new Error("An application with that name already exists.  Names must be unique.  Please try again.")}
 
         //generate secret
         const secret = generateApplicationSecret();
@@ -47,9 +36,7 @@ const addApplication = async (req, res) => {
         const hashedKey = await bcrypt.hash(rawKey, saltRounds);
         const keyExpiration = new Date(new Date().setFullYear(new Date().getFullYear() + 1));
 
-
-
-        const application = new Application({name: name, 
+        const application = await Application({name: name, 
             description: description, 
             isExternal: isExternal, 
             currentSecret: secret,  
@@ -57,9 +44,9 @@ const addApplication = async (req, res) => {
             keyExpiration: keyExpiration,
             owner: owner,
             queryRateLimit: queryRateLimit,
-            queryRateInterval: queryRateInterval});
+            queryRateInterval: queryRateInterval}.save());
 
-        await application.save();
+        if(!application){ throw new Error("The application could not be saved.")}
         
         res.status(201).json({ 
             message: "Please record your application secret and your application's Api Key.  The Api Key is stored encrypted and is not retrievable after this.", 
@@ -71,103 +58,108 @@ const addApplication = async (req, res) => {
             queryRateInterval: application.queryRateInterval
         });
     } catch (error) {
-        res.status(400).json({
-            error: error.message
-        });
+        res.status(400).json(error);
     }
 }
 
 //Get all applications
 const getAllApplications = async (req, res) => {
-    const applications = await Application.find({});
+    try {
+        const applications = await Application.find({});
     
-    if(!applications){
-        return res.status(404).json({message: "No applications were returned."})
+        if(applications.length === 0){ throw new Error("No applications were found.")}
+    
+        return res.status(200).json(removeSensitiveData(applications));
+    
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json(error)
     }
-
-    res.status(200).json(removeSensitiveData(applications));
 
 }
 
-//Get Application by ID
 const getApplicationById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        if(!id) { throw new Error("Please provide an application Id.")}
+        if (!mongoose.Types.ObjectId.isValid(id)) { throw new Error("Invalid ID.")}
 
-    console.log(req.params)
-    const { id } = req.params;
+        const application = await Application.findById(_id = id);
 
-    if(!mongoose.Types.ObjectId.isValid(id)){
-        return res.status(404).json({error: 'We cannot retrieve an applications using the Id provided.  The ID is not valid.'})
+        if(!application){ throw new Error("No application was found with that Id.")}
+            
+        res.status(200).json(removeSensitiveData(application))
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json(error)
     }
-    const application = await Application.findById(id);
-
-    if(!application){
-        return res.status(404).json({message: "No application was found with that Id."})
-    }
-        
-    res.status(200).json(removeSensitiveData(application))
 }
 
-//Get application by name
 const getApplicationByName = async (req, res) => {
+    try {
+        const name = req.params.name;
+        if(!name){ throw new Error("Please provide an application name.")}
 
-    console.log(req.params)
-    const name = req.params.name;
-    console.log(name)
-    const application = await Application.findOne({name});
+        const application = await Application.findOne({name});
+        if(!application){ throw new Error("No application was found with that name.")}
 
-    if(!application){
-        return res.status(404).json({message: "We could not find an application with that name."})
+        res.status(200).json(removeSensitiveData(application))
+    
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json(error)
     }
-    res.status(200).json(removeSensitiveData(application))
 }
 
-//Get Applications By Type
 const getApplicationsByType = async (req, res) => {
 
-    console.log(req.params)
-    const type = req.params.type;
-    let isExternal = true;
-    if(type && type.toLowerCase() === "internal") { isExternal = false }
+    try {
+        const type = req.params.type;
+        let isExternal = true;
+        if(type && type.toLowerCase() === "internal") { isExternal = false }
+    
+        const applications = await Application.find({isExternal: isExternal});
+        if(applications.length === 0){ throw new Error("No applications were found matching that criteria.")}
 
-    const applications = await Application.find({isExternal: isExternal});
-    if(applications.length === 0){
-        return res.status(404).json({message: "No applications were found matching that criteria."})
+        return res.status(200).json(removeSensitiveData(applications))
+    
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json(error)
     }
-    res.status(200).json(removeSensitiveData(applications))
 }
 
-//Delete an application
 const deleteApplication = async (req, res) => {
-    const id = req.params.id;
+    try {
+        const {id} = req.params.id;
+        if(!id){ return res.status(404).json({error: 'Please provide an Id for the application to delete.'})}
+        if(!mongoose.Types.ObjectId.isValid(id)){ throw new Error("Invalid Id.")}
 
-    if(!mongoose.Types.ObjectId.isValid(id)){
-        return res.status(404).json({error: 'We cannot delete the application using the Id provided.  The Id is invalid.'})
+        const application = await Application.findByIdAndDelete(id);
+    
+        if(!application){ throw new Error("No application was found with that Id.")}
+
+        return res.status(200).json({ message: "The application registration was deleted" }, { application: removeSensitiveData(application) })
+    
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json(error)
     }
-
-    const application = await Application.findByIdAndDelete(id);
-
-    if(!application){
-        return res.status(404).json({message: "No application was deleted.  We could not find an application with that Id."})
-    }
-    res.status(200).json({ message: "The application registration was deleted" }, { application: removeSensitiveData(application) })
 }
 
 //Regenerate an api key
 const replaceKey = async (req, res) => {
-    const { id } = req.params;
     try{
-        console.log(req.params)
-        console.log(id)
-        //Get the application
+        const { id } = req.params;
+        if (!id){throw new Error("Please provide an application Id.")}
+
         const application = await Application.findById(id);
-        if(!application){
-            return res.status(404).json({message: "We could not find an application with the provided Id."});
-        }
+        if(!application){ throw new Error("No application was found with that Id.")}
 
-        //Move the current key to previous keys
-        application.previousKeys.push(application.currentKey);
-
+        //keep the old key just in case something breaks
+        const oldKey = application.currentKey;
         //Generate a new key and get its Id to add to the application
+        application.previousKeys.push(oldKey);
         const newKey = generateApiKey();
         const hashedKey = await bcrypt.hash(newKey, saltRounds);
         application.currentKey = hashedKey;
@@ -184,8 +176,6 @@ const replaceKey = async (req, res) => {
 }
 
 //TODO: Transfer an application to a new owner
-
-
 
 module.exports = {
     getAllApplications,

@@ -6,10 +6,10 @@ const {
     signupUser, 
     loginUser,
     signupWixUser,
-    getAll, 
-    getById,
-    getByEmail,
-    addApplicationClaim
+    getAllUsers, 
+    getUserById,
+    getUserByEmail,
+    addApplicationClaimToUser
 } = require('../controllers/userController');
 const { addNotFoundHandler } = require("./baseApiRouter");
 const { authenticateToken } = require('../middleware/auth');
@@ -22,10 +22,10 @@ router.post('/requestpasswordreset', requestPasswordReset)
 router.post('/passwordreset', passwordReset)
 
 router.use(authenticateToken, requireSpecOpsClaim)
-router.get('/', getAll)
-router.get('/:id', getById)
-router.get('/email/:email', getByEmail)
-router.patch('/:id/applicationclaim', addApplicationClaim)
+router.get('/', getAllUsers)
+router.get('/:id', getUserById)
+router.get('/email/:email', getUserByEmail)
+router.patch('/:id/applicationclaim', addApplicationClaimToUser)
 
 addNotFoundHandler(router);
 module.exports = router;

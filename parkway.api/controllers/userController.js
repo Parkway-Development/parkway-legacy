@@ -13,21 +13,14 @@ const { validatePassword,
  } = require('../helpers/accountValidation');
 
 const loginUser = async (req, res) => {
-    const {email, password} = req.body
-
     try {
-        if(!email || !password) {
-            throw Error('All fields are required.')
-        }
+        const {email, password} = req.body
+        if(!email || !password) { throw Error('All fields are required.') }
     
-        const activeUser = await User.findOne({email})
-            .populate('applicationClaims');
-
+        const activeUser = await User.findOne({email}).populate('applicationClaims');
         const authenticate = await bcrypt.compare(password, activeUser.password)
 
-        if(!authenticate) {
-            throw Error('Invalid credentials.')
-        }
+        if(!authenticate) { throw Error('Invalid credentials.') }
 
         const profile = await Profile.findOne({email})
             .populate('teams')
@@ -42,13 +35,14 @@ const loginUser = async (req, res) => {
         const token = createToken(activeUser);
         return res.status(200).json({email: email, token: token, message: 'No profile found'});
     } catch (error) {
-        return res.status(400).json({error: error.message})
+        console.log(error)
+        return res.status(500).json(error)
     }
 }
 
 const signupUser = async (req, res) => {
-    const {email, password} = req.body
     try {
+        const {email, password} = req.body
         if(!email || !password) { throw Error('All fields are required.') }
     
         if(!validateEmail(email)) { throw Error('Invalid email') }
@@ -79,84 +73,96 @@ const signupUser = async (req, res) => {
         return res.status(200).json({email: email, token: token, message: 'No profile found'});
     
     } catch (error) {
-    
+        console.log(error)
         return res.status(400).json({error: error.message})
-    
     }
 }
 
 const signupWixUser = async (req, res) => {
+    try {
+        const wixUser = req.body;
+        return res.status(200).json({message: 'Wix User Signup'})
     
-    const wixUser = req.body;
-    return res.status(200).json({message: 'Wix User Signup'})
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json(error)
+    }
 }
 
-const getAll = async (req, res) => {
+const getAllUsers = async (req, res) => {
     try {
         const users = await User.find({});
 
-        if(users.length === 0){
-            return res.status(404).json({message: "No users found."});
-        }
+        if(users.length === 0){ throw Error('No users found.') }
 
         return res.status(200).json(removeSensitiveData(users));
     } catch (error) {
-        return res.status(400).json({error: error.message});
+        console.log(error)
+        return res.status(500).json(error)
     }
 };
 
-const getById = async (req, res) => {
-    const { id } = req.params;
-    const user = await User.findById(id)
-    if(!user){
-        return res.status(404).json({message: "No such user found."})
+const getUserById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        if(!id) { throw Error('No id provided.') }
+        if(!mongoose.Types.ObjectId.isValid(id)) { throw Error('Invalid id.') }
+    
+        const user = await User.findById(id)
+        if(!user){ throw Error('No user found.') }
+
+        return res.status(200).json(removeSensitiveData(user))
+    
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json(error)
     }
-    return res.status(200).json(removeSensitiveData(user))
-}
+};
 
-const getByEmail = async (req, res) => {
-    const { email } = req.params;
-    const user = await User.findOne({email})
-    if(!user){
-        return res.status(404).json({message: "No such user found."})
+const getUserByEmail = async (req, res) => {
+    try {
+        const { email } = req.params;
+        if(!email) { throw Error('No email provided.') }
+
+        const user = await User.findOne({email})
+        if(!user){throw Error('No user found.')}
+    
+        return res.status(200).json(removeSensitiveData(user))
+    
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json(error)        
     }
+};
 
-    return res.status(200).json(removeSensitiveData(user))
-}
-
-const addApplicationClaim = async (req, res) => {
+const addApplicationClaimToUser = async (req, res) => {
     try{
         const { id } = req.params;
-        const { name, value } = req.body
-        
-        console.log('id: ', id);
-        console.log('name: ', name);
-        console.log('value: ', value);
+        if(!id) { throw Error('No id provided.') }
+        if(!mongoose.Types.ObjectId.isValid(id)) { throw Error('Invalid id.') }
 
-        // is it a legit claim
+        const { name, value } = req.body
+        if(!name || !value) { throw Error('All fields are required.') }
+        
         const applicationClaim = await ApplicationClaim.findOne({name: name});
-        if(!applicationClaim){
-            return res.status(404).json({message: "No such application claim found."})
-        }
+        if(!applicationClaim){ throw Error('No such application claim found.') }
         
         const user = await User.findById(id);
-        if(!user){
-            return res.status(404).json({message: "No such user found."})
-        }
+        if(!user){ throw Error('No user found.') }
 
         const valueExists = applicationClaim.values.includes(value);
-        if(!valueExists){
-            return res.status(400).json({message: "Invalid value for the application claim."})
-        }
+        if(!valueExists){ throw Error('Invalid value for the application claim.') }
         
         user.applicationClaims.push({ name, value });
         await user.save({new: true});
+        if(!user){ throw Error('Error saving user.') }
 
         return res.status(200).json(removeSensitiveData(user));
     } catch (error) {
-        return res.status(400).json({message: error.message});
+        console.log(error)
+        return res.status(500).json(error)
     }
-}
+};
 
 const requestPasswordReset = async (req, res) => {
 
@@ -180,31 +186,30 @@ const requestPasswordReset = async (req, res) => {
 };
 
 const passwordReset = async (req, res) => {
-    const { token, email, password } = req.body;
 
     try {
+        const { token, email, password } = req.body;
+        if (!token || !email || !password) { throw new Error('All fields are required.'); }
+
         const user = await User.findOne({ email }).select('+resetPasswordToken +resetPasswordExpires');
 
-        if (!user) {
-            return res.status(404).json({ error: 'User not found. Please contact support.' });
-        }
+        if (!user) { throw new Error('User not found. Please contact support.'); }
 
-        const tokenIsValid = await bcrypt.compare(token, user.resetPasswordToken);
-        const tokenNotExpired = user.resetPasswordExpires > Date.now();
+        const legit = bcrypt.compare(token, user.resetPasswordToken);
+        if (!legit) { throw new Error('Invalid reset token.'); }
 
-        if (!tokenIsValid || !tokenNotExpired) {
-            const errorMessage = !tokenIsValid ? 'Invalid reset token.' : 'Reset token has expired.';
-            return res.status(400).json({ error: errorMessage });
-        }
+        const expired = user.resetPasswordExpires > Date.now();
+        if (!expired) { throw new Error('Reset token has expired.'); }
 
         user.password = await hashPassword(password);
         user.resetPasswordToken = undefined;
         user.resetPasswordExpires = undefined;
         await user.save();
-
+        
         res.status(200).json({ message: 'Password successfully reset.' });
     } catch (error) {
-        res.status(500).json({ error: 'Internal server error. Please try again later.' });
+        console.log(error)
+        return res.status(500).json(error)
     }
 };
 
@@ -213,9 +218,9 @@ module.exports = {
     loginUser,
     requestPasswordReset,
     passwordReset,
-    getAll,
-    getById,
-    getByEmail,
+    getAllUsers,
+    getUserById,
+    getUserByEmail,
     signupWixUser,
-    addApplicationClaim
+    addApplicationClaimToUser
 }

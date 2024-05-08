@@ -14,9 +14,17 @@ const accountSchema = new mongoose.Schema({
         required: true,
         default: 'Undefined'
     },
+    parent: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Account'
+    },
+    children: {
+        type: [mongoose.Schema.Types.ObjectId],
+        ref: 'Account'
+    },
     custodian: {
         type: mongoose.Schema.Types.ObjectId,
-        default: 'profile'
+        ref: 'Profile',
     },
     notes: [ 
         String 

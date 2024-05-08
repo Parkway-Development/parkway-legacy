@@ -89,8 +89,8 @@ const createEvents = async (event, eventSchedule) => {
     }
 };
 
-//Post an event
 const addEvent = async (req, res) => {
+
     const { schedule, ...body } = req.body;
 
     const event = new Event(body);
@@ -118,7 +118,15 @@ const addEvent = async (req, res) => {
         event.schedule = _id;
     }
 
+
     try {
+        const event = new Event(req.body);
+        if (!event) { throw new Error("Please provide an event.") }
+
+        const validationError = event.validateSync();
+    
+        if (validationError) { throw new Error(validationError.message) }
+    
         await event.save();
 
         if (eventSchedule) {
@@ -126,10 +134,12 @@ const addEvent = async (req, res) => {
         }
 
         return res.status(201).json(event);
+
     } catch (error) {
         console.log(error);
-        return res.status(500).json(error.message);
+        return res.status(500).json(error);
     }
+
 }
 
 //Get all events
@@ -137,16 +147,18 @@ const getAll = async (req, res) => {
     const events = await Event.find({})
         .sort({start: 'desc'});
 
-    if (!events) {
-        return res.status(404).json({message: "No events were returned."})
-    }
 
-    res.status(200).json(events);
+    try {
+    } catch (error) {
+    }
 }
 
-//Get event by ID
-const getById = async (req, res) => {
-    const {id} = req.params;
+const getAllEvents = async (req, res) => {
+    try {
+        const events = await Event.find({}).sort({start: 'desc'});
+
+
+        if (!events) { throw new Error("No events were returned.") }
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
         return res.status(404).json({error: 'No such event.'})
@@ -154,129 +166,155 @@ const getById = async (req, res) => {
     const event = await Event.findById(id)
         .populate('schedule');
 
-    if (!event) {
-        return res.status(404).json({message: "No such event found."})
-    }
 
-    res.status(200).json(event)
+        res.status(200).json(events);
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json(error)
+    }
 }
 
-//Update event by ID
-const updateEvent = async (req, res) => {
-    const {id} = req.params;
+const getEventById = async (req, res) => {
+    try {
+        const {id} = req.params;
+        if (!id) { throw new Error("Please provide an event Id.")}
+        if (!mongoose.Types.ObjectId.isValid(id)) {throw new Error("Invalid ID.")}
 
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(404).json({error: 'No such event.'})
+        const event = await Event.findById(id);
+    
+        if (!event) { throw new Error("No event was found with that Id.") }
+    
+        res.status(200).json(event)
+    
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json(error)
     }
-
-    // Exclude fields that shouldn't be updated using this method
-    const { status, approvedBy, approvedDate, ...update } = req.body;
-
-    const updatedEvent = await Event.findByIdAndUpdate(id, update, {new: true});
-
-    if (!updatedEvent) {
-        return res.status(404).json({message: "No such event found."})
-    }
-    res.status(200).json(updatedEvent)
 }
 
-//Approve an event
-const approveEvent = async (req, res) => {
-    if (!requireClaim(req, res, 'calendarManagement')) {
-        return res;
+const updateEventById = async (req, res) => {
+    try{
+        const {id} = req.params;
+        if (!id) { throw new Error("Please provide an event Id.") }
+        if (!mongoose.Types.ObjectId.isValid(id)) { throw new Error("Invalid ID.") }
+
+        // Exclude fields that shouldn't be updated using this method
+        const { status, approvedBy, approvedDate, ...update } = req.body;
+
+        const updatedEvent = await Event.findByIdAndUpdate(id, update, {new: true});
+
+        if (!updatedEvent) { throw new Error("No such event found.") }
+
+        res.status(200).json(updatedEvent)
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json(error)
     }
-
-    const {id} = req.params;
-
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(404).json({error: 'No such event.'})
-    }
-
-    const update = {
-        approvedBy: req.body.approvedBy,
-        approvedDate: req.body.approvedDate,
-        status: 'Active'
-    };
-
-    const updatedEvent = await Event.findByIdAndUpdate(id, update, {new: true});
-
-    if (!updatedEvent) {
-        return res.status(404).json({message: "No such event found."})
-    }
-
-    res.status(200).json(updatedEvent);
 }
 
-//Reject an event
-const rejectEvent = async (req, res) => {
-    if (!requireClaim(req, res, 'calendarManagement')) {
-        return res;
+const approveEventById = async (req, res) => {
+    try {
+        if (!requireClaim(req, res, 'calendarManagement')) { throw new Error("Unauthorized.") }
+    
+        const {id} = req.params;
+        if(!id) { throw new Error("Please provide an event Id.") }
+        if (!mongoose.Types.ObjectId.isValid(id)) { throw new Error("Invalid ID.") }
+    
+        const update = {
+            approvedBy: req.body.approvedBy,
+            approvedDate: req.body.approvedDate,
+            status: 'Active'
+        };
+    
+        const updatedEvent = await Event.findByIdAndUpdate(id, update, {new: true});
+    
+        if (!updatedEvent) { throw new Error("No such event found.") }
+    
+        res.status(200).json(updatedEvent);
+    
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json(error)
     }
-
-    const {id} = req.params;
-
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(404).json({error: 'No such event.'})
-    }
-
-    const update = {
-        rejectedBy: req.body.rejectedBy,
-        rejectedDate: req.body.rejectedDate,
-        status: 'Rejected'
-    };
-
-    const updatedEvent = await Event.findByIdAndUpdate(id, update, {new: true});
-
-    if (!updatedEvent) {
-        return res.status(404).json({message: "No such event found."})
-    }
-
-    res.status(200).json(updatedEvent);
 }
 
-//Delete event by ID
-const deleteEvent = async (req, res) => {
-    const {id} = req.params;
+const rejectEventById = async (req, res) => {
+    try{
+        if (!requireClaim(req, res, 'calendarManagement')) { throw new Error("Unauthorized.") }
 
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(404).json({error: 'No such event.'})
+        const {id} = req.params;
+        if (!id) { throw new Error("Please provide an event Id.") }
+        if (!mongoose.Types.ObjectId.isValid(id)) { throw new Error("Invalid ID.") }
+
+        const update = {
+            rejectedBy: req.body.rejectedBy,
+            rejectedDate: req.body.rejectedDate,
+            status: 'Rejected'
+        };
+
+        const updatedEvent = await Event.findByIdAndUpdate(id, update, {new: true});
+
+        if (!updatedEvent) { throw new Error("No such event found.") }
+
+        res.status(200).json(updatedEvent);
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json(error)
     }
-
-    const deletedEvent = await Event.findByIdAndDelete(id);
-
-    if (!deletedEvent) {
-        return res.status(404).json({message: "No such event found."})
-    }
-    res.status(200).json(deletedEvent);
 }
 
-//Add event message
-const addEventMessage = async (req, res) => {
-    const {id} = req.params;
+const deleteEventById = async (req, res) => {
+    try{
+        const {id} = req.params;
+        if (!id) { throw new Error("Please provide an event Id.") }
+        if (!mongoose.Types.ObjectId.isValid(id)) { throw new Error("Invalid ID.") }
 
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(404).json({error: 'No such event.'})
+        const deletedEvent = await Event.findByIdAndDelete(id);
+
+        if (!deletedEvent) { throw new Error("No such event found.") }
+
+        res.status(200).json(deletedEvent);
+    }catch(error){
+        console.log(error)
+        return res.status(500).json(error)
     }
+}
 
-    const { profile, messageDate, message } = req.body;
-
-    if (!profile || !messageDate || !message) {
-        return res.status(400).json({error: 'Invalid request body.'})
+const addEventMessageById = async (req, res) => {
+    try {
+        const {id} = req.params;
+        if (!id) { throw new Error("Please provide an event Id.") }
+        if (!mongoose.Types.ObjectId.isValid(id)) { throw new Error("Invalid ID.") }
+    
+        const { profile, messageDate, message } = req.body;
+    
+        if (!profile || !messageDate || !message) { throw new Error("Invalid request body.") }
+    
+        const newMessage = {
+            profile,
+            messageDate,
+            message
+        };
+    
+        const updatedEvent = await Event.findByIdAndUpdate({_id: id},{$addToSet: {messages: newMessage}},{new: true})
+    
+        if(!updatedEvent){ throw new Error("No such event found.") }
+    
+        res.status(201).json(updatedEvent);
+    
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json(error)
     }
-
-    const newMessage = {
-        profile,
-        messageDate,
-        message
-    };
-
-    const updatedEvent = await Event.findByIdAndUpdate({_id: id},{$addToSet: {messages: newMessage}},{new: true})
-
-    if(!updatedEvent){ return res.status(404).json({message: "No such event found."}) }
-
-    res.status(201).json(updatedEvent);
 }
 
 module.exports = {
-    addEvent, getAll, getById, updateEvent, deleteEvent, approveEvent, rejectEvent, addEventMessage
+    addEvent, 
+    getAllEvents, 
+    getEventById, 
+    updateEventById, 
+    deleteEventById, 
+    approveEventById, 
+    rejectEventById, 
+    addEventMessageById
 };
