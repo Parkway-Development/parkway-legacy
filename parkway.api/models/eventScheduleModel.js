@@ -16,16 +16,6 @@ const eventScheduleSchema = new mongoose.Schema({
         required: false,
         type: [Number]
     },
-    // Used for yearly events
-    month: {
-        required: false,
-        type: Number
-    },
-    // Days of the month for repeat
-    month_days: {
-        required: false,
-        type: [Number]
-    },
     // Weeks of the month for repeat, to support first and third Wednesday of the month as an example
     month_weeks: {
         required: false,

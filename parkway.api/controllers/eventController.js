@@ -2,6 +2,56 @@ const mongoose = require('mongoose');
 const Event = require('../models/eventModel');
 const EventSchedule = require('../models/eventScheduleModel');
 const { requireClaim } = require("../middleware/auth");
+const { addMonths, addWeeks, set, endOfDay, differenceInDays, addDays, addYears } = require("date-fns");
+
+const createEvents = async (event, eventSchedule) => {
+    const today = new Date();
+    const schedulingEnd = addMonths(today, 3);
+
+    let getNextEventDate = undefined;
+
+    if (eventSchedule.frequency === 'weekly') {
+        getNextEventDate = (lastEventDate) => addWeeks(lastEventDate, eventSchedule.interval);
+    } else if (eventSchedule.frequency === 'monthly') {
+        getNextEventDate = (lastEventDate) => addMonths(lastEventDate, eventSchedule.interval);
+    } else if (eventSchedule.frequency === 'yearly') {
+        getNextEventDate = (lastEventDate) => addYears(lastEventDate, eventSchedule.interval);
+    }
+
+    if (getNextEventDate) {
+        let nextEvent = getNextEventDate(eventSchedule.last_schedule_date);
+
+        while (nextEvent <= schedulingEnd && (!eventSchedule.end_date || nextEvent <= endOfDay(eventSchedule.endDate))) {
+            const start = set(event.start, { year: nextEvent.getFullYear(), month: nextEvent.getMonth(), date: nextEvent.getDate() });
+            const daysDiff = differenceInDays(start, event.start);
+            const end = addDays(event.end, daysDiff);
+
+            const newEvent = new Event({
+                name: event.name,
+                description: event.description,
+                organizer: event.organizer,
+                start,
+                end,
+                location: event.location,
+                category: event.category,
+                status: event.status,
+                teams: event.teams,
+                approvedBy: event.approvedBy,
+                approvedDate: event.approvedDate,
+                rejectedBy: event.rejectedBy,
+                rejectedDate: event.rejectedDate,
+                messages: [],
+                schedule: event.schedule
+            });
+
+            eventSchedule.last_schedule_date = nextEvent;
+            await newEvent.save();
+            await eventSchedule.save();
+
+            nextEvent = getNextEventDate(nextEvent);
+        }
+    }
+};
 
 //Post an event
 const addEvent = async (req, res) => {
@@ -15,8 +65,10 @@ const addEvent = async (req, res) => {
         return res.status(400).json({message: validationError.message});
     }
 
+    let eventSchedule;
+
     if (schedule) {
-        const eventSchedule = new EventSchedule(schedule);
+        eventSchedule = new EventSchedule(schedule);
 
         eventSchedule.start_date = event.start;
         eventSchedule.last_schedule_date = event.start;
@@ -26,12 +78,17 @@ const addEvent = async (req, res) => {
             return res.status(400).json({message: validationError.message});
         }
 
-        const result = await eventSchedule.save();
-        event.schedule = result._id;
+        const { _id } = await eventSchedule.save();
+        event.schedule = _id;
     }
 
     try {
         await event.save();
+
+        if (eventSchedule) {
+            await createEvents(event, eventSchedule);
+        }
+
         return res.status(201).json(event);
     } catch (error) {
         console.log(error);
