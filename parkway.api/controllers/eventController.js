@@ -2,7 +2,9 @@ const mongoose = require('mongoose');
 const Event = require('../models/eventModel');
 const EventSchedule = require('../models/eventScheduleModel');
 const { requireClaim } = require("../middleware/auth");
-const { addMonths, addWeeks, set, endOfDay, differenceInDays, addDays, addYears } = require("date-fns");
+const { addMonths, addWeeks, set, endOfDay, differenceInDays, addDays, addYears, startOfMonth, eachDayOfInterval,
+    getDay
+} = require("date-fns");
 
 const createEvents = async (event, eventSchedule) => {
     const today = new Date();
@@ -16,12 +18,46 @@ const createEvents = async (event, eventSchedule) => {
         getNextEventDate = (lastEventDate) => addMonths(lastEventDate, eventSchedule.interval);
     } else if (eventSchedule.frequency === 'yearly') {
         getNextEventDate = (lastEventDate) => addYears(lastEventDate, eventSchedule.interval);
+    } else if (eventSchedule.frequency === 'custom') {
+        const validDates = [];
+        const lastDay = eventSchedule.end_date && eventSchedule.end_date < schedulingEnd ? eventSchedule.end_date :  schedulingEnd;
+        let currentMonth = startOfMonth(eventSchedule.last_schedule_date);
+
+        while (currentMonth < lastDay) {
+            const nextMonth = addMonths(currentMonth, 1);
+
+            const allDays = eachDayOfInterval({
+                start: currentMonth,
+                end: nextMonth < lastDay ? nextMonth : lastDay
+            });
+
+            eventSchedule.week_days.forEach((dayNumber) => {
+                const matchingDays = allDays.filter(day => getDay(day) === dayNumber);
+
+                eventSchedule.month_weeks.forEach((weekNumber) => {
+                    if (matchingDays.length >= weekNumber) {
+                        const day = matchingDays[weekNumber - 1];
+
+                        if (day > eventSchedule.last_schedule_date) {
+                            validDates.push(day);
+                        }
+                    }
+                });
+            });
+
+            currentMonth = addMonths(currentMonth, 1);
+        }
+
+        if (validDates.length) {
+            let currentDayIndex = 0;
+            getNextEventDate = (_) => currentDayIndex < validDates.length ? validDates[currentDayIndex++] : undefined;
+        }
     }
 
     if (getNextEventDate) {
         let nextEvent = getNextEventDate(eventSchedule.last_schedule_date);
 
-        while (nextEvent <= schedulingEnd && (!eventSchedule.end_date || nextEvent <= endOfDay(eventSchedule.endDate))) {
+        while (nextEvent && nextEvent <= schedulingEnd && (!eventSchedule.end_date || nextEvent <= endOfDay(eventSchedule.endDate))) {
             const start = set(event.start, { year: nextEvent.getFullYear(), month: nextEvent.getMonth(), date: nextEvent.getDate() });
             const daysDiff = differenceInDays(start, event.start);
             const end = addDays(event.end, daysDiff);
