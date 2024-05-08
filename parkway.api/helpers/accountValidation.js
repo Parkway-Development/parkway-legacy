@@ -2,6 +2,8 @@ const validator = require('validator');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
+const Profile = require('../models/profileModel');
+const Account = require('../models/accounting/accountModel');
 
 const validatePassword = (password) => {
 
@@ -82,10 +84,28 @@ const generatePasswordResetToken = async (user) => {
     return resetToken;
 };
 
+const profileExists = async (profileId) => {
+    const profile = await Profile.findById(profileId);
+    if (!profile) {
+        return false;
+    }
+    return true;
+}
+
+const accountExists = async (accountId) => {
+    const account = await Account.findById(accountId);
+    if (!account) {
+        return false;
+    }
+    return true;
+}
+
 module.exports = { 
     validatePassword, 
     hashPassword, 
     validateEmail,
     createToken,
-    generatePasswordResetToken
+    generatePasswordResetToken,
+    profileExists,
+    accountExists
 };

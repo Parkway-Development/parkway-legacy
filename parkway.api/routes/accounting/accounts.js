@@ -5,15 +5,20 @@ const{
     getAllAccounts,
     getAccountById,
     getAccountByName,
-    updateAccount,
-    deleteAccount
+    updateAccountById,
+    updateAccountCustodian,
+    addAccountParent,
+    addAccountChildren,
+    deleteAccountById
 } = require('../../controllers/accounting/accountController')
 const { addNotFoundHandler, configureBaseApiRoutes } = require('../baseApiRouter');
 
-configureBaseApiRoutes(router, addAccount, getAllAccounts, getAccountById, updateAccount, deleteAccount);
+configureBaseApiRoutes(router, addAccount, getAllAccounts, getAccountById, updateAccountById, deleteAccountById);
 
 //add additional routes here
 router.get('/name/:name', getAccountByName)
-
+router.patch('/updatecustodian/:id', updateAccountCustodian)
+router.patch('/addparent/:accountId', addAccountParent)
+router.patch('/addchildren/:accountId', addAccountChildren)
 addNotFoundHandler(router);
 module.exports = router;
