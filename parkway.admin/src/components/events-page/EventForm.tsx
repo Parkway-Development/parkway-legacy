@@ -1,4 +1,11 @@
-import { Breadcrumb, DatePicker, Form, Input, TimePicker } from 'antd';
+import {
+  Breadcrumb,
+  Checkbox,
+  DatePicker,
+  Form,
+  Input,
+  TimePicker
+} from 'antd';
 import { Link, useParams } from 'react-router-dom';
 import UserProfileSelect from '../user-profile-select';
 import { Event } from '../../types';
@@ -14,6 +21,7 @@ import TeamSelect from '../team-select';
 import { useAuth } from '../../hooks/useAuth.tsx';
 import EventStatus from './EventStatus.tsx';
 import EventMessages from './EventMessages.tsx';
+import { BaseSelect, BaseSelectionProps } from '../base-select';
 
 type EventWithoutId = Omit<Event, '_id'>;
 
@@ -27,6 +35,79 @@ type EventFormFields = Omit<EventWithoutId, 'start' | 'end'> & {
 type EventFormProps = AddBaseApiFormProps<Event> & {
   initialValues?: EventWithoutId;
 };
+
+const frequencyOptions: BaseSelectionProps['options'] = [
+  {
+    label: 'Weekly',
+    value: 'weekly'
+  },
+  {
+    label: 'Monthly',
+    value: 'monthly'
+  },
+  {
+    label: 'Yearly',
+    value: 'yearly'
+  },
+  {
+    label: 'Custom',
+    value: 'custom'
+  }
+];
+
+const weekDayOptions: BaseSelectionProps['options'] = [
+  {
+    label: 'Sunday',
+    value: 0
+  },
+  {
+    label: 'Monday',
+    value: 1
+  },
+  {
+    label: 'Tuesday',
+    value: 2
+  },
+  {
+    label: 'Wednesday',
+    value: 3
+  },
+  {
+    label: 'Thursday',
+    value: 4
+  },
+  {
+    label: 'Friday',
+    value: 5
+  },
+  {
+    label: 'Saturday',
+    value: 6
+  }
+];
+
+const monthWeekOptions: BaseSelectionProps['options'] = [
+  {
+    label: 'First',
+    value: 1
+  },
+  {
+    label: 'Second',
+    value: 2
+  },
+  {
+    label: 'Third',
+    value: 3
+  },
+  {
+    label: 'Fourth',
+    value: 4
+  },
+  {
+    label: 'Fifth',
+    value: 5
+  }
+];
 
 const EventForm = ({
   isSaving,
@@ -47,7 +128,14 @@ const EventForm = ({
     eventsApi: { delete: deleteFn }
   } = useApi();
   const [form] = Form.useForm<EventFormFields>();
+  const frequency = Form.useWatch(['schedule', 'frequency'], form);
+  const weekDays = Form.useWatch(['schedule', 'week_days'], form);
+  const monthWeeks = Form.useWatch(['schedule', 'month_weeks'], form);
+
   const [endTimeOpen, setEndTimeOpen] = useState<boolean>(false);
+  const [repeats, setRepeats] = useState<boolean>(
+    initialValues !== undefined && initialValues.schedule !== undefined
+  );
 
   const eventStatusMapping: Record<string, Event['status']> = {
     Tentative: 'Tentative',
@@ -268,6 +356,123 @@ const EventForm = ({
             </Form.Item>
           </div>
         </div>
+
+        <Form.Item<EventFormFields> label="Repeats">
+          <Checkbox
+            checked={repeats}
+            onChange={() =>
+              setRepeats((prev) => {
+                if (prev) {
+                  form.setFieldsValue({ schedule: undefined });
+                }
+
+                return !prev;
+              })
+            }
+          />
+        </Form.Item>
+
+        {repeats && (
+          <>
+            <Form.Item<EventFormFields>
+              label="Frequency"
+              name={['schedule', 'frequency']}
+              rules={[{ required: true, message: 'Frequency is required.' }]}
+            >
+              <BaseSelect
+                value={frequency}
+                onChange={(value) => {
+                  if (
+                    value === 'monthly' ||
+                    value === 'weekly' ||
+                    value === 'yearly' ||
+                    value === 'custom'
+                  ) {
+                    form.setFieldsValue({
+                      schedule: {
+                        frequency: value,
+                        interval: 1,
+                        week_days: undefined,
+                        month_weeks: undefined
+                      }
+                    });
+                  } else {
+                    form.setFieldsValue({
+                      schedule: undefined
+                    });
+                  }
+                }}
+                options={frequencyOptions}
+              />
+            </Form.Item>
+            {frequency && (
+              <Form.Item<EventFormFields>
+                label="Repeat Interval"
+                name={['schedule', 'interval']}
+                hidden={frequency === 'custom'}
+                rules={[{ required: true, message: 'Interval is required.' }]}
+              >
+                <Input type="number" />
+              </Form.Item>
+            )}
+            {frequency === 'custom' && (
+              <>
+                <Form.Item<EventFormFields>
+                  label="Month Weeks"
+                  name={['schedule', 'month_weeks']}
+                  rules={[
+                    { required: true, message: 'Week numbers are required.' }
+                  ]}
+                >
+                  <BaseSelect
+                    isMultiSelect
+                    value={monthWeeks}
+                    onChange={(value) => {
+                      form.setFieldsValue({
+                        schedule: {
+                          month_weeks:
+                            value
+                              ?.filter((x) => !Number.isNaN(x))
+                              .map((x) => Number(x)) ?? []
+                        }
+                      });
+                    }}
+                    options={monthWeekOptions}
+                  />
+                </Form.Item>
+                <Form.Item<EventFormFields>
+                  label="Week Days"
+                  name={['schedule', 'week_days']}
+                  rules={[
+                    { required: true, message: 'Week days are required.' }
+                  ]}
+                >
+                  <BaseSelect
+                    isMultiSelect
+                    value={weekDays}
+                    onChange={(value) => {
+                      form.setFieldsValue({
+                        schedule: {
+                          week_days:
+                            value
+                              ?.filter((x) => !Number.isNaN(x))
+                              .map((x) => Number(x)) ?? []
+                        }
+                      });
+                    }}
+                    options={weekDayOptions}
+                  />
+                </Form.Item>
+              </>
+            )}
+            <Form.Item<EventFormFields>
+              label="Repeat Until"
+              name={['schedule', 'end_date']}
+            >
+              <DatePicker />
+            </Form.Item>
+          </>
+        )}
 
         <Form.Item<EventFormFields> label="Location" name="location">
           <Input />

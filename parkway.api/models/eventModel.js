@@ -73,7 +73,12 @@ const eventSchema = new mongoose.Schema({
             required: true,
             type: String
         }
-    }]
+    }],
+    schedule: {
+        required: false,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'EventSchedule'
+    }
 });
 
 module.exports = mongoose.model('Event', eventSchema, 'events')
