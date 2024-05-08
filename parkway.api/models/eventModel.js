@@ -74,7 +74,7 @@ const eventSchema = new mongoose.Schema({
             type: String
         }
     }],
-    eventSchedule: {
+    schedule: {
         required: false,
         type: mongoose.Schema.Types.ObjectId,
         ref: 'EventSchedule'

@@ -130,11 +130,12 @@ const EventForm = ({
   const [form] = Form.useForm<EventFormFields>();
   const frequency = Form.useWatch(['schedule', 'frequency'], form);
   const weekDays = Form.useWatch(['schedule', 'week_days'], form);
-  console.log('weekdays', weekDays);
   const monthWeeks = Form.useWatch(['schedule', 'month_weeks'], form);
 
   const [endTimeOpen, setEndTimeOpen] = useState<boolean>(false);
-  const [repeats, setRepeats] = useState<boolean>(false);
+  const [repeats, setRepeats] = useState<boolean>(
+    initialValues !== undefined && initialValues.schedule !== undefined
+  );
 
   const eventStatusMapping: Record<string, Event['status']> = {
     Tentative: 'Tentative',
@@ -187,9 +188,6 @@ const EventForm = ({
       start,
       end
     };
-
-    console.log('final payload', finalPayload);
-    return;
 
     onSave(finalPayload);
   };
@@ -407,10 +405,11 @@ const EventForm = ({
                 options={frequencyOptions}
               />
             </Form.Item>
-            {frequency && frequency !== 'custom' && (
+            {frequency && (
               <Form.Item<EventFormFields>
                 label="Repeat Interval"
                 name={['schedule', 'interval']}
+                hidden={frequency === 'custom'}
                 rules={[{ required: true, message: 'Interval is required.' }]}
               >
                 <Input type="number" />

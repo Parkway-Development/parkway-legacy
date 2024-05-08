@@ -1,15 +1,33 @@
 const mongoose = require('mongoose');
 const Event = require('../models/eventModel');
+const EventSchedule = require('../models/eventScheduleModel');
 const { requireClaim } = require("../middleware/auth");
 
 //Post an event
 const addEvent = async (req, res) => {
-    const event = new Event(req.body);
+    const { schedule, ...body } = req.body;
 
-    const validationError = event.validateSync();
+    const event = new Event(body);
+
+    let validationError = event.validateSync();
 
     if (validationError) {
         return res.status(400).json({message: validationError.message});
+    }
+
+    if (schedule) {
+        const eventSchedule = new EventSchedule(schedule);
+
+        eventSchedule.start_date = event.start;
+        eventSchedule.last_schedule_date = event.start;
+        validationError = eventSchedule.validateSync();
+
+        if (validationError) {
+            return res.status(400).json({message: validationError.message});
+        }
+
+        const result = await eventSchedule.save();
+        event.schedule = result._id;
     }
 
     try {
@@ -23,7 +41,8 @@ const addEvent = async (req, res) => {
 
 //Get all events
 const getAll = async (req, res) => {
-    const events = await Event.find({}).sort({start: 'desc'});
+    const events = await Event.find({})
+        .sort({start: 'desc'});
 
     if (!events) {
         return res.status(404).json({message: "No events were returned."})
@@ -39,7 +58,8 @@ const getById = async (req, res) => {
     if (!mongoose.Types.ObjectId.isValid(id)) {
         return res.status(404).json({error: 'No such event.'})
     }
-    const event = await Event.findById(id);
+    const event = await Event.findById(id)
+        .populate('schedule');
 
     if (!event) {
         return res.status(404).json({message: "No such event found."})
