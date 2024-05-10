@@ -112,6 +112,7 @@ export const mockApi = (
       signup: vi.fn(),
       getAllLimitedProfile: vi.fn(),
       requestPasswordReset: vi.fn(),
+      passwordReset: vi.fn(),
       ...usersApi
     },
     accountsApi: mockBaseApi<Account>(accountsApi),

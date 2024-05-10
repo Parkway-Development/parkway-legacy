@@ -16,6 +16,9 @@ export type UsersApiType = BaseApiType<UserProfile> & {
   requestPasswordReset: (
     payload: RequestPasswordResetInput
   ) => TypedResponse<GenericMessageResponse>;
+  passwordReset: (
+    payload: PasswordResetInput
+  ) => TypedResponse<GenericMessageResponse>;
 };
 
 export interface LoginFields {
@@ -32,6 +35,12 @@ export interface RequestPasswordResetInput {
   email: string;
 }
 
+export interface PasswordResetInput {
+  email: string;
+  token: string;
+  password: string;
+}
+
 export const buildUsersApi = (instance: AxiosInstance): UsersApiType => ({
   ...buildBaseApi<UserProfile>(instance, '/profiles'),
   joinProfileAndUser: ({ profileId, ...payload }) =>
@@ -44,5 +53,7 @@ export const buildUsersApi = (instance: AxiosInstance): UsersApiType => ({
     instance.post<GenericMessageResponse>(
       '/users/requestpasswordreset',
       payload
-    )
+    ),
+  passwordReset: (payload) =>
+    instance.post<GenericMessageResponse>('/users/passwordreset', payload)
 });

@@ -18,7 +18,7 @@ const ForgotPasswordPage = () => {
     mutationFn: requestPasswordReset
   });
 
-  const handleSignup = ({ email }: ForgotPasswordFields) => mutate({ email });
+  const handleSubmit = ({ email }: ForgotPasswordFields) => mutate({ email });
 
   let content: ReactNode;
 
@@ -30,7 +30,7 @@ const ForgotPasswordPage = () => {
         name="basic"
         labelCol={{ span: 8 }}
         wrapperCol={{ span: 16 }}
-        onFinish={handleSignup}
+        onFinish={handleSubmit}
         autoComplete="off"
         disabled={isPending}
       >
