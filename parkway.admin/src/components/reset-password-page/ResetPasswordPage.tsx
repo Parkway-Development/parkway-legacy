@@ -1,4 +1,4 @@
-import styles from './SignupPage.module.css';
+import styles from './ResetPasswordPage.module.css';
 import { Alert, Button, Card, Form, Input } from 'antd';
 import { InternalLoginResponse, useAuth } from '../../hooks/useAuth';
 import { Link } from 'react-router-dom';
@@ -36,7 +36,7 @@ const PasswordRequirement = ({ count, display }: PasswordRequirementProps) => {
   );
 };
 
-const SignupPage = () => {
+const ResetPasswordPage = () => {
   const { login } = useAuth();
   const {
     generalApi: { getPasswordSettings },
@@ -84,7 +84,7 @@ const SignupPage = () => {
   return (
     <div className="entryPage">
       <Card
-        title="Parkway Ministries Admin Signup"
+        title="Parkway Ministries Admin Reset Password"
         bordered={false}
         style={{ width: '90vw', maxWidth: 500 }}
       >
@@ -192,4 +192,4 @@ const SignupPage = () => {
   );
 };
 
-export default SignupPage;
+export default ResetPasswordPage;
