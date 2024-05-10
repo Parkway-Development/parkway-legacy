@@ -104,10 +104,7 @@ createRoot(document.getElementById('root')!).render(
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
             <Route path="/forgot" element={<ForgotPasswordPage />} />
-            <Route
-              path="/reset/:token/:email"
-              element={<ResetPasswordPage />}
-            />
+            <Route path="/reset/:resetToken" element={<ResetPasswordPage />} />
             <Route
               path="/"
               element={
