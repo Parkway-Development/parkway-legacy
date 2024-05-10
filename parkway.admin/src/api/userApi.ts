@@ -36,8 +36,7 @@ export interface RequestPasswordResetInput {
 }
 
 export interface PasswordResetInput {
-  email: string;
-  token: string;
+  resetToken: string;
   password: string;
 }
 

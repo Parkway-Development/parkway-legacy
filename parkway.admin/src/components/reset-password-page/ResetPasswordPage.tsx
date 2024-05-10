@@ -34,12 +34,11 @@ const PasswordRequirement = ({ count, display }: PasswordRequirementProps) => {
 };
 
 type ResetPasswordPageParams = {
-  token: string;
-  email: string;
+  resetToken: string;
 };
 
 const ResetPasswordPage = () => {
-  const { token, email } = useParams<ResetPasswordPageParams>();
+  const { resetToken } = useParams<ResetPasswordPageParams>();
   const {
     generalApi: { getPasswordSettings },
     usersApi: { passwordReset },
@@ -64,13 +63,13 @@ const ResetPasswordPage = () => {
 
   let content: ReactNode;
 
-  if (!email || !token) {
+  if (!resetToken) {
     content = <span>Invalid password reset request.</span>;
   } else if (data) {
     content = <span>{data.data.message}</span>;
   } else {
     const handleSubmit = ({ password }: ResetPasswordFields) =>
-      mutate({ email, password, token });
+      mutate({ password, resetToken });
 
     content = (
       <Form
@@ -81,10 +80,6 @@ const ResetPasswordPage = () => {
         autoComplete="off"
         disabled={isPending}
       >
-        <Form.Item<ResetPasswordFields> label="Email">
-          <span>{email}</span>
-        </Form.Item>
-
         <Form.Item<ResetPasswordFields>
           label="Password"
           name="password"
