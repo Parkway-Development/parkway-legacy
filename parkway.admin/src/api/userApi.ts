@@ -1,4 +1,4 @@
-import { UserProfile } from '../types';
+import { LimitedUserProfile, UserProfile } from '../types';
 import { LoginResponse } from '../hooks/useAuth.tsx';
 import { TypedResponse } from '../hooks/useApi.ts';
 import { AxiosInstance } from 'axios';
@@ -8,6 +8,7 @@ export type UsersApiType = BaseApiType<UserProfile> & {
   joinProfileAndUser: (payload: JoinProfileInput) => TypedResponse<UserProfile>;
   login: (payload: LoginFields) => TypedResponse<LoginResponse>;
   signup: (payload: LoginFields) => TypedResponse<LoginResponse>;
+  getAllLimitedProfile: () => TypedResponse<LimitedUserProfile[]>;
 };
 
 export interface LoginFields {
@@ -23,7 +24,9 @@ export interface JoinProfileInput {
 export const buildUsersApi = (instance: AxiosInstance): UsersApiType => ({
   ...buildBaseApi<UserProfile>(instance, '/profiles'),
   joinProfileAndUser: ({ profileId, ...payload }) =>
-    instance.post<UserProfile>(`/api/profiles/join/${profileId}`, payload),
+    instance.post<UserProfile>(`/profiles/join/${profileId}`, payload),
   login: (payload) => instance.post<LoginResponse>('/users/login', payload),
-  signup: (payload) => instance.post<LoginResponse>('/users/connect', payload)
+  signup: (payload) => instance.post<LoginResponse>('/users/connect', payload),
+  getAllLimitedProfile: () =>
+    instance.get<LimitedUserProfile[]>('/profiles/limited')
 });

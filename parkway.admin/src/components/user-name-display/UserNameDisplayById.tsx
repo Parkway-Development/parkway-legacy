@@ -10,10 +10,10 @@ interface UserDisplayProps {
 
 export const UserNameDisplayById = ({ id }: UserDisplayProps) => {
   const {
-    usersApi: { getAll }
+    usersApi: { getAllLimitedProfile }
   } = useApi();
   const { isPending, data: response } = useQuery({
-    queryFn: getAll,
+    queryFn: getAllLimitedProfile,
     queryKey: buildQueryKey('profiles')
   });
 
