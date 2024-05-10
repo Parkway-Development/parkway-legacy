@@ -22,6 +22,11 @@ export type UserProfile = BaseEntity & {
   preferences?: string;
 };
 
+export type LimitedUserProfile = Pick<
+  UserProfile,
+  '_id' | 'firstName' | 'middleInitial' | 'lastName' | 'nickname'
+>;
+
 export const genderMapping: Record<
   NonNullable<UserProfile['gender']>,
   string

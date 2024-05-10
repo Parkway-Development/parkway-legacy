@@ -9,9 +9,12 @@ const {
     getProfilesByHomePhone,
     updateProfile,
     deleteProfile,
-    connectUserAndProfile
+    connectUserAndProfile,
+    getAllLimitedProfiles
 } = require('../controllers/profileController')
 const { addNotFoundHandler, configureBaseApiRoutes } = require("./baseApiRouter");
+
+router.get('/limited', getAllLimitedProfiles)
 
 configureBaseApiRoutes(router, addProfile, getAllProfiles, getProfileById, updateProfile, deleteProfile);
 

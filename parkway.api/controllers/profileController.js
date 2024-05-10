@@ -2,8 +2,17 @@ const mongoose = require('mongoose')
 const Profile = require('../models/profileModel')
 const User = require('../models/userModel')
 
-const searchForAProfile = async (inboundProfile) => {
+const mapToLimitedProfile = (user) => {
+    return {
+        _id: user._id,
+        firstName: user.firstName,
+        middleInitial: user.middleInitial,
+        lastName: user.lastName,
+        nickname: user.nickname
+    };
+}
 
+const searchForAProfile = async (inboundProfile) => {
     try{
         const inProfile = inboundProfile;
         if(!inboundProfile){ throw new Error("No profile was submitted.") }
@@ -60,6 +69,21 @@ const getAllProfiles = async (req, res) => {
     } catch (error) {
         console.log(error);
         return res.status(500).json(error)
+    }
+}
+
+const getAllLimitedProfiles = async (req, res) => {
+    try {
+        const profiles = await Profile.find({})
+            .sort({lastname: 1, firstname: 1});
+        if(!profiles){ throw new Error("No profiles were returned.")}
+
+        const limitedProfiles = profiles.map(user => mapToLimitedProfile(user));
+
+        res.status(200).json(limitedProfiles);
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json(error);
     }
 }
 
@@ -233,5 +257,6 @@ module.exports = {
     getProfilesByHomePhone, 
     updateProfile, 
     deleteProfile,
-    connectUserAndProfile 
+    connectUserAndProfile,
+    getAllLimitedProfiles
 }
