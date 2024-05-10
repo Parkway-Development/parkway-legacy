@@ -9,7 +9,6 @@ class ValidationHelper {
     // Validate the account ids are actual account ids
     static async validateAccountIds(accountIds) {
         try {
-            const AccountModel = require( '../models/accounting/accountModel');
             let errors = [];
 
             for (const accountId of accountIds) {
@@ -25,6 +24,23 @@ class ValidationHelper {
                 }
             }
             return errors.length > 0 ? errors : null;
+        } catch (error) {
+            console.log(error.message);
+            return { message: error.message };
+        }
+    }
+
+    // Validate a single account Id
+    static async validateAccountId(accountId) {
+        try {
+
+            if(!accountId){throw new Error("No account id was provided for validation.")}
+            if (!mongoose.Types.ObjectId.isValid(accountId)) { throw new Error ("The account ID provide for validation is not a valid ObjectId.")}
+
+            const account = await Account.findById(accountId);
+            if(!account){throw new Error("The account ID provided for validation does not exist.")}
+
+            return true;
         } catch (error) {
             console.log(error.message);
             return { message: error.message };
@@ -54,7 +70,6 @@ class ValidationHelper {
 
 module.exports = {
     sanitizeString: ValidationHelper.sanitizeString,
-    validateId: ValidationHelper.validateId,
     validateAccountIds: ValidationHelper.validateAccountIds,
     validateAccountSumMatchesAmount: ValidationHelper.validateAccountSumMatchesAmount,
     convertDollarsToPennies: ValidationHelper.convertDollarsToPennies,

@@ -2,37 +2,22 @@ const mongoose = require('mongoose');
 const { validateAccountSumMatchesAmount } = require('../../helpers/validationHelper');
 
 const contributionSchema = new mongoose.Schema({
-    totalAmount: {
-        required: true,
-        type: Number
-    },
-    transactionDate: {
-        required: true,
-        type: Date,
-        default: Date.now()
-    },
-    depositDate: {
-        type: Date
-    },
-    approvalDate: {
-        type: Date
-    },
-    approvedBy: {
+    profile: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Profile'
     },
-    locked: {
-        type: Boolean,
+    gross: {
         required: true,
-        default: false
+        type: Number
     },
-    depositBatchId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'DepositBatch'
-    },
-    type: {
+    fees: {
         required: true,
-        type: String
+        type: Number,
+        default: 0
+    },
+    net: {
+        required: true,
+        type: Number
     },
     accounts: [
         {
@@ -54,10 +39,31 @@ const contributionSchema = new mongoose.Schema({
             }
         }
     ],
-    profile: {
+    transactionDate: {
+        required: true,
+        type: Date,
+        default: Date.now()
+    },
+    depositDate: {
+        type: Date
+    },
+    approvalDate: {
+        type: Date
+    },
+    approvedBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Profile'
+    },
+    depositBatchId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'DepositBatch'
+    },
+    type: {
+        required: true,
+        type: String,
+        default: 'cash'
     }
+
 }, {timestamps: true})
 
 contributionSchema.path('accounts').validate(function (accounts) {

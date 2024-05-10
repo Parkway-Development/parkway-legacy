@@ -10,7 +10,7 @@ const { validatePassword,
     validateEmail,
     createToken,
     generatePasswordResetToken
- } = require('../helpers/accountValidation');
+ } = require('../helpers/userValidation');
 
 const loginUser = async (req, res) => {
     try {
@@ -188,22 +188,21 @@ const requestPasswordReset = async (req, res) => {
 const passwordReset = async (req, res) => {
 
     try {
-        const { token, email, password } = req.body;
-        if (!token || !email || !password) { throw new Error('All fields are required.'); }
+        const { resetToken, password } = req.body;
+        if (!resetToken || !password) { throw new Error('All fields are required.'); }
 
-        const user = await User.findOne({ email }).select('+resetPasswordToken +resetPasswordExpires');
-
+        const user = await User.findOne({ resetToken });
         if (!user) { throw new Error('User not found. Please contact support.'); }
 
-        const legit = bcrypt.compare(token, user.resetPasswordToken);
-        if (!legit) { throw new Error('Invalid reset token.'); }
+        // const legit = bcrypt.compare(token, user.resetToken);
+        // if (!legit) { throw new Error('Invalid reset token.'); }
 
-        const expired = user.resetPasswordExpires > Date.now();
-        if (!expired) { throw new Error('Reset token has expired.'); }
+        const valid = user.resetTokenExpiration > Date.now();
+        if (!valid) { throw new Error('Reset token has expired.'); }
 
         user.password = await hashPassword(password);
-        user.resetPasswordToken = undefined;
-        user.resetPasswordExpires = undefined;
+        user.resetToken = undefined;
+        user.resetTokenExpiration = undefined;
         await user.save();
         
         res.status(200).json({ message: 'Password successfully reset.' });

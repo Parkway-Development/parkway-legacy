@@ -70,14 +70,13 @@ const createToken = (activeUser, profile) => {
 
 const generatePasswordResetToken = async (user) => {
     const resetToken = crypto.randomBytes(32).toString('hex');
-    const hash = await bcrypt.hash(resetToken, 10);
+    const resetTokenExpiration = Date.now() + 3600000; // 1 hour from now
 
-    // Set token and expiration on user model
-    user.resetPasswordToken = hash;
-    user.resetPasswordExpires = Date.now() + 3600000; // 1 hour from now
+    user.resetToken = resetToken;
+    user.resetTokenExpiration = resetTokenExpiration
     console.log('resetToken: ', resetToken)
-    console.log('hashedResetToken: ', user.resetPasswordToken)
-    console.log('resetTokenExpires: ', user.resetPasswordExpires)
+    // console.log('hashedResetToken: ', user.resetPasswordToken)
+    console.log('resetTokenExpires: ', resetTokenExpiration)
 
     await user.save();
 
@@ -92,20 +91,11 @@ const profileExists = async (profileId) => {
     return true;
 }
 
-const accountExists = async (accountId) => {
-    const account = await Account.findById(accountId);
-    if (!account) {
-        return false;
-    }
-    return true;
-}
-
 module.exports = { 
     validatePassword, 
     hashPassword, 
     validateEmail,
     createToken,
     generatePasswordResetToken,
-    profileExists,
-    accountExists
+    profileExists
 };

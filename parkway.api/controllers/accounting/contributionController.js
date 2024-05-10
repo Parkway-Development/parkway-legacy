@@ -1,60 +1,70 @@
 const mongoose = require('mongoose')
 const Contribution = require('../../models/accounting/contributionModel')
 const ValidationHelper = require('../../helpers/validationHelper');
+const AccountValidation = require('../../helpers/userValidation');
+const Profile = require('../../models/profileModel');
 
-//Create a new contribution
-const addContribution = async (req, res) => {
-
-    // Validate the request body is present, the profile id is present, and the profile id is valid
-    if(!req.body){ return res.status(400).json({error: 'No contribution data provided.'}) }
-    if(!req.body.profile){ return res.status(400).json({error: 'No profile ID provided.'}) }
-    if(!ValidationHelper.validateId(req.body.profile)){ return res.status(404).json({error: 'Profile ID is not valid.'}) }
-    
-    // Validate the account IDs are valid and that they exist in the database
-    const accountIds = req.body.accounts.map(account => account.account);
-    const accountErrors = await ValidationHelper.validateAccountIds(accountIds);
-    if (accountErrors) { return res.status(400).json({ errors: accountErrors }); }
-    
-    // Create a new contribution
-    const contribution = new Contribution(req.body);
-    
-    // Validate the contribution
-    const validationError = contribution.validateSync();
-    if (validationError) { return res.status(400).json({ error: validationError.message }) }
+const addCashContribution = async (req, res) => {
 
     try {
+        if(!req.body){throw new Error('No contribution data provided.')};
+
+        if(req.body.profile){
+            if (!mongoose.Types.ObjectId.isValid(req.body.profile)) { throw new Error("Invalid ID.")}
+            if(!await AccountValidation.profileExists(req.body.profile)){throw new Error('A Profile Id was provided but that profile could not be found.')}
+        }
+
+        if (!req.body.accounts || req.body.accounts.length === 0){
+            let generalFund = await Account.findOne({name: 'General Fund'});
+            if(!generalFund){
+                generalFund = new Account({name: 'General Fund', type: 'Fund'});
+            }
+        }
+
+        const accountIds = req.body.accounts.map(account => account.account);
+        const accountErrors = await ValidationHelper.validateAccountIds(accountIds);
+        if (accountErrors) { throw new Error({ errors: accountErrors }); }
+    
+        const contribution = new Contribution(req.body);
+
+        const validationError = contribution.validateSync();
+        if (validationError) { throw new Error({ error: validationError.message }) }
+
         await contribution.save();
         return res.status(201).json(contribution);
+
     } catch (error) {
+        console.log(error.message);
         return res.status(500).json(error.message);
+
     }
 }
 
 //TODO: Add Date range
 //TODO: Add pagination
-//Get all contributions
 const getAllContributions = async (req, res) => {
 
     try {
         const contributions = await Contribution.find({});
-        if(contributions.length === 0) return res.status(200).json({ message: 'No contributions were returned.' });
+        if(contributions.length === 0) { throw new Error('No contributions were returned.')}
         return res.status(200).json(contributions);
     } catch (error) {
+        console.log(error.message);
         return res.status(500).json(error.message);
     }
 }
 
-//Get contribution by ID
 const getContributionById = async (req, res) => {
-
-    if(!req.params.id){ return res.status(400).json({error: 'No Contribution ID provided.'})}
-    if(!ValidationHelper.validateId(req.params.id)){ return res.status(404).json({error: 'Id is not valid.'}) }
-
     try {
+        if(!req.params.id){ throw new Error('No Contribution ID provided.')}
+        if(!mongoose.Types.ObjectId.isValid(req.params.id)){ throw new Error('Invalid ID.')}
+
         const contribution = await Contribution.findById(req.params.id);
-        if(!contribution) return res.status(200).json({ message: 'No contribution found.' });
+        if(!contribution) {throw new Error('Contribution not found.')};
+
         return res.status(200).json(contribution);
     } catch (error) {
+        console.log(error.message);
         return res.status(500).json(error.message);
     }
 }
@@ -62,82 +72,77 @@ const getContributionById = async (req, res) => {
 //TODO: Make case insensitive
 //TODO: Add Date range
 //TODO: Add pagination
-//Get contributions by type
 const getContributionsByType = async (req, res) => {
-
-    if(!req.params.type){ return res.status(400).json({error: 'No Contribution type provided.'})}
-
     try {
+        if(!req.params.type){ throw new Error('No Contribution type provided.')}
+
         const contributions = await Contribution.find({ type: req.params.type });
-        if(contributions.length === 0) return res.status(200).json({ message: 'No contributions were returned.' });
+        if(contributions.length === 0) throw new Error('No contributions were returned.');
         return res.status(200).json(contributions);
     } catch (error) {
+        console.log(error.message);
         return res.status(500).json(error.message);
     }
 }
 
 //TODO: Add Date range
 //TODO: Add pagination
-//Get contributions by Profile ID
 const getContributionsByProfileId = async (req, res) => {
-
-    if(!req.params.id){ return res.status(400).json({error: 'No Profile ID provided.'})}
-    if(!ValidationHelper.validateId(req.params.id)){ return res.status(404).json({error: 'Id is not valid.'}) }
-
     try {
+
+        if(!req.params.id){ throw new Error('No Profile ID provided.')}
+        if(!mongoose.Types.ObjectId.isValid(req.params.id)){ throw new Error('Invalid ID.')}
+
         const contributions = await Contribution.find({ profile: req.params.id });
-        if(contributions.length === 0) return res.status(200).json({ message: 'No contributions were returned.' });
+        if(contributions.length === 0) { throw new Error('No contributions were returned.')}
         return res.status(200).json(contributions);
     } catch (error) {
+        console.log(error.message);
         return res.status(500).json(error.message);
     }
 }
 
 //TODO: Add Date range
 //TODO: Add pagination
-//Get contributions by Account ID
 const getContributionsByAccountId = async (req, res) => {
-
-    if(!req.params.id){ return res.status(400).json({error: 'No Account ID provided.'})}
-    if(!ValidationHelper.validateId(req.params.id)){ return res.status(404).json({error: 'Id is not valid.'}) }
-
     try {
+        if(!req.params.id){ throw new Error('No Account ID provided.')}
+        if(!mongoose.Types.ObjectId.isValid(req.params.id)){ throw new Error('Invalid ID.')}
+
         const contributions = await Contribution.find({ 'accounts.account': req.params.id });
         if(contributions.length === 0) return res.status(200).json({ message: 'No contributions were returned.' });
         return res.status(200).json(contributions);
     } catch (error) {
+        console.log(error.message);
         return res.status(500).json(error.message);
     }
 }
 
-//Update a contribution by ID
 const updateContribution = async (req, res) => {
-
-    // Validate the request body is present, the profile id is present, and the profile id is valid
-    if(!req.params.id){ return res.status(400).json({error: 'No Contribution ID provided.'})}
-    if(!req.body || Object.keys(req.body).length === 0){ return res.status(400).json({error: 'No contribution updates provided.  The request body either did not contain an object, or the object did not have any keys.'}) }
-    if(!ValidationHelper.validateId(req.params.id)){ return res.status(404).json({error: 'Id is not valid.'}) }
-
     try {
+        if(!req.params.id){ throw new Error('No Contribution ID provided.')}
+        if (!req.body || Object.keys(req.body).length === 0) { throw new Error('No contribution updates provided.  The request body either did not contain an object, or the object did not have any keys.') }
+        if(!mongoose.Types.ObjectId.isValid(req.params.id)){ throw new Error('Invalid ID.')}
 
         //Get the contribution in question
         const contribution = await Contribution.findById(req.params.id);
         if(!contribution){ return res.status(404).json({error: 'Contribution not found.'}) }
 
-        // If this deposit is already deposited, it cannot be updated
-        if(req.body.totalAmount && contribution.depositDate){ return res.status(200).json({message: 'This contribution has already been deposited and the total amount cannot be updated.'}) }
-
         // Apply updates dynamically
         Object.keys(req.body).forEach(key => {
             contribution[key] = req.body[key];
         });
-        // contribution.totalAmount = req.body.totalAmount || contribution.totalAmount;
+        
+        const validationError = contribution.validateSync();
+        if (validationError) { throw new Error({ error: validationError.message }) }
         
         //Do the update
         const updatedContribution = await contribution.save();
-        if(!updatedContribution) return res.status(404).json({error: "Update failed."});
+        if(!updatedContribution) throw new Error('Contribution could not be updated.');
+
         return res.status(200).json(updatedContribution);
     } catch (error) {
+        console.log(error.message);
         return res.status(500).json(error.message);
     }
 }
@@ -161,7 +166,7 @@ const deleteContribution = async (req, res) => {
 }
 
 module.exports = {
-    addContribution,
+    addCashContribution,
     getAllContributions,
     getContributionById,
     getContributionsByType,
