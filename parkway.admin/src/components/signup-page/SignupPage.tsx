@@ -184,7 +184,8 @@ const SignupPage = () => {
           />
         )}
         <p>
-          Already have an account? <Link to="/login">Login</Link>
+          Already have an account? <Link to="/login">Login</Link> or{' '}
+          <Link to="/forgot">Forgot Password?</Link>
         </p>
       </Card>
     </div>

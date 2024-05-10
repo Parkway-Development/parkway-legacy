@@ -2,6 +2,10 @@ import { BaseEntity } from '../types';
 import { GenericResponse, TypedResponse } from '../hooks/useApi.ts';
 import { AxiosInstance } from 'axios';
 
+export type GenericMessageResponse = {
+  message: string;
+};
+
 export type BaseApiType<T extends BaseEntity> = {
   create: (payload: Omit<T, '_id'>) => TypedResponse<T>;
   delete: (id: string) => GenericResponse;
