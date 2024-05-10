@@ -14,6 +14,11 @@ const accountSchema = new mongoose.Schema({
         required: true,
         default: 'Undefined'
     },
+    subtype:{
+        type: String,
+        required: true,
+        default: 'Undefined'
+    },
     parent: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Account'

@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 const Account = require('../../models/accounting/accountModel');
 const ValidationHelper = require('../../helpers/validationHelper');
-const AccountValidation = require('../../helpers/accountValidation');
 
 const addAccount = async (req, res) => {
     try {
@@ -9,9 +8,6 @@ const addAccount = async (req, res) => {
         req.body.name = ValidationHelper.sanitizeString(req.body.name); 
 
         const account = new Account(req.body);
-
-        // const validationError = account.validateSync();
-        // if(validationError){ throw new Error(validationError.message) }
 
         await account.save();
         return res.status(201).json(account);
@@ -143,7 +139,7 @@ const addAccountParent = async (req, res) => {
         const parentId = req.body.parent;
         if(!parentId){ throw new Error('No parent account ID provided.')}
         if (!mongoose.Types.ObjectId.isValid(parentId)) { throw new Error("Invalid parent ID.")}
-        if(parentId && !AccountValidation.accountExists(parentId)){ throw new Error('The parent account does not exist.')}
+        if(parentId && !ValidationHelper.validateAccountId(parentId)){ throw new Error('The parent account does not exist.')}
         updateData.parent = req.body.parent;
 
         let account =  await Account.findByIdAndUpdate( accountId, updateData, { new: true, runValidators: true})
