@@ -91,6 +91,10 @@ const BaseDataTableList = <T extends BaseEntity>({
       size="small"
       bordered
       scroll={{ x: 'auto' }}
+      expandable={{
+        expandIcon: () => null,
+        expandRowByClick: true
+      }}
     />
   ) : (
     <ResponsiveTable
