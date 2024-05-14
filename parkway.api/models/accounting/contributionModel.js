@@ -12,8 +12,7 @@ const contributionSchema = new mongoose.Schema({
     },
     fees: {
         required: true,
-        type: Number,
-        default: 0
+        type: Number
     },
     net: {
         required: true,
@@ -44,19 +43,9 @@ const contributionSchema = new mongoose.Schema({
         type: Date,
         default: Date.now()
     },
-    depositDate: {
-        type: Date
-    },
-    approvalDate: {
-        type: Date
-    },
-    approvedBy: {
+    depositId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Profile'
-    },
-    depositBatchId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'DepositBatch'
+        ref: 'Deposits'
     },
     type: {
         required: true,
@@ -67,7 +56,7 @@ const contributionSchema = new mongoose.Schema({
 }, {timestamps: true})
 
 contributionSchema.path('accounts').validate(function (accounts) {
-    return validateAccountSumMatchesAmount(this.totalAmount, accounts);
+    return validateAccountSumMatchesAmount(this.net, accounts);
 }, 'The sum of accounts amounts must equal the total amount.');
 
 module.exports = mongoose.model('Contribution', contributionSchema,'contributions');

@@ -12,16 +12,6 @@ const userRoutes = require('./routes/users');
 const profileRoutes = require('./routes/profiles');
 const settingRoutes = require('./routes/settings');
 const teamRoutes = require('./routes/teams');
-const assetRoutes = require('./routes/accounting/assets');
-const budgetRoutes = require('./routes/accounting/budgets');
-const donationRoutes = require('./routes/accounting/donations');
-const expenseRoutes = require('./routes/accounting/expenses');
-const accountRoutes = require('./routes/accounting/accounts');
-const liabilityRoutes = require('./routes/accounting/liabilities');
-const payrollRoutes = require('./routes/accounting/payroll');
-const pledgeRoutes = require('./routes/accounting/pledges');
-const vendorRoutes = require('./routes/accounting/vendors');
-const contributionRoutes = require('./routes/accounting/contributions');
 const platformRoutes = require('./routes/platform');
 const songRoutes = require('./routes/songs');
 const eventRoutes = require('./routes/events');
@@ -30,6 +20,11 @@ const uploadRoutes = require('./routes/uploads');
 const healhRoutes = require('./routes/health');
 const developerRoutes = require('./routes/developer');
 const applicationClaimsRoutes = require('./routes/applicationClaims');
+
+const donationRoutes = require('./routes/accounting/donations');
+const accountRoutes = require('./routes/accounting/accounts');
+const contributionRoutes = require('./routes/accounting/contributions');
+const depositRoutes = require('./routes/accounting/deposits');
 
 //express app
 const app = express();
@@ -72,16 +67,10 @@ app.use('/developer', developerRoutes);
 app.use('/applicationclaims', applicationClaimsRoutes);
 
 //Accounting routes
-app.use('/accounting/assets', assetRoutes);
-app.use('/accounting/budgets', budgetRoutes);
 app.use('/accounting/donations', donationRoutes);
-app.use('/accounting/expenses', expenseRoutes);
 app.use('/accounting/accounts', accountRoutes);
-app.use('/accounting/liabilities', liabilityRoutes);
-app.use('/accounting/payroll', payrollRoutes);
-app.use('/accounting/pledges', pledgeRoutes);
-app.use('/accounting/vendors', vendorRoutes);
 app.use('/accounting/contributions', contributionRoutes);
+app.use('/accounting/deposits', depositRoutes);
 
 // Catch-all route for undefined paths
 //TODO: Add logging.....lots and lots of logging
