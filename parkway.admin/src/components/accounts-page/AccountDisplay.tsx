@@ -1,6 +1,7 @@
 import { Account } from '../../types';
 import { Descriptions, DescriptionsProps } from 'antd';
 import UserNameDisplay from '../user-name-display/UserNameDisplay.tsx';
+import AccountParent from './AccountParent.tsx';
 
 const AccountDisplay = (account: Account) => {
   const items: DescriptionsProps['items'] = [
@@ -22,7 +23,7 @@ const AccountDisplay = (account: Account) => {
     {
       key: 4,
       label: 'Parent',
-      children: account.parent?.name
+      children: <AccountParent account={account} />
     },
     {
       key: 5,

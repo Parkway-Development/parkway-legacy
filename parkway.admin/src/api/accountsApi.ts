@@ -28,9 +28,9 @@ const basePath = '/accounting/accounts';
 export const buildAccountsApi = (instance: AxiosInstance): AccountsApiType => ({
   ...buildBaseApi<Account>(instance, basePath),
   updateCustodian: ({ _id: id, ...payload }: UpdateAccountCustodianPayload) =>
-    instance.patch(`${basePath}/${id}/updatecustodian`, payload),
+    instance.patch(`${basePath}/updatecustodian/${id}`, payload),
   addParent: ({ _id: id, ...payload }: AddAccountParentPayload) =>
-    instance.patch(`${basePath}/${id}/addparent`, payload),
+    instance.patch(`${basePath}/addparent/${id}`, payload),
   addChildren: ({ _id: id, ...payload }: AddAccountChildrenPayload) =>
-    instance.patch(`${basePath}/${id}/addchildren`, payload)
+    instance.patch(`${basePath}/addchildren/${id}`, payload)
 });

@@ -14,8 +14,8 @@ import {
 } from './BaseSelect.tsx';
 
 export type ExportedBaseEntitySelectProps =
-  | Pick<SingleSelectionProps, 'isMultiSelect' | 'value' | 'onChange'>
-  | Pick<MultipleSelectionProps, 'isMultiSelect' | 'value' | 'onChange'>;
+  | SingleSelectionProps
+  | MultipleSelectionProps;
 
 type BaseEntitySelectProps<
   T extends BaseEntity,
@@ -77,5 +77,11 @@ export const BaseEntitySelect = <
     }
   }
 
-  return <BaseSelect {...props} loading={isPending} options={options} />;
+  return (
+    <BaseSelect
+      {...props}
+      loading={isPending || props.loading}
+      options={options}
+    />
+  );
 };

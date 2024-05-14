@@ -1,6 +1,6 @@
 import { Select, SelectProps } from 'antd';
 
-type BaseSelection<T> = Pick<SelectProps, 'options' | 'value' | 'loading'> & {
+type BaseSelection<T> = Omit<SelectProps, 'onChange'> & {
   onChange: (values: T | undefined) => void;
 };
 

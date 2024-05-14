@@ -139,7 +139,7 @@ const addAccountParent = async (req, res) => {
         const parentId = req.body.parent;
         if(!parentId){ throw new Error('No parent account ID provided.')}
         if (!mongoose.Types.ObjectId.isValid(parentId)) { throw new Error("Invalid parent ID.")}
-        if(parentId && !ValidationHelper.validateAccountId(parentId)){ throw new Error('The parent account does not exist.')}
+        if(parentId && !await ValidationHelper.validateAccountId(parentId)){ throw new Error('The parent account does not exist.')}
         updateData.parent = req.body.parent;
 
         let account =  await Account.findByIdAndUpdate( accountId, updateData, { new: true, runValidators: true})
