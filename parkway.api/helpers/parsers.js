@@ -3,7 +3,6 @@ const csv = require('csv-parser');
 const { convertDollarsToPennies, combineDateAndTime } = require('./validationHelper');
 const Account = require('../models/accounting/accountModel');
 const Contribution = require('../models/accounting/contributionModel');
-const JournalEntry = require('../models/accounting/journalModel');
 const SubsplashTransaction = require('../models/accounting/subsplashTransactionModel');
 
 //  Parse the Subsplash CSV file

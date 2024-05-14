@@ -1,17 +1,20 @@
 const mongoose = require('mongoose')
 const Contribution = require('../../models/accounting/contributionModel')
 const ValidationHelper = require('../../helpers/validationHelper');
-const AccountValidation = require('../../helpers/userValidation');
-const Profile = require('../../models/profileModel');
+//const AccountValidation = require('../../helpers/userValidation');
+const UserValidation = require('../../helpers/userValidation');
+const Deposit = require('../../models/accounting/depositModel');
+//const Profile = require('../../models/profileModel');
 
-const addCashContribution = async (req, res) => {
+const addContribution = async (req, res) => {
+
 
     try {
         if(!req.body){throw new Error('No contribution data provided.')};
 
         if(req.body.profile){
             if (!mongoose.Types.ObjectId.isValid(req.body.profile)) { throw new Error("Invalid ID.")}
-            if(!await AccountValidation.profileExists(req.body.profile)){throw new Error('A Profile Id was provided but that profile could not be found.')}
+            if(!await UserValidation.profileExists(req.body.profile)){throw new Error('A Profile Id was provided but that profile could not be found.')}
         }
 
         if (!req.body.accounts || req.body.accounts.length === 0){
@@ -23,20 +26,30 @@ const addCashContribution = async (req, res) => {
 
         const accountIds = req.body.accounts.map(account => account.account);
         const accountErrors = await ValidationHelper.validateAccountIds(accountIds);
-        if (accountErrors) { throw new Error({ errors: accountErrors }); }
+        if (accountErrors) { throw new Error(accountErrors ); }
     
         const contribution = new Contribution(req.body);
 
         const validationError = contribution.validateSync();
-        if (validationError) { throw new Error({ error: validationError.message }) }
 
-        await contribution.save();
+        if (validationError) { throw new Error(validationError.message) }
+
+        await contribution.save({new: true});
+
+        if(req.body.depositId){
+            if (!mongoose.Types.ObjectId.isValid(req.body.depositId)) { throw new Error("Invalid ID.")}
+            const deposit = await Deposit.findById(req.body.depositId);
+            if(!deposit){throw new Error('A Deposit Id was provided but that deposit could not be found.')}
+
+            deposit.contributions.push(contribution._id);
+            await deposit.save();
+        }        
+
         return res.status(201).json(contribution);
 
     } catch (error) {
         console.log(error.message);
-        return res.status(500).json(error.message);
-
+        return res.status(500).json({message: error.message});
     }
 }
 
@@ -147,7 +160,6 @@ const updateContribution = async (req, res) => {
     }
 }
 
-//Delete an asset by ID
 //TODO:  Adjust the ledger before removing the contribution
 const deleteContribution = async (req, res) => {
 
@@ -161,6 +173,7 @@ const deleteContribution = async (req, res) => {
 
         return res.status(200).json({message: "Contribution deleted", contribution: contribution});
     } catch (error) {
+        console.log(error.message);
         return res.status(500).json(error.message);
     }
 }

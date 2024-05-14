@@ -18,7 +18,7 @@ class ValidationHelper {
                 }
 
                 // Validate if the ID exists in the database
-                const account = await Account.findById(_id = accountId);
+                const account = await Account.findById(accountId);
                 if (!account) {
                     errors.push(`Account with ID ${accountId} does not exist.`);
                 }
@@ -47,10 +47,25 @@ class ValidationHelper {
         }
     }
 
+    static async validateDepositId(depositId) {
+        try {
+            if(!depositId){throw new Error("No deposit id was provided for validation.")}
+            if (!mongoose.Types.ObjectId.isValid(depositId)) { throw new Error ("The deposit ID provide for validation is not a valid ObjectId.")}
+
+            const deposit = await Deposit.findById(depositId);
+            if(!deposit){throw new Error("The deposit ID provided for validation does not exist.")}
+
+            return true;
+        } catch (error) {
+            console.log(error.message);
+            return { message: error.message };
+        }
+    }
+
     // Validate the sum of the amounts going to the accounts equals the total amount
-    static validateAccountSumMatchesAmount = (totalAmount, accounts) => {
+    static validateAccountSumMatchesAmount = (net, accounts) => {
         const sumOfAccounts = accounts.reduce((sum, record) => sum + record.amount, 0);
-        return totalAmount === sumOfAccounts;
+        return net === sumOfAccounts;
     };
 
     // Convert all financial amounts to pennies for storage
@@ -74,6 +89,8 @@ module.exports = {
     validateAccountId: ValidationHelper.validateAccountId,
     validateAccountSumMatchesAmount: ValidationHelper.validateAccountSumMatchesAmount,
     convertDollarsToPennies: ValidationHelper.convertDollarsToPennies,
-    combineDateAndTime: ValidationHelper.combineDateAndTime
+    combineDateAndTime: ValidationHelper.combineDateAndTime,
+    validateAccountId: ValidationHelper.validateAccountId,
+    validateDepositId: ValidationHelper.validateDepositId
 };
 

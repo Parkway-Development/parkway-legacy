@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 const SubsplashTransaction = require('../models/accounting/subsplashTransactionModel');
 const Contribution = require('../models/accounting/contributionModel');
-const JournalEntry = require('../models/accounting/journalModel');
 const { parseSubSplashCSV } = require('../helpers/parsers');
 const fs = require('fs');
 const csv = require('csv-parser');
@@ -18,10 +17,6 @@ const uploadSubsplashTransferFile = async (req, res) => {
         // Create Donations and insert them into the database under donations
         const contributionData = await CreateDonations(parsedData);
         await Contribution.insertMany(contributionData);
-
-        // Create Journal Entries and insert them into the database under journal entries
-        const journalEntryData = await CreateJournalEntries(contributionData);
-        await JournalEntry.insertMany(journalEntryData);
 
         // Send a success response
         res.json({ message: 'CSV data successfully uploaded and saved.' });
