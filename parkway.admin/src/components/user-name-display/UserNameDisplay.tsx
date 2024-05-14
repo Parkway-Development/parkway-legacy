@@ -1,7 +1,7 @@
-import { UserProfile } from '../../types';
+import { LimitedUserProfile } from '../../types';
 
 interface UserProfileDisplayProps {
-  user: UserProfile;
+  user: LimitedUserProfile;
 }
 
 export const UserNameDisplay = ({ user }: UserProfileDisplayProps) => {

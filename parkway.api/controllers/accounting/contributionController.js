@@ -8,6 +8,7 @@ const Deposit = require('../../models/accounting/depositModel');
 
 const addContribution = async (req, res) => {
 
+
     try {
         if(!req.body){throw new Error('No contribution data provided.')};
 
@@ -30,6 +31,7 @@ const addContribution = async (req, res) => {
         const contribution = new Contribution(req.body);
 
         const validationError = contribution.validateSync();
+
         if (validationError) { throw new Error(validationError.message) }
 
         await contribution.save({new: true});
@@ -177,7 +179,7 @@ const deleteContribution = async (req, res) => {
 }
 
 module.exports = {
-    addContribution,
+    addCashContribution,
     getAllContributions,
     getContributionById,
     getContributionsByType,

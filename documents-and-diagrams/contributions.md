@@ -221,6 +221,7 @@ graph TD
 
 ---
 ### Drawings
+
 <details>
 <summary>Model Definition</summary>
 
@@ -251,5 +252,3 @@ graph TD
 |**A person makes an $20 credit card contribution AND covers the fees**|$21.50|$1.50|$20.00|Yes|
 
 </details>
-
-

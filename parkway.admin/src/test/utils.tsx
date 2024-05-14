@@ -110,6 +110,9 @@ export const mockApi = (
       joinProfileAndUser: vi.fn(),
       login: vi.fn(),
       signup: vi.fn(),
+      getAllLimitedProfile: vi.fn(),
+      requestPasswordReset: vi.fn(),
+      passwordReset: vi.fn(),
       ...usersApi
     },
     accountsApi: mockBaseApi<Account>(accountsApi),
@@ -117,7 +120,12 @@ export const mockApi = (
     contributionsApi: mockBaseApi<Contribution>(contributionsApi),
     enumsApi: mockBaseApi<Enum>(enumsApi),
     eventCategoriesApi: mockBaseApi<EventCategory>(eventCategoriesApi),
-    eventsApi: mockBaseApi<Event>(eventsApi),
+    eventsApi: {
+      ...mockBaseApi<Event>(eventsApi),
+      addMessage: vi.fn(),
+      reject: vi.fn(),
+      approve: vi.fn()
+    },
     songsApi: mockBaseApi<Song>(songsApi),
     teamsApi: mockBaseApi<Team>(teamsApi),
     generalApi: {
