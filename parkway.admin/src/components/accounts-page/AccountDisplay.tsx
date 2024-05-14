@@ -2,6 +2,8 @@ import { Account } from '../../types';
 import { Descriptions, DescriptionsProps } from 'antd';
 import UserNameDisplay from '../user-name-display/UserNameDisplay.tsx';
 import AccountParent from './AccountParent.tsx';
+import { Link } from 'react-router-dom';
+import styles from './AccountDisplay.module.css';
 
 const AccountDisplay = (account: Account) => {
   const items: DescriptionsProps['items'] = [
@@ -29,11 +31,13 @@ const AccountDisplay = (account: Account) => {
       key: 5,
       label: 'Children',
       children: (
-        <>
+        <ol className={styles.childrenList}>
           {account.children?.map((child) => (
-            <p key={child.name}>{child.name}</p>
+            <li key={child._id}>
+              <Link to={`/accounts/${child._id}`}>{child.name}</Link>
+            </li>
           ))}
-        </>
+        </ol>
       )
     },
     {

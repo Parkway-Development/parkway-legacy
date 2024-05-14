@@ -5,6 +5,7 @@ import AccountSelect from '../account-select';
 import useApi, { buildQueryKey } from '../../hooks/useApi.ts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import styles from './AccountParent.module.css';
+import { Link } from 'react-router-dom';
 
 type AccountParentProps = {
   account: Account;
@@ -73,7 +74,9 @@ const AccountParent = ({ account }: AccountParentProps) => {
   if (account.parent) {
     return (
       <span className={styles.accountSelect}>
-        {account.parent.name}
+        <Link to={`/accounts/${account.parent._id}`}>
+          {account.parent.name}
+        </Link>
         <Button onClick={() => setIsEditing(true)} type="link">
           Update
         </Button>
