@@ -6,7 +6,7 @@ import useApi, {
 } from '../../hooks/useApi.ts';
 import { IsBaseEntityApi } from '../../api';
 import { useQuery } from '@tanstack/react-query';
-import { Alert, SelectProps } from 'antd';
+import { Alert, SelectProps, Spin } from 'antd';
 import {
   BaseSelect,
   MultipleSelectionProps,
@@ -87,11 +87,9 @@ export const BaseEntitySelect = <
     }
   }
 
-  return (
-    <BaseSelect
-      {...props}
-      loading={isPending || props.loading}
-      options={options}
-    />
-  );
+  if (isPending || props.loading) {
+    return <Spin size="small" />;
+  }
+
+  return <BaseSelect {...props} options={options} />;
 };

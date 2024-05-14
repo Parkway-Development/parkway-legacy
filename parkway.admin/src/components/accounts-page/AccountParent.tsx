@@ -4,6 +4,7 @@ import { Alert, Button } from 'antd';
 import AccountSelect from '../account-select';
 import useApi, { buildQueryKey } from '../../hooks/useApi.ts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import styles from './AccountParent.module.css';
 
 type AccountParentProps = {
   account: Account;
@@ -46,9 +47,8 @@ const AccountParent = ({ account }: AccountParentProps) => {
 
   if (isEditing) {
     return (
-      <>
+      <div className={styles.accountSelect}>
         <AccountSelect
-          style={{ minWidth: 250 }}
           value={newParent}
           onChange={(value) => setNewParent(value)}
           disabled={isPending}
@@ -56,34 +56,25 @@ const AccountParent = ({ account }: AccountParentProps) => {
         />
         <Button
           onClick={handleUpdateParent}
-          style={{ marginLeft: '1em' }}
           type="primary"
           loading={isPending}
           disabled={!newParent || newParent === account.parent?._id}
         >
           Update
         </Button>
-        <Button
-          onClick={() => setIsEditing(false)}
-          style={{ marginLeft: '1em' }}
-          loading={isPending}
-        >
+        <Button onClick={() => setIsEditing(false)} loading={isPending}>
           Cancel
         </Button>
         {error && <Alert type="error" message={formatError(error)} />}
-      </>
+      </div>
     );
   }
 
   if (account.parent) {
     return (
-      <span>
+      <span className={styles.accountSelect}>
         {account.parent.name}
-        <Button
-          onClick={() => setIsEditing(true)}
-          type="link"
-          style={{ marginLeft: '1em' }}
-        >
+        <Button onClick={() => setIsEditing(true)} type="link">
           Update
         </Button>
       </span>
@@ -91,13 +82,9 @@ const AccountParent = ({ account }: AccountParentProps) => {
   }
 
   return (
-    <span>
+    <span className={styles.accountSelect}>
       None
-      <Button
-        onClick={() => setIsEditing(true)}
-        type="link"
-        style={{ marginLeft: '1em' }}
-      >
+      <Button onClick={() => setIsEditing(true)} type="link">
         Add Parent
       </Button>
     </span>
