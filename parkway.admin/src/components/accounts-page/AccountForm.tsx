@@ -4,9 +4,7 @@ import { Account } from '../../types';
 import { AddBaseApiFormProps, BaseFormFooter } from '../base-data-table-page';
 
 type AccountWithoutId = Omit<Account, '_id'>;
-type AccountFields = Omit<AccountWithoutId, 'notes'> & {
-  notes: string;
-};
+type AccountFields = Pick<Account, 'name' | 'description' | 'type' | 'subtype'>;
 
 type AccountFormProps = AddBaseApiFormProps<Account> & {
   initialValues?: AccountWithoutId;
@@ -26,8 +24,7 @@ const AccountForm = ({
 
   const handleSave = (values: AccountFields) => {
     const payload: AccountWithoutId = {
-      ...values,
-      notes: [values.notes]
+      ...values
     };
 
     onSave(payload);
@@ -67,16 +64,20 @@ const AccountForm = ({
           <Input />
         </Form.Item>
 
-        <Form.Item<AccountFields> label="Target Amount" name="targetAmount">
-          <Input type="number" step={0.01} />
+        <Form.Item<AccountFields>
+          label="Type"
+          name="type"
+          rules={[{ required: true, whitespace: true, message: 'Required' }]}
+        >
+          <Input />
         </Form.Item>
 
-        <Form.Item<AccountFields> label="Current Value" name="currentAmount">
-          <Input type="number" step={0.01} />
-        </Form.Item>
-
-        <Form.Item<AccountFields> label="Notes" name="notes">
-          <Input.TextArea />
+        <Form.Item<AccountFields>
+          label="Sub Type"
+          name="subtype"
+          rules={[{ required: true, whitespace: true, message: 'Required' }]}
+        >
+          <Input />
         </Form.Item>
 
         <BaseFormFooter

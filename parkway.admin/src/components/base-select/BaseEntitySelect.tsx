@@ -6,16 +6,20 @@ import useApi, {
 } from '../../hooks/useApi.ts';
 import { IsBaseEntityApi } from '../../api';
 import { useQuery } from '@tanstack/react-query';
-import { Alert, SelectProps } from 'antd';
+import { Alert, SelectProps, Spin } from 'antd';
 import {
   BaseSelect,
   MultipleSelectionProps,
   SingleSelectionProps
 } from './BaseSelect.tsx';
 
-export type ExportedBaseEntitySelectProps =
-  | Pick<SingleSelectionProps, 'isMultiSelect' | 'value' | 'onChange'>
-  | Pick<MultipleSelectionProps, 'isMultiSelect' | 'value' | 'onChange'>;
+export type ExportedBaseEntitySelectProps = (
+  | SingleSelectionProps
+  | MultipleSelectionProps
+) & {
+  enabledIds?: string[];
+  excludedIds?: string[];
+};
 
 type BaseEntitySelectProps<
   T extends BaseEntity,
@@ -24,7 +28,6 @@ type BaseEntitySelectProps<
   queryKey: QueryType;
   baseApiType: TBaseApiKey;
   renderer: (value: T) => string;
-  enabledIds?: string[];
 };
 
 export const BaseEntitySelect = <
@@ -35,6 +38,7 @@ export const BaseEntitySelect = <
   baseApiType,
   renderer,
   enabledIds,
+  excludedIds,
   ...props
 }: BaseEntitySelectProps<T, TBaseApiKey>) => {
   const queryKey = buildQueryKey(queryKeyProp);
@@ -68,14 +72,24 @@ export const BaseEntitySelect = <
     const { data } = response;
 
     if (data.length) {
-      options = data.map((baseEntity) => ({
-        value: baseEntity._id,
-        label: renderer(baseEntity),
-        disabled:
-          !enabledIds || enabledIds.includes(baseEntity._id) ? undefined : true
-      }));
+      options = data
+        .filter(
+          (baseEntity) => !excludedIds || !excludedIds.includes(baseEntity._id)
+        )
+        .map((baseEntity) => ({
+          value: baseEntity._id,
+          label: renderer(baseEntity),
+          disabled:
+            !enabledIds || enabledIds.includes(baseEntity._id)
+              ? undefined
+              : true
+        }));
     }
   }
 
-  return <BaseSelect {...props} loading={isPending} options={options} />;
+  if (isPending || props.loading) {
+    return <Spin size="small" />;
+  }
+
+  return <BaseSelect {...props} options={options} />;
 };

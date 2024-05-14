@@ -90,42 +90,31 @@ const createEvents = async (event, eventSchedule) => {
 };
 
 const addEvent = async (req, res) => {
-
-    const { schedule, ...body } = req.body;
-
-    const event = new Event(body);
-
-    let validationError = event.validateSync();
-
-    if (validationError) {
-        return res.status(400).json({message: validationError.message});
-    }
-
-    let eventSchedule;
-
-    if (schedule) {
-        eventSchedule = new EventSchedule(schedule);
-
-        eventSchedule.start_date = event.start;
-        eventSchedule.last_schedule_date = event.start;
-        validationError = eventSchedule.validateSync();
-
-        if (validationError) {
-            return res.status(400).json({message: validationError.message});
-        }
-
-        const { _id } = await eventSchedule.save();
-        event.schedule = _id;
-    }
-
-
     try {
-        const event = new Event(req.body);
+        const { schedule, ...body } = req.body;
+        const event = new Event(body);
         if (!event) { throw new Error("Please provide an event.") }
 
-        const validationError = event.validateSync();
+        let validationError = event.validateSync();
     
         if (validationError) { throw new Error(validationError.message) }
+
+        let eventSchedule;
+
+        if (schedule) {
+            eventSchedule = new EventSchedule(schedule);
+
+            eventSchedule.start_date = event.start;
+            eventSchedule.last_schedule_date = event.start;
+            validationError = eventSchedule.validateSync();
+
+            if (validationError) {
+                return res.status(400).json({message: validationError.message});
+            }
+
+            const { _id } = await eventSchedule.save();
+            event.schedule = _id;
+        }
     
         await event.save();
 
@@ -139,33 +128,13 @@ const addEvent = async (req, res) => {
         console.log(error);
         return res.status(500).json(error);
     }
-
-}
-
-//Get all events
-const getAll = async (req, res) => {
-    const events = await Event.find({})
-        .sort({start: 'desc'});
-
-
-    try {
-    } catch (error) {
-    }
 }
 
 const getAllEvents = async (req, res) => {
     try {
         const events = await Event.find({}).sort({start: 'desc'});
 
-
         if (!events) { throw new Error("No events were returned.") }
-
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(404).json({error: 'No such event.'})
-    }
-    const event = await Event.findById(id)
-        .populate('schedule');
-
 
         res.status(200).json(events);
     } catch (error) {

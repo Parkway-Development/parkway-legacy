@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Account = require('../../models/accounting/accountModel');
 const ValidationHelper = require('../../helpers/validationHelper');
+const {profileExists} = require("../../helpers/userValidation");
 
 const addAccount = async (req, res) => {
     try {
@@ -112,7 +113,7 @@ const updateAccountCustodian = async (req, res) => {
         if(req.body.custodian){
             const custodianId = req.body.custodian;
             if (!mongoose.Types.ObjectId.isValid(custodianId)) { throw new Error("Invalid custodian ID.")}
-            if(custodianId && !AccountValidation.profileExists(custodianId)){ throw new Error('The profile specified for the custodian does not exist.')}
+            if(custodianId && !await profileExists(custodianId)){ throw new Error('The profile specified for the custodian does not exist.')}
             updateData.custodian = req.body.custodian;
         }
 
@@ -139,7 +140,7 @@ const addAccountParent = async (req, res) => {
         const parentId = req.body.parent;
         if(!parentId){ throw new Error('No parent account ID provided.')}
         if (!mongoose.Types.ObjectId.isValid(parentId)) { throw new Error("Invalid parent ID.")}
-        if(parentId && !ValidationHelper.validateAccountId(parentId)){ throw new Error('The parent account does not exist.')}
+        if(parentId && !await ValidationHelper.validateAccountId(parentId)){ throw new Error('The parent account does not exist.')}
         updateData.parent = req.body.parent;
 
         let account =  await Account.findByIdAndUpdate( accountId, updateData, { new: true, runValidators: true})

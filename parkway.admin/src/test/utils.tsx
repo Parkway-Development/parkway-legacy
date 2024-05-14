@@ -115,7 +115,12 @@ export const mockApi = (
       passwordReset: vi.fn(),
       ...usersApi
     },
-    accountsApi: mockBaseApi<Account>(accountsApi),
+    accountsApi: {
+      ...mockBaseApi<Account>(accountsApi),
+      updateCustodian: vi.fn(),
+      addParent: vi.fn(),
+      addChildren: vi.fn()
+    },
     assetsApi: mockBaseApi<Asset>(assetsApi),
     contributionsApi: mockBaseApi<Contribution>(contributionsApi),
     enumsApi: mockBaseApi<Enum>(enumsApi),

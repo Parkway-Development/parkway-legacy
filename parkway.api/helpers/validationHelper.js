@@ -86,6 +86,7 @@ class ValidationHelper {
 module.exports = {
     sanitizeString: ValidationHelper.sanitizeString,
     validateAccountIds: ValidationHelper.validateAccountIds,
+    validateAccountId: ValidationHelper.validateAccountId,
     validateAccountSumMatchesAmount: ValidationHelper.validateAccountSumMatchesAmount,
     convertDollarsToPennies: ValidationHelper.convertDollarsToPennies,
     combineDateAndTime: ValidationHelper.combineDateAndTime,

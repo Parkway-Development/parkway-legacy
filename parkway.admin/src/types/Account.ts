@@ -1,9 +1,13 @@
 import { BaseEntity } from './BaseEntity.ts';
+import { UserProfile } from './UserProfile.ts';
 
 export type Account = BaseEntity & {
   name: string;
   description?: string;
-  targetAmount: number;
-  currentAmount: number;
+  type: string;
+  subtype: string;
+  parent?: Account;
+  children?: Account[];
+  custodian?: UserProfile;
   notes?: string[];
 };

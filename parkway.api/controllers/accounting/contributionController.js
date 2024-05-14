@@ -6,9 +6,7 @@ const UserValidation = require('../../helpers/userValidation');
 const Deposit = require('../../models/accounting/depositModel');
 //const Profile = require('../../models/profileModel');
 
-const addContribution = async (req, res) => {
-
-
+const addCashContribution = async (req, res) => {
     try {
         if(!req.body){throw new Error('No contribution data provided.')};
 
