@@ -52,15 +52,23 @@ const AccountParent = ({ account }: AccountParentProps) => {
           value={newParent}
           onChange={(value) => setNewParent(value)}
           disabled={isPending}
+          excludedIds={[account._id]}
         />
         <Button
           onClick={handleUpdateParent}
           style={{ marginLeft: '1em' }}
           type="primary"
           loading={isPending}
-          disabled={!newParent}
+          disabled={!newParent || newParent === account.parent?._id}
         >
           Update
+        </Button>
+        <Button
+          onClick={() => setIsEditing(false)}
+          style={{ marginLeft: '1em' }}
+          loading={isPending}
+        >
+          Cancel
         </Button>
         {error && <Alert type="error" message={formatError(error)} />}
       </>
