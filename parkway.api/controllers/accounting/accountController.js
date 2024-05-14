@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Account = require('../../models/accounting/accountModel');
 const ValidationHelper = require('../../helpers/validationHelper');
+const {profileExists} = require("../../helpers/userValidation");
 
 const addAccount = async (req, res) => {
     try {
@@ -112,7 +113,7 @@ const updateAccountCustodian = async (req, res) => {
         if(req.body.custodian){
             const custodianId = req.body.custodian;
             if (!mongoose.Types.ObjectId.isValid(custodianId)) { throw new Error("Invalid custodian ID.")}
-            if(custodianId && !AccountValidation.profileExists(custodianId)){ throw new Error('The profile specified for the custodian does not exist.')}
+            if(custodianId && !await profileExists(custodianId)){ throw new Error('The profile specified for the custodian does not exist.')}
             updateData.custodian = req.body.custodian;
         }
 

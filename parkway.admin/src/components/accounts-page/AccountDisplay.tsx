@@ -1,9 +1,9 @@
 import { Account } from '../../types';
 import { Descriptions, DescriptionsProps } from 'antd';
-import UserNameDisplay from '../user-name-display/UserNameDisplay.tsx';
 import AccountParent from './AccountParent.tsx';
 import { Link } from 'react-router-dom';
 import styles from './AccountDisplay.module.css';
+import AccountCustodian from './AccountCustodian.tsx';
 
 const AccountDisplay = (account: Account) => {
   const items: DescriptionsProps['items'] = [
@@ -43,9 +43,7 @@ const AccountDisplay = (account: Account) => {
     {
       key: 6,
       label: 'Custodian',
-      children: account.custodian ? (
-        <UserNameDisplay user={account.custodian} />
-      ) : null
+      children: <AccountCustodian account={account} />
     },
     {
       key: 7,
