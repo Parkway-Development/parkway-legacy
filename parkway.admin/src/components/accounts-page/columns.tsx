@@ -1,13 +1,17 @@
 import { Account } from '../../types';
 import { OrderedColumnsType } from '../../hooks/useColumns.tsx';
 import UserNameDisplay from '../user-name-display/UserNameDisplay.tsx';
+import { Link } from 'react-router-dom';
 
 export const accountColumns: OrderedColumnsType<Account> = [
   {
     title: 'Name',
     dataIndex: 'name',
     key: 'name',
-    displayOrder: 1
+    displayOrder: 1,
+    render: (value: Account['name'], account) => (
+      <Link to={`/accounts/${account._id}`}>{value}</Link>
+    )
   },
   {
     title: 'Description',
@@ -32,7 +36,8 @@ export const accountColumns: OrderedColumnsType<Account> = [
     dataIndex: 'parent',
     key: 'parent',
     displayOrder: 5,
-    render: (value: Account['parent']) => value?.name
+    render: (value: Account['parent']) =>
+      value ? <Link to={`/accounts/${value._id}`}>{value.name}</Link> : null
   },
   {
     title: 'Children',
