@@ -10,7 +10,8 @@ const addBudget = async (req, res) => {
         await budget.save();
         return res.status(201).send(budget);
     } catch (error) {
-        return res.status(400).send(error);
+        console.log(error.message);
+        return res.status(500).json(error.message);
     }
 }
 
@@ -20,7 +21,8 @@ const getAllBudgets = async (req, res) => {
         const budgets = await Budget.find({}).populate('fund');
         return res.status(200).send(budgets);
     } catch (error) {
-        return res.status(400).send(error);
+        console.log(error.message);
+        return res.status(500).json(error.message);
     }
 }
 
@@ -30,7 +32,8 @@ const getBudgetById = async (req, res) => {
         const budget = await Budget.findById(req.params.id).populate('fund');
         return res.status(200).send(budget);
     } catch (error) {
-        return res.status(400).send(error);
+        console.log(error.message);
+        return res.status(500).json(error.message);
     }
 }
 
@@ -40,7 +43,8 @@ const getBudgetsByFund = async (req, res) => {
         const budgets = await Budget.find({ fundId: req.params.id }).populate('fund');
         return res.status(200).send(budgets);
     } catch (error) {
-        return res.status(400).send(error);
+        console.log(error.message);
+        return res.status(500).json(error.message);
     }
 }
 
@@ -50,7 +54,8 @@ const getBudgetsByYear = async (req, res) => {
         const budgets = await Budget.find({ budgetYear: req.params.year }).populate('fund');
         return res.status(200).send(budgets);
     } catch (error) {
-        return res.status(400).send(error);
+        console.log(error.message);
+        return res.status(500).json(error.message);
     }
 }
 
@@ -64,7 +69,8 @@ const updateBudget = async (req, res) => {
         return res.status(200).send('Budget updated');
     }
     catch (error) {
-        return res.status(400).send(error);
+        console.log(error.message);
+        return res.status(500).json(error.message);
     }
 }   
 
@@ -74,7 +80,8 @@ const deleteBudget = async (req, res) => {
         await Budget.findByIdAndDelete(req.params.id);
         return res.status(200).send('Budget deleted');
     } catch (error) {
-        return res.status(400).send(error);
+        console.log(error.message);
+        return res.status(500).json(error.message);
     }
 }
 

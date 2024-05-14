@@ -85,10 +85,7 @@ const generatePasswordResetToken = async (user) => {
 
 const profileExists = async (profileId) => {
     const profile = await Profile.findById(profileId);
-    if (!profile) {
-        return false;
-    }
-    return true;
+    return !!profile;
 }
 
 module.exports = { 

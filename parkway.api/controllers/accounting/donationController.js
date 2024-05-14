@@ -15,7 +15,8 @@ const addDonation = async (req, res) => {
         return res.status(201).json(donation);
     }
     catch (error){
-        return res.status(500).json(error.message)
+        console.log(error.message);
+        return res.status(500).json(error.message);
     }
 }
 
@@ -27,7 +28,8 @@ const getAllDonations = async (req, res) => {
         if(!donations){ return res.status(200).json({message: "No donations were returned."}) }
         return res.status(200).json(donations)
     } catch (error){
-        return res.status(500).json(error.message)
+        console.log(error.message);
+        return res.status(500).json(error.message);
     }
 }
 
@@ -42,7 +44,8 @@ const getDonationById = async (req, res) => {
         if(!donation){ return res.status(200).json({message: "No donation found."}) }
         return res.status(200).json(donation)
     } catch (error){
-        return res.status(500).json(error.message)
+        console.log(error.message);
+        return res.status(500).json(error.message);
     }
 }
 
@@ -57,7 +60,8 @@ const getDonationsByProfile = async (req, res) => {
         if(donations.length === 0){ return res.status(200).json({message: "No donations found."}) }
         return res.status(200).json(donations)
     } catch (error){
-        return res.status(500).json(error.message)
+        console.log(error.message);
+        return res.status(500).json(error.message);
     }
 }
 
@@ -73,7 +77,8 @@ const updateDonation = async (req, res) => {
         return res.status(200).json(donation);
     }
     catch (error){
-        return res.status(500).json(error.message)
+        console.log(error.message);
+        return res.status(500).json(error.message);
     }
 }
 
@@ -88,7 +93,8 @@ const deleteDonation = async (req, res) => {
         if(!donation){ return res.status(404).json({message: "Donation could not be found.  Donation was not deleted."}) }
         return res.status(200).json({message: 'Donation ' + donation._id + ' was deleted.', donation: donation});
     } catch (error){
-        return res.status(500).json(error.message)
+        console.log(error.message);
+        return res.status(500).json(error.message);
     }
 }
 
