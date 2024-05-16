@@ -22,7 +22,7 @@ const searchForAProfile = async (inboundProfile) => {
         else if(inProfile.mobilePhone){ profile = Profile.findOne({mobilePhone: inProfile.mobilePhone}) }
         else if(inProfile.homePhone){ profile = Profile.findOne({homePhone: inProfile.homePhone}) }
     
-        if(!profile){ throw new Error("No profile was found.")}
+        if(!profile) { return null; }
 
         profile = await Profile.populate(profile, [{ path: 'family' }, { path: 'preferences' }, { path: 'teams' }]);
 
@@ -46,7 +46,7 @@ const addProfile = async (req, res) => {
         const savedProfile = await submittedProfile.save();
         if(!savedProfile){ throw new Error("There was a problem saving the profile.")}
         
-        savedProfile = await Profile.populate(savedProfile, [{ path: 'family' }, { path: 'preferences' }, { path: 'teams' }]);
+        await Profile.populate(savedProfile, [{ path: 'family' }, { path: 'preferences' }, { path: 'teams' }]);
 
         return res.status(200).json(savedProfile)
     } catch (error) {
@@ -193,7 +193,7 @@ const updateProfile = async (req, res) => {
 
 const deleteProfile = async (req, res) => {
     try {
-        const {id} = req.params.id;
+        const {id} = req.params;
         if(!id){ throw new Error("No ID was submitted.")}
 
         if(!mongoose.Types.ObjectId.isValid(id)){ throw new Error("Invalid ID was submitted.")}
