@@ -78,7 +78,7 @@ const buildActionsColumn = <T extends BaseEntity>({
     return nodes;
   };
 
-  const itemWidth = 30;
+  const itemWidth = 35;
   let width = 0;
   if (editLink) width += itemWidth;
   if (deleteAction) width += itemWidth;

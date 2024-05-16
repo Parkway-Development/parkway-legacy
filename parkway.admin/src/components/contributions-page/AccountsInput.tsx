@@ -37,7 +37,7 @@ const AccountsInput = ({
       .filter((account) => account.account !== undefined)
       .map(({ account, amount }) => ({ account: account!, amount }));
 
-    onChange(changeValues, remaining === 0);
+    onChange(changeValues, totalAmount > 0 && remaining === 0);
   }, [accounts, remaining]);
 
   const handleAccountChange = useCallback(

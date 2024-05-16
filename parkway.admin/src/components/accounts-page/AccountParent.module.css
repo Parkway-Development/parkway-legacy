@@ -1,0 +1,7 @@
+.accountSelect button {
+    margin-left: 1em;
+}
+
+.accountSelect :global(.ant-select) {
+    min-width: 250px;
+}

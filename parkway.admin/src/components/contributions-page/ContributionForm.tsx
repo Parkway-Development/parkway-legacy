@@ -1,4 +1,4 @@
-import { Breadcrumb, DatePicker, Form, Input, Switch } from 'antd';
+import { Breadcrumb, DatePicker, Form, Input } from 'antd';
 import { Link } from 'react-router-dom';
 import { Contribution, ContributionAccount } from '../../types';
 import { AddBaseApiFormProps, BaseFormFooter } from '../base-data-table-page';
@@ -6,6 +6,7 @@ import UserProfileSelect from '../user-profile-select';
 import { transformDateToDayjs } from '../../utilities';
 import AccountsInput from './AccountsInput.tsx';
 import { useState } from 'react';
+import MoneyDisplay from '../money-display';
 
 type ContributionWithoutId = Omit<Contribution, '_id'>;
 
@@ -20,19 +21,23 @@ const ContributionForm = ({
   onCancel
 }: ContributionFormProps) => {
   const [form] = Form.useForm<ContributionWithoutId>();
-  const totalAmount = Form.useWatch('totalAmount', form);
+  const grossAmount = Form.useWatch('gross', form);
+  const feesAmount = Form.useWatch('fees', form);
+  const netAmount = grossAmount - feesAmount;
+
   const [isAccountBalanceValid, setIsAccountBalanceValid] =
     useState<boolean>(false);
 
   const initialValues = initialValuesProp
     ? {
         ...initialValuesProp,
-        transactionDate: transformDateToDayjs(
-          initialValuesProp.transactionDate
-        ),
-        depositDate: transformDateToDayjs(initialValuesProp.depositDate)
+        transactionDate: transformDateToDayjs(initialValuesProp.transactionDate)
       }
-    : undefined;
+    : {
+        fees: 0,
+        profile: undefined,
+        accounts: undefined
+      };
 
   const handleProfileChange = (value: string | undefined) =>
     form.setFieldsValue({
@@ -48,6 +53,19 @@ const ContributionForm = ({
     });
 
     setIsAccountBalanceValid(isValid);
+  };
+
+  const handleSave = (values: ContributionWithoutId) => {
+    if (isNaN(netAmount) || netAmount <= 0) {
+      return false;
+    }
+
+    const finalPayload = {
+      ...values,
+      net: netAmount
+    };
+
+    onSave(finalPayload);
   };
 
   return (
@@ -70,17 +88,31 @@ const ContributionForm = ({
         name="basic"
         labelCol={{ span: 3 }}
         wrapperCol={{ span: 12 }}
-        onFinish={onSave}
+        onFinish={handleSave}
         autoComplete="off"
         disabled={isSaving}
         initialValues={initialValues}
       >
         <Form.Item<ContributionWithoutId>
-          label="Total Amount"
-          name="totalAmount"
-          rules={[{ required: true, message: 'Total amount is required.' }]}
+          label="Gross Amount"
+          name="gross"
+          rules={[{ required: true, message: 'Gross amount is required.' }]}
         >
           <Input autoFocus type="number" step={0.01} />
+        </Form.Item>
+
+        <Form.Item<ContributionWithoutId>
+          label="Fees"
+          name="fees"
+          rules={[{ required: true, message: 'Fee amount is required.' }]}
+        >
+          <Input type="number" step={0.01} />
+        </Form.Item>
+
+        <Form.Item<ContributionWithoutId> label="Net Amount" name="net">
+          <span>
+            {!isNaN(netAmount) ? <MoneyDisplay money={netAmount} /> : '$0.00'}
+          </span>
         </Form.Item>
 
         <Form.Item<ContributionWithoutId>
@@ -91,21 +123,7 @@ const ContributionForm = ({
           <DatePicker />
         </Form.Item>
 
-        <Form.Item<ContributionWithoutId>
-          label="Deposit Date"
-          name="depositDate"
-        >
-          <DatePicker />
-        </Form.Item>
-
-        <Form.Item<ContributionWithoutId> label="Locked" name="locked">
-          <Switch />
-        </Form.Item>
-
-        <Form.Item<ContributionWithoutId>
-          label="Deposit Batch Id"
-          name="depositBatchId"
-        >
+        <Form.Item<ContributionWithoutId> label="Deposit Id" name="depositId">
           <Input />
         </Form.Item>
 
@@ -120,7 +138,7 @@ const ContributionForm = ({
         <Form.Item<ContributionWithoutId> label="Accounts" name="accounts">
           <AccountsInput
             onChange={handleAccountsChange}
-            totalAmount={totalAmount}
+            totalAmount={netAmount}
             initialValue={initialValues?.accounts}
           />
         </Form.Item>
