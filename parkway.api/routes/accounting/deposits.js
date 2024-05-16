@@ -13,7 +13,7 @@ const {
 
 const { addNotFoundHandler, configureBaseApiRoutes } = require('../baseApiRouter');
 
-router.get('/by-date-range', getDepositsByDateRange);
+router.get('/bydaterange', getDepositsByDateRange);
 
 configureBaseApiRoutes(router, addDeposit, getAllDeposits, getDepositById, updateDeposit, deleteDeposit);
 

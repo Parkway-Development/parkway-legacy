@@ -4,6 +4,7 @@ const ValidationHelper = require('../../helpers/validationHelper');
 const UserValidation = require('../../helpers/userValidation');
 const Deposit = require('../../models/accounting/depositModel');
 const AppError = require('../../applicationErrors')
+const Account = require('../../models/accounting/accountModel');
 
 const addContribution = async (req, res, next) => {
     try {
@@ -17,14 +18,23 @@ const addContribution = async (req, res, next) => {
         if (!req.body.accounts || req.body.accounts.length === 0){
             let generalFund = await Account.findOne({name: 'General Fund'});
             if(!generalFund){
-                generalFund = new Account({name: 'General Fund', type: 'Fund'});
+                generalFund = new Account({name: 'General Fund', type: 'fund'});
+                await generalFund.save();
             }
+            req.body.accounts = [{account: generalFund._id, amount: req.body.net}];
         }
 
         const accountIds = req.body.accounts.map(account => account.account);
         const accountErrors = await ValidationHelper.validateAccountIds(accountIds);
-        if (accountErrors) { throw new AppError.Validation('addContribution', accountErrors); }
-    
+        if (accountErrors.length > 0) { throw new AppError.Validation('addContribution', accountErrors); }
+
+        let deposit;
+        if(req.body.depositId){
+            if (!mongoose.Types.ObjectId.isValid(req.body.depositId)) { throw new AppError.InvalidId('addContribution')}
+            deposit = await Deposit.findById(req.body.depositId);
+            if(!deposit){throw new AppError.DepositDoesNotExist('addContribution')}
+        }        
+
         const contribution = new Contribution(req.body);
 
         const validationError = contribution.validateSync();
@@ -33,14 +43,8 @@ const addContribution = async (req, res, next) => {
 
         await contribution.save({new: true});
 
-        if(req.body.depositId){
-            if (!mongoose.Types.ObjectId.isValid(req.body.depositId)) { throw new AppError.InvalidId('addContribution')}
-            const deposit = await Deposit.findById(req.body.depositId);
-            if(!deposit){throw new AppError.DepositDoesNotExist('addContribution')}
-
-            deposit.contributions.push(contribution._id);
-            await deposit.save();
-        }        
+        deposit.contributions.push(contribution._id);
+        await deposit.save();
 
         return res.status(201).json(contribution);
 
@@ -69,6 +73,7 @@ const getContributionsByDateRange = async (req, res, next) => {
     try {
         const { startDate, endDate, dateType } = req.query;
         if(!startDate || !endDate){ throw new AppError.MissingDateRange('getContributionsByDateRange')}
+        if(ValidationHelper.checkDateOrder(startDate, endDate)){ throw new AppError.InvalidDateRange('getContributionsByDateRange')}
         if(!dateType === 'transactionDate'){ dateType = 'depositDate'}
 
         let contributions;

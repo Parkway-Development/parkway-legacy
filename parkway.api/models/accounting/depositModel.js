@@ -5,15 +5,17 @@ const depositSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
-    date: {
+    processedDate: {
         type: Date,
-        required: true,
-        default: Date.now()
     },
-    profileId: {
+    creatorProfileId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Profile',
         required: true
+    },
+    approverProfileId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Profile'
     },
     contributions: [
         {
@@ -27,6 +29,8 @@ const depositSchema = new mongoose.Schema({
             ref: 'Donation'
         }
     ]
+}, {
+    timestamps: true
 });
 
 module.exports = mongoose.model('Deposit', depositSchema);

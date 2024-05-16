@@ -87,6 +87,14 @@ class DepositDoesNotExist extends ApplicationError {
     }
 }
 
+class DepositAlreadyProcessed extends ApplicationError {
+    constructor(method,
+        customMessage = 'The deposit has already been processed', 
+        customErrorCode = 'DEPOSITS_003') {
+            super(customMessage, 400, method, customErrorCode);
+    }
+}
+
 class DuplicateAccount extends ApplicationError {
     constructor(method,
         customMessage = 'An account already exists with that name', 
@@ -118,11 +126,17 @@ class MissingDateRange extends ApplicationError {
             super(customMessage, 400, method, customErrorCode);
     }
 }
-
+class InvalidDateRange extends ApplicationError {
+    constructor(method,
+        customMessage = 'The start date must be before the end date', 
+        customErrorCode = 'REQUIRED_PARAMETERS_003') {
+            super(customMessage, 400, method, customErrorCode);
+    }
+}
 class MissingRequestBody extends ApplicationError {
     constructor(method,
         customMessage = 'This method requires a request body with particular parameters, but none were provided', 
-        customErrorCode = 'REQUIRED_PARAMETERS_003') {
+        customErrorCode = 'REQUIRED_PARAMETERS_004') {
             super(customMessage, 400, method, customErrorCode);
     }
 }
@@ -130,7 +144,7 @@ class MissingRequestBody extends ApplicationError {
 class MissingId extends ApplicationError {
     constructor(method,
         customMessage = 'This method requires and Id, but no Id was provided', 
-        customErrorCode = 'REQUIRED_PARAMETERS_004') {
+        customErrorCode = 'REQUIRED_PARAMETERS_005') {
             super(customMessage, 400, method, customErrorCode);
     }
 }
@@ -138,7 +152,7 @@ class MissingId extends ApplicationError {
 class InvalidId extends ApplicationError {
     constructor(method,
         customMessage = 'The provided Id is not valid Mongo Id', 
-        customErrorCode = 'REQUIRED_PARAMETERS_001') {
+        customErrorCode = 'REQUIRED_PARAMETERS_006') {
             super(customMessage, 400, method, customErrorCode);
     }
 }
@@ -162,6 +176,7 @@ module.exports = {
     DeleteFailed,
     MissingRequiredParameter,
     MissingDateRange,
+    InvalidDateRange,
     MissingRequestBody,
     InternalServerError,
     InvalidId,
@@ -169,6 +184,7 @@ module.exports = {
     Validation,
     DepositUnbalanced,
     DepositDoesNotExist,
+    DepositAlreadyProcessed,
     DuplicateAccount,
     AccountDelete,
     ProfileDoesNotExist

@@ -16,6 +16,24 @@ class ValidationHelper {
         let fullDateTime = `${date} ${time}`;
         return new Date(fullDateTime);
     };
+
+    static validateAccountIds = async (accountId) => {
+        let errors = [];
+        for (let i = 0; i < accountId.length; i++) {
+            if (!mongoose.Types.ObjectId.isValid(accountId[i])) { errors.push(`Invalid account id: ${accountId[i]}`) }
+            
+            const account = await Account.findById(accountId[i]);
+            if (!account) { errors.push(`Account not found: ${accountId[i]}`) }
+        }
+
+        return errors;
+    }
+
+    static checkDateOrder(startDate, endDate) {
+        let start = new Date(startDate);
+        let end = new Date(endDate);
+        return start < end;
+    }
 }
 
 
@@ -23,5 +41,7 @@ module.exports = {
     sanitizeString: ValidationHelper.sanitizeString,
     validateAccountSumMatchesAmount: ValidationHelper.validateAccountSumMatchesAmount,
     combineDateAndTime: ValidationHelper.combineDateAndTime,
+    checkDateOrder: ValidationHelper.checkDateOrder,
+    validateAccountIds: ValidationHelper.validateAccountIds
 };
 
