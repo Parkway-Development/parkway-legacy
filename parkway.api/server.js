@@ -7,6 +7,7 @@ const conn = mongoose.connection;
 const Multer = require('multer');
 const upload = Multer({ dest: 'uploads/' });
 const { validateAppAndKey } = require('./middleware/validateAppAndKey');
+const errorHandler = require('./middleware/errorHandler');
 
 const userRoutes = require('./routes/users');
 const profileRoutes = require('./routes/profiles');
@@ -29,6 +30,10 @@ const depositRoutes = require('./routes/accounting/deposits');
 //express app
 const app = express();
 
+app.use((req, res, next)  => { console.log(req.path, req.method, req.body), next(); }) 
+app.use(validateAppAndKey);
+app.use(express.json());
+
 if (process.env.ALLOWED_ORIGINS) {
     const allowedOrigins = process.env.ALLOWED_ORIGINS.split(',');
 
@@ -44,12 +49,6 @@ if (process.env.ALLOWED_ORIGINS) {
 
     app.use(cors(corsOptions));
 }
-
-//Middleware
-app.use((req, res, next)  => { console.log(req.path, req.method, req.body), next(); }) 
-app.use(validateAppAndKey);
-app.use(express.json());
-
 
 //Routes
 app.get ('/', (req, res) => { res.send('Welcome to the Parkway API'); });
@@ -81,6 +80,8 @@ app.use('*', (req, res) => {
     return res.status(404).json({ message: 'Endpoint not found' });
 });
 
+//Middleware
+app.use(errorHandler)
 
 //Database connection
 mongoose.connect(process.env.DATABASE_URL)

@@ -1,59 +1,60 @@
 const mongoose = require('mongoose')
 const Deposit = require('../../models/accounting/depositModel')
+const AppError = require('../../applicationErrors')
 
-const addDeposit = async (req, res) => {
+const addDeposit = async (req, res, next) => {
         try {
-        if(!req.body){throw new Error('No deposit data provided.')};
+        if(!req.body){throw new AppError.RequestBodyMissing('addDeposit')};
 
         const deposit = new Deposit(req.body);
 
         const validationError = deposit.validateSync();
-        if (validationError) { throw new Error({ error: validationError.message }) }
+        if (validationError) { throw new AppError.Validation('addDeposit') }
 
         await deposit.save();
         return res.status(201).json(deposit);
 
     } catch (error) {
-        console.log(error.message);
-        return res.status(500).json(error.message);
-
+        next(error)
+        console.log({method: error.method, message: error.message});
     }
 }
 
-const getAllDeposits = async (req, res) => {
+const getAllDeposits = async (req, res, next) => {
 
     try {
         const deposits = await Deposit.find({});
-        if(deposits.length === 0) { throw new Error('No deposits were returned.')}
+
+        if(deposits.length === 0){ return res.status(200).json('No deposits found.'); }
+
         return res.status(200).json(deposits);
+
     } catch (error) {
-        console.log(error.message);
-        return res.status(500).json(error.message);
+        next(error)
+        console.log({method: error.method, message: error.message});
     }
 }
 
-//TODO: Add Date range
-
-const getDepositById = async (req, res) => {
+const getDepositById = async (req, res, next) => {
     try {
-        if(!req.params.id){ throw new Error('No Deposit ID provided.')}
-        if(!mongoose.Types.ObjectId.isValid(req.params.id)){ throw new Error('Invalid ID.')}
+        if(!req.params.id){ throw new AppError.MissingId('getDepositById')}
+        if(!mongoose.Types.ObjectId.isValid(req.params.id)){ throw new AppError.InvalidId('getDepositById')}
 
         const deposit = await Deposit.findById(req.params.id)
             .populate('contributions');
-        if(!deposit) {throw new Error('Deposit not found.')};
 
+        if(!deposit){ return res.status(200).json('No deposit found for that Id.')}
         return res.status(200).json(deposit);
     } catch (error) {
-        console.log(error.message);
-        return res.status(500).json(error.message);
+        next(error)
+        console.log({method: error.method, message: error.message});
     }
 }
 
-const getPopulatedDepositById = async (req, res) => {
+const getPopulatedDepositById = async (req, res, next) => {
     try {
-        if(!req.params.id){ throw new Error('No Deposit ID provided.')}
-        if(!mongoose.Types.ObjectId.isValid(req.params.id)){ throw new Error('Invalid ID.')}
+        if(!req.params.id){ throw new AppError.MissingId('getPopulatedDepositById')}
+        if(!mongoose.Types.ObjectId.isValid(req.params.id)){ throw new AppError.InvalidId('getPopulatedDepositById')}
 
         const deposit = await Deposit.findById(req.params.id)
             .populate({
@@ -68,64 +69,83 @@ const getPopulatedDepositById = async (req, res) => {
                     model: 'Profile'
                 }
             ]});
-        if(!deposit) {throw new Error('Deposit not found.')};
 
+        if(!deposit){ return res.status(200).json('No deposit found for that Id.')}
         return res.status(200).json(deposit);
     } catch (error) {
-        console.log(error.message);
-        return res.status(500).json(error.message);
+        next(error)
+        console.log({method: error.method, message: error.message});
     }
 }
 
-const updateDeposit = async (req, res) => {
+const getDepositsByDateRange = async (req, res, next) => {
     try {
-        if(!req.params.id){ throw new Error('No Deposit ID provided.')}
-        if(!mongoose.Types.ObjectId.isValid(req.params.id)){ throw new Error('Invalid ID.')}
+        const { startDate, endDate } = req.query;
+
+        const deposits = await Deposit.find({
+            date: {
+                $gte: new Date(startDate).toISOString(),
+                $lte: new Date(endDate).toISOString()
+            }
+        }).sort({ date: 1});
+
+        if(deposits.length === 0){ return res.status(200).json('No deposits found for that date range.')}
+        return res.status(200).json(deposits);
+    } catch (error) {
+        next(error)
+        console.log({method: error.method, message: error.message});
+    }
+}
+
+const updateDeposit = async (req, res, next) => {
+    try {
+        if(!req.params.id){ throw new AppError.MissingId('updateDeposit')}
+        if(!mongoose.Types.ObjectId.isValid(req.params.id)){ throw new AppError.InvalidId('updateDeposit')}
 
         const deposit = await Deposit.findById(req.params.id);
-        if(!deposit) {throw new Error('Deposit not found.')};
+        if(!deposit) {throw new AppError.NotFound('updateDeposit')};
 
         Object.keys(req.body).forEach(key => {
             deposit[key] = req.body[key];
         });
 
         const validationError = deposit.validateSync();
-        if (validationError) { throw new Error({ error: validationError.message }) }
+        if (validationError) { throw new AppError.Validation('updateDeposit') }
 
         await deposit.save();
         return res.status(200).json(deposit);
     } catch (error) {
-        console.log(error.message);
-        return res.status(500).json(error.message);
+        next(error)
+        console.log({method: error.method, message: error.message});
     }
 }
 
-const deleteDeposit = async (req, res) => {
+const deleteDeposit = async (req, res, next) => {
     try {
-        if(!req.params.id){ throw new Error('No Deposit ID provided.')}
-        if(!mongoose.Types.ObjectId.isValid(req.params.id)){ throw new Error('Invalid ID.')}
+        if(!req.params.id){ throw new AppError.MissingId('deleteDeposit')}
+        if(!mongoose.Types.ObjectId.isValid(req.params.id)){ throw new AppError.InvalidId('deleteDeposit')}
 
         const deposit = await Deposit.findById(req.params.id);
-        if(!deposit) {throw new Error('Deposit not found.')};
+        if(!deposit) {throw new AppError.NotFound('deleteDeposit')};
 
         await deposit.deleteOne();
         return res.status(200).json('Deposit deleted.');
     } catch (error) {
-        console.log(error.message);
-        return res.status(500).json(error.message);
+        next(error)
+        console.log({method: error.method, message: error.message});
     }
 }
 
-const processDeposit = async (req, res) => {
+const processDeposit = async (req, res, next) => {
     try {
-        if(!req.params.id){ throw new Error('No Deposit ID provided.')}
-        if(!mongoose.Types.ObjectId.isValid(req.params.id)){ throw new Error('Invalid ID.')}
+        if(!req.params.id){ throw new AppError.MissingId('processDeposit')}
+        if(!mongoose.Types.ObjectId.isValid(req.params.id)){ throw new AppError.InvalidId('processDeposit')}
 
         const approverId = req.body
-        if(!approverId) {throw new Error('No approver ID provided.')}
+        if(!approverId) {throw new AppError.IdMissing('processDeposit')}
 
         const deposit = await Deposit.findById(req.params.id);
-        if(!deposit) {throw new Error('Deposit not found.')};
+        if(!deposit) {throw new AppError.NotFound('processDeposit')};
 
         const total = deposit.total
         const contributionTotal = 0;
@@ -134,15 +154,15 @@ const processDeposit = async (req, res) => {
             contributionTotal += deposit.contributions[i].amount
         }
 
-        if(!total === contributionTotal) {throw new Error('Deposit total does not match contribution total.')}
+        if(!total === contributionTotal) {throw new AppError.DepositUnbalanced('processDeposit')}
 
         deposit.approverId = approverId;
         deposit = await deposit.save();
 
         return res.status(200).json(deposit);
     } catch (error) {
-        console.log(error.message);
-        return res.status(500).json(error.message);
+        next(error)
+        console.log({method: error.method, message: error.message});
     }
 }
 
@@ -151,6 +171,7 @@ module.exports = {
     getAllDeposits,
     getDepositById,
     getPopulatedDepositById,
+    getDepositsByDateRange,
     updateDeposit,
     deleteDeposit,
     processDeposit
