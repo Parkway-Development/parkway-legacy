@@ -162,12 +162,12 @@ const updateContribution = async (req, res) => {
 const deleteContribution = async (req, res) => {
 
     if(!req.params.id){ return res.status(400).json({error: 'No Contribution ID provided.'})}
-    if(!ValidationHelper.validateId(req.params.id)){ return res.status(404).json({error: 'Id is not valid.'}) }
+    //if(!ValidationHelper.validateId(req.params.id)){ return res.status(404).json({error: 'Id is not valid.'}) }
 
     try {
         const contribution = await Contribution.findByIdAndDelete(req.params.id);
         if(!contribution){ return res.status(404).json({message: "Contribution could not be found.  Contribution was not deleted."})};
-        if(contribution.depositDate){ return res.status(200).json({message: 'This contribution has already been deposited and cannot be deleted.  You may only assign it to another profile or change the distribution between accounts.'}) }
+        if(contribution.depositId){ return res.status(200).json({message: 'This contribution has already been deposited and cannot be deleted.  You may only assign it to another profile or change the distribution between accounts.'}) }
 
         return res.status(200).json({message: "Contribution deleted", contribution: contribution});
     } catch (error) {
