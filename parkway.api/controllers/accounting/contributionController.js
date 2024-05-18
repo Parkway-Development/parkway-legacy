@@ -1,188 +1,304 @@
 const mongoose = require('mongoose')
 const Contribution = require('../../models/accounting/contributionModel')
 const ValidationHelper = require('../../helpers/validationHelper');
-//const AccountValidation = require('../../helpers/userValidation');
 const UserValidation = require('../../helpers/userValidation');
 const Deposit = require('../../models/accounting/depositModel');
-//const Profile = require('../../models/profileModel');
+const AppError = require('../../applicationErrors')
+const Account = require('../../models/accounting/accountModel');
 
-const addCashContribution = async (req, res) => {
+const addContribution = async (req, res, next) => {
     try {
-        if(!req.body){throw new Error('No contribution data provided.')};
+        if(!req.body){throw new AppError.RequestBodyMissing('addContribution')};
 
         if(req.body.profile){
-            if (!mongoose.Types.ObjectId.isValid(req.body.profile)) { throw new Error("Invalid ID.")}
-            if(!await UserValidation.profileExists(req.body.profile)){throw new Error('A Profile Id was provided but that profile could not be found.')}
+            if (!mongoose.Types.ObjectId.isValid(req.body.profile)) { throw new AppError.InvalidId('addContribution')}
+            if(!await UserValidation.profileExists(req.body.profile)){throw new AppError.ProfileDoesNotExist('addContribution')}
         }
 
         if (!req.body.accounts || req.body.accounts.length === 0){
             let generalFund = await Account.findOne({name: 'General Fund'});
             if(!generalFund){
-                generalFund = new Account({name: 'General Fund', type: 'Fund'});
+                generalFund = new Account({name: 'General Fund', type: 'fund'});
+                await generalFund.save();
             }
+            req.body.accounts = [{account: generalFund._id, amount: req.body.net}];
         }
 
         const accountIds = req.body.accounts.map(account => account.account);
         const accountErrors = await ValidationHelper.validateAccountIds(accountIds);
-        if (accountErrors) { throw new Error(accountErrors ); }
-    
+        if (accountErrors.length > 0) { throw new AppError.Validation('addContribution', accountErrors); }
+
+        let deposit;
+        if(req.body.depositId){
+            if (!mongoose.Types.ObjectId.isValid(req.body.depositId)) { throw new AppError.InvalidId('addContribution')}
+            deposit = await Deposit.findById(req.body.depositId);
+            if(!deposit){throw new AppError.DepositDoesNotExist('addContribution')}
+        }        
+
         const contribution = new Contribution(req.body);
 
         const validationError = contribution.validateSync();
 
-        if (validationError) { throw new Error(validationError.message) }
+        if (validationError) { throw new AppError.Validation('addContribution', validationError.message) }
 
         await contribution.save({new: true});
 
-        if(req.body.depositId){
-            if (!mongoose.Types.ObjectId.isValid(req.body.depositId)) { throw new Error("Invalid ID.")}
-            const deposit = await Deposit.findById(req.body.depositId);
-            if(!deposit){throw new Error('A Deposit Id was provided but that deposit could not be found.')}
-
-            deposit.contributions.push(contribution._id);
-            await deposit.save();
-        }        
+        deposit.contributions.push(contribution._id);
+        await deposit.save();
 
         return res.status(201).json(contribution);
 
     } catch (error) {
-        console.log(error.message);
-        return res.status(500).json({message: error.message});
+        next(error)
+        console.log({method: error.method, message: error.message});
     }
 }
 
-//TODO: Add Date range
 //TODO: Add pagination
-const getAllContributions = async (req, res) => {
+const getAllContributions = async (req, res, next) => {
 
     try {
         const contributions = await Contribution.find({});
-        if(contributions.length === 0) { throw new Error('No contributions were returned.')}
+        
+        if(contributions.length === 0) { return res.status(200).json({contributions: contributions, message: 'No contributions were returned.'})}
+        
         return res.status(200).json(contributions);
     } catch (error) {
-        console.log(error.message);
-        return res.status(500).json(error.message);
+        next(error)
+        console.log({method: error.method, message: error.message});
     }
 }
 
-const getContributionById = async (req, res) => {
+const getContributionsByDateRange = async (req, res, next) => {
     try {
-        if(!req.params.id){ throw new Error('No Contribution ID provided.')}
-        if(!mongoose.Types.ObjectId.isValid(req.params.id)){ throw new Error('Invalid ID.')}
+        const { startDate, endDate, dateType } = req.query;
+        if(!startDate || !endDate){ throw new AppError.MissingDateRange('getContributionsByDateRange')}
+        if(ValidationHelper.checkDateOrder(startDate, endDate)){ throw new AppError.InvalidDateRange('getContributionsByDateRange')}
+        if(!dateType === 'transactionDate'){ dateType = 'depositDate'}
+
+        let contributions;
+
+        if(dateType === 'depositDate'){
+            contributions = await Contribution.find({
+                depositDate: {
+                    $gte: startDate,
+                    $lte: endDate
+                }
+            }).sort({ depositDate: 1});
+        } else {
+            contributions = await Contribution.find({
+                transactionDate: {
+                    $gte: startDate,
+                    $lte: endDate
+                }
+            }).sort({ transactionDate: 1});
+        }
+
+        if(contributions.length === 0){ return res.status(200).json({contributions: contributions, message: 'No contributions were returned.'})}
+
+        return res.status(200).json(contributions);
+    } catch (error) {
+        next(error)
+        console.log({method: error.method, message: error.message});
+    }
+}
+
+const getContributionById = async (req, res, next) => {
+    try {
+        if(!req.params.id){ throw new AppError.MissingId('getContributionById')}
+        if(!mongoose.Types.ObjectId.isValid(req.params.id)){ throw new AppError.InvalidId('getContributionById')}
 
         const contribution = await Contribution.findById(req.params.id);
-        if(!contribution) {throw new Error('Contribution not found.')};
+        if(!contribution) { return res.status(200).json({message: 'No contribution found for that Id.'})};
 
         return res.status(200).json(contribution);
     } catch (error) {
-        console.log(error.message);
-        return res.status(500).json(error.message);
+        next(error)
+        console.log({method: error.method, message: error.message});
     }
 }
 
-//TODO: Make case insensitive
-//TODO: Add Date range
 //TODO: Add pagination
-const getContributionsByType = async (req, res) => {
+const getContributionsByType = async (req, res, next) => {
     try {
-        if(!req.params.type){ throw new Error('No Contribution type provided.')}
+        if(!req.params.type){ throw new AppError.MissingRequiredParameter('getContributionsByType','No Contribution type provided.')}
+        const { startDate, endDate, dateType } = req.query;
 
-        const contributions = await Contribution.find({ type: req.params.type });
-        if(contributions.length === 0) throw new Error('No contributions were returned.');
+        let contributions;
+
+        if(!startDate || !endDate){
+            contributions = await Contribution.find({ type: req.params.type });
+        } else {
+            if(!dateType === 'transactionDate'){ dateType = 'depositDate'}
+
+            if(dateType === 'depositDate'){
+                contributions = await Contribution.find({
+                    type: req.params.type,
+                    depositDate: {
+                        $gte: startDate,
+                        $lte: endDate
+                    }
+                }).sort({ depositDate: 1});
+            } else {
+                contributions = await Contribution.find({
+                    type: req.params.type,
+                    transactionDate: {
+                        $gte: startDate,
+                        $lte: endDate
+                    }
+                }).sort({ transactionDate: 1});
+            }
+            if(contributions.length === 0) { return res.status(200).json({message: 'No contributions were returned for the given type in the specified date range.'})}
+        }
+        if(contributions.length === 0) { return res.status(200).json({message: 'No contributions were returned.'})} 
+        return res.status(200).json(contributions);
+    }
+    catch (error) {
+        next(error)
+        console.log({method: error.method, message: error.message});
+    }
+}
+
+//TODO: Add pagination
+const getContributionsByProfileId = async (req, res, next) => {
+    try {
+        if(!req.params.id){ throw new AppError.MissingId('getContributionsByProfileId')}
+        if(!mongoose.Types.ObjectId.isValid(req.params.id)){ throw new AppError.InvalidId('getContributionsByProfile')}
+
+        const { startDate, endDate, dateType } = req.query;
+
+        let contributions;
+
+        if(!startDate || !endDate){
+            contributions = await Contribution.find({ profile: req.params.id });
+        } else {
+            if(!dateType === 'transactionDate'){ dateType = 'depositDate'}
+
+            if(dateType === 'depositDate'){
+                contributions = await Contribution.find({
+                    profile: req.params.id,
+                    depositDate: {
+                        $gte: startDate,
+                        $lte: endDate
+                    }
+                }).sort({ depositDate: 1});
+            } else {
+                contributions = await Contribution.find({
+                    profile: req.params.id,
+                    transactionDate: {
+                        $gte: startDate,
+                        $lte: endDate
+                    }
+                }).sort({ transactionDate: 1});
+            }
+            if(contributions.length === 0) { return res.status(200).json({message: 'No contributions were returned for the given profile Id and the specified date range.'})}
+        }
+
+        if(contributions.length === 0) { return res.status(200).json({message: 'No contributions were returned.'})}
+        
         return res.status(200).json(contributions);
     } catch (error) {
-        console.log(error.message);
-        return res.status(500).json(error.message);
+        next(error)
+        console.log({method: error.method, message: error.message});
     }
 }
 
-//TODO: Add Date range
 //TODO: Add pagination
-const getContributionsByProfileId = async (req, res) => {
+const getContributionsByAccountId = async (req, res, next) => {
     try {
+        if(!req.params.id){ throw new AppError.MissingId('getContributionsByAccountId')}
+        if(!mongoose.Types.ObjectId.isValid(req.params.id)){ throw new AppError.InvalidId('getContributionsByAccountId')}
 
-        if(!req.params.id){ throw new Error('No Profile ID provided.')}
-        if(!mongoose.Types.ObjectId.isValid(req.params.id)){ throw new Error('Invalid ID.')}
+        const { startDate, endDate, dateType } = req.query;
 
-        const contributions = await Contribution.find({ profile: req.params.id });
-        if(contributions.length === 0) { throw new Error('No contributions were returned.')}
+        let contributions;
+
+        if(!startDate || !endDate){
+            contributions = await Contribution.find({ 'accounts.account': req.params.id });
+        } else {
+            if(!dateType === 'transactionDate'){ dateType = 'depositDate'}
+
+            if(dateType === 'depositDate'){
+                contributions = await Contribution.find({
+                    'accounts.account': req.params.id,
+                    depositDate: {
+                        $gte: startDate,
+                        $lte: endDate
+                    }
+                }).sort({ depositDate: 1});
+            } else {
+                contributions = await Contribution.find({
+                    'accounts.account': req.params.id,
+                    transactionDate: {
+                        $gte: startDate,
+                        $lte: endDate
+                    }
+                }).sort({ transactionDate: 1});
+            }
+            if(contributions.length === 0) { return res.status(200).json({message: 'No contributions were returned for the given account Id and the specified date range.'})}
+        }
+
+        if(contributions.length === 0) { return res.status(200).json({message: 'No contributions were returned.'})}
+
         return res.status(200).json(contributions);
     } catch (error) {
-        console.log(error.message);
-        return res.status(500).json(error.message);
+        next(error)
+        console.log({method: error.method, message: error.message});
     }
 }
 
-//TODO: Add Date range
-//TODO: Add pagination
-const getContributionsByAccountId = async (req, res) => {
+const updateContribution = async (req, res, next) => {
     try {
-        if(!req.params.id){ throw new Error('No Account ID provided.')}
-        if(!mongoose.Types.ObjectId.isValid(req.params.id)){ throw new Error('Invalid ID.')}
+        if(!req.params.id){ throw new AppError.MissingId('updateContribution')}
+        if(!mongoose.Types.ObjectId.isValid(req.params.id)){ throw new AppError.InvalidId('updateContribution')}
+        if (!req.body) { throw new AppError.MissingRequestBody('updateContribution') }
+        if (Object.keys(req.body).length === 0) { throw new AppError.MissingRequiredParameter('updateContribution','The request body did not have any keys.') }
 
-        const contributions = await Contribution.find({ 'accounts.account': req.params.id });
-        if(contributions.length === 0) return res.status(200).json({ message: 'No contributions were returned.' });
-        return res.status(200).json(contributions);
-    } catch (error) {
-        console.log(error.message);
-        return res.status(500).json(error.message);
-    }
-}
-
-const updateContribution = async (req, res) => {
-    try {
-        if(!req.params.id){ throw new Error('No Contribution ID provided.')}
-        if (!req.body || Object.keys(req.body).length === 0) { throw new Error('No contribution updates provided.  The request body either did not contain an object, or the object did not have any keys.') }
-        if(!mongoose.Types.ObjectId.isValid(req.params.id)){ throw new Error('Invalid ID.')}
-
-        //Get the contribution in question
         const contribution = await Contribution.findById(req.params.id);
-        if(!contribution){ return res.status(404).json({error: 'Contribution not found.'}) }
+        if(!contribution){ throw new AppError.NotFound('updateContribution')}
 
-        // Apply updates dynamically
         Object.keys(req.body).forEach(key => {
             contribution[key] = req.body[key];
         });
         
         const validationError = contribution.validateSync();
-        if (validationError) { throw new Error({ error: validationError.message }) }
+        if (validationError) { throw new AppError.Validation('updateContribution', validationError.message ) }
         
-        //Do the update
         const updatedContribution = await contribution.save();
-        if(!updatedContribution) throw new Error('Contribution could not be updated.');
+        if(!updatedContribution) throw new AppError.UpdateFailed('updateContribution');
 
         return res.status(200).json(updatedContribution);
     } catch (error) {
-        console.log(error.message);
-        return res.status(500).json(error.message);
+        next(error)
+        console.log({method: error.method, message: error.message});
     }
 }
 
 //TODO:  Adjust the ledger before removing the contribution
 const deleteContribution = async (req, res) => {
-
-    if(!req.params.id){ return res.status(400).json({error: 'No Contribution ID provided.'})}
-    //if(!ValidationHelper.validateId(req.params.id)){ return res.status(404).json({error: 'Id is not valid.'}) }
-
     try {
-        const contribution = await Contribution.findByIdAndDelete(req.params.id);
-        if(!contribution){ return res.status(404).json({message: "Contribution could not be found.  Contribution was not deleted."})};
-        if(contribution.depositId){ return res.status(200).json({message: 'This contribution has already been deposited and cannot be deleted.  You may only assign it to another profile or change the distribution between accounts.'}) }
+        if(!req.params.id){ throw new AppError.MissingId('deleteContribution') }
+        if(!ValidationHelper.validateId(req.params.id)){ throw new AppError.InvalidId('deleteContribution')}
 
+        const contribution = await Contribution.findById(req.params.id);
+        if(!contribution){ throw new AppError.NotFound('deleteContribution', 'The specified contribution was not found.')};
+        if(contribution.depositDate){ throw new AppError.DeleteFailed('deleteContribution', 'This contribution has already been deposited and cannot be deleted.  You may only assign it to another profile or change the distribution between accounts.')}
+        
         return res.status(200).json({message: "Contribution deleted", contribution: contribution});
     } catch (error) {
-        console.log(error.message);
-        return res.status(500).json(error.message);
+        next(error)
+        console.log({method: error.method, message: error.message});
     }
 }
 
 module.exports = {
-    addCashContribution,
+    addContribution,
     getAllContributions,
     getContributionById,
     getContributionsByType,
     getContributionsByProfileId,
     getContributionsByAccountId,
+    getContributionsByDateRange,
     updateContribution,
     deleteContribution
 }

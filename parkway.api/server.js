@@ -7,6 +7,7 @@ const conn = mongoose.connection;
 const Multer = require('multer');
 const upload = Multer({ dest: 'uploads/' });
 const { validateAppAndKey } = require('./middleware/validateAppAndKey');
+const errorHandler = require('./middleware/errorHandler');
 
 const userRoutes = require('./routes/users');
 const profileRoutes = require('./routes/profiles');
@@ -29,6 +30,17 @@ const depositRoutes = require('./routes/accounting/deposits');
 //express app
 const app = express();
 
+app.use((req, res, next) => {
+    console.log(`Path: ${req.path}, Method: ${req.method}`);
+    if (req.params && Object.keys(req.params).length > 0) { console.log(`Params: ${JSON.stringify(req.params)}`); }
+    if (req.query && Object.keys(req.query).length > 0) { console.log(`Query: ${JSON.stringify(req.query)}`); }
+    if (req.body && Object.keys(req.body).length > 0) { console.log(`Body: ${JSON.stringify(req.body)}`); }
+    next();
+});
+
+app.use(validateAppAndKey);
+app.use(express.json());
+
 if (process.env.ALLOWED_ORIGINS) {
     const allowedOrigins = process.env.ALLOWED_ORIGINS.split(',');
 
@@ -44,12 +56,6 @@ if (process.env.ALLOWED_ORIGINS) {
 
     app.use(cors(corsOptions));
 }
-
-//Middleware
-app.use((req, res, next)  => { console.log(req.path, req.method, req.body), next(); }) 
-app.use(validateAppAndKey);
-app.use(express.json());
-
 
 //Routes
 app.get ('/', (req, res) => { res.send('Welcome to the Parkway API'); });
@@ -75,12 +81,16 @@ app.use('/accounting/deposits', depositRoutes);
 // Catch-all route for undefined paths
 //TODO: Add logging.....lots and lots of logging
 app.use('*', (req, res) => {
-    console.log(`Path: ${req.path}, Method: ${req.method}, Params: ${req.params}, Query: ${req.query}, Body: ${req.body}`)
+    console.log(`Path: ${req.path}, Method: ${req.method}`)
+    if(req.params) { console.log(`Params: ${req.params}`) }
+    if(req.query) { console.log(`Query: ${req.query}`) }
+    if(req.body) { console.log(`Body: ${req.body}`) }
 
-    if(req.method === 'PATCH' && !req.params.id) { return res.status(400).json({ error: 'Required parameters were not sent.' } ) }
     return res.status(404).json({ message: 'Endpoint not found' });
 });
 
+//Middleware
+app.use(errorHandler)
 
 //Database connection
 mongoose.connect(process.env.DATABASE_URL)
