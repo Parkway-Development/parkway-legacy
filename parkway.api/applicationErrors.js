@@ -133,6 +133,7 @@ class InvalidDateRange extends ApplicationError {
             super(customMessage, 400, method, customErrorCode);
     }
 }
+
 class MissingRequestBody extends ApplicationError {
     constructor(method,
         customMessage = 'This method requires a request body with particular parameters, but none were provided', 
@@ -165,6 +166,13 @@ class ProfileDoesNotExist extends ApplicationError {
     }
 }
 
+class ProtectedContribution extends ApplicationError {
+    constructor(method,
+        customMessage = 'The contribution is protected because it belongs to a processed deposit.', 
+        customErrorCode = 'CONTRIBUTIONS__001') {
+            super(customMessage, 400, method, customErrorCode);
+    }
+}
 
 module.exports = {
     ApplicationError,
@@ -187,6 +195,7 @@ module.exports = {
     DepositAlreadyProcessed,
     DuplicateAccount,
     AccountDelete,
-    ProfileDoesNotExist
+    ProfileDoesNotExist,
+    ProtectedContribution
 }
 

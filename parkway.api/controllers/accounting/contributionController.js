@@ -257,6 +257,13 @@ const updateContribution = async (req, res, next) => {
         const contribution = await Contribution.findById(req.params.id);
         if(!contribution){ throw new AppError.NotFound('updateContribution')}
 
+        let protected = false;
+        if(contribution.processedDate){ protected = true }
+
+        if (protected && req.body.hasOwnProperty('net') && req.body.net !== contribution.net) {
+            throw new AppError.ProtectedContribution('updateContribution', 'The contribution is protected because it belongs to a processed deposit and you have included a net amount that is different than the original net amount.');
+        }
+
         Object.keys(req.body).forEach(key => {
             contribution[key] = req.body[key];
         });

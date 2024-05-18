@@ -184,6 +184,12 @@ const processDeposit = async (req, res, next) => {
         deposit.processedDate = new Date();
         deposit = await deposit.save();
 
+        for(let i = 0; i < deposit.contributions.length; i++){
+            deposit.contributions[i].depositId = deposit._id;
+            deposit.contributions[i].processedDate = deposit.processedDate;
+            await deposit.contributions[i].save();
+        }
+
         return res.status(200).json(deposit);
     } catch (error) {
         next(error)

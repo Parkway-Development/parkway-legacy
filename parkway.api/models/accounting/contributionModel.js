@@ -47,6 +47,9 @@ const contributionSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Deposits'
     },
+    procesesedDate: {
+        type: Date
+    },
     type: {
         required: true,
         type: String,
