@@ -260,8 +260,22 @@ const updateContribution = async (req, res, next) => {
         let protected = false;
         if(contribution.processedDate){ protected = true }
 
-        if (protected && req.body.hasOwnProperty('net') && req.body.net !== contribution.net) {
-            throw new AppError.ProtectedContribution('updateContribution', 'The contribution is protected because it belongs to a processed deposit and you have included a net amount that is different than the original net amount.');
+        if(protected){
+            if(req.body.hasOwnProperty('net') && req.body.net !== contribution.net){
+                throw new AppError.ProtectedContribution('updateContribution', 'The contribution is protected because it belongs to a processed deposit and you have included a net amount that is different than the original net amount.');
+            }
+            if(req.body.hasOwnProperty('gross') && req.body.gross !== contribution.gross){
+                throw new AppError.ProtectedContribution('updateContribution', 'The contribution is protected because it belongs to a processed deposit and you have included a gross amount that is different than the original gross amount.');
+            }
+            if(req.body.hasOwnProperty('fees') && req.body.fees !== contribution.fees){
+                throw new AppError.ProtectedContribution('updateContribution', 'The contribution is protected because it belongs to a processed deposit and you have included a fees amount that is different than the original fees amount.');
+            }
+            if(req.body.hasOwnProperty('depositId') && req.body.depositId !== contribution.depositId){
+                throw new AppError.ProtectedContribution('updateContribution', 'The contribution is protected because it belongs to a processed deposit and you have included a depositId that is different than the original depositId.');
+            }
+            if(req.body.hasOwnProperty('processedDate') && req.body.processedDate !== contribution.processedDate){
+                throw new AppError.ProtectedContribution('updateContribution', 'The contribution is protected because it belongs to a processed deposit and you have included a processedDate that is different than the original processedDate.');
+            }
         }
 
         Object.keys(req.body).forEach(key => {
