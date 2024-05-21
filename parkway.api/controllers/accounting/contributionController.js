@@ -5,6 +5,7 @@ const UserValidation = require('../../helpers/userValidation');
 const Deposit = require('../../models/accounting/depositModel');
 const AppError = require('../../applicationErrors')
 const Account = require('../../models/accounting/accountModel');
+const Transaction = require('../../models/accounting/transactionModel');
 
 const addContribution = async (req, res, next) => {
     try {
@@ -21,10 +22,9 @@ const addContribution = async (req, res, next) => {
                 generalFund = new Account({name: 'General Fund', type: 'fund'});
                 await generalFund.save();
             }
-            req.body.accounts = [{account: generalFund._id, amount: req.body.net}];
+            req.body.accounts = [{accountId: generalFund._id, amount: req.body.net}];
         }
 
-        const accountIds = req.body.accounts.map(account => account.account);
         const accountErrors = await ValidationHelper.validateAccountIds(accountIds);
         if (accountErrors.length > 0) { throw new AppError.Validation('addContribution', accountErrors); }
 
@@ -38,13 +38,31 @@ const addContribution = async (req, res, next) => {
         const contribution = new Contribution(req.body);
 
         const validationError = contribution.validateSync();
-
         if (validationError) { throw new AppError.Validation('addContribution', validationError.message) }
 
         await contribution.save({new: true});
 
+        for(let i = 0; i < contribution.accounts.length; i++){
+            const accountId = contribution.accounts[i].accountId
+            let account = await Account.findById(accountId);
+
+            if(!account){ throw new AppError.NotFound('addContribution', `The account with the id ${accountId} was not found.`)}
+
+            const sourceAccount = await Account.findOne({name: 'Unallocated'});
+            const transaction = new Transaction({
+                amount: contribution.accounts[i].amount,
+                type: 'deposit',
+                toAccount: { accountId: accountId },
+                createdBy: contribution.profile,
+                contributionId: contribution._id
+            });
+        }
+
+
         deposit.contributions.push(contribution._id);
         await deposit.save();
+
+
 
         return res.status(201).json(contribution);
 

@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { AccountType, AccountRestriction } = require('../constants');
 
 const accountSchema = new mongoose.Schema({
     name: {
@@ -9,24 +10,34 @@ const accountSchema = new mongoose.Schema({
         type: String,
         default: 'New Account'
     },
+    balance: {
+        type: Number,
+        required: true,
+        default: 0
+    },
     type: {
         type: String,
-        required: true,
-        default: 'Undefined'
+        enum: Object.values(AccountType),
+        default: AccountType.UNKNOWN
     },
-    subtype:{
+    restriction:{
         type: String,
-        required: true,
-        default: 'Undefined'
+        enum: Object.values(AccountRestriction),
+        default: AccountRestriction.UNRESTRICTED
     },
-    parent: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Account'
-    },
-    children: {
+    siblingId: {
         type: [mongoose.Schema.Types.ObjectId],
         ref: 'Account'
     },
+    parentId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Account'
+    },
+    childIds: [{
+        type: [mongoose.Schema.Types.ObjectId],
+        ref: 'Account'
+        }
+    ],
     custodian: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Profile',

@@ -3,14 +3,22 @@ const Deposit = require('../../models/accounting/depositModel')
 const AppError = require('../../applicationErrors')
 const ValidationHelper = require('../../helpers/validationHelper')
 const UserValidation = require('../../helpers/userValidation')
+const {DepositStatus} = require('../../models/constants')
 
 const addDeposit = async (req, res, next) => {
         try {
-        if(!req.body){throw new AppError.RequestBodyMissing('addDeposit')};
+        const amount = req.body.amount;
+        const responsiblePartyProfileId = req.body.responsiblePartyProfileId;
 
-        const deposit = new Deposit(req.body);
-        if(!deposit.amount){ throw new AppError.MissingRequiredParameter('addDeposit', 'No amount was provided.  You cannot have a $0 deposit.') }
-        if (!deposit.creatorProfileId) { throw new AppError.MissingRequiredParameter('addDeposit', 'No profile Id was provided. The profile of the person creating the deposit is required.') } 
+        if(!amount){ throw new AppError.MissingRequiredParameter('addDeposit', 'No amount was provided.  You cannot have a $0 deposit.') }
+        if(!responsiblePartyProfileId){ throw new AppError.MissingRequiredParameter('addDeposit', 'No responsiblePartyProfileId was provided.  The profile of the person responsible for the deposit is required.') }
+        if(!mongoose.Types.ObjectId.isValid(responsiblePartyProfileId)){ throw new AppError.InvalidId('addDeposit', 'The responsiblePartyProfileId is not a valid ObjectId.') }
+
+        let deposit = new Deposit;
+        deposit.amount = amount;
+        deposit.currentStatus = DepositStatus.UNDEPOSITED;
+        deposit.statusDate = new Date();
+        deposit.history.push({status: deposit.currentStatus, date: deposit.statusDate, responsiblePartyProfileId: responsiblePartyProfileId});
 
         const validationError = deposit.validateSync();
         if (validationError) { throw new AppError.Validation('addDeposit') }
@@ -50,6 +58,42 @@ const getDepositById = async (req, res, next) => {
         if(!deposit){ return res.status(200).json('No deposit found for that Id.')}
         return res.status(200).json(deposit);
     } catch (error) {
+        next(error)
+        console.log({method: error.method, message: error.message});
+    }
+}
+
+const getDepositsByStatus = async (req, res, next) => {
+    try {
+        const status = req.params.status;
+        if(!status){ throw new AppError.MissingRequiredParameter('getDepositByStatus', 'No status was provided.')}
+
+        let startDate, endDate;
+        if(req.query){
+            startDate = req.query.startDate;
+            endDate = req.query.endDate;
+        }
+
+        let deposits;
+
+        if(!startDate || !endDate){ 
+            deposits = await Deposit.find({currentStatus: status});
+            if(deposits.length === 0){ return res.status(200).json('No deposits found for that status.')}
+        }else{
+            if(!ValidationHelper.checkDateOrder(startDate, endDate)){ throw new AppError.InvalidDateRange('getDepositByStatus')}
+            deposits = await Deposit.find({
+                currentStatus: status,
+                statusDate: {
+                    $gte: new Date(startDate).toISOString(),
+                    $lte: new Date(endDate).toISOString()
+                }
+            }).sort({ statusDate: 1});
+            if(deposits.length === 0){ return res.status(200).json('No deposits found for that status and date range.')}
+        }
+
+        return res.status(200).json(deposits);
+    }
+    catch (error) {
         next(error)
         console.log({method: error.method, message: error.message});
     }
@@ -145,6 +189,31 @@ const deleteDeposit = async (req, res, next) => {
     }
 }
 
+const executeDeposit = async (req, res, next) => {
+    try {
+        const depositId = req.params.id;
+        const responsiblePartyProfileId = req.body.responsiblePartyProfileId;
+        if(!depositId){ throw new AppError.MissingId('executeDeposit')}
+        if(!responsiblePartyProfileId){ throw new AppError.MissingId('executeDeposit','No profile Id was provided.  The profile of the person executing the deposit is required.')}
+        if(!mongoose.Types.ObjectId.isValid(depositId)){ throw new AppError.InvalidId('executeDeposit')}
+        if(!mongoose.Types.ObjectId.isValid(responsiblePartyProfileId)){ throw new AppError.InvalidId('executeDeposit','The responsiblePartyProfileId is not a valid ObjectId.')}
+
+        let deposit = await Deposit.findById(depositId);
+        if(!deposit) {throw new AppError.NotFound('executeDeposit')};
+        if(deposit.currentStatus === DepositStatus.UNALLOCATED){throw new AppError.DepositAlreadyProcessed('executeDeposit','The deposit has already been deposited and is awaiting processing.')}
+
+        deposit.currentStatus = DepositStatus.UNALLOCATED;
+        deposit.statusDate = new Date();
+        deposit.history.push({status: deposit.currentStatus, date: deposit.statusDate, responsiblePartyProfileId: responsiblePartyProfileId});
+
+        await deposit.save();
+        return res.status(200).json(deposit);
+    } catch (error) {
+        next(error)
+        console.log({method: error.method, message: error.message});
+    }
+}
+
 const processDeposit = async (req, res, next) => {
     try {
         if(!req.params.id){ throw new AppError.MissingId('processDeposit')}
@@ -181,12 +250,14 @@ const processDeposit = async (req, res, next) => {
         if(depositTotal !== contributionTotal + donationTotal) {throw new AppError.DepositUnbalanced('processDeposit')}
 
         deposit.approverProfileId = req.body.approverProfileId;
-        deposit.processedDate = new Date();
+        deposit.currentStatus = 'PROCESSED';
+        deposit.statusDate = new Date();
+        deposit.history.push({status: deposit.currentStatus, date: deposit.statusDate});
         deposit = await deposit.save();
 
         for(let i = 0; i < deposit.contributions.length; i++){
             deposit.contributions[i].depositId = deposit._id;
-            deposit.contributions[i].processedDate = deposit.processedDate;
+            deposit.contributions[i].processedDate = deposit.statusDate;
             await deposit.contributions[i].save();
         }
 
@@ -205,5 +276,7 @@ module.exports = {
     getDepositsByDateRange,
     updateDeposit,
     deleteDeposit,
-    processDeposit
+    processDeposit,
+    executeDeposit,
+    getDepositsByStatus
 }

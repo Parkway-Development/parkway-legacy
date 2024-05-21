@@ -21,7 +21,7 @@ const contributionSchema = new mongoose.Schema({
     accounts: [
         {
             _id: false,
-            account: {
+            accountId: {
                 type: mongoose.Schema.Types.ObjectId,
                 ref: 'Account',
                 required: true

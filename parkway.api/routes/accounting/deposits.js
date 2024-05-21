@@ -9,7 +9,10 @@ const {
     getDepositsByDateRange,
     updateDeposit, 
     deleteDeposit, 
-    processDeposit } = require('../../controllers/accounting/depositController')
+    processDeposit,
+    executeDeposit,
+    getDepositsByStatus
+} = require('../../controllers/accounting/depositController')
 
 const { addNotFoundHandler, configureBaseApiRoutes } = require('../baseApiRouter');
 
@@ -19,7 +22,9 @@ configureBaseApiRoutes(router, addDeposit, getAllDeposits, getDepositById, updat
 
 //add additional routes here
 router.post('/process/:id', processDeposit);
+router.post('/execute/:id', executeDeposit);
 router.get('/populated/:id', getPopulatedDepositById);
+router.get('/bystatus/:status', getDepositsByStatus);
 
 addNotFoundHandler(router);
 module.exports = router;

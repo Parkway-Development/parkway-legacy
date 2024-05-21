@@ -9,6 +9,8 @@ const addAccount = async (req, res, next) => {
         if(!req.body.name){ throw new AppError.RequestBodyMissing('addAccount')}
         req.body.name = ValidationHelper.sanitizeString(req.body.name); 
 
+        const revenueAccountName = req.body.name
+
         const existingAccount = await Account.findOne({name: req.body.name});
         if(existingAccount){ throw new AppError.DuplicateAccount('addAccount')}
 
@@ -111,16 +113,16 @@ const updateAccountById = async (req, res, next) => {
         if(req.body.name){ updateData.name = ValidationHelper.sanitizeString(req.body.name) }
 
         if(req.body.description){ updateData.description = ValidationHelper.sanitizeString(req.body.description) }
-        if(req.body.type && (req.body.type === "expense" || req.body.type === "income")){ updateData.type = req.body.type }
+        if(req.body.type && (req.body.type === 'expense' || req.body.type === 'revenue' || req.body.type === 'asset' || req.body.type === 'liability')){ updateData.type = req.body.type }
         
         let controlMessages = [];
         if(req.body.custodian){controlMessages.push('Custodian account cannot be updated via this endpoint.') }
-        if(req.body.parent){controlMessages.push('Parent account cannot be updated via this endpoint.')}
-        if(req.body.children){controlMessages.push('Children accounts cannot be updated via this endpoint.')}
+        if(req.body.parentId){controlMessages.push('Parent account cannot be updated via this endpoint.')}
+        if(req.body.childId){controlMessages.push('Children accounts cannot be updated via this endpoint.')}
         if(req.body.notes){controlMessages.push('Notes cannot be updated via this endpoint.')}
 
         let account =  await Account.findByIdAndUpdate( id, updateData, { new: true, runValidators: true})
-            .populate('custodian').populate('parent').populate('children');
+            .populate('custodian').populate('parentId').populate('childIds');
 
         if(!account){ throw new AppError.NotFound('updateAccountById', 'No account found for that Id.')}
 
@@ -170,7 +172,7 @@ const addAccountParent = async (req, res, next) => {
         if(!accountId){ throw new AppError.MissingId('addAccountParent', 'No account ID provided.')}
         if (!mongoose.Types.ObjectId.isValid(accountId)) { throw new AppError.InvalidId('addAccountParent', 'The account Id you provided is invalid') }
     
-        const  { parentId } = req.body.parent;
+        const  parentId  = req.body.parentId;
         if (!parentId) { throw new AppError.MissingId('addAccountParent','The parent account Id is missing') }
         
         if (!mongoose.Types.ObjectId.isValid(parentId)) { 
@@ -181,7 +183,7 @@ const addAccountParent = async (req, res, next) => {
         if(parentId && !ValidationHelper.validateAccountId(parentId)){ 
             throw new AppError.AccountUpdate('addAccountParent','The parent account you provided does not exist') }
         
-        updateData.parent = req.body.parent;
+        updateData.parentId = req.body.parentId;
 
         const account =  await Account.findByIdAndUpdate( accountId, updateData, { new: true, runValidators: true})
             .populate('parent').populate('children');

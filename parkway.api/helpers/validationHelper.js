@@ -17,7 +17,7 @@ class ValidationHelper {
         return new Date(fullDateTime);
     };
 
-    static validateAccountIds = async (accountId) => {
+    static validateAccountIds = async (accountIds) => {
         let errors = [];
         for (let i = 0; i < accountId.length; i++) {
             if (!mongoose.Types.ObjectId.isValid(accountId[i])) { errors.push(`Invalid account id: ${accountId[i]}`) }
@@ -27,6 +27,15 @@ class ValidationHelper {
         }
 
         return errors;
+    }
+
+    static validateAccountId = async (accountId) => {
+        if (!mongoose.Types.ObjectId.isValid(accountId)) { errors.push(`Invalid account id: ${accountId}`) }
+           
+        const account = await Account.findById(accountId);
+        if (!account) { return false}
+
+        return true;
     }
 
     static checkDateOrder(startDate, endDate) {
@@ -42,6 +51,7 @@ module.exports = {
     validateAccountSumMatchesAmount: ValidationHelper.validateAccountSumMatchesAmount,
     combineDateAndTime: ValidationHelper.combineDateAndTime,
     checkDateOrder: ValidationHelper.checkDateOrder,
-    validateAccountIds: ValidationHelper.validateAccountIds
+    validateAccountIds: ValidationHelper.validateAccountIds,
+    validateAccountId: ValidationHelper.validateAccountId
 };
 
