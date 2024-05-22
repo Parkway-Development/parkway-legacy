@@ -24,9 +24,10 @@ parkway-dev.profiles.json
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-platform/
-localnotes.txt
-uploads/
+gitignore/
+localstuff/
+testdata/
+uploads/*
 parkway.api.code-workspace
 azure-env-settings/
 

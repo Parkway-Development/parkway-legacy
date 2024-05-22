@@ -6,6 +6,7 @@ const DepositStatus = Object.freeze({
 
 const AccountType = Object.freeze({
     REVENUE: 'revenue',
+    FUND: 'fund',
     EXPENSE: 'expense',
     ASSET: 'asset',
     LIABILITY: 'liability',

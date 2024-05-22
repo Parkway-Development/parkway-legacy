@@ -97,7 +97,7 @@ class DepositAlreadyProcessed extends ApplicationError {
 
 class DuplicateAccount extends ApplicationError {
     constructor(method,
-        customMessage = 'An account already exists with that name', 
+        customMessage = 'An account already exists with that name and that type.  When creating an account, the combination of the name and type must be unique.', 
         customErrorCode = 'ACCOUNTS_001') {
             super(customMessage, 400, method, customErrorCode);
     }
@@ -107,6 +107,14 @@ class AccountDelete extends ApplicationError {
     constructor(method,
         customMessage = 'You attempted to delete an account, but the delete failed', 
         customErrorCode = 'ACCOUNTS_005') {
+            super(customMessage, 400, method, customErrorCode);
+    }
+}
+
+class InvalidAccountType extends ApplicationError {
+    constructor(method,
+        customMessage = 'The account type you specified is not valid', 
+        customErrorCode = 'ACCOUNTS_006') {
             super(customMessage, 400, method, customErrorCode);
     }
 }
@@ -195,6 +203,7 @@ module.exports = {
     DepositAlreadyProcessed,
     DuplicateAccount,
     AccountDelete,
+    InvalidAccountType,
     ProfileDoesNotExist,
     ProtectedContribution
 }

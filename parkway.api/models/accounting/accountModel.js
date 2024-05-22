@@ -25,15 +25,15 @@ const accountSchema = new mongoose.Schema({
         enum: Object.values(AccountRestriction),
         default: AccountRestriction.UNRESTRICTED
     },
-    siblingId: {
+    sibling: {
         type: [mongoose.Schema.Types.ObjectId],
         ref: 'Account'
     },
-    parentId: {
+    parent: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Account'
     },
-    childIds: [{
+    children: [{
         type: [mongoose.Schema.Types.ObjectId],
         ref: 'Account'
         }
@@ -46,5 +46,7 @@ const accountSchema = new mongoose.Schema({
         String 
     ]
     });
+
+    accountSchema.index({ name: 1, type: 1 }, { unique: true });
 
 module.exports = mongoose.model('Account', accountSchema, 'accounts')

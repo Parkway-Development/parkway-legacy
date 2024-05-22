@@ -19,11 +19,9 @@ class ValidationHelper {
 
     static validateAccountIds = async (accountIds) => {
         let errors = [];
-        for (let i = 0; i < accountId.length; i++) {
-            if (!mongoose.Types.ObjectId.isValid(accountId[i])) { errors.push(`Invalid account id: ${accountId[i]}`) }
-            
-            const account = await Account.findById(accountId[i]);
-            if (!account) { errors.push(`Account not found: ${accountId[i]}`) }
+        for (let i = 0; i < accountIds.length; i++) {
+            const accountId = accountIds[i];
+            if(validateAccountId(accountId) === false) { errors.push(`Account not found: ${accountId}`) }
         }
 
         return errors;
@@ -43,6 +41,11 @@ class ValidationHelper {
         let end = new Date(endDate);
         return start < end;
     }
+
+    static async checkDuplicateAccount(accountName, accountType) {
+        const account = await Account.findOne({ name: accountName, type: accountType });
+        return !!account;
+    }
 }
 
 
@@ -52,6 +55,7 @@ module.exports = {
     combineDateAndTime: ValidationHelper.combineDateAndTime,
     checkDateOrder: ValidationHelper.checkDateOrder,
     validateAccountIds: ValidationHelper.validateAccountIds,
-    validateAccountId: ValidationHelper.validateAccountId
+    validateAccountId: ValidationHelper.validateAccountId,
+    checkDuplicateAccount: ValidationHelper.checkDuplicateAccount
 };
 
