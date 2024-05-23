@@ -198,6 +198,10 @@ const approveEventById = async (req, res) => {
         const updatedEvent = await Event.findByIdAndUpdate(id, update, {new: true});
     
         if (!updatedEvent) { throw new Error("No such event found.") }
+
+        if (updatedEvent.schedule) {
+            await Event.updateMany({ schedule: updatedEvent.schedule }, update, { new: true });
+        }
     
         res.status(200).json(updatedEvent);
     
@@ -224,6 +228,10 @@ const rejectEventById = async (req, res) => {
         const updatedEvent = await Event.findByIdAndUpdate(id, update, {new: true});
 
         if (!updatedEvent) { throw new Error("No such event found.") }
+
+        if (updatedEvent.schedule) {
+            await Event.updateMany({ schedule: updatedEvent.schedule }, update, { new: true });
+        }
 
         res.status(200).json(updatedEvent);
     } catch (error) {
