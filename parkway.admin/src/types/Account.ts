@@ -1,4 +1,5 @@
 import { BaseEntity } from './BaseEntity.ts';
+import { UserProfile } from './UserProfile.ts';
 
 export type Account = BaseEntity & {
   name: string;
@@ -7,6 +8,6 @@ export type Account = BaseEntity & {
   subtype: string;
   parent?: Account;
   children?: Account[];
-  custodian?: string;
+  custodian?: string | UserProfile;
   notes?: string[];
 };

@@ -17,7 +17,7 @@ configureBaseApiRoutes(router, addAccount, getAllAccounts, getAccountById, updat
 
 //add additional routes here
 router.get('/name/:name', getAccountByName)
-router.patch('/updatecustodian/:id', updateAccountCustodian)
+router.patch('/updatecustodian/:accountId', updateAccountCustodian)
 router.patch('/addparent/:accountId', addAccountParent)
 router.patch('/addchildren/:accountId', addAccountChildren)
 addNotFoundHandler(router);

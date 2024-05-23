@@ -6,6 +6,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import styles from './AccountCustodian.module.css';
 import UserProfileSelect from '../user-profile-select';
 import { UserNameDisplayById } from '../user-name-display';
+import UserNameDisplay from '../user-name-display/UserNameDisplay.tsx';
 
 type AccountCustodianProps = {
   account: Account;
@@ -14,7 +15,9 @@ type AccountCustodianProps = {
 const AccountCustodian = ({ account }: AccountCustodianProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [newCustodian, setNewCustodian] = useState<string | undefined>(
-    account.custodian
+    typeof account.custodian === 'string'
+      ? account.custodian
+      : account.custodian?._id
   );
   const queryClient = useQueryClient();
   const {
@@ -72,7 +75,11 @@ const AccountCustodian = ({ account }: AccountCustodianProps) => {
   if (account.custodian) {
     return (
       <span className={styles.accountCustodian}>
-        <UserNameDisplayById id={account.custodian} />
+        {typeof account.custodian === 'string' ? (
+          <UserNameDisplayById id={account.custodian} />
+        ) : (
+          <UserNameDisplay user={account.custodian} />
+        )}
         <Button onClick={() => setIsEditing(true)} type="link">
           Update
         </Button>

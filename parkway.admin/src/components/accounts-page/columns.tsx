@@ -2,6 +2,7 @@ import { Account } from '../../types';
 import { OrderedColumnsType } from '../../hooks/useColumns.tsx';
 import { Link } from 'react-router-dom';
 import { UserNameDisplayById } from '../user-name-display';
+import UserNameDisplay from '../user-name-display/UserNameDisplay.tsx';
 
 export const accountColumns: OrderedColumnsType<Account> = [
   {
@@ -52,7 +53,13 @@ export const accountColumns: OrderedColumnsType<Account> = [
     key: 'custodian',
     displayOrder: 7,
     render: (value: Account['custodian']) =>
-      value ? <UserNameDisplayById id={value} /> : null
+      value ? (
+        typeof value === 'string' ? (
+          <UserNameDisplayById id={value} />
+        ) : (
+          <UserNameDisplay user={value} />
+        )
+      ) : null
   },
   {
     title: 'Notes',

@@ -3,9 +3,10 @@ import useApi, { buildQueryKey } from '../../hooks/useApi.ts';
 import { Skeleton } from 'antd';
 import { WarningOutlined } from '@ant-design/icons';
 import UserNameDisplay from './UserNameDisplay.tsx';
+import { UserProfile } from '../../types';
 
 interface UserDisplayProps {
-  id?: string;
+  id?: string | UserProfile;
 }
 
 export const UserNameDisplayById = ({ id }: UserDisplayProps) => {
