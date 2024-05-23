@@ -257,6 +257,33 @@ const deleteEventById = async (req, res) => {
     }
 }
 
+const deleteEventBySchedule = async (req, res) => {
+    try{
+        const {id, updateSeries} = req.params;
+        if (!id) { throw new Error("Please provide an event Id.") }
+        if (!updateSeries) { throw new Error("Please provide an update type.") }
+        if (!mongoose.Types.ObjectId.isValid(id)) { throw new Error("Invalid ID.") }
+
+        const event = await Event.findById(id);
+
+        if (!event) { throw new Error("No such event found.") }
+        if (!event.schedule) { throw new Error("Event does not have an associated schedule.") }
+
+        if (updateSeries === 'all') {
+            await Event.deleteMany({ schedule: event.schedule });
+        } else if (updateSeries === 'future') {
+            await Event.deleteMany({ schedule: event.schedule, start: { $gte: event.start } });
+        } else {
+            throw new Error('Invalid update series value');
+        }
+
+        res.status(200).json(event);
+    }catch(error){
+        console.log(error)
+        return res.status(500).json(error)
+    }
+}
+
 const addEventMessageById = async (req, res) => {
     try {
         const {id} = req.params;
@@ -290,7 +317,8 @@ module.exports = {
     getAllEvents, 
     getEventById, 
     updateEventById, 
-    deleteEventById, 
+    deleteEventById,
+    deleteEventBySchedule,
     approveEventById, 
     rejectEventById, 
     addEventMessageById

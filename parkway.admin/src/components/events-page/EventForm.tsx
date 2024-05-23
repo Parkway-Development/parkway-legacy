@@ -4,6 +4,7 @@ import {
   DatePicker,
   Form,
   Input,
+  Radio,
   TimePicker
 } from 'antd';
 import { Link, useParams } from 'react-router-dom';
@@ -30,6 +31,7 @@ type EventFormFields = Omit<EventWithoutId, 'start' | 'end'> & {
   startTime: Dayjs;
   endDate: Dayjs;
   endTime: Dayjs;
+  updateSeries?: 'this' | 'future' | 'all';
 };
 
 type EventFormProps = AddBaseApiFormProps<Event> & {
@@ -125,13 +127,19 @@ const EventForm = ({
     : undefined;
 
   const {
-    eventsApi: { delete: deleteFn }
+    eventsApi: { delete: deleteById, deleteBySchedule }
   } = useApi();
   const [form] = Form.useForm<EventFormFields>();
   const frequency = Form.useWatch(['schedule', 'frequency'], form);
   const weekDays = Form.useWatch(['schedule', 'week_days'], form);
   const monthWeeks = Form.useWatch(['schedule', 'month_weeks'], form);
   const allDay = Form.useWatch('allDay', form);
+  const updateSeries = Form.useWatch('updateSeries', form);
+
+  const deleteFn =
+    !initialValues || !updateSeries || updateSeries === 'this'
+      ? deleteById
+      : (id: string) => deleteBySchedule({ _id: id, updateSeries });
 
   const [endTimeOpen, setEndTimeOpen] = useState<boolean>(false);
   const [repeats, setRepeats] = useState<boolean>(
@@ -155,7 +163,8 @@ const EventForm = ({
         startDate: transformDateToDayjs(initialValues.start),
         startTime: transformDateToDayjs(initialValues.start),
         endDate: transformDateToDayjs(initialValues.end),
-        endTime: transformDateToDayjs(initialValues.end)
+        endTime: transformDateToDayjs(initialValues.end),
+        updateSeries: 'this'
       }
     : addDate
       ? {
@@ -403,20 +412,22 @@ const EventForm = ({
           </div>
         </div>
 
-        <Form.Item<EventFormFields> label="Repeats">
-          <Checkbox
-            checked={repeats}
-            onChange={() =>
-              setRepeats((prev) => {
-                if (prev) {
-                  form.setFieldsValue({ schedule: undefined });
-                }
+        {!initialValues && (
+          <Form.Item<EventFormFields> label="Repeats">
+            <Checkbox
+              checked={repeats}
+              onChange={() =>
+                setRepeats((prev) => {
+                  if (prev) {
+                    form.setFieldsValue({ schedule: undefined });
+                  }
 
-                return !prev;
-              })
-            }
-          />
-        </Form.Item>
+                  return !prev;
+                })
+              }
+            />
+          </Form.Item>
+        )}
 
         {repeats && (
           <>
@@ -538,6 +549,16 @@ const EventForm = ({
             onChange={handleTeamsChange}
           />
         </Form.Item>
+
+        {initialValues?.schedule && (
+          <Form.Item<EventFormFields> label="Series Update" name="updateSeries">
+            <Radio.Group>
+              <Radio.Button value="this">Only this event</Radio.Button>
+              <Radio.Button value="future">This and future events</Radio.Button>
+              <Radio.Button value="all">All events</Radio.Button>
+            </Radio.Group>
+          </Form.Item>
+        )}
 
         <BaseFormFooter
           isDisabled={isSaving}

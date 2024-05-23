@@ -6,6 +6,7 @@ const {
     getEventById,
     updateEventById,
     deleteEventById,
+    deleteEventBySchedule,
     approveEventById,
     rejectEventById,
     addEventMessageById
@@ -17,6 +18,7 @@ configureBaseApiRoutes(router, addEvent, getAllEvents, getEventById, updateEvent
 router.patch('/:id/approve', approveEventById);
 router.patch('/:id/reject', rejectEventById);
 router.post('/:id/message', addEventMessageById);
+router.delete('/:id/schedule/:updateSeries', deleteEventBySchedule);
 
 addNotFoundHandler(router);
 module.exports = router;
