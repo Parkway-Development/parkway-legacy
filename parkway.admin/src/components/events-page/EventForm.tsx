@@ -163,12 +163,14 @@ const EventForm = ({
           endDate: addDate,
           status: eventStatusMapping['Tentative'],
           organizer: user!.profileId,
-          allDay: false
+          allDay: false,
+          schedule: undefined
         }
       : {
           status: eventStatusMapping['Tentative'],
           organizer: user!.profileId,
-          allDay: false
+          allDay: false,
+          schedule: undefined
         };
 
   const isCalendarAdmin = hasClaim('calendarManagement');
@@ -281,6 +283,7 @@ const EventForm = ({
         {initialValues && (
           <Form.Item<EventFormFields> label="Status" name="status">
             <EventStatus
+              schedule={initial.schedule}
               status={initial.status}
               isCalendarAdmin={isCalendarAdmin}
               eventId={id!}

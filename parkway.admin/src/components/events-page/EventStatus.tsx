@@ -8,6 +8,7 @@ import { ApproveEventPayload, RejectEventPayload } from '../../api';
 
 type EventStatusProps = {
   status: Event['status'];
+  schedule: Event['schedule'];
   isCalendarAdmin: boolean;
   userId: string;
   eventId: string;
@@ -15,6 +16,7 @@ type EventStatusProps = {
 
 const EventStatus = ({
   status: initialStatus,
+  schedule,
   isCalendarAdmin,
   userId,
   eventId
@@ -96,6 +98,7 @@ const EventStatus = ({
         <span>{status}</span>
         {approveButton}
         {rejectButton}
+        {schedule && <span>All events in this series will be updated.</span>}
       </div>
     </div>
   );
