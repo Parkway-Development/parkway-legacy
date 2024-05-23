@@ -7,6 +7,7 @@ export type Event = BaseEntity & {
   organizer?: string;
   start: Date;
   end: Date;
+  allDay: boolean;
   location?: string;
   category?: string;
   status: EventStatus;
