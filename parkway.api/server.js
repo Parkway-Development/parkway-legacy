@@ -30,17 +30,6 @@ const depositRoutes = require('./routes/accounting/deposits');
 //express app
 const app = express();
 
-app.use((req, res, next) => {
-    console.log(`Path: ${req.path}, Method: ${req.method}`);
-    if (req.params && Object.keys(req.params).length > 0) { console.log(`Params: ${JSON.stringify(req.params)}`); }
-    if (req.query && Object.keys(req.query).length > 0) { console.log(`Query: ${JSON.stringify(req.query)}`); }
-    if (req.body && Object.keys(req.body).length > 0) { console.log(`Body: ${JSON.stringify(req.body)}`); }
-    next();
-});
-
-app.use(validateAppAndKey);
-app.use(express.json());
-
 if (process.env.ALLOWED_ORIGINS) {
     const allowedOrigins = process.env.ALLOWED_ORIGINS.split(',');
 
@@ -56,6 +45,17 @@ if (process.env.ALLOWED_ORIGINS) {
 
     app.use(cors(corsOptions));
 }
+
+app.use((req, res, next) => {
+    console.log(`Path: ${req.path}, Method: ${req.method}`);
+    if (req.params && Object.keys(req.params).length > 0) { console.log(`Params: ${JSON.stringify(req.params)}`); }
+    if (req.query && Object.keys(req.query).length > 0) { console.log(`Query: ${JSON.stringify(req.query)}`); }
+    if (req.body && Object.keys(req.body).length > 0) { console.log(`Body: ${JSON.stringify(req.body)}`); }
+    next();
+});
+
+app.use(validateAppAndKey);
+app.use(express.json());
 
 //Routes
 app.get ('/', (req, res) => { res.send('Welcome to the Parkway API'); });
