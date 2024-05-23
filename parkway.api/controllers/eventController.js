@@ -57,7 +57,7 @@ const createEvents = async (event, eventSchedule) => {
     if (getNextEventDate) {
         let nextEvent = getNextEventDate(eventSchedule.last_schedule_date);
 
-        while (nextEvent && nextEvent <= schedulingEnd && (!eventSchedule.end_date || nextEvent <= endOfDay(eventSchedule.endDate))) {
+        while (nextEvent && nextEvent <= schedulingEnd && (!eventSchedule.end_date || nextEvent <= endOfDay(eventSchedule.end_date))) {
             const start = set(event.start, { year: nextEvent.getFullYear(), month: nextEvent.getMonth(), date: nextEvent.getDate() });
             const daysDiff = differenceInDays(start, event.start);
             const end = addDays(event.end, daysDiff);
