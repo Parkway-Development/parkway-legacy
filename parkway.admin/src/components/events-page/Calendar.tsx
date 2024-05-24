@@ -20,6 +20,7 @@ import { SyntheticEvent } from 'react';
 import { SelectInfo } from 'antd/lib/calendar/generateCalendar';
 import CalendarTooltip from './CalendarTooltip.tsx';
 import DayViewCalendar from './DayViewCalendar.tsx';
+import classNames from 'classnames';
 
 const Calendar = () => {
   const navigate = useNavigate();
@@ -101,6 +102,11 @@ const Calendar = () => {
             <Tooltip key={item._id} title={<CalendarTooltip event={item} />}>
               <li
                 onClick={(e) => navigateToItem(item, e)}
+                className={classNames({
+                  [styles.approved]: item.status === 'Active',
+                  [styles.tentative]: item.status === 'Tentative',
+                  [styles.rejected]: item.status === 'Rejected'
+                })}
                 style={{ backgroundColor, color: fontColor }}
               >
                 {item.name}

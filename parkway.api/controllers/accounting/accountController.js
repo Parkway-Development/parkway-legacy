@@ -142,8 +142,8 @@ const updateAccountCustodian = async (req, res, next) => {
         const updateData = {};
 
         if(req.body.custodian){
-            const { custodianId } = req.body.custodian;
-            if (!custodianId) { throw new AppError.RequestBodyMissing('updateAccountCustodian', 'No custodian ID provided.') }
+            const custodianId = req.body.custodian;
+            if (!custodianId) { throw AppError.RequestBodyMissing('updateAccountCustodian', 'No custodian ID provided.') }
             if (!mongoose.Types.ObjectId.isValid(custodianId)) { throw new AppError.InvalidId('updateAccountCustodian', 'Invalid custodian ID.')}
             
             if(custodianId && !UserValidation.profileExists(custodianId)){ throw new AppError.CustodianProfileMissing('updateAccountCustodian')}

@@ -14,7 +14,9 @@ type AccountCustodianProps = {
 const AccountCustodian = ({ account }: AccountCustodianProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [newCustodian, setNewCustodian] = useState<string | undefined>(
-    account.custodian?._id
+    typeof account.custodian === 'string'
+      ? account.custodian
+      : account.custodian?._id
   );
   const queryClient = useQueryClient();
   const {
@@ -57,7 +59,7 @@ const AccountCustodian = ({ account }: AccountCustodianProps) => {
           onClick={handleUpdateParent}
           type="primary"
           loading={isPending}
-          disabled={!newCustodian || newCustodian === account.custodian?._id}
+          disabled={!newCustodian || newCustodian === account.custodian}
         >
           Update
         </Button>
