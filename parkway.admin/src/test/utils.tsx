@@ -129,7 +129,8 @@ export const mockApi = (
       ...mockBaseApi<Event>(eventsApi),
       addMessage: vi.fn(),
       reject: vi.fn(),
-      approve: vi.fn()
+      approve: vi.fn(),
+      deleteBySchedule: vi.fn()
     },
     songsApi: mockBaseApi<Song>(songsApi),
     teamsApi: mockBaseApi<Team>(teamsApi),
