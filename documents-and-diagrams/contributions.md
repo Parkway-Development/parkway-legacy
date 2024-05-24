@@ -167,8 +167,8 @@ graph LR
     D-->E 
     AAA[SUBSPLASH]-->BBB[TRANSFER]-->E
     E-->F[TITHES]-->G[TITHE OF TITHES]-->GG[TITHE OF TITHES]
-    F-->H[GENERAL FUND]-->HH[GENERAL FUND]
-    E-->I[OFFERINGS]-->H
+    F-->H
+    E-->H[GENERAL FUND]-->HH[GENERAL FUND]
     E-->J[MISSIONS]-->JJ[MISSIONS]
     E-->K[MACH1]-->KK[MACH1]
     E-->L[WOMEN]-->LL[WOMEN]
@@ -188,7 +188,7 @@ graph LR
     style E fill:white,stroke:#333,stroke-width:2px,color:black
     style F fill:blue,stroke:#333,stroke-width:2px,color:white
     style G fill:blue,stroke:#333,stroke-width:2px,color:white
-    style H fill:blue,stroke:#333,stroke-width:2px,color:white
+    style H fill:green,stroke:#333,stroke-width:2px,color:white
     style I fill:green,stroke:#333,stroke-width:2px,color:white
     style J fill:green,stroke:#333,stroke-width:2px,color:white
     style K fill:green,stroke:#333,stroke-width:2px,color:white

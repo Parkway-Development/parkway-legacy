@@ -17,23 +17,24 @@ class ValidationHelper {
         return new Date(fullDateTime);
     };
 
-    static validateAccountIds = async (accountIds) => {
+    static validateAccountIds = async (accounts) => {
         let errors = [];
-        for (let i = 0; i < accountIds.length; i++) {
-            const accountId = accountIds[i];
-            if(validateAccountId(accountId) === false) { errors.push(`Account not found: ${accountId}`) }
+        for (let i = 0; i < accounts.length; i++) {
+            const accountId = accounts[i].accountId;
+            const response = await this.validateAccountId(accountId);
+            if(response.result === false) { errors.push(result.message) }
         }
 
         return errors;
     }
 
     static validateAccountId = async (accountId) => {
-        if (!mongoose.Types.ObjectId.isValid(accountId)) { errors.push(`Invalid account id: ${accountId}`) }
+        if (!mongoose.Types.ObjectId.isValid(accountId)) { return ({message: `Invalid account Id: ${accountId}`, result: false}) }
            
         const account = await Account.findById(accountId);
-        if (!account) { return false}
+        if (!account) { return ({message: `Account does not exist for Id: ${accountId}`, result: false})}
 
-        return true;
+        return ({message: `Account found Id: ${accountId}`, result: true})    
     }
 
     static checkDateOrder(startDate, endDate) {

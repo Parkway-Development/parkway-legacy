@@ -1,6 +1,6 @@
 class ApplicationError extends Error {
     constructor(message, statusCode, method, errorCode) {
-        super(`${message} in method: ${method}`);
+        super(`${message}. Method: ${method}`);
         this.statusCode = statusCode;
         this.method = method;
         this.errorCode = errorCode

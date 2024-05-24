@@ -5,7 +5,7 @@ const ValidationHelper = require('../../helpers/validationHelper')
 const UserValidation = require('../../helpers/userValidation')
 const {DepositStatus} = require('../../models/constants')
 
-const addDeposit = async (req, res, next) => {
+const createDeposit = async (req, res, next) => {
         try {
         const amount = req.body.amount;
         const responsiblePartyProfileId = req.body.responsiblePartyProfileId;
@@ -35,7 +35,14 @@ const addDeposit = async (req, res, next) => {
 const getAllDeposits = async (req, res, next) => {
 
     try {
-        const deposits = await Deposit.find({});
+        let deposits;
+        if(req.query.populate){
+            deposits = await Deposit.find({}
+                .populate('contributions')
+                .populate('donations'));
+        }else{
+            deposits = await Deposit.find({});
+        }
 
         if(deposits.length === 0){ return res.status(200).json('No deposits found.'); }
 
@@ -52,8 +59,14 @@ const getDepositById = async (req, res, next) => {
         if(!req.params.id){ throw new AppError.MissingId('getDepositById')}
         if(!mongoose.Types.ObjectId.isValid(req.params.id)){ throw new AppError.InvalidId('getDepositById')}
 
-        const deposit = await Deposit.findById(req.params.id)
-            .populate('contributions');
+        let deposit;
+        if(req.query.populate){
+            deposit = await Deposit.findById(req.params.id)
+                .populate('contributions')
+                .populate('donations');
+        }else{
+            deposit = await Deposit.findById(req.params.id);
+        }
 
         if(!deposit){ return res.status(200).json('No deposit found for that Id.')}
         return res.status(200).json(deposit);
@@ -91,6 +104,13 @@ const getDepositsByStatus = async (req, res, next) => {
             if(deposits.length === 0){ return res.status(200).json('No deposits found for that status and date range.')}
         }
 
+        if(req.query.populate){
+            deposits = await Deposit.find({currentStatus: status})
+                .populate('contributions')
+                .populate('donations')
+                .populate('history.responsiblePartyProfileId');
+        }
+
         return res.status(200).json(deposits);
     }
     catch (error) {
@@ -99,47 +119,34 @@ const getDepositsByStatus = async (req, res, next) => {
     }
 }
 
-const getPopulatedDepositById = async (req, res, next) => {
-    try {
-        if(!req.params.id){ throw new AppError.MissingId('getPopulatedDepositById')}
-        if(!mongoose.Types.ObjectId.isValid(req.params.id)){ throw new AppError.InvalidId('getPopulatedDepositById')}
-
-        const deposit = await Deposit.findById(req.params.id)
-            .populate({
-                path: 'contributions',
-            populate:[
-                {
-                    path: 'accounts.account',
-                    model: 'Account'
-                },
-                {
-                    path: 'profile',
-                    model: 'Profile'
-                }
-            ]});
-
-        if(!deposit){ return res.status(200).json('No deposit found for that Id.')}
-        return res.status(200).json(deposit);
-    } catch (error) {
-        next(error)
-        console.log({method: error.method, message: error.message});
-    }
-}
-
 const getDepositsByDateRange = async (req, res, next) => {
     try {
-        const { startDate, endDate } = req.query;
+        const { startDate, endDate, populate } = req.query;
         if(!startDate || !endDate){ throw new AppError.MissingDateRange('getDepositsByDateRange')}
         if(!ValidationHelper.checkDateOrder(startDate, endDate)){ throw new AppError.InvalidDateRange('getContributionsByDateRange')}
 
-        const deposits = await Deposit.find({
-            date: {
-                $gte: new Date(startDate).toISOString(),
-                $lte: new Date(endDate).toISOString()
-            }
-        }).sort({ date: 1});
+        let deposits;
+        if(populate){
+            deposits = await Deposit.find({
+                date: {
+                    $gte: new Date(startDate).toISOString(),
+                    $lte: new Date(endDate).toISOString()
+                }
+            }).sort({ date: 1})
+            .populate('contributions')
+            .populate('donations')
+            .populate('history.responsiblePartyProfileId');
+        } else{
+            deposits = await Deposit.find({
+                date: {
+                    $gte: new Date(startDate).toISOString(),
+                    $lte: new Date(endDate).toISOString()
+                }
+            }).sort({ date: 1});
+        }
 
         if(deposits.length === 0){ return res.status(200).json('No deposits found for that date range.')}
+
         return res.status(200).json(deposits);
     } catch (error) {
         next(error)
@@ -154,7 +161,7 @@ const updateDeposit = async (req, res, next) => {
 
         const deposit = await Deposit.findById(req.params.id);
         if(!deposit) {throw new AppError.NotFound('updateDeposit')};
-        if(deposit.processedDate){throw new AppError.DeleteFailed('updateDeposit', 'The deposit has already been processed and cannot be modified.')}
+        if(deposit.currentStatus === DepositStatus.PROCESSED){throw new AppError.DepositAlreadyProcessed('updateDeposit','The deposit has already been processed and cannot be modified.')} 
 
         Object.keys(req.body).forEach(key => {
             deposit[key] = req.body[key];
@@ -163,7 +170,7 @@ const updateDeposit = async (req, res, next) => {
         const validationError = deposit.validateSync();
         if (validationError) { throw new AppError.Validation('updateDeposit') }
 
-        await deposit.save();
+        await deposit.save({new: true});
         return res.status(200).json(deposit);
     } catch (error) {
         next(error)
@@ -178,7 +185,7 @@ const deleteDeposit = async (req, res, next) => {
 
         const deposit = await Deposit.findById(req.params.id);
         if(!deposit) {throw new AppError.NotFound('deleteDeposit')};
-        if(deposit.processedDate){throw new AppError.DeleteFailed('deleteDeposit', 'The deposit has already been processed and cannot be deleted.')}
+        if(deposit.currentStatus === DepositStatus.PROCESSED){throw new AppError.DepositAlreadyProcessed('deleteDeposit','The deposit has already been processed and cannot be deleted.')}
         if(deposit.contributions.length > 0 || deposit.donations.length > 0) {throw new AppError.DeleteFailed('deleteDeposit', 'The deposit has contributions or donations that must be dealt with first.')}
 
         await deposit.deleteOne();
@@ -250,7 +257,7 @@ const processDeposit = async (req, res, next) => {
         if(depositTotal !== contributionTotal + donationTotal) {throw new AppError.DepositUnbalanced('processDeposit')}
 
         deposit.approverProfileId = req.body.approverProfileId;
-        deposit.currentStatus = 'PROCESSED';
+        deposit.currentStatus = DepositStatus.PROCESSED;
         deposit.statusDate = new Date();
         deposit.history.push({status: deposit.currentStatus, date: deposit.statusDate});
         deposit = await deposit.save();
@@ -269,10 +276,9 @@ const processDeposit = async (req, res, next) => {
 }
 
 module.exports = {
-    addDeposit,
+    createDeposit,
     getAllDeposits,
     getDepositById,
-    getPopulatedDepositById,
     getDepositsByDateRange,
     updateDeposit,
     deleteDeposit,

@@ -4,80 +4,49 @@ const ValidationHelper = require('../../helpers/validationHelper');
 const UserValidation = require('../../helpers/userValidation');
 const AppError = require('../../applicationErrors');
 const { AccountType, AccountRestriction } = require('../../models/constants');
-// const { sign } = require('jsonwebtoken');
 
-const createRevenueAccount = async (req, res, next) => {
+const createAccount = async (req, res, next) => {
     try {
-        if(!req.body.name){ throw new AppError.MissingRequiredParameter('createRevenueAccount', 'The name of the account is required')}
+        if(!req.body.name){ throw new AppError.MissingRequiredParameter('createAccount', 'The name of the account is required')}
+        if(!req.body.type){ throw new AppError.MissingRequiredParameter('createAccount', 'The type of the account is required')}
+        if(req.body.custodian & !mongoose.Types.ObjectId.isValid(req.body.custodian)){ throw new AppError.InvalidId('createAccount', 'The custodian ID is invalid')}
+        if(req.body.custodian & !await UserValidation.profileExists(req.body.custodian)){ throw new AppError.CustodianProfileMissing('createAccount')}
+        if(req.body.parent & !mongoose.Types.ObjectId.isValid(req.body.parent)){ throw new AppError.InvalidId('createAccount', 'The parent ID is invalid')}
+        if(req.body.parent & !await AccountValidation.accountExists(req.body.parent)){ throw new AppError.NotFound('createAccount', 'The parent account does not exist')}
+        if(req.body.children){
+            for (const child of req.body.children) {
+                if(!mongoose.Types.ObjectId.isValid(child)){ throw new AppError.InvalidId('createAccount', 'A child ID is invalid')}
+                if(!await AccountValidation.accountExists(child)){ throw new AppError.NotFound('createAccount', 'A child account does not exist')}
+            }
+        }
+        if(req.body.sibling){
+            if(!mongoose.Types.ObjectId.isValid(req.body.sibling)){ throw new AppError.InvalidId('createAccount', 'The sibling ID is invalid')}
+            if(!await AccountValidation.accountExists(req.body.sibling)){ throw new AppError.NotFound('createAccount', 'The sibling account does not exist')}
+        }
 
         const accountName = ValidationHelper.sanitizeString(req.body.name);
-        const type = AccountType.REVENUE;
+        const accountType = req.body.type;
+        const accountCustodian = req.body.custodian;
+        const accountParent = req.body.parent;
+        const accountChildren = req.body.children;
+        const accountSibling = req.body.sibling;
 
-        const isDuplicate = await ValidationHelper.checkDuplicateAccount(accountName, type);
-        if(isDuplicate){ throw new AppError.DuplicateAccount('createRevenueAccount')}
+        const isDuplicate = await ValidationHelper.checkDuplicateAccount(accountName, accountType);
+        if(isDuplicate){ throw new AppError.DuplicateAccount('createAccount')}
 
-        const account = new Account(req.body);
+        const account = new Account({
+            name: accountName,
+            type: accountType,
+            custodian: accountCustodian,
+            parent: accountParent,
+            children: accountChildren,
+            sibling: accountSibling
+        }).save({new: true});
 
-        await account.save();
         return res.status(201).json(account);
     } catch (error) {
         next(error)
-        console.log({method: error.method, message: error.message});
-    }
-}
-
-const createFundAccount = async (req, res, next) => {
-    try {
-        if(!req.body.name){ throw new AppError.MissingRequiredParameter('createFundAccount', 'The name of the account is required')}
-
-        const accountName = ValidationHelper.sanitizeString(req.body.name);
-
-        const isFundDuplicate = await ValidationHelper.checkDuplicateAccount(accountName, AccountType.FUND);
-        const isExpenseDuplicate = await ValidationHelper.checkDuplicateAccount(accountName, AccountType.EXPENSE);
-
-        if(isFundDuplicate && isExpenseDuplicate){ throw new AppError.DuplicateAccount('createFundAccount')}
-
-        let fundAccount, expenseAccount, message;
-        if(isFundDuplicate && !isExpenseDuplicate){ 
-            fundAccount = await Account.findOne({name: accountName, type: AccountType.FUND});
-            expenseAccount = await new Account({
-                name: accountName,
-                type: AccountType.EXPENSE,
-                restriction: AccountRestriction.RESTRICTED,
-            }).save({new: true});
-            message = 'Fund account already exists. Expense account created.  The two accounts are now siblings.'
-        }      
-        else if(!isFundDuplicate && isExpenseDuplicate){ 
-            expenseAccount = await Account.findOne({name: accountName, type: AccountType.EXPENSE});
-            fundAccount = await new Account({
-                name: accountName,
-                type: AccountType.FUND,
-                restriction: AccountRestriction.RESTRICTED,
-            }).save({new: true});
-            message = 'Expense account already exists. Fund account created.  The two accounts are now siblings.'
-        }
-        else{
-            fundAccount = await new Account({
-                name: accountName,
-                type: AccountType.FUND,
-                restriction: AccountRestriction.RESTRICTED,
-            }).save({new: true});
-            expenseAccount = await new Account({
-                name: accountName,
-                type: AccountType.EXPENSE,
-                restriction: AccountRestriction.RESTRICTED,
-            }).save({new: true});
-            message = 'Fund and Expense accounts created. The two accounts are now siblings.'
-        }
-
-        await addSiblingIds(fundAccount._id, expenseAccount._id);
-        fundAccount = await Account.findById(fundAccount._id);
-        expenseAccount = await Account.findById(expenseAccount._id);
-        return res.status(201).json({message: message, fundAccount: fundAccount, expenseAccount: expenseAccount});
-
-    } catch (error) {
-        next(error)
-        console.log({method: error.method, message: error.message});
+        console.log({method: error.method, message: error.message});        
     }
 }
 
@@ -377,8 +346,7 @@ const addSiblingIds = async (fundAccountId, expenseAccountId) => {
 }
 
 module.exports = {
-    createRevenueAccount,
-    createFundAccount,
+    createAccount,
     getAllAccounts,
     getAccountById,
     getAccountByName,

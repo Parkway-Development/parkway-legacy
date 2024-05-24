@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const { validateAccountSumMatchesAmount } = require('../../helpers/validationHelper');
 
 const contributionSchema = new mongoose.Schema({
-    profile: {
+    contributorProfileId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Profile'
     },
@@ -41,25 +41,28 @@ const contributionSchema = new mongoose.Schema({
     transactionDate: {
         required: true,
         type: Date,
-        default: Date.now()
+        default: Date.now
     },
     depositId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Deposits'
     },
-    procesesedDate: {
+    processedDate: {
         type: Date
     },
     type: {
         required: true,
         type: String,
         default: 'cash'
-    }
+    },
+    notes: [{
+        type: String
+    }]
 
-}, {timestamps: true})
+}, {timestamps: true});
 
 contributionSchema.path('accounts').validate(function (accounts) {
     return validateAccountSumMatchesAmount(this.net, accounts);
 }, 'The sum of accounts amounts must equal the total amount.');
 
-module.exports = mongoose.model('Contribution', contributionSchema,'contributions');
+module.exports = mongoose.model('Contribution', contributionSchema, 'contributions');
