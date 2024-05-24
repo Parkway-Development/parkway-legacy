@@ -191,10 +191,10 @@ export const buildMocks = <
   mocks.forEach(([key, key2, data]) => {
     // noinspection SuspiciousTypeOfGuard
     if (typeof data === 'string') {
-      // @ts-ignore
+      // @ts-expect-error
       overrides[key][key2] = vi.fn().mockRejectedValue({ message: data });
     } else {
-      // @ts-ignore
+      // @ts-expect-error
       overrides[key][key2] = buildResolvedMock(key, key2, data);
     }
   });

@@ -9,12 +9,12 @@ import { AxiosResponse } from 'axios';
 import { trimStrings } from '../../utilities';
 import { SharedBasePageProps } from './types.ts';
 
-export type EditBaseApiFormProps<T extends BaseEntity> = {
+export interface EditBaseApiFormProps<T extends BaseEntity> {
   isSaving: boolean;
   onSave: (values: Omit<T, '_id'>) => void;
   onCancel: () => void;
   initialValues: Omit<T, '_id'>;
-};
+}
 
 type EditBaseApiEntityPageProps<T extends BaseEntity> = SharedBasePageProps & {
   editForm: (props: EditBaseApiFormProps<T>) => ReactNode;

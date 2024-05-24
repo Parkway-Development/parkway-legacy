@@ -11,7 +11,7 @@ export type Contribution = BaseEntity & {
   type: string;
 };
 
-export type ContributionAccount = {
+export interface ContributionAccount {
   account: string;
   amount: number;
-};
+}

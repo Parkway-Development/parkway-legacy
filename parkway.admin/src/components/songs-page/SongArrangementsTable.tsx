@@ -10,10 +10,10 @@ import { trimStrings } from '../../utilities';
 import { UserNameDisplay } from '../user-name-display';
 import { EditOutlined } from '@ant-design/icons';
 
-type SongArrangementsTableProps = {
+interface SongArrangementsTableProps {
   songArrangements: SongArrangement[] | undefined;
   onUpdate: (songArrangements: SongArrangement[]) => void;
-};
+}
 
 type SongArrangementModalItem = SongArrangement & {
   isEditing: boolean;

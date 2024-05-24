@@ -2,14 +2,14 @@ import { Button, Form } from 'antd';
 import styles from './BaseFormFooter.module.css';
 import { ReactNode } from 'react';
 
-export type BaseFormFooterType = {
+export interface BaseFormFooterType {
   isDisabled: boolean;
   isLoading: boolean;
   onCancel: () => void;
   submitText?: string;
   cancelText?: string;
   children?: ReactNode;
-};
+}
 
 export const BaseFormFooter = ({
   isDisabled,

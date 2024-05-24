@@ -9,12 +9,12 @@ export interface AuthUser {
   profileId?: string;
 }
 
-export type InternalLoginResponse = {
+export interface InternalLoginResponse {
   user: AuthUser;
   profile: UserProfile | undefined;
   errorMessage: string | undefined;
   hasValidProfile: boolean;
-};
+}
 
 interface AuthContextType {
   isLoggedIn: boolean;
@@ -129,7 +129,7 @@ export interface LoginResponse {
   message?: string;
 }
 
-type TokenPayload = {
+interface TokenPayload {
   _id: string;
   claims: {
     systemSettings: boolean | string;
@@ -145,7 +145,7 @@ type TokenPayload = {
     teams: string[];
     teamsLed: string[];
   };
-};
+}
 
 export type AppClaimKeys = Exclude<
   keyof TokenPayload['claims'],

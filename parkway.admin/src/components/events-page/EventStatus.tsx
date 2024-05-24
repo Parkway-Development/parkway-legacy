@@ -6,13 +6,13 @@ import useApi, { invalidateQueries } from '../../hooks/useApi.ts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { ApproveEventPayload, RejectEventPayload } from '../../api';
 
-type EventStatusProps = {
+interface EventStatusProps {
   status: Event['status'];
   schedule: Event['schedule'];
   isCalendarAdmin: boolean;
   userId: string;
   eventId: string;
-};
+}
 
 const EventStatus = ({
   status: initialStatus,

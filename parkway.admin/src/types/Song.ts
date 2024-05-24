@@ -11,16 +11,16 @@ export type Song = BaseEntity & {
   arrangements: SongArrangement[];
 };
 
-export type SongArrangement = {
+export interface SongArrangement {
   vocalist?: string;
   key: string;
   arrangementName: string;
   arrangementDescription?: string;
   documents?: SongArrangementDocuments[];
-};
+}
 
-export type SongArrangementDocuments = {
+export interface SongArrangementDocuments {
   fileName: string;
   filePath: string;
   fileType: string;
-};
+}

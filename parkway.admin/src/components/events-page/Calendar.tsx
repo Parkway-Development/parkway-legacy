@@ -8,7 +8,7 @@ import {
   Tooltip
 } from 'antd';
 import { Dayjs } from 'dayjs';
-// @ts-ignore
+// @ts-expect-error
 import dayLocaleData from 'dayjs/plugin/localeData';
 import useApi, { buildQueryKey } from '../../hooks/useApi.ts';
 import { useQuery } from '@tanstack/react-query';

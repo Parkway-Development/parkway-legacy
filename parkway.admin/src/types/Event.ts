@@ -20,10 +20,10 @@ export type Event = BaseEntity & {
   schedule?: EventSchedule;
 };
 
-export type EventMessage = {
+export interface EventMessage {
   profile: string;
   messageDate: Date;
   message: string;
-};
+}
 
 export type EventStatus = 'Active' | 'Tentative' | 'Rejected';

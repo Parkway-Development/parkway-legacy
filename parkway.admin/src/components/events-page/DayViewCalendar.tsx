@@ -7,19 +7,19 @@ import CalendarTooltip from './CalendarTooltip.tsx';
 import { useQuery } from '@tanstack/react-query';
 import useApi, { buildQueryKey } from '../../hooks/useApi.ts';
 
-type DayViewCalendarProps = {
+interface DayViewCalendarProps {
   events: Event[];
   date: Date;
   dateParam: string;
   onClickEvent: (event: Event) => void;
-};
+}
 
-type EventGridPosition = {
+interface EventGridPosition {
   event: Event;
   gridRow: number;
   gridRowSpan: number;
   gridColumn: number;
-};
+}
 
 const DayViewCalendar = ({
   events,

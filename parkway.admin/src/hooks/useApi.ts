@@ -29,7 +29,7 @@ import { QueryClient } from '@tanstack/react-query';
 export type GenericResponse = Promise<AxiosResponse<any, any>>;
 export type TypedResponse<T> = Promise<Omit<AxiosResponse<T>, 'config'>>;
 
-export type BaseApiTypes = {
+export interface BaseApiTypes {
   accountsApi: AccountsApiType;
   assetsApi: AssetsApiType;
   contributionsApi: ContributionsApiType;
@@ -40,7 +40,7 @@ export type BaseApiTypes = {
   teamsApi: TeamsApiType;
   usersApi: UsersApiType;
   vendorsApi: VendorsApiType;
-};
+}
 
 export type ApiType = BaseApiTypes & {
   formatError: (error: Error | null) => string;

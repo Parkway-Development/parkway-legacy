@@ -14,22 +14,22 @@ import { addProfileInitialValues } from '../directory-page';
 import { UserProfile } from '../../types';
 import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
 
-type ProfileVerificationProps = {
+interface ProfileVerificationProps {
   loginResponse: InternalLoginResponse;
-};
+}
 
-type InputComparison = {
+interface InputComparison {
   placeholder: string;
   field: keyof UserProfile;
   input?: string;
   compareFn: (input?: string) => boolean;
   isValid?: boolean;
-};
+}
 
 const stringComparison = (
   input: string | undefined,
   expected: string,
-  isPhoneNumber: boolean = false
+  isPhoneNumber = false
 ) => {
   if (expected === input) return true;
   if (!input?.trim().length) return false;

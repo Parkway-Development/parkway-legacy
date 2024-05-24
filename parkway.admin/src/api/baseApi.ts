@@ -2,17 +2,17 @@ import { BaseEntity } from '../types';
 import { GenericResponse, TypedResponse } from '../hooks/useApi.ts';
 import { AxiosInstance } from 'axios';
 
-export type GenericMessageResponse = {
+export interface GenericMessageResponse {
   message: string;
-};
+}
 
-export type BaseApiType<T extends BaseEntity> = {
+export interface BaseApiType<T extends BaseEntity> {
   create: (payload: Omit<T, '_id'>) => TypedResponse<T>;
   delete: (id: string) => GenericResponse;
   getById: (id: string) => () => TypedResponse<T>;
   getAll: () => TypedResponse<T[]>;
   update: (payload: T) => TypedResponse<T>;
-};
+}
 
 export const IsBaseEntityApi = <T extends BaseEntity>(
   apiEntity: any

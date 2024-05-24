@@ -47,11 +47,11 @@ const DeleteButton = ({
   );
 };
 
-type BasicDeleteButtonProps = {
+interface BasicDeleteButtonProps {
   onDelete: () => void;
   isLoading?: boolean;
   isIconButton: boolean;
-};
+}
 
 export const BasicDeleteButton = ({
   onDelete,

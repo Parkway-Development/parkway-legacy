@@ -17,12 +17,12 @@ export const trimStrings = <T extends {}>(payload: T): T => {
     if (value === undefined || value === null) {
       // do nothing
     } else if (typeof value === 'string') {
-      // @ts-ignore
+      // @ts-expect-error
       trimmedPayload[key] = value.trim();
     } else if (isValidDate(value)) {
       // do nothing
     } else if (Array.isArray(value)) {
-      // @ts-ignore
+      // @ts-expect-error
       trimmedPayload[key] = value.map((item) => {
         if (typeof item === 'string') return item.trim();
         if (isValidDate(item)) return item;
@@ -30,7 +30,7 @@ export const trimStrings = <T extends {}>(payload: T): T => {
         return item;
       });
     } else if (typeof value === 'object') {
-      // @ts-ignore
+      // @ts-expect-error
       trimmedPayload[key] = trimStrings(value);
     }
   }

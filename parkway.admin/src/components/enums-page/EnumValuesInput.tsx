@@ -3,10 +3,10 @@ import { Button, Input } from 'antd';
 import styles from './EnumValuesInput.module.css';
 import { CloseOutlined, PlusCircleOutlined } from '@ant-design/icons';
 
-type EnumValuesInputProps = {
+interface EnumValuesInputProps {
   onChange: (values: string[]) => void;
   initialValue: string[] | undefined;
-};
+}
 
 const EnumValuesInput = ({ onChange, initialValue }: EnumValuesInputProps) => {
   const [values, setValues] = useState<string[]>(() => {
