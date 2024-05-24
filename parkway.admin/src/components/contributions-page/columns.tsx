@@ -1,6 +1,6 @@
 import { Contribution } from '../../types';
 import { OrderedColumnsType } from '../../hooks/useColumns.tsx';
-import { UserNameDisplayById } from '../user-name-display';
+import { UserNameDisplay } from '../user-name-display';
 import DateDisplay from '../date-display';
 import MoneyDisplay from '../money-display';
 
@@ -63,7 +63,7 @@ export const contributionColumns: OrderedColumnsType<Contribution> = [
     width: 200,
     dataIndex: 'profile',
     render: (value: Contribution['profile']) => (
-      <UserNameDisplayById id={value} />
+      <UserNameDisplay user={value} />
     ),
     key: 'profile',
     displayOrder: 8

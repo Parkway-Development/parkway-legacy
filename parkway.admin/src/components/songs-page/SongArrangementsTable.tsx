@@ -7,7 +7,7 @@ import { BasicDeleteButton } from '../delete-button';
 import { BaseFormFooter } from '../base-data-table-page';
 import UserProfileSelect from '../user-profile-select';
 import { trimStrings } from '../../utilities';
-import { UserNameDisplayById } from '../user-name-display';
+import { UserNameDisplay } from '../user-name-display';
 import { EditOutlined } from '@ant-design/icons';
 
 type SongArrangementsTableProps = {
@@ -118,7 +118,10 @@ const SongArrangementsTable = ({
             <Button onClick={() => handleEdit(value)} size="small">
               <EditOutlined />
             </Button>
-            <BasicDeleteButton onDelete={() => handleDelete(value)} isIconButton />
+            <BasicDeleteButton
+              onDelete={() => handleDelete(value)}
+              isIconButton
+            />
           </div>
         )
       },
@@ -128,7 +131,7 @@ const SongArrangementsTable = ({
         key: 'vocalist',
         displayOrder: 1,
         render: (value: SongArrangement['vocalist']) => (
-          <UserNameDisplayById id={value} />
+          <UserNameDisplay user={value} />
         )
       },
       {

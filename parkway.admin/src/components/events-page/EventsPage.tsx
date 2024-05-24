@@ -1,5 +1,5 @@
 import { Event } from '../../types';
-import { UserNameDisplayById } from '../user-name-display';
+import { UserNameDisplay } from '../user-name-display';
 import { BaseApiDataTablePage } from '../base-data-table-page';
 import { OrderedColumnsType } from '../../hooks/useColumns.tsx';
 import DateDisplay from '../date-display';
@@ -25,7 +25,7 @@ const eventColumns: OrderedColumnsType<Event> = [
   {
     title: 'Organizer',
     dataIndex: 'organizer',
-    render: (value: Event['organizer']) => <UserNameDisplayById id={value} />,
+    render: (value: Event['organizer']) => <UserNameDisplay user={value} />,
     key: 'organizer',
     displayOrder: 3
   },

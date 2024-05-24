@@ -7,7 +7,7 @@ import useApi, { buildQueryKey } from '../../hooks/useApi.ts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../../hooks/useAuth.tsx';
 import { AddEventMessagePayload } from '../../api';
-import { UserNameDisplayById } from '../user-name-display';
+import { UserNameDisplay } from '../user-name-display';
 
 type EventMessagesProps = {
   eventId: string;
@@ -53,7 +53,7 @@ const EventMessages = ({
                   {messageDate.toLocaleTimeString()}
                 </td>
                 <td>
-                  <UserNameDisplayById id={message.profile} />
+                  <UserNameDisplay user={message.profile} />
                 </td>
                 <td>{message.message}</td>
               </tr>

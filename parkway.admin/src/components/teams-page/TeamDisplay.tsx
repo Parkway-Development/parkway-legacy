@@ -1,6 +1,6 @@
 import { Team } from '../../types';
 import { Descriptions, DescriptionsProps } from 'antd';
-import { UserNameDisplayById } from '../user-name-display';
+import { UserNameDisplay } from '../user-name-display';
 import styles from './TeamDisplay.module.css';
 
 const TeamDisplay = (team: Team) => {
@@ -13,7 +13,7 @@ const TeamDisplay = (team: Team) => {
     {
       key: 2,
       label: 'Leader',
-      children: <UserNameDisplayById id={team.leader} />
+      children: <UserNameDisplay user={team.leader} />
     },
     {
       key: 3,
@@ -22,7 +22,7 @@ const TeamDisplay = (team: Team) => {
         <ul className={styles.memberDisplay}>
           {team.members.map((member, index) => (
             <li>
-              <UserNameDisplayById key={index} id={member} />
+              <UserNameDisplay key={index} user={member} />
             </li>
           ))}
         </ul>
