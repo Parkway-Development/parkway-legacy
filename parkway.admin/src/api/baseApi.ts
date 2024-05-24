@@ -15,6 +15,7 @@ export interface BaseApiType<T extends BaseEntity> {
 }
 
 export const IsBaseEntityApi = <T extends BaseEntity>(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   apiEntity: any
 ): apiEntity is BaseApiType<T> =>
   Object.keys(apiEntity).includes('getAll') &&

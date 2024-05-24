@@ -25,7 +25,7 @@ type BaseDataTableListProps<T extends BaseEntity> = Pick<
   'responsiveCardRenderer'
 > & {
   queryFn: () => TypedResponse<T[]>;
-  queryKey: any[];
+  queryKey: unknown[];
   columns: OrderedColumnsType<T>;
 };
 

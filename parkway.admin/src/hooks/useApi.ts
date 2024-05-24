@@ -26,7 +26,7 @@ import {
 } from '../api';
 import { QueryClient } from '@tanstack/react-query';
 
-export type GenericResponse = Promise<AxiosResponse<any, any>>;
+export type GenericResponse = Promise<AxiosResponse<unknown, unknown>>;
 export type TypedResponse<T> = Promise<Omit<AxiosResponse<T>, 'config'>>;
 
 export interface BaseApiTypes {
@@ -61,7 +61,7 @@ export type QueryType =
   | 'vendors';
 
 export const buildQueryKey = (queryType: QueryType, id?: string) => {
-  const result: any[] = [queryType];
+  const result: unknown[] = [queryType];
   if (id) result.push({ _id: id });
   return result;
 };

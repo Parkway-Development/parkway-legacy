@@ -219,7 +219,7 @@ const EventForm = ({
     onSave(finalPayload);
   };
 
-  const validateEndDate = (_: any, value: Dayjs) => {
+  const validateEndDate = (_: unknown, value: Dayjs) => {
     const startDate: Dayjs = form.getFieldValue('startDate');
     if (value && startDate && value < startDate) {
       return Promise.reject('End date cannot be before the start date');
@@ -228,7 +228,7 @@ const EventForm = ({
     return Promise.resolve();
   };
 
-  const validateEndTime = (_: any, value: Dayjs) => {
+  const validateEndTime = (_: unknown, value: Dayjs) => {
     const startDate: Dayjs = form.getFieldValue('startDate');
     const startTime: Dayjs = form.getFieldValue('startTime');
     const endDate: Dayjs = form.getFieldValue('endDate');

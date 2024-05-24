@@ -64,6 +64,7 @@ export const BasicDeleteButton = ({
         title="Delete"
         description="Are you sure to delete this?"
         onConfirm={onDelete}
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
         onCancel={() => {}}
         disabled={isLoading}
         okText="Yes"

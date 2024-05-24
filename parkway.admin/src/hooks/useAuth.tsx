@@ -113,7 +113,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       teamsLed,
       token
     };
-  }, [user, setUser, token]);
+  }, [user, setUser, token, clearToken, clearUser, setToken]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

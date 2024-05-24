@@ -14,11 +14,13 @@ export type MultipleSelectionProps = BaseSelection<string[]> & {
 
 export type BaseSelectionProps = SingleSelectionProps | MultipleSelectionProps;
 
+// TODO: Rework this to provide a selection option or something to return instead of magic strings
 export const BaseSelect = ({
   isMultiSelect = false,
   onChange,
   ...props
 }: BaseSelectionProps) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleOnChange = (changeValue: any) => {
     onChange(changeValue);
   };

@@ -19,7 +19,7 @@ const EnumValuesInput = ({ onChange, initialValue }: EnumValuesInputProps) => {
     );
 
     onChange(changeValues);
-  }, [values]);
+  }, [values, onChange]);
 
   const handleValueChange = useCallback(
     (index: number, value: string | undefined) => {

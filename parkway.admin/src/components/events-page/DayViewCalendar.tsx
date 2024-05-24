@@ -185,6 +185,7 @@ const DayViewCalendar = ({
           return (
             <Tooltip key={event._id} title={<CalendarTooltip event={event} />}>
               <div
+                accessKey="c"
                 onClick={() => onClickEvent(event)}
                 className={styles.eventItem}
                 style={{

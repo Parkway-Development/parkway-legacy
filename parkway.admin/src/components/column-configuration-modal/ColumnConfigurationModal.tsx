@@ -25,7 +25,7 @@ const ColumnConfigurationModal = <T extends BaseEntity>({
 
   useEffect(() => {
     columnsProp.current = columns;
-  }, [columns]);
+  }, [columns, columnsProp]);
 
   const handleSwitchToggle = (key: string) => (toggled: boolean) => {
     setColumns((prev) =>
