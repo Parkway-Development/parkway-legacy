@@ -33,9 +33,9 @@ const PasswordRequirement = ({ count, display }: PasswordRequirementProps) => {
   );
 };
 
-interface ResetPasswordPageParams {
+type ResetPasswordPageParams = {
   resetToken: string;
-}
+};
 
 const ResetPasswordPage = () => {
   const { resetToken } = useParams<ResetPasswordPageParams>();
