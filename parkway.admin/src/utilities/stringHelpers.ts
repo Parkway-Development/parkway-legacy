@@ -14,7 +14,9 @@ export const trimStrings = <T extends {}>(payload: T): T => {
   const trimmedPayload = { ...payload };
 
   for (const [key, value] of Object.entries(payload)) {
-    if (typeof value === 'string') {
+    if (value === undefined || value === null) {
+      // do nothing
+    } else if (typeof value === 'string') {
       // @ts-ignore
       trimmedPayload[key] = value.trim();
     } else if (isValidDate(value)) {
