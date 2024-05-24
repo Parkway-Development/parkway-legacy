@@ -4,13 +4,28 @@
 }
 
 .events li {
-    border: 1px solid rgb(240, 240, 240);
+    border-top: 1px solid rgb(240, 240, 240);
+    border-right: 1px solid rgb(240, 240, 240);
+    border-bottom: 1px solid rgb(240, 240, 240);
+    border-left: 5px solid;
     border-radius: 2px;
     padding: 0 0.5em;
     margin-bottom: 2px;
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
+
+    &.approved {
+        border-left-color: green;
+    }
+
+    &.tentative {
+        border-left-color: yellow;
+    }
+
+    &.rejected {
+        border-left-color: red;
+    }
 }
 
 .events li:hover {
