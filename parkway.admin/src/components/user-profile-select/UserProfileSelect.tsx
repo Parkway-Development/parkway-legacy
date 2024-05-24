@@ -28,6 +28,7 @@ const UserProfileSelect = ({
     queryKey: buildQueryKey('profiles')
   });
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleOnChange = (changeValue: any) => {
     onChange(changeValue);
     setValue(changeValue);
@@ -53,7 +54,7 @@ const UserProfileSelect = ({
           : prev
       );
     }
-  }, [excludedUserId]);
+  }, [excludedUserId, isMultiSelect]);
 
   let options: SelectProps['options'] = [];
 

@@ -6,16 +6,16 @@ import styles from './AccountsInput.module.css';
 import { CloseOutlined, PlusCircleOutlined } from '@ant-design/icons';
 import MoneyDisplay from '../money-display';
 
-type ContributionAccountInput = {
+interface ContributionAccountInput {
   account: string | undefined;
   amount: number;
-};
+}
 
-type AccountsInputProps = {
+interface AccountsInputProps {
   totalAmount: number;
   onChange: (accounts: ContributionAccount[], isValid: boolean) => void;
   initialValue: ContributionAccount[] | undefined;
-};
+}
 
 const AccountsInput = ({
   onChange,
@@ -38,7 +38,7 @@ const AccountsInput = ({
       .map(({ account, amount }) => ({ account: account!, amount }));
 
     onChange(changeValues, totalAmount > 0 && remaining === 0);
-  }, [accounts, remaining]);
+  }, [accounts, remaining, onChange, totalAmount]);
 
   const handleAccountChange = useCallback(
     (index: number, value: string | undefined) => {

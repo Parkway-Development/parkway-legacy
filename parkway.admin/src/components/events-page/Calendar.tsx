@@ -8,8 +8,6 @@ import {
   Tooltip
 } from 'antd';
 import { Dayjs } from 'dayjs';
-// @ts-ignore
-import dayLocaleData from 'dayjs/plugin/localeData';
 import useApi, { buildQueryKey } from '../../hooks/useApi.ts';
 import { useQuery } from '@tanstack/react-query';
 import styles from './Calendar.module.css';
@@ -21,6 +19,7 @@ import { SelectInfo } from 'antd/lib/calendar/generateCalendar';
 import CalendarTooltip from './CalendarTooltip.tsx';
 import DayViewCalendar from './DayViewCalendar.tsx';
 import classNames from 'classnames';
+import 'dayjs/plugin/localeData';
 
 const Calendar = () => {
   const navigate = useNavigate();

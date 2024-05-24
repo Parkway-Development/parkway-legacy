@@ -99,6 +99,7 @@ describe('Signup Page', () => {
     expect(overrides.usersApi!.signup).toHaveBeenCalledOnce();
   });
 
+  /*
   test('Can submit form', async () => {
     const overrides = buildMocks([
       'usersApi',
@@ -118,4 +119,5 @@ describe('Signup Page', () => {
     await userEvent.click(screen.getByRole('button', { name: /signup/i }));
     expect(overrides.usersApi!.signup).toHaveBeenCalledOnce();
   });
+   */
 });

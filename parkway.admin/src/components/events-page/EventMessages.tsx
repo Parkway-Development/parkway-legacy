@@ -9,10 +9,10 @@ import { useAuth } from '../../hooks/useAuth.tsx';
 import { AddEventMessagePayload } from '../../api';
 import { UserNameDisplay } from '../user-name-display';
 
-type EventMessagesProps = {
+interface EventMessagesProps {
   eventId: string;
   messages?: EventMessage[];
-};
+}
 
 const EventMessages = ({
   eventId,

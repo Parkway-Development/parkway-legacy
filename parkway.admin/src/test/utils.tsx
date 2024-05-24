@@ -150,7 +150,9 @@ type ExtractReturnType<
   T,
   K1 extends keyof T,
   K2 extends keyof T[K1]
-> = T[K1][K2] extends (...args: any[]) => any ? ReturnType<T[K1][K2]> : never;
+> = T[K1][K2] extends (...args: unknown[]) => unknown
+  ? ReturnType<T[K1][K2]>
+  : never;
 
 const buildResolvedMock = <
   K extends keyof ApiType,
@@ -161,6 +163,7 @@ const buildResolvedMock = <
   resolvedValue: ExtractDataType<ExtractReturnType<ApiType, K, K2>>
 ): Mock => {
   const mock = vi.fn<
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     any,
     TypedResponse<ExtractDataType<ExtractReturnType<ApiType, K, K2>>>
   >();
@@ -191,10 +194,10 @@ export const buildMocks = <
   mocks.forEach(([key, key2, data]) => {
     // noinspection SuspiciousTypeOfGuard
     if (typeof data === 'string') {
-      // @ts-ignore
+      // @ts-expect-error required for mocking
       overrides[key][key2] = vi.fn().mockRejectedValue({ message: data });
     } else {
-      // @ts-ignore
+      // @ts-expect-error required for mocking
       overrides[key][key2] = buildResolvedMock(key, key2, data);
     }
   });

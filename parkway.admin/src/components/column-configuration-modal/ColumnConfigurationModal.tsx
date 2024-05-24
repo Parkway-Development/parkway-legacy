@@ -12,9 +12,9 @@ import {
 } from '@hello-pangea/dnd';
 import { DragOutlined } from '@ant-design/icons';
 
-type ColumnConfigurationModal<T extends BaseEntity> = {
+interface ColumnConfigurationModal<T extends BaseEntity> {
   columns: React.MutableRefObject<OrderedColumnsType<T>>;
-};
+}
 
 const ColumnConfigurationModal = <T extends BaseEntity>({
   columns: columnsProp
@@ -25,7 +25,7 @@ const ColumnConfigurationModal = <T extends BaseEntity>({
 
   useEffect(() => {
     columnsProp.current = columns;
-  }, [columns]);
+  }, [columns, columnsProp]);
 
   const handleSwitchToggle = (key: string) => (toggled: boolean) => {
     setColumns((prev) =>
