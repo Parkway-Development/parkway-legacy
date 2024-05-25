@@ -3,13 +3,11 @@ const mongoose = require('mongoose');
 const teamSchema = new mongoose.Schema({
     name: {
         required: true,
-        type: String,
-        lowercase: true
+        type: String
     },
     description: {
         required: false,
-        type: String,
-        lowercase: true
+        type: String
     },
     leader: {
         required: false,
