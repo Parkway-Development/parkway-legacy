@@ -8,13 +8,23 @@ const addTeam = async (req, res) => {
         if (!name) { throw new Error('Team name is required.'); }
     
         const team = new Team({
-            name: req.body.name,
-            description: req.body.description,
-            leader: req.body.leader,
-            members: req.body.members
-        }).save();
+            name,
+            description,
+            members: []
+        });
 
         if(!team){ throw new Error('There was a problem saving the team.') }
+
+        if (leader) {
+            if(!mongoose.Types.ObjectId.isValid(leader)){ throw new Error('Invalid leader ID.') }
+            await addLeaderById(req, res, team, leader);
+        }
+
+        if (members && members.length > 0) {
+            await addMembersToTeam(req, res, team, members);
+        }
+
+        await team.save();
 
         res.status(200).json(team);
     } catch (error) {
@@ -76,12 +86,42 @@ const updateTeamById = async (req, res) => {
         if(!id){ throw new Error('No ID provided.')}
         if(!mongoose.Types.ObjectId.isValid(id)){ throw new Error('Invalid ID provided.')}
 
-        const updatedTeam = await Team.findByIdAndUpdate(id, req.body, {new: true});
-    
-        if(!updatedTeam){ throw new Error('No team found.') }
+        const team = await Team.findById(id);
+        if (!team) { throw new Error('No team found.'); }
 
-        res.status(200).json(updatedTeam)
-    
+        team.name = req.body.name;
+        team.description = req.body.description;
+
+        const { leader, members } = req.body;
+
+        // Check to clear the leader or change the leader
+        if (team.leader && leader !== team.leader) {
+            await removeLeader(req, res, team);
+        }
+
+        // Add the new leader
+        if (leader && !team.leader) {
+            await addLeaderById(req, res, team, leader);
+        }
+
+        // Check if changing members
+        if (members) {
+            const existingMembers = [...team.members] ?? [];
+            const membersToAdd = members.filter((member) => !existingMembers.includes(member));
+            if (membersToAdd.length > 0) {
+                console.log('adding members', membersToAdd);
+                await addMembersToTeam(req, res, team, membersToAdd);
+            }
+
+            const membersToRemove = existingMembers.filter((member) => !members.includes(member));
+            if (membersToRemove.length > 0) {
+                console.log('removing members', membersToRemove);
+                await removeMembersFromTeam(req, res, team, membersToRemove);
+            }
+        }
+
+        await team.save();
+        res.status(200).json(team);
     } catch (error) {
         console.log(error);
         return res.status(500).json(error);
@@ -101,178 +141,97 @@ const deleteTeamById = async (req, res) => {
 
         const { leader, members } = team;
 
-        if (leader) { await Profile.findByIdAndUpdate( leader, { $pull: { teams: id } }); }
+        if (leader) {
+            await removeLeader(req, res, team);
+        }
 
         if (members && members.length > 0) {
-            await Promise.all(members.map(memberId =>
-                Profile.findByIdAndUpdate( memberId, { $pull: { teams: id } } )
-            ));
+            await removeMembersFromTeam(req, res, team, members);
         }
 
         const deletedTeam = await Team.findByIdAndDelete(id);
 
         if(!deletedTeam){ throw new Error('There was a problem deleting the team.') }
 
-        res.status(200).json(deletedTeam)
-    
+        res.status(200).json(deletedTeam);
     } catch (error) {
         console.log(error);
         return res.status(500).json(error);
     }
-
 }
 
-const addLeaderById = async (req, res) => {
+const addLeaderById = async (req, res, team, leaderId) => {
     try {
-        const { teamId } = req.params;
-        if(!teamId){ throw new Error('No team ID provided.') }
-        if(!mongoose.Types.ObjectId.isValid(teamId)){ throw new Error('Invalid team ID.') }
-
-        const { leaderId } = req.body;
-        if(!leaderId){ throw new Error('No leader ID provided.') }
-        if(!mongoose.Types.ObjectId.isValid(leaderId)){ throw new Error('Invalid leader ID.') }
-
-        //Get the team in question
-        const team = await Team.findById(teamId);
-        if(!team){ throw new Error('No such team found.') }
-
         //If the leader is already a team member, remove them from the members list first
-        if(team.members.includes(leaderId)){ await Team.findByIdAndUpdate(leaderId, {$pull: {members: leaderId}});}
+        if(team.members.includes(leaderId)) {
+            team.members = team.members.filter((member) => member.id !== leaderId);
+        }
 
         //Then add the team to the leader's profile
-        const updatedProfile = await Profile.findByIdAndUpdate({_id: leaderId},{$addToSet: {teams: teamId}},{new: true})
+        const updatedProfile = await Profile.findByIdAndUpdate(leaderId, {$addToSet: {teams: team._id}},{new: true})
         if(!updatedProfile){ throw new Error('There was a problem updating the leaders profile.') }
 
-        //Then add the leader to the team
-        const updatedTeam = await Team.findByIdAndUpdate({_id: teamId},{leader: leaderId},{new: true});
-        if(!updatedTeam){ throw new Error('There was a problem updating the team with the new leader.') }
-
-        return res.status(200).json({ team: updatedTeam, profile: updatedProfile })
-    } catch (error) {
-        console.log(error);
-        return res.status(500).json(error);
-    }
-
-}
-
-const removeLeaderById = async (req, res) => {
-    try {
-        const { teamId } = req.params;
-        if(!teamId){ throw new Error('No team ID provided.') }
-        if(!mongoose.Types.ObjectId.isValid(teamId)){ throw new Error('Invalid team ID.') }
-
-        const team = await Team.findByIdAndUpdate(teamId)
-        if (!team) { throw new Error('No such team found.') }
-
-        const { leaderId } = team;
-        if (!leaderId) { throw new Error('No leader assigned for this team.') }
-
-        const updatedTeam = await Team.findByIdAndUpdate( _id = teamId, {$unset: {leader: ""}}, {new: true} );
-        if (!updatedTeam) { throw new Error('There was a problem updating the team.') }
-
-        const updatedProfile = await Profile.findByIdAndUpdate(_id = leaderId, { $pull: { teams: teamId } }, { new: true } );
-        if (!updatedProfile) { throw new Error('There was a problem updating the leaders profile.') }
-    
-        res.status(200).json({team: updatedTeam, profile: updatedProfile});
-
+        team.leader = leaderId;
     } catch (error) {
         console.log(error);
         return res.status(500).json(error);
     }
 }
 
-const addMembersToTeam = async (req, res) => {
+const removeLeader = async (req, res, team) => {
     try {
-        const { teamId } = req.params;
-        if(!teamId){ throw new Error('No team ID provided.') }
-        if(!mongoose.Types.ObjectId.isValid(teamId)){ throw new Error('Invalid team ID.') }
-
-        const { members } = req.body;
-        if(members.length === 0){ throw new Error('No members provided.') }
-    
-        const badMemberIds = [];
-        const goodMemberIds = [];
-
-        for (const memberId of members) {
-            if (!mongoose.Types.ObjectId.isValid(memberId)) {
-                badMemberIds.push({ memberId, reason: 'Invalid ID' });
-                continue;
-            }
-            goodMemberIds.push(memberId);
+        const { leader } = team;
+        if (!leader) {
+            return;
         }
-    
-        if (goodMemberIds.length === 0) { throw new Error('No valid profile IDs provided.', badMemberIds); }
 
-        const team = await Team.findById(teamId);
-        if (!team) { throw new Error('No such team found.') }
+        const leaderId = team.leader;
+        team.leader = undefined;
 
-        const nonLeaderMemberIds = [];
-        goodMemberIds.forEach(id => {
-            if (id.toString() === team.leader.toString()) {
-                badMemberIds.push({ memberId: id, reason: 'Member is the team leader' });
-            } else {
-                nonLeaderMemberIds.push(id);
-            }
-        });
+        const updatedProfile = await Profile.findByIdAndUpdate(leaderId, { $pull: { teams: team._id } }, { new: true } );
+        if (!updatedProfile) { throw new Error('There was a problem updating the leaders profile.') }
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json(error);
+    }
+}
 
-        team.members.push(...nonLeaderMembers).save();
+const addMembersToTeam = async (req, res, team, members) => {
+    try {
+        if (members.length === 0){ throw new Error('No members provided.') }
 
-        const updates = nonLeaderMembers.map(memberId =>
-            Profile.findByIdAndUpdate( _id = memberId, { $addToSet: { teams: teamId } }, { new: true } )
-        );
+        const goodMemberIds = members.filter((memberId) => mongoose.Types.ObjectId.isValid(memberId) &&
+            memberId !== team.leader);
 
-        await Promise.all(updates);
+        if (goodMemberIds.length) {
+            team.members.push(...goodMemberIds);
 
-        res.status(200).json({ updatedTeam, rejectedMembers });
+            const updates = goodMemberIds.map(memberId =>
+                Profile.findByIdAndUpdate(memberId, {$addToSet: {teams: team._id}}, {new: true})
+            );
+
+            await Promise.all(updates);
+        }
     } catch (error) {
         console.log(error);
         return res.status(500).json(error);        
     }
 };
 
-const removeMembersFromTeam = async (req, res) => {
+const removeMembersFromTeam = async (req, res, team, members) => {
     try {
-        const { teamId } = req.params;
-        if(!teamId){ throw new Error('No team ID provided.') }
-        if(!mongoose.Types.ObjectId.isValid(teamId)){ throw new Error('Invalid team ID.') }
-
-        const { members } = req.body;
         if(members.length === 0){ throw new Error('No members provided.') }
-    
-        const badMemberIds = [];
-        const goodMemberIds = [];
-        for (const memberId of members) {
-            if (!mongoose.Types.ObjectId.isValid(memberId)) {
-                badMemberIds.push({ memberId, reason: 'Invalid ID' });
-                continue;
-            }
-            goodMemberIds.push(memberId);
+
+        const goodMemberIds = members.filter((memberId) => mongoose.Types.ObjectId.isValid(memberId));
+
+        if (goodMemberIds.length) {
+            team.members = team.members.filter((memberId) => !goodMemberIds.includes(memberId));
+
+            const updates = goodMemberIds.map(memberId =>
+                Profile.findByIdAndUpdate( memberId, { $pull: { teams: team._id } }, { new: true } )
+            );
+            await Promise.all(updates);
         }
-    
-        if (goodMemberIds.length === 0) {throw new Error('No valid profile IDs provided.', badMemberIds); }
-
-        const team = await Team.findById(teamId);
-        if (!team) { throw new Error('No such team found.') }
-
-        const nonLeaderMemberIds = [];
-        goodMemberIds.forEach(id => {
-            if (id.toString() === team.leader.toString()) {
-                badMemberIds.push({ memberId: id, reason: 'Member is the team leader' });
-            } else {
-                nonLeaderMemberIds.push(id);
-            }
-        });
-
-        const updatedTeam = await Team.findByIdAndUpdate( teamId, { $pull: { members: { $in: nonLeaderMemberIds } } }, { new: true } );
-        if (!updatedTeam) { throw new Error('There was a problem updating the team.') }
-    
-        const updates = nonLeaderMemberIds.map(memberId =>
-            Profile.findByIdAndUpdate( memberId, { $pull: { teams: id } }, { new: true } )
-        );
-        await Promise.all(updates);
-
-        res.status(200).json({ updatedTeam, rejectedMembers });
-
     } catch (error) {
         console.log(error);
         return res.status(500).json(error);             
@@ -285,9 +244,5 @@ module.exports = {
     getTeamById,
     getTeamByName,
     updateTeamById,
-    deleteTeamById,
-    addLeaderById,
-    removeLeaderById,
-    addMembersToTeam,
-    removeMembersFromTeam
+    deleteTeamById
 }
