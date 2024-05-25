@@ -38,7 +38,7 @@ type EventFormProps = AddBaseApiFormProps<Event> & {
   initialValues?: EventWithoutId;
 };
 
-const frequencyOptions: BaseSelectionProps['options'] = [
+const frequencyOptions: BaseSelectionProps<string>['options'] = [
   {
     label: 'Weekly',
     value: 'weekly'
@@ -57,7 +57,7 @@ const frequencyOptions: BaseSelectionProps['options'] = [
   }
 ];
 
-const weekDayOptions: BaseSelectionProps['options'] = [
+const weekDayOptions: BaseSelectionProps<number>['options'] = [
   {
     label: 'Sunday',
     value: 0
@@ -88,7 +88,7 @@ const weekDayOptions: BaseSelectionProps['options'] = [
   }
 ];
 
-const monthWeekOptions: BaseSelectionProps['options'] = [
+const monthWeekOptions: BaseSelectionProps<number>['options'] = [
   {
     label: 'First',
     value: 1
@@ -481,7 +481,7 @@ const EventForm = ({
                     { required: true, message: 'Week numbers are required.' }
                   ]}
                 >
-                  <BaseSelect
+                  <BaseSelect<number[]>
                     isMultiSelect
                     value={monthWeeks}
                     onChange={(value) => {
@@ -504,7 +504,7 @@ const EventForm = ({
                     { required: true, message: 'Week days are required.' }
                   ]}
                 >
-                  <BaseSelect
+                  <BaseSelect<number[]>
                     isMultiSelect
                     value={weekDays}
                     onChange={(value) => {
