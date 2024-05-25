@@ -3,13 +3,7 @@ import dayjs from 'dayjs';
 const isValidDate = (date: unknown): boolean => {
   if (date instanceof dayjs) return true;
 
-  return (
-    date !== undefined &&
-    date !== null &&
-    Object.prototype.toString.call(date) === '[object Date]' &&
-    typeof date === 'number' &&
-    !isNaN(date)
-  );
+  return date !== undefined && date !== null && date instanceof Date;
 };
 
 export const trimStrings = <T extends NonNullable<unknown>>(payload: T): T => {
