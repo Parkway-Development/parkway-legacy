@@ -8,11 +8,11 @@ import { useNavigate } from 'react-router-dom';
 import { trimStrings } from '../../utilities';
 import { SharedBasePageProps } from './types.ts';
 
-export type AddBaseApiFormProps<T extends BaseEntity> = {
+export interface AddBaseApiFormProps<T extends BaseEntity> {
   isSaving: boolean;
   onSave: (values: Omit<T, '_id'>) => void;
   onCancel: () => void;
-};
+}
 
 type AddBaseApiEntityPageProps<T extends BaseEntity> = SharedBasePageProps & {
   addForm: (props: AddBaseApiFormProps<T>) => ReactNode;

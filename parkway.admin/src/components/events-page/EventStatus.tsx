@@ -1,24 +1,27 @@
 import styles from './EventStatus.module.css';
 import { Button } from 'antd';
 import { Event } from '../../types';
-import { useState } from 'react';
-import useApi from '../../hooks/useApi.ts';
-import { useMutation } from '@tanstack/react-query';
+import { useEffect, useState } from 'react';
+import useApi, { invalidateQueries } from '../../hooks/useApi.ts';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { ApproveEventPayload, RejectEventPayload } from '../../api';
 
-type EventStatusProps = {
+interface EventStatusProps {
   status: Event['status'];
+  schedule: Event['schedule'];
   isCalendarAdmin: boolean;
   userId: string;
   eventId: string;
-};
+}
 
 const EventStatus = ({
   status: initialStatus,
+  schedule,
   isCalendarAdmin,
   userId,
   eventId
 }: EventStatusProps) => {
+  const queryClient = useQueryClient();
   const [status, setStatus] = useState<Event['status']>(initialStatus);
   const {
     eventsApi: { approve, reject }
@@ -30,6 +33,10 @@ const EventStatus = ({
     mutationFn: reject
   });
 
+  useEffect(() => {
+    setStatus(initialStatus);
+  }, [initialStatus]);
+
   const handleApproveClick = async () => {
     const payload: ApproveEventPayload = {
       _id: eventId,
@@ -38,7 +45,10 @@ const EventStatus = ({
     };
 
     performApprove(payload, {
-      onSuccess: () => setStatus('Active')
+      onSuccess: () => {
+        setStatus('Active');
+        invalidateQueries(queryClient, 'events');
+      }
     });
   };
 
@@ -50,7 +60,10 @@ const EventStatus = ({
     };
 
     performReject(payload, {
-      onSuccess: () => setStatus('Rejected')
+      onSuccess: () => {
+        setStatus('Rejected');
+        invalidateQueries(queryClient, 'events');
+      }
     });
   };
 
@@ -85,6 +98,7 @@ const EventStatus = ({
         <span>{status}</span>
         {approveButton}
         {rejectButton}
+        {schedule && <span>All events in this series will be updated.</span>}
       </div>
     </div>
   );

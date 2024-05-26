@@ -47,11 +47,11 @@ const DeleteButton = ({
   );
 };
 
-type BasicDeleteButtonProps = {
+interface BasicDeleteButtonProps {
   onDelete: () => void;
   isLoading?: boolean;
   isIconButton: boolean;
-};
+}
 
 export const BasicDeleteButton = ({
   onDelete,
@@ -64,6 +64,7 @@ export const BasicDeleteButton = ({
         title="Delete"
         description="Are you sure to delete this?"
         onConfirm={onDelete}
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
         onCancel={() => {}}
         disabled={isLoading}
         okText="Yes"

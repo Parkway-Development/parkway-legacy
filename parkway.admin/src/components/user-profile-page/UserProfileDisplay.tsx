@@ -3,10 +3,10 @@ import { Button, Card } from 'antd';
 import styles from './UserProfileDisplay.module.css';
 import { InfoRow } from '../base-display-page';
 
-type UserProfileDisplay = {
+interface UserProfileDisplay {
   profile: UserProfile;
   onEdit?: () => void;
-};
+}
 
 const UserProfileDisplay = ({ profile, onEdit }: UserProfileDisplay) => {
   return (

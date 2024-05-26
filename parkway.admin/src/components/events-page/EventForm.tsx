@@ -4,6 +4,7 @@ import {
   DatePicker,
   Form,
   Input,
+  Radio,
   TimePicker
 } from 'antd';
 import { Link, useParams } from 'react-router-dom';
@@ -30,13 +31,14 @@ type EventFormFields = Omit<EventWithoutId, 'start' | 'end'> & {
   startTime: Dayjs;
   endDate: Dayjs;
   endTime: Dayjs;
+  updateSeries?: 'this' | 'future' | 'all';
 };
 
 type EventFormProps = AddBaseApiFormProps<Event> & {
   initialValues?: EventWithoutId;
 };
 
-const frequencyOptions: BaseSelectionProps['options'] = [
+const frequencyOptions: BaseSelectionProps<string>['options'] = [
   {
     label: 'Weekly',
     value: 'weekly'
@@ -55,7 +57,7 @@ const frequencyOptions: BaseSelectionProps['options'] = [
   }
 ];
 
-const weekDayOptions: BaseSelectionProps['options'] = [
+const weekDayOptions: BaseSelectionProps<number>['options'] = [
   {
     label: 'Sunday',
     value: 0
@@ -86,7 +88,7 @@ const weekDayOptions: BaseSelectionProps['options'] = [
   }
 ];
 
-const monthWeekOptions: BaseSelectionProps['options'] = [
+const monthWeekOptions: BaseSelectionProps<number>['options'] = [
   {
     label: 'First',
     value: 1
@@ -125,12 +127,19 @@ const EventForm = ({
     : undefined;
 
   const {
-    eventsApi: { delete: deleteFn }
+    eventsApi: { delete: deleteById, deleteBySchedule }
   } = useApi();
   const [form] = Form.useForm<EventFormFields>();
   const frequency = Form.useWatch(['schedule', 'frequency'], form);
   const weekDays = Form.useWatch(['schedule', 'week_days'], form);
   const monthWeeks = Form.useWatch(['schedule', 'month_weeks'], form);
+  const allDay = Form.useWatch('allDay', form);
+  const updateSeries = Form.useWatch('updateSeries', form);
+
+  const deleteFn =
+    !initialValues || !updateSeries || updateSeries === 'this'
+      ? deleteById
+      : (id: string) => deleteBySchedule({ _id: id, updateSeries });
 
   const [endTimeOpen, setEndTimeOpen] = useState<boolean>(false);
   const [repeats, setRepeats] = useState<boolean>(
@@ -154,37 +163,55 @@ const EventForm = ({
         startDate: transformDateToDayjs(initialValues.start),
         startTime: transformDateToDayjs(initialValues.start),
         endDate: transformDateToDayjs(initialValues.end),
-        endTime: transformDateToDayjs(initialValues.end)
+        endTime: transformDateToDayjs(initialValues.end),
+        updateSeries: 'this'
       }
     : addDate
       ? {
           startDate: addDate,
           endDate: addDate,
           status: eventStatusMapping['Tentative'],
-          organizer: user!.profileId
+          organizer: user!.profileId,
+          allDay: false,
+          schedule: undefined
         }
       : {
           status: eventStatusMapping['Tentative'],
-          organizer: user!.profileId
+          organizer: user!.profileId,
+          allDay: false,
+          schedule: undefined
         };
 
   const isCalendarAdmin = hasClaim('calendarManagement');
 
   const handleSave = (values: EventFormFields) => {
-    const { startDate, startTime, endDate, endTime, ...remaining } = values;
+    const { startDate, startTime, endDate, endTime, allDay, ...remaining } =
+      values;
 
     const start = startDate.toDate();
-    start.setHours(startTime.hour());
-    start.setMinutes(startTime.minute());
-    start.setSeconds(0);
-
     const end = endDate.toDate();
-    end.setHours(endTime.hour());
-    end.setMinutes(endTime.minute());
-    end.setSeconds(0);
+
+    if (allDay) {
+      start.setHours(0);
+      start.setMinutes(0);
+      start.setSeconds(0);
+
+      end.setHours(23);
+      end.setMinutes(59);
+      end.setSeconds(59);
+    } else {
+      start.setHours(startTime.hour());
+      start.setMinutes(startTime.minute());
+      start.setSeconds(0);
+
+      end.setHours(endTime.hour());
+      end.setMinutes(endTime.minute());
+      end.setSeconds(0);
+    }
 
     const finalPayload: EventWithoutId = {
       ...remaining,
+      allDay,
       start,
       end
     };
@@ -192,7 +219,7 @@ const EventForm = ({
     onSave(finalPayload);
   };
 
-  const validateEndDate = (_: any, value: Dayjs) => {
+  const validateEndDate = (_: unknown, value: Dayjs) => {
     const startDate: Dayjs = form.getFieldValue('startDate');
     if (value && startDate && value < startDate) {
       return Promise.reject('End date cannot be before the start date');
@@ -201,7 +228,7 @@ const EventForm = ({
     return Promise.resolve();
   };
 
-  const validateEndTime = (_: any, value: Dayjs) => {
+  const validateEndTime = (_: unknown, value: Dayjs) => {
     const startDate: Dayjs = form.getFieldValue('startDate');
     const startTime: Dayjs = form.getFieldValue('startTime');
     const endDate: Dayjs = form.getFieldValue('endDate');
@@ -265,6 +292,7 @@ const EventForm = ({
         {initialValues && (
           <Form.Item<EventFormFields> label="Status" name="status">
             <EventStatus
+              schedule={initial.schedule}
               status={initial.status}
               isCalendarAdmin={isCalendarAdmin}
               eventId={id!}
@@ -300,27 +328,33 @@ const EventForm = ({
               />
             </Form.Item>
 
-            <Form.Item<EventFormFields>
-              label="Start Time"
-              name="startTime"
-              rules={[{ required: true, message: 'Start time is required.' }]}
-              labelCol={{ flex: 0 }}
-              wrapperCol={{ flex: 1 }}
-            >
-              <TimePicker
-                use12Hours
-                format="h:mm a"
-                minuteStep={15}
-                onChange={(value) => {
-                  const currentEndTime = form.getFieldValue('endTime');
+            {!allDay && (
+              <Form.Item<EventFormFields>
+                label="Start Time"
+                name="startTime"
+                rules={
+                  !allDay
+                    ? [{ required: true, message: 'Start time is required.' }]
+                    : undefined
+                }
+                labelCol={{ flex: 0 }}
+                wrapperCol={{ flex: 1 }}
+              >
+                <TimePicker
+                  use12Hours
+                  format="h:mm a"
+                  minuteStep={15}
+                  onChange={(value) => {
+                    const currentEndTime = form.getFieldValue('endTime');
 
-                  if (!currentEndTime) {
-                    form.setFieldsValue({ endTime: value });
-                    setEndTimeOpen(true);
-                  }
-                }}
-              />
-            </Form.Item>
+                    if (!currentEndTime) {
+                      form.setFieldsValue({ endTime: value });
+                      setEndTimeOpen(true);
+                    }
+                  }}
+                />
+              </Form.Item>
+            )}
           </div>
           <div>
             <Form.Item<EventFormFields>
@@ -336,41 +370,64 @@ const EventForm = ({
               <DatePicker />
             </Form.Item>
 
+            {!allDay && (
+              <Form.Item<EventFormFields>
+                label="End Time"
+                name="endTime"
+                rules={
+                  !allDay
+                    ? [
+                        { required: true, message: 'End time is required.' },
+                        { validator: validateEndTime }
+                      ]
+                    : undefined
+                }
+                labelCol={{ flex: 0 }}
+                wrapperCol={{ flex: 1 }}
+              >
+                <TimePicker
+                  use12Hours
+                  format="h:mm a"
+                  minuteStep={15}
+                  open={endTimeOpen}
+                  onOpenChange={setEndTimeOpen}
+                />
+              </Form.Item>
+            )}
+          </div>
+          <div>
             <Form.Item<EventFormFields>
-              label="End Time"
-              name="endTime"
-              rules={[
-                { required: true, message: 'End time is required.' },
-                { validator: validateEndTime }
-              ]}
+              label="All Day"
+              name="allDay"
               labelCol={{ flex: 0 }}
               wrapperCol={{ flex: 1 }}
             >
-              <TimePicker
-                use12Hours
-                format="h:mm a"
-                minuteStep={15}
-                open={endTimeOpen}
-                onOpenChange={setEndTimeOpen}
+              <Checkbox
+                checked={allDay}
+                onChange={(e) =>
+                  form.setFieldsValue({ allDay: e.target.checked })
+                }
               />
             </Form.Item>
           </div>
         </div>
 
-        <Form.Item<EventFormFields> label="Repeats">
-          <Checkbox
-            checked={repeats}
-            onChange={() =>
-              setRepeats((prev) => {
-                if (prev) {
-                  form.setFieldsValue({ schedule: undefined });
-                }
+        {!initialValues && (
+          <Form.Item<EventFormFields> label="Repeats">
+            <Checkbox
+              checked={repeats}
+              onChange={() =>
+                setRepeats((prev) => {
+                  if (prev) {
+                    form.setFieldsValue({ schedule: undefined });
+                  }
 
-                return !prev;
-              })
-            }
-          />
-        </Form.Item>
+                  return !prev;
+                })
+              }
+            />
+          </Form.Item>
+        )}
 
         {repeats && (
           <>
@@ -424,7 +481,7 @@ const EventForm = ({
                     { required: true, message: 'Week numbers are required.' }
                   ]}
                 >
-                  <BaseSelect
+                  <BaseSelect<number[]>
                     isMultiSelect
                     value={monthWeeks}
                     onChange={(value) => {
@@ -447,7 +504,7 @@ const EventForm = ({
                     { required: true, message: 'Week days are required.' }
                   ]}
                 >
-                  <BaseSelect
+                  <BaseSelect<number[]>
                     isMultiSelect
                     value={weekDays}
                     onChange={(value) => {
@@ -492,6 +549,16 @@ const EventForm = ({
             onChange={handleTeamsChange}
           />
         </Form.Item>
+
+        {initialValues?.schedule && (
+          <Form.Item<EventFormFields> label="Series Update" name="updateSeries">
+            <Radio.Group>
+              <Radio.Button value="this">Only this event</Radio.Button>
+              <Radio.Button value="future">This and future events</Radio.Button>
+              <Radio.Button value="all">All events</Radio.Button>
+            </Radio.Group>
+          </Form.Item>
+        )}
 
         <BaseFormFooter
           isDisabled={isSaving}

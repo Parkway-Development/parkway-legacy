@@ -3,9 +3,9 @@ import { isSameDate, transformToTime } from '../../utilities';
 import DateDisplay from '../date-display';
 import styles from './CalendarTooltip.module.css';
 
-type CalendarTooltipProps = {
+interface CalendarTooltipProps {
   event: Event;
-};
+}
 
 const CalendarTooltip = ({ event }: CalendarTooltipProps) => {
   const timeFormat = isSameDate(event.start, event.end) ? (

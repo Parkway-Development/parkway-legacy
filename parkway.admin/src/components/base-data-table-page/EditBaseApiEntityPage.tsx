@@ -9,12 +9,12 @@ import { AxiosResponse } from 'axios';
 import { trimStrings } from '../../utilities';
 import { SharedBasePageProps } from './types.ts';
 
-export type EditBaseApiFormProps<T extends BaseEntity> = {
+export interface EditBaseApiFormProps<T extends BaseEntity> {
   isSaving: boolean;
   onSave: (values: Omit<T, '_id'>) => void;
   onCancel: () => void;
   initialValues: Omit<T, '_id'>;
-};
+}
 
 type EditBaseApiEntityPageProps<T extends BaseEntity> = SharedBasePageProps & {
   editForm: (props: EditBaseApiFormProps<T>) => ReactNode;
@@ -48,11 +48,7 @@ const EditBaseApiEntityPage = <T extends BaseEntity>({
 
   const { update } = baseApiEntity;
 
-  if (!id) {
-    return <Alert type="error" message="Invalid id" />;
-  }
-
-  const queryFn = buildQueryFn(baseApiEntity, id);
+  const queryFn = buildQueryFn(baseApiEntity, id ?? 'undefined');
 
   const { isPending, mutate } = useMutation({
     mutationFn: update
@@ -63,16 +59,20 @@ const EditBaseApiEntityPage = <T extends BaseEntity>({
     data: response,
     error
   } = useQuery<
-    Omit<AxiosResponse<T, any>, 'config'>,
+    Omit<AxiosResponse<T, unknown>, 'config'>,
     Error,
-    Omit<AxiosResponse<T, any>, 'config'>,
-    any[]
+    Omit<AxiosResponse<T, unknown>, 'config'>,
+    unknown[]
   >({
     queryFn,
     queryKey: buildQueryKey(queryKeyProp, id)
   });
 
   const [api, contextHolder] = notification.useNotification();
+
+  if (!id) {
+    return <Alert type="error" message="Invalid id" />;
+  }
 
   if (error) {
     return <Alert type="error" message={formatError(error)} />;

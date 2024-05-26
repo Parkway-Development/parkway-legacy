@@ -8,6 +8,6 @@ export type Account = BaseEntity & {
   subtype: string;
   parent?: Account;
   children?: Account[];
-  custodian?: UserProfile;
+  custodian?: string | UserProfile;
   notes?: string[];
 };

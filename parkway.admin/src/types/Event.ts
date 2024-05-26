@@ -7,6 +7,7 @@ export type Event = BaseEntity & {
   organizer?: string;
   start: Date;
   end: Date;
+  allDay: boolean;
   location?: string;
   category?: string;
   status: EventStatus;
@@ -19,10 +20,10 @@ export type Event = BaseEntity & {
   schedule?: EventSchedule;
 };
 
-export type EventMessage = {
+export interface EventMessage {
   profile: string;
   messageDate: Date;
   message: string;
-};
+}
 
 export type EventStatus = 'Active' | 'Tentative' | 'Rejected';

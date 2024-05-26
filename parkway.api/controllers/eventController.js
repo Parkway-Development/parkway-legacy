@@ -57,7 +57,7 @@ const createEvents = async (event, eventSchedule) => {
     if (getNextEventDate) {
         let nextEvent = getNextEventDate(eventSchedule.last_schedule_date);
 
-        while (nextEvent && nextEvent <= schedulingEnd && (!eventSchedule.end_date || nextEvent <= endOfDay(eventSchedule.endDate))) {
+        while (nextEvent && nextEvent <= schedulingEnd && (!eventSchedule.end_date || nextEvent <= endOfDay(eventSchedule.end_date))) {
             const start = set(event.start, { year: nextEvent.getFullYear(), month: nextEvent.getMonth(), date: nextEvent.getDate() });
             const daysDiff = differenceInDays(start, event.start);
             const end = addDays(event.end, daysDiff);
@@ -149,7 +149,8 @@ const getEventById = async (req, res) => {
         if (!id) { throw new Error("Please provide an event Id.")}
         if (!mongoose.Types.ObjectId.isValid(id)) {throw new Error("Invalid ID.")}
 
-        const event = await Event.findById(id);
+        const event = await Event.findById(id)
+            .populate('schedule');
     
         if (!event) { throw new Error("No event was found with that Id.") }
     
@@ -164,17 +165,59 @@ const getEventById = async (req, res) => {
 const updateEventById = async (req, res) => {
     try{
         const {id} = req.params;
+
         if (!id) { throw new Error("Please provide an event Id.") }
         if (!mongoose.Types.ObjectId.isValid(id)) { throw new Error("Invalid ID.") }
 
-        // Exclude fields that shouldn't be updated using this method
-        const { status, approvedBy, approvedDate, ...update } = req.body;
+        // Include only fields that we want to update
+        const update = {
+            name: req.body.name,
+            description: req.body.description ?? null,
+            organizer: req.body.organizer ?? null,
+            start: req.body.start,
+            end: req.body.end,
+            allDay: req.body.allDay,
+            location: req.body.location ?? null,
+            category: req.body.category ?? null,
+            teams: req.body.teams
+        };
+
+        const { updateSeries, schedule } = req.body;
+
+        const shouldUpdateSchedule = schedule && ['future', 'all'].includes(updateSeries);
+
+        if (shouldUpdateSchedule) {
+            schedule.start_date = update.start;
+            schedule.last_schedule_date = update.start;
+            const validationError = new EventSchedule(schedule).validateSync();
+            if (validationError) {
+                return res.status(400).json({message: validationError.message});
+            }
+        }
 
         const updatedEvent = await Event.findByIdAndUpdate(id, update, {new: true});
 
         if (!updatedEvent) { throw new Error("No such event found.") }
 
-        res.status(200).json(updatedEvent)
+        if (shouldUpdateSchedule) {
+            // Remove future events
+            await Event.deleteMany({ schedule: updatedEvent.schedule, start: { $gt: updatedEvent.start } });
+
+            // Update all previous events with the event data based on the update, but leave start/end dates alone
+            // for historical events
+            if (updateSeries === 'all') {
+                const {start, end, allDay, ...otherEventsUpdate} = update;
+                await Event.updateMany({schedule: updatedEvent.schedule, start: {$lt: updatedEvent.start}}, otherEventsUpdate, {new: true});
+            }
+
+            // Update the schedule entity
+            const updatedSchedule = await EventSchedule.findByIdAndUpdate(updatedEvent.schedule, schedule, {new: true});
+
+            // Create new scheduled events for the future
+            await createEvents(updatedEvent, updatedSchedule);
+        }
+
+        return res.status(200).json(updatedEvent);
     } catch (error) {
         console.log(error)
         return res.status(500).json(error)
@@ -198,6 +241,10 @@ const approveEventById = async (req, res) => {
         const updatedEvent = await Event.findByIdAndUpdate(id, update, {new: true});
     
         if (!updatedEvent) { throw new Error("No such event found.") }
+
+        if (updatedEvent.schedule) {
+            await Event.updateMany({ schedule: updatedEvent.schedule }, update, { new: true });
+        }
     
         res.status(200).json(updatedEvent);
     
@@ -225,6 +272,10 @@ const rejectEventById = async (req, res) => {
 
         if (!updatedEvent) { throw new Error("No such event found.") }
 
+        if (updatedEvent.schedule) {
+            await Event.updateMany({ schedule: updatedEvent.schedule }, update, { new: true });
+        }
+
         res.status(200).json(updatedEvent);
     } catch (error) {
         console.log(error)
@@ -243,6 +294,33 @@ const deleteEventById = async (req, res) => {
         if (!deletedEvent) { throw new Error("No such event found.") }
 
         res.status(200).json(deletedEvent);
+    }catch(error){
+        console.log(error)
+        return res.status(500).json(error)
+    }
+}
+
+const deleteEventBySchedule = async (req, res) => {
+    try{
+        const {id, updateSeries} = req.params;
+        if (!id) { throw new Error("Please provide an event Id.") }
+        if (!updateSeries) { throw new Error("Please provide an update type.") }
+        if (!mongoose.Types.ObjectId.isValid(id)) { throw new Error("Invalid ID.") }
+
+        const event = await Event.findById(id);
+
+        if (!event) { throw new Error("No such event found.") }
+        if (!event.schedule) { throw new Error("Event does not have an associated schedule.") }
+
+        if (updateSeries === 'all') {
+            await Event.deleteMany({ schedule: event.schedule });
+        } else if (updateSeries === 'future') {
+            await Event.deleteMany({ schedule: event.schedule, start: { $gte: event.start } });
+        } else {
+            throw new Error('Invalid update series value');
+        }
+
+        res.status(200).json(event);
     }catch(error){
         console.log(error)
         return res.status(500).json(error)
@@ -282,7 +360,8 @@ module.exports = {
     getAllEvents, 
     getEventById, 
     updateEventById, 
-    deleteEventById, 
+    deleteEventById,
+    deleteEventBySchedule,
     approveEventById, 
     rejectEventById, 
     addEventMessageById

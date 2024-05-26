@@ -8,8 +8,6 @@ import {
   Tooltip
 } from 'antd';
 import { Dayjs } from 'dayjs';
-// @ts-ignore
-import dayLocaleData from 'dayjs/plugin/localeData';
 import useApi, { buildQueryKey } from '../../hooks/useApi.ts';
 import { useQuery } from '@tanstack/react-query';
 import styles from './Calendar.module.css';
@@ -20,6 +18,8 @@ import { SyntheticEvent } from 'react';
 import { SelectInfo } from 'antd/lib/calendar/generateCalendar';
 import CalendarTooltip from './CalendarTooltip.tsx';
 import DayViewCalendar from './DayViewCalendar.tsx';
+import classNames from 'classnames';
+import 'dayjs/plugin/localeData';
 
 const Calendar = () => {
   const navigate = useNavigate();
@@ -101,6 +101,11 @@ const Calendar = () => {
             <Tooltip key={item._id} title={<CalendarTooltip event={item} />}>
               <li
                 onClick={(e) => navigateToItem(item, e)}
+                className={classNames({
+                  [styles.approved]: item.status === 'Active',
+                  [styles.tentative]: item.status === 'Tentative',
+                  [styles.rejected]: item.status === 'Rejected'
+                })}
                 style={{ backgroundColor, color: fontColor }}
               >
                 {item.name}

@@ -1,26 +1,24 @@
 import dayjs from 'dayjs';
 
-const isValidDate = (date: any): boolean => {
+const isValidDate = (date: unknown): boolean => {
   if (date instanceof dayjs) return true;
 
-  return (
-    date &&
-    Object.prototype.toString.call(date) === '[object Date]' &&
-    !isNaN(date)
-  );
+  return date !== undefined && date !== null && date instanceof Date;
 };
 
-export const trimStrings = <T extends {}>(payload: T): T => {
+export const trimStrings = <T extends NonNullable<unknown>>(payload: T): T => {
   const trimmedPayload = { ...payload };
 
   for (const [key, value] of Object.entries(payload)) {
-    if (typeof value === 'string') {
-      // @ts-ignore
+    if (value === undefined || value === null) {
+      // do nothing
+    } else if (typeof value === 'string') {
+      // @ts-expect-error required for this to work
       trimmedPayload[key] = value.trim();
     } else if (isValidDate(value)) {
       // do nothing
     } else if (Array.isArray(value)) {
-      // @ts-ignore
+      // @ts-expect-error required for this to work
       trimmedPayload[key] = value.map((item) => {
         if (typeof item === 'string') return item.trim();
         if (isValidDate(item)) return item;
@@ -28,7 +26,7 @@ export const trimStrings = <T extends {}>(payload: T): T => {
         return item;
       });
     } else if (typeof value === 'object') {
-      // @ts-ignore
+      // @ts-expect-error required for this to work
       trimmedPayload[key] = trimStrings(value);
     }
   }

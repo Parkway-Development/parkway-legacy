@@ -4,11 +4,11 @@ import { Skeleton } from 'antd';
 import { WarningOutlined } from '@ant-design/icons';
 import UserNameDisplay from './UserNameDisplay.tsx';
 
-interface UserDisplayProps {
+interface UserNameDisplayByIdProps {
   id?: string;
 }
 
-export const UserNameDisplayById = ({ id }: UserDisplayProps) => {
+export const UserNameDisplayById = ({ id }: UserNameDisplayByIdProps) => {
   const {
     usersApi: { getAllLimitedProfile }
   } = useApi();

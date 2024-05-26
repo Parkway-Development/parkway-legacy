@@ -7,9 +7,9 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import styles from './AccountParent.module.css';
 import { Link } from 'react-router-dom';
 
-type AccountParentProps = {
+interface AccountParentProps {
   account: Account;
-};
+}
 
 const AccountParent = ({ account }: AccountParentProps) => {
   const [isEditing, setIsEditing] = useState(false);

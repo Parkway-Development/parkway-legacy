@@ -7,19 +7,19 @@ import CalendarTooltip from './CalendarTooltip.tsx';
 import { useQuery } from '@tanstack/react-query';
 import useApi, { buildQueryKey } from '../../hooks/useApi.ts';
 
-type DayViewCalendarProps = {
+interface DayViewCalendarProps {
   events: Event[];
   date: Date;
   dateParam: string;
   onClickEvent: (event: Event) => void;
-};
+}
 
-type EventGridPosition = {
+interface EventGridPosition {
   event: Event;
   gridRow: number;
   gridRowSpan: number;
   gridColumn: number;
-};
+}
 
 const DayViewCalendar = ({
   events,
@@ -51,12 +51,12 @@ const DayViewCalendar = ({
     }, 0);
 
     const startingHour = Math.max(0, earliestHour - 1);
-    const endingHour = Math.max(0, latestHour + 1);
+    const endingHour = Math.min(23, latestHour + 1);
 
     const hours: number[] = [];
     const emptyColumn: boolean[] = [];
 
-    for (let i = startingHour; i <= endingHour; i++) {
+    for (let i = startingHour; i <= endingHour && i < 24; i++) {
       hours.push(i);
       emptyColumn.push(false);
       emptyColumn.push(false);
@@ -70,12 +70,23 @@ const DayViewCalendar = ({
     events.forEach((event) => {
       const startEvent = new Date(event.start);
       const endEvent = new Date(event.end);
+
+      if (event.allDay) {
+        startEvent.setHours(0);
+        startEvent.setMinutes(0);
+        startEvent.setSeconds(0);
+        endEvent.setHours(24);
+        endEvent.setMinutes(0);
+        endEvent.setSeconds(0);
+      }
+
       const gridRow =
         (startEvent.getHours() - startingHour) * 4 +
         1 +
         startEvent.getMinutes() / 15;
-      const gridRowSpan =
-        (endEvent.valueOf() - startEvent.valueOf()) / 1000 / 60 / 15;
+      const gridRowSpan = Math.ceil(
+        (endEvent.valueOf() - startEvent.valueOf()) / 1000 / 60 / 15
+      );
 
       let gridColumn: number | undefined = undefined;
 
@@ -156,8 +167,10 @@ const DayViewCalendar = ({
             {hour > 12
               ? `${hour - 12} PM`
               : hour === 12
-                ? '12 PM '
-                : `${hour} AM`}
+                ? '12 PM'
+                : hour === 0
+                  ? '12 AM'
+                  : `${hour} AM`}
           </div>
         ))}
         {eventPositions.map(({ event, gridRow, gridRowSpan, gridColumn }) => {
@@ -172,6 +185,7 @@ const DayViewCalendar = ({
           return (
             <Tooltip key={event._id} title={<CalendarTooltip event={event} />}>
               <div
+                accessKey="c"
                 onClick={() => onClickEvent(event)}
                 className={styles.eventItem}
                 style={{

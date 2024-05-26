@@ -14,8 +14,8 @@ import {
 } from './BaseSelect.tsx';
 
 export type ExportedBaseEntitySelectProps = (
-  | SingleSelectionProps
-  | MultipleSelectionProps
+  | SingleSelectionProps<string>
+  | MultipleSelectionProps<string[]>
 ) & {
   enabledIds?: string[];
   excludedIds?: string[];
@@ -91,5 +91,9 @@ export const BaseEntitySelect = <
     return <Spin size="small" />;
   }
 
-  return <BaseSelect {...props} options={options} />;
+  return props.isMultiSelect ? (
+    <BaseSelect<string[]> {...props} options={options} />
+  ) : (
+    <BaseSelect<string> {...props} options={options} />
+  );
 };
