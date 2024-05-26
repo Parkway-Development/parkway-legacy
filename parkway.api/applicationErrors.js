@@ -71,6 +71,15 @@ class Validation extends ApplicationError {
     }
 }
 
+class MissingRequiredParameter extends ApplicationError {
+    constructor(method,
+        customMessage = 'The method requires a parameter that was not provided', 
+        customErrorCode = 'REQUIRED_PARAMETERS_000') {
+            super(customMessage, 400, method, customErrorCode);
+    }
+}
+
+//DEPOSITS
 class DepositUnbalanced extends ApplicationError {
     constructor(method,
         customMessage = 'The deposit net amount does not equal the sum of the nets of the contributions and/or donations', 
@@ -95,6 +104,14 @@ class DepositAlreadyProcessed extends ApplicationError {
     }
 }
 
+//ACCOUNTS
+class AccountDoesNotExist extends ApplicationError {
+    constructor(method,
+        customMessage = 'No account was found', 
+        customErrorCode = 'ACCOUNTS_006') {
+            super(customMessage, 400, method, customErrorCode);
+    }
+}
 class DuplicateAccount extends ApplicationError {
     constructor(method,
         customMessage = 'An account already exists with that name and that type.  When creating an account, the combination of the name and type must be unique.', 
@@ -119,14 +136,7 @@ class InvalidAccountType extends ApplicationError {
     }
 }
 
-class MissingRequiredParameter extends ApplicationError {
-    constructor(method,
-        customMessage = 'The method requires a parameter that was not provided', 
-        customErrorCode = 'REQUIRED_PARAMETERS_000') {
-            super(customMessage, 400, method, customErrorCode);
-    }
-}
-
+//DATES
 class MissingDateRange extends ApplicationError {
     constructor(method,
         customMessage = 'The method requires a date range that was not provided via the query string', 
@@ -142,14 +152,7 @@ class InvalidDateRange extends ApplicationError {
     }
 }
 
-class MissingRequestBody extends ApplicationError {
-    constructor(method,
-        customMessage = 'This method requires a request body with particular parameters, but none were provided', 
-        customErrorCode = 'REQUIRED_PARAMETERS_004') {
-            super(customMessage, 400, method, customErrorCode);
-    }
-}
-
+//ID ISSUES
 class MissingId extends ApplicationError {
     constructor(method,
         customMessage = 'This method requires and Id, but no Id was provided', 
@@ -166,6 +169,7 @@ class InvalidId extends ApplicationError {
     }
 }
 
+//PROFILES
 class ProfileDoesNotExist extends ApplicationError {
     constructor(method,
         customMessage = 'The profile you specified does not exist', 
@@ -174,10 +178,28 @@ class ProfileDoesNotExist extends ApplicationError {
     }
 }
 
+//CONTRIBUTIONS
 class ProtectedContribution extends ApplicationError {
     constructor(method,
         customMessage = 'The contribution is protected because it belongs to a processed deposit.', 
-        customErrorCode = 'CONTRIBUTIONS__001') {
+        customErrorCode = 'CONTRIBUTIONS_001') {
+            super(customMessage, 400, method, customErrorCode);
+    }
+}
+
+class ContributionDoesNotExist extends ApplicationError {
+    constructor(method,
+        customMessage = 'The contribution specified does not exist.', 
+        customErrorCode = 'DONATIONS_001') {
+            super(customMessage, 400, method, customErrorCode);
+    }
+}
+
+//DONATIONS
+class DonationDoesNotExist extends ApplicationError {
+    constructor(method,
+        customMessage = 'The donation specified does not exist.', 
+        customErrorCode = 'DONATIONS_001') {
             super(customMessage, 400, method, customErrorCode);
     }
 }
@@ -193,7 +215,6 @@ module.exports = {
     MissingRequiredParameter,
     MissingDateRange,
     InvalidDateRange,
-    MissingRequestBody,
     InternalServerError,
     InvalidId,
     MissingId,
@@ -203,8 +224,11 @@ module.exports = {
     DepositAlreadyProcessed,
     DuplicateAccount,
     AccountDelete,
+    AccountDoesNotExist,
     InvalidAccountType,
     ProfileDoesNotExist,
-    ProtectedContribution
+    ProtectedContribution,
+    ContributionDoesNotExist,
+    DonationDoesNotExist
 }
 

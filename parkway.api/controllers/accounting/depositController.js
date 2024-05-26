@@ -33,26 +33,27 @@ const createDeposit = async (req, res, next) => {
 }
 
 const getAllDeposits = async (req, res, next) => {
-
     try {
         let deposits;
-        if(req.query.populate){
-            deposits = await Deposit.find({}
+        if (req.query.populate === 'true') {
+            deposits = await Deposit.find()
                 .populate('contributions')
-                .populate('donations'));
-        }else{
-            deposits = await Deposit.find({});
+                .populate('donations');
+        } else {
+            deposits = await Deposit.find();
         }
 
-        if(deposits.length === 0){ return res.status(200).json('No deposits found.'); }
+        if (deposits.length === 0) {
+            return res.status(200).json('No deposits found.');
+        }
 
         return res.status(200).json(deposits);
-
     } catch (error) {
-        next(error)
-        console.log({method: error.method, message: error.message});
+        console.log({ method: 'getAllDeposits', message: error.message });
+        next(error);
     }
-}
+};
+
 
 const getDepositById = async (req, res, next) => {
     try {

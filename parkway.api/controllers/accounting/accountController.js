@@ -9,39 +9,55 @@ const createAccount = async (req, res, next) => {
     try {
         if(!req.body.name){ throw new AppError.MissingRequiredParameter('createAccount', 'The name of the account is required')}
         if(!req.body.type){ throw new AppError.MissingRequiredParameter('createAccount', 'The type of the account is required')}
-        if(req.body.custodian & !mongoose.Types.ObjectId.isValid(req.body.custodian)){ throw new AppError.InvalidId('createAccount', 'The custodian ID is invalid')}
-        if(req.body.custodian & !await UserValidation.profileExists(req.body.custodian)){ throw new AppError.CustodianProfileMissing('createAccount')}
-        if(req.body.parent & !mongoose.Types.ObjectId.isValid(req.body.parent)){ throw new AppError.InvalidId('createAccount', 'The parent ID is invalid')}
-        if(req.body.parent & !await AccountValidation.accountExists(req.body.parent)){ throw new AppError.NotFound('createAccount', 'The parent account does not exist')}
-        if(req.body.children){
-            for (const child of req.body.children) {
-                if(!mongoose.Types.ObjectId.isValid(child)){ throw new AppError.InvalidId('createAccount', 'A child ID is invalid')}
-                if(!await AccountValidation.accountExists(child)){ throw new AppError.NotFound('createAccount', 'A child account does not exist')}
-            }
+        if(!req.body.restriction){ throw new AppError.MissingRequiredParameter('createAccount', 'The acount must specify the type of restriction')}
+        if(req.body.custodian){
+            if(!mongoose.Types.ObjectId.isValid(req.body.custodian)){ throw new AppError.InvalidId('createAccount', 'The custodian ID is invalid')}
+            if(!await UserValidation.profileExists(req.body.custodian)){ throw new AppError.CustodianProfileMissing('createAccount')}
+        }
+        if(req.body.parent){
+            if(!mongoose.Types.ObjectId.isValid(req.body.parent)){ throw new AppError.InvalidId('createAccount', `The parent Id ${req.body.parent} is not valid`)}
+            const parentExists = await ValidationHelper.validateAccountId(req.body.parent);
+            if(!parentExists.result){ throw new AppError.NotFound('createAccount', `The parent Id ${req.body.parent} does not exist`)}
         }
         if(req.body.sibling){
-            if(!mongoose.Types.ObjectId.isValid(req.body.sibling)){ throw new AppError.InvalidId('createAccount', 'The sibling ID is invalid')}
-            if(!await AccountValidation.accountExists(req.body.sibling)){ throw new AppError.NotFound('createAccount', 'The sibling account does not exist')}
+            if(!mongoose.Types.ObjectId.isValid(req.body.sibling)){ throw new AppError.InvalidId('createAccount', `The sibling Id ${req.body.sibling} is not valid`)}
+            const siblingExists = await ValidationHelper.validateAccountId(req.body.sibling);
+            if(!siblingExists.result){ throw new AppError.NotFound('createAccount', `The sibling Id ${req.body.sibling} does not exist.`)}
+        }
+        if(req.body.children){
+            for (const child of req.body.children) {
+                if(!mongoose.Types.ObjectId.isValid(child)){ throw new AppError.InvalidId('createAccount', `The child Id ${child} is not valid`)}
+                if(!await ValidationHelper.validateAccountId(child)){ throw new AppError.NotFound('createAccount', `The child Id ${child} does not exist`)}
+            }
         }
 
         const accountName = ValidationHelper.sanitizeString(req.body.name);
         const accountType = req.body.type;
+
+        const isDuplicate = await ValidationHelper.checkDuplicateAccount(accountName, accountType);
+        if(isDuplicate){ throw new AppError.DuplicateAccount('createAccount')}
+
+        const accountRestriction = req.body.restriction;
         const accountCustodian = req.body.custodian;
         const accountParent = req.body.parent;
         const accountChildren = req.body.children;
         const accountSibling = req.body.sibling;
 
-        const isDuplicate = await ValidationHelper.checkDuplicateAccount(accountName, accountType);
-        if(isDuplicate){ throw new AppError.DuplicateAccount('createAccount')}
-
-        const account = new Account({
+        let account = new Account({
             name: accountName,
             type: accountType,
+            restriction: accountRestriction,
             custodian: accountCustodian,
             parent: accountParent,
             children: accountChildren,
             sibling: accountSibling
-        }).save({new: true});
+        })
+        
+        account = await account.save({new: true});
+
+        if(account.sibling){
+            await addSiblingIds(account._id, account.sibling);
+        }
 
         return res.status(201).json(account);
     } catch (error) {
@@ -340,9 +356,8 @@ const deleteAccountById = async (req, res, next) => {
     }
 }
 
-const addSiblingIds = async (fundAccountId, expenseAccountId) => {
-    await Account.findByIdAndUpdate(fundAccountId, {sibling: expenseAccountId}, {runValidators: true});
-    await Account.findByIdAndUpdate(expenseAccountId, {sibling: fundAccountId}, {runValidators: true});
+const addSiblingIds = async (sibling1Id, sibling2Id) => {
+    await Account.findByIdAndUpdate(sibling2Id, {sibling: sibling1Id}, {runValidators: true});
 }
 
 module.exports = {

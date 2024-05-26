@@ -26,7 +26,7 @@ const accountSchema = new mongoose.Schema({
         default: AccountRestriction.UNRESTRICTED
     },
     sibling: {
-        type: [mongoose.Schema.Types.ObjectId],
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'Account'
     },
     parent: {

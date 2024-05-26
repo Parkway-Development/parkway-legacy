@@ -26,7 +26,7 @@ const addContribution = async (req, res, next) => {
         if (accountErrors.length > 0) { throw new AppError.Validation('addContribution', accountErrors); }
 
         const accountsTotal = accounts.reduce((total, account) => total + account.amount, 0);
-        if (net !== accountsTotal) { throw new AppError.Validation('addContribution', 'The sum of the accounts does not equal the net amount.'); }
+        if (net !== accountsTotal) { throw new AppError.Validation('addContribution', 'The sum of the accounts does not equal the contribution net amount.'); }
         
         let deposit;
         if (depositId) {
