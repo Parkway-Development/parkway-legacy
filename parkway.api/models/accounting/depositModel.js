@@ -1,22 +1,40 @@
 const mongoose = require('mongoose');
+const {DepositStatus} = require('../constants');
+
+
+const depositHistorySchema = new mongoose.Schema({
+    status: {
+        type: String,
+        enum: Object.values(DepositStatus),
+    },
+    date: {
+        type: Date,
+        required: true
+    },
+    responsiblePartyProfileId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Profile'
+    },
+    _id: false
+});
 
 const depositSchema = new mongoose.Schema({
     amount: {
         type: Number,
         required: true
     },
-    processedDate: {
-        type: Date,
+    currentStatus: {
+        type: String,
+        enum: Object.values(DepositStatus),
+        default: DepositStatus.UNDEPOSITED
     },
-    creatorProfileId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Profile',
+    statusDate: {
+        type: Date,
         required: true
     },
-    approverProfileId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Profile'
-    },
+    history: [
+        depositHistorySchema
+    ],
     contributions: [
         {
             type: mongoose.Schema.Types.ObjectId,

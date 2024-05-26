@@ -139,84 +139,113 @@ For example, the church has an account in the system called General Fund.  This 
 The church may also have other accounts, much like the General Fund, but with a more specific focus, like Outreach, or Men's Ministry, etc.
 
 ### GENERAL Cash Flow
-
 ```mermaid
-graph TD
+graph LR
     subgraph LEGEND
-        AA[REVENUE]
-        CC[CASH INSTRUMENTS<BR/>inbound cash or checks]
-        BB[EXPENSE]
-        DD[CASH INSTRUMENTS<BR/>outbound cash or checks]
+        A[PHYSICAL MONEY]
+        B[TITHES]
+        C[OFFERINGS]
+        D[EXPENSE]
+        E[SUBSPLASH]
 
-            style AA fill:white,stroke:#333,stroke-width:2px,color:black
-            style BB fill:red,stroke:#333,stroke-width:2px,color:black
-            style CC fill:blue,stroke:#333,stroke-width:2px,color:white
-            style DD fill:purple,stroke:#333,stroke-width:2px,color:white
+            style A fill:white,stroke:#333,stroke-width:2px,color:black
+            style B fill:blue,stroke:#333,stroke-width:2px,color:white
+            style C fill:green,stroke:#333,stroke-width:2px,color:white
+            style D fill:red,stroke:#333,stroke-width:2px,color:white
+            style E fill:yellow,stroke:#333,stroke-width:2px,color:black
     end
 
-    A[DONATION]-->B[DEPOSIT]-->C[UNALLOCATED FUNDS<BR/>OR<BR/> ACCOUNTS RECEIVABLE]
-    C-->D[GENERAL FUND]
-    C-->E[MEN'S MINISTRY]
-    C-->F[YOUTH]
-    C-->G[WOMEN'S MINISTRY]
-    C-->H[EVANGELISM]
-    C-->I[OUTREACH]
-    C-->J[WORSHIP AND MEDIA]
-    C-->K[ETC.]
-    D-->L[GENERAL FUND]-->T[ACCOUNTS PAYABLE]
-    E-->M[MEN'S MINISTRY]-->T
-    F-->N[YOUTH]-->T
-    G-->O[WOMEN'S MINISTRY]-->T
-    H-->P[EVANGELISM]-->T
-    I-->Q[OUTREACH]-->T
-    J-->R[WORSHIP AND MEDIA]-->T
-    K-->S[ETC.]-->T
-    T-->U[CHECKS OR RECEIPTS PAID AGAINST EXPENSES]
-    
+```
+
+```mermaid
+graph LR
+    A[PHYSICAL CASH INSTRUMENTS]-->B[CASH]
+    A-->C[COINS]
+    A-->D[CHECK]
+    B-->E[DEPOSIT<br/>status: undeposited, unallocated, processed]
+    C-->E
+    D-->E 
+    AAA[SUBSPLASH]-->BBB[TRANSFER]-->E
+    E-->F[TITHES]-->G[TITHE OF TITHES]-->GG[TITHE OF TITHES]
+    F-->H
+    E-->H[GENERAL FUND]-->HH[GENERAL FUND]
+    E-->J[MISSIONS]-->JJ[MISSIONS]
+    E-->K[MACH1]-->KK[MACH1]
+    E-->L[WOMEN]-->LL[WOMEN]
+    E-->M[YOUTH]-->MM[YOUTH]
+    E-->N[RAMP]-->NN[RAMP]
+    E-->O[KIDS WORLD]-->OO[KIDS WORLD]
+    E-->P[BENEVOLENCE]-->PP[BENEVOLENCE]
+    E-->Q[OUTREACH]-->QQ[OUTREACH]
+    E-->R[COFFEE]-->RR[COFFEE]
+    E-->S[DISCIPLESHIP]-->SS[DISCIPLESHIP]
+    E-->T[SINGLE MOMS]-->TT[SINGLE MOMS]
 
     style A fill:white,stroke:#333,stroke-width:2px,color:black
     style B fill:white,stroke:#333,stroke-width:2px,color:black
-    style C fill:blue,stroke:#333,stroke-width:2px,color:white
-    style D fill:blue,stroke:#333,stroke-width:2px,color:white
-    style E fill:blue,stroke:#333,stroke-width:2px,color:white
+    style C fill:white,stroke:#333,stroke-width:2px,color:black
+    style D fill:white,stroke:#333,stroke-width:2px,color:black
+    style E fill:white,stroke:#333,stroke-width:2px,color:black
     style F fill:blue,stroke:#333,stroke-width:2px,color:white
     style G fill:blue,stroke:#333,stroke-width:2px,color:white
-    style H fill:blue,stroke:#333,stroke-width:2px,color:white
-    style I fill:blue,stroke:#333,stroke-width:2px,color:white
-    style J fill:blue,stroke:#333,stroke-width:2px,color:white
-    style K fill:blue,stroke:#333,stroke-width:2px,color:white
-    style L fill:red,stroke:#333,stroke-width:2px,color:white
-    style M fill:red,stroke:#333,stroke-width:2px,color:white
-    style N fill:red,stroke:#333,stroke-width:2px,color:white
-    style O fill:red,stroke:#333,stroke-width:2px,color:white
-    style P fill:red,stroke:#333,stroke-width:2px,color:white
-    style Q fill:red,stroke:#333,stroke-width:2px,color:white
-    style R fill:red,stroke:#333,stroke-width:2px,color:white
-    style S fill:red,stroke:#333,stroke-width:2px,color:white
-    style T fill:purple,stroke:#333,stroke-width:2px,color:white
-    style U fill:purple,stroke:#333,stroke-width:2px,color:white
+    style H fill:green,stroke:#333,stroke-width:2px,color:white
+    style I fill:green,stroke:#333,stroke-width:2px,color:white
+    style J fill:green,stroke:#333,stroke-width:2px,color:white
+    style K fill:green,stroke:#333,stroke-width:2px,color:white
+    style L fill:green,stroke:#333,stroke-width:2px,color:white
+    style M fill:green,stroke:#333,stroke-width:2px,color:white
+    style N fill:green,stroke:#333,stroke-width:2px,color:white
+    style O fill:green,stroke:#333,stroke-width:2px,color:white
+    style P fill:green,stroke:#333,stroke-width:2px,color:white
+    style Q fill:green,stroke:#333,stroke-width:2px,color:white
+    style R fill:green,stroke:#333,stroke-width:2px,color:white
+    style S fill:green,stroke:#333,stroke-width:2px,color:white
+    style T fill:green,stroke:#333,stroke-width:2px,color:white
+    style GG fill:red,stroke:#333,stroke-width:2px,color:white
+    style HH fill:red,stroke:#333,stroke-width:2px,color:white
+    style JJ fill:red,stroke:#333,stroke-width:2px,color:white
+    style KK fill:red,stroke:#333,stroke-width:2px,color:white
+    style LL fill:red,stroke:#333,stroke-width:2px,color:white
+    style MM fill:red,stroke:#333,stroke-width:2px,color:white
+    style NN fill:red,stroke:#333,stroke-width:2px,color:white
+    style OO fill:red,stroke:#333,stroke-width:2px,color:white
+    style PP fill:red,stroke:#333,stroke-width:2px,color:white
+    style QQ fill:red,stroke:#333,stroke-width:2px,color:white
+    style RR fill:red,stroke:#333,stroke-width:2px,color:white
+    style SS fill:red,stroke:#333,stroke-width:2px,color:white
+    style TT fill:red,stroke:#333,stroke-width:2px,color:white
+    style AAA fill:yellow,stroke:#333,stroke-width:2px,color:black
+    style BBB fill:yellow,stroke:#333,stroke-width:2px,color:black
+
 ```
 ### Specific Example of Cash Flow
 #### Revenue (Tithes, Offerings, Donations)
 ```mermaid
-graph TD
+graph LR
 
-A[$100 TITHE<BR/>split between 2 accounts]-->B[DEPOSIT $100 TO BANK]
-B-->C[CONTRIBUTION RECORD<br/>increase Unallocated Funds by $100]
-C-->D[TRANSACTION RECORD<BR/>decrease Unallocated Funds by $50s<br/>increase General Fund by $50]
-C-->E[TRANSACTION RECORD<BR/>decrease Unallocated Funds by $50<br/>increase Men's Ministry by $50]
+A[$5000 TITHE and $2000 OFFERING<BR/>split between 4 FUNDS]-->B[DEPOSIT $7000 TO BANK<br/>debit BANK ACCOUNT $7000 - cash<br/>credit TITHES $5000 - revenue<br/>credit OFFERINGS $2000 - revenue<br/>This results in increases in the balance of BANK ACCOUNT, TITHES, AND OFFERINGS]
+B-->C[TRANSACTION RECORD<br/>debit TITHES $2000<br/>credit GENERAL FUND $2000<br/>This results in a decrease in TITHES and an increase in GENERAL FUND]
+B-->D[TRANSACTION RECORD<br/>debit TITHES $1000<br/>credit MEN'S MINISTRY $1000<br/>This results in a decrease in TITHES and an increase in MEN'S MINISTRY Fund]
+B-->E[TRANSACTION RECORD<br/>debit TITHES $1000<br/>credit YOUTH $1000<br/>This results in a decrease in TITHES and an increase in YOUTH Fund]
+B-->F[TRANSACTION RECORD<br/>debit TITHES $1000<br/>credit MUSIC MINISTRY $1000<br/>This results in a decrease in TITHES and an increase in MUSIC MINISTRY Fund]
+B-->G[TRANSACTION RECORD<br/>debit OFFERINGS $2000<br/>credit BUILDING FUND $2000<br/>This results in a decrease in OFFERINGS and an increase in BUILDING FUND]
+
 ```
+
+
+
 #### Expenses
-Graphing the expenses, from a practical application perspective, are a little tricky depending on how the church operates.  At the end of the day, in order to write a check or disperse a cashe reimbursement, there should be an expense recorded in the form of an invoice, or reimbursement request.  The reimbursement request is where it get's a bit "unofficial" looking because it can be just a receipt with a hand written note on it.  Dont get too caught up in the method of the request, just understand that the request happened.
+Graphing the expenses, from a practical application perspective, are a little tricky depending on how the church operates.  At the end of the day, in order to write a check or disperse a cash reimbursement, there should be an expense recorded in the form of an invoice, or reimbursement request.  The reimbursement request is where it get's a bit "unofficial" looking because it can be just a receipt with a hand written note on it.  Dont get too caught up in the method of the request, just understand that the request happened.
 
 ```mermaid
-graph TD
+graph LR
 
-    A[INVOICE OR REIMBURSEMENT REQUEST<BR/>$30 reimbursement request split between 2 accounts]-->B[RECORD REQUEST/INVOICE FOR $30<br/> decrease Accounts Payable by $30]
-    B-->C[TRANSACTION RECORD<BR/>decrease General Fund by $25 for door knob<br/>increase Accounts Payable by $25]
-    B-->D[TRANSACTION RECORD<BR/>decrease Men's Ministry by $5 for paper plates<br/>increase Accounts Payable by $5]
-    C-->E[WRITE CHECK OR PAY CASH<br/>decrease Accounts Payable by $30.]
+    A[INVOICE OR REIMBURSEMENT REQUEST<BR/>$30 reimbursement request split between 2 accounts]-->B[RECORD REQUEST/INVOICE FOR $30<br/>credit Accounts Payable by $30]
+    B-->C[TRANSACTION RECORD<BR/>debit General Fund by $25 for door knob<br/>credit Accounts Payable by $25]
+    B-->D[TRANSACTION RECORD<BR/>debit Men's Ministry by $5 for paper plates<br/>credit Accounts Payable by $5]
+    C-->E[WRITE CHECK OR PAY CASH<br/>debit Accounts Payable by $30.]
     D-->E
+
 ```
 
 ---

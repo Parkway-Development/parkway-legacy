@@ -3,22 +3,66 @@ const Account = require('../../models/accounting/accountModel');
 const ValidationHelper = require('../../helpers/validationHelper');
 const UserValidation = require('../../helpers/userValidation');
 const AppError = require('../../applicationErrors');
+const { AccountType, AccountRestriction } = require('../../models/constants');
 
-const addAccount = async (req, res, next) => {
+const createAccount = async (req, res, next) => {
     try {
-        if(!req.body.name){ throw new AppError.RequestBodyMissing('addAccount')}
-        req.body.name = ValidationHelper.sanitizeString(req.body.name); 
+        if(!req.body.name){ throw new AppError.MissingRequiredParameter('createAccount', 'The name of the account is required')}
+        if(!req.body.type){ throw new AppError.MissingRequiredParameter('createAccount', 'The type of the account is required')}
+        if(!req.body.restriction){ throw new AppError.MissingRequiredParameter('createAccount', 'The acount must specify the type of restriction')}
+        if(req.body.custodian){
+            if(!mongoose.Types.ObjectId.isValid(req.body.custodian)){ throw new AppError.InvalidId('createAccount', 'The custodian ID is invalid')}
+            if(!await UserValidation.profileExists(req.body.custodian)){ throw new AppError.CustodianProfileMissing('createAccount')}
+        }
+        if(req.body.parent){
+            if(!mongoose.Types.ObjectId.isValid(req.body.parent)){ throw new AppError.InvalidId('createAccount', `The parent Id ${req.body.parent} is not valid`)}
+            const parentExists = await ValidationHelper.validateAccountId(req.body.parent);
+            if(!parentExists.result){ throw new AppError.NotFound('createAccount', `The parent Id ${req.body.parent} does not exist`)}
+        }
+        if(req.body.sibling){
+            if(!mongoose.Types.ObjectId.isValid(req.body.sibling)){ throw new AppError.InvalidId('createAccount', `The sibling Id ${req.body.sibling} is not valid`)}
+            const siblingExists = await ValidationHelper.validateAccountId(req.body.sibling);
+            if(!siblingExists.result){ throw new AppError.NotFound('createAccount', `The sibling Id ${req.body.sibling} does not exist.`)}
+        }
+        if(req.body.children){
+            for (const child of req.body.children) {
+                if(!mongoose.Types.ObjectId.isValid(child)){ throw new AppError.InvalidId('createAccount', `The child Id ${child} is not valid`)}
+                if(!await ValidationHelper.validateAccountId(child)){ throw new AppError.NotFound('createAccount', `The child Id ${child} does not exist`)}
+            }
+        }
 
-        const existingAccount = await Account.findOne({name: req.body.name});
-        if(existingAccount){ throw new AppError.DuplicateAccount('addAccount')}
+        const accountName = ValidationHelper.sanitizeString(req.body.name);
+        const accountType = req.body.type;
 
-        const account = new Account(req.body);
+        const isDuplicate = await ValidationHelper.checkDuplicateAccount(accountName, accountType);
+        if(isDuplicate){ throw new AppError.DuplicateAccount('createAccount')}
 
-        await account.save();
+        const accountRestriction = req.body.restriction;
+        const accountCustodian = req.body.custodian;
+        const accountParent = req.body.parent;
+        const accountChildren = req.body.children;
+        const accountSibling = req.body.sibling;
+
+        let account = new Account({
+            name: accountName,
+            type: accountType,
+            restriction: accountRestriction,
+            custodian: accountCustodian,
+            parent: accountParent,
+            children: accountChildren,
+            sibling: accountSibling
+        })
+        
+        account = await account.save({new: true});
+
+        if(account.sibling){
+            await addSiblingIds(account._id, account.sibling);
+        }
+
         return res.status(201).json(account);
     } catch (error) {
         next(error)
-        console.log({method: error.method, message: error.message});
+        console.log({method: error.method, message: error.message});        
     }
 }
 
@@ -31,7 +75,8 @@ const getAllAccounts = async (req, res, next) => {
             accounts = await Account.find({})
             .populate('custodian')
             .populate('parent')
-            .populate('children');
+            .populate('children')
+            .populate('sibling');
         } else {
             accounts = await Account.find({});
         }
@@ -58,7 +103,8 @@ const getAccountById = async (req, res, next) => {
             account = await Account.findById(id)
                 .populate('custodian')
                 .populate('parent')
-                .populate('children');
+                .populate('children')
+                .populate('sibling');
         } else {
             account = await Account.findById(id);
         }
@@ -67,6 +113,36 @@ const getAccountById = async (req, res, next) => {
 
         res.status(200).json(account);
 
+    } catch (error) {
+        next(error)
+        console.log({method: error.method, message: error.message});
+    }
+}
+
+const getAccountsByType = async (req, res, next) => {
+    try {
+        const {type} = req.params;
+        if(!type){ throw new AppError.MissingRequiredParameter('getAccountByType')}
+        if(type === 'revenue' || type === 'fund' || type === 'expense' || type === 'asset' || type === 'liability' || type === 'cash' || type === 'unknown'){
+
+            const {populate = false} = req.query;
+            let accounts;
+    
+            if(populate === 'true'){
+                accounts = await Account.findById(id)
+                    .populate('custodian')
+                    .populate('parent')
+                    .populate('children')
+                    .populate('sibling');
+            } else {
+                accounts = await Account.findById(id);
+            }
+    
+            if(accounts.length === 0){ return res.status(200).json('No accounts found with that type.')}
+
+            return res.status(200).json(accounts);
+        }
+        throw new AppError.InvalidAccountType('getAccountByType');
     } catch (error) {
         next(error)
         console.log({method: error.method, message: error.message});
@@ -82,12 +158,13 @@ const getAccountByName = async (req, res, next) => {
         let account;
 
         if(populate === 'true'){
-            const account = await Account.findOne({name: name }).collation({locale: "en", strength: 2})
+            account = await Account.findOne({name: name }).collation({locale: "en", strength: 2})
                 .populate('custodian')
                 .populate('parent')
-                .populate('children');
+                .populate('children')
+                .populate('sibling');
         } else {
-            const account = await Account.findOne({name: name }).collation({locale: "en", strength: 2});
+            account = await Account.findOne({name: name }).collation({locale: "en", strength: 2});
         }
 
         if(!account){ return res.status(200).json('No account found with that name.')}
@@ -111,18 +188,25 @@ const updateAccountById = async (req, res, next) => {
         if(req.body.name){ updateData.name = ValidationHelper.sanitizeString(req.body.name) }
 
         if(req.body.description){ updateData.description = ValidationHelper.sanitizeString(req.body.description) }
-        if(req.body.type && (req.body.type === "expense" || req.body.type === "income")){ updateData.type = req.body.type }
+        if(req.body.type && (req.body.type === 'expense' || req.body.type === 'revenue' || req.body.type === 'asset' || req.body.type === 'liability')){ updateData.type = req.body.type }
         
         let controlMessages = [];
         if(req.body.custodian){controlMessages.push('Custodian account cannot be updated via this endpoint.') }
         if(req.body.parent){controlMessages.push('Parent account cannot be updated via this endpoint.')}
-        if(req.body.children){controlMessages.push('Children accounts cannot be updated via this endpoint.')}
+        if(req.body.childId){controlMessages.push('Children accounts cannot be updated via this endpoint.')}
         if(req.body.notes){controlMessages.push('Notes cannot be updated via this endpoint.')}
 
-        let account =  await Account.findByIdAndUpdate( id, updateData, { new: true, runValidators: true})
-            .populate('custodian').populate('parent').populate('children');
-
+        let account =  await Account.findByIdAndUpdate( id, updateData, { new: true, runValidators: true});
         if(!account){ throw new AppError.NotFound('updateAccountById', 'No account found for that Id.')}
+
+        const populate = req.query.populate;
+        if (populate === 'true') {
+            account = await Account.findById(id)
+                .populate('custodian')
+                .populate('parent')
+                .populate('children')
+                .populate('sibling');           
+        }
 
         if(controlMessages.length > 0){ return res.status(200).json({account: account, controlMessages: controlMessages}); }
         return res.status(200).json({account: account});
@@ -135,25 +219,30 @@ const updateAccountById = async (req, res, next) => {
 
 const updateAccountCustodian = async (req, res, next) => {
     try {
-        const { accountId } = req.params;
+        const accountId = req.params.accountId;
         if(!accountId){ throw new AppError.MissingId('updateAccountCustodian', 'No account ID provided.')}
         if (!mongoose.Types.ObjectId.isValid(accountId)) { throw new AppError.InvalidId('updateAccountCustodian', 'Invalid account ID.')}
     
-        const updateData = {};
+        const custodianId = req.body.custodianId;
 
-        if(req.body.custodian){
-            const custodianId = req.body.custodian;
-            if (!custodianId) { throw AppError.RequestBodyMissing('updateAccountCustodian', 'No custodian ID provided.') }
-            if (!mongoose.Types.ObjectId.isValid(custodianId)) { throw new AppError.InvalidId('updateAccountCustodian', 'Invalid custodian ID.')}
-            
-            if(custodianId && !UserValidation.profileExists(custodianId)){ throw new AppError.CustodianProfileMissing('updateAccountCustodian')}
-            updateData.custodian = req.body.custodian;
+        if(!custodianId){ throw new AppError.RequestBodyMissing('updateAccountCustodian', 'No custodian ID provided.') }
+        if (!mongoose.Types.ObjectId.isValid(custodianId)) { throw new AppError.InvalidId('updateAccountCustodian', 'Invalid custodian ID.')}
+
+        const profileExists = await UserValidation.profileExists(custodianId);
+        if(!profileExists){ throw new AppError.CustodianProfileMissing('updateAccountCustodian');}
+
+        populate = req.query.populate;
+        let account;
+        if(populate === 'true'){
+            const account =  await Account.findByIdAndUpdate( accountId, {custodian: custodianId}  , { new: true, runValidators: true})
+                .populate('custodian')
+                .populate('parent')
+                .populate('children')
+                .populate('sibling');
+        } else {
+            account =  await Account.findByIdAndUpdate( accountId, {custodian: custodianId}  , { new: true, runValidators: true});
         }
-
-        const account =  await Account.findByIdAndUpdate( accountId, updateData, { new: true, runValidators: true})
-            .populate('custodian')
-            .populate('parent')
-            .populate('children');
+        
         if(!account){ throw new AppError.AccountUpdate('updateAccountCustodian')}
 
         return res.status(200).json(account);
@@ -170,24 +259,26 @@ const addAccountParent = async (req, res, next) => {
         if(!accountId){ throw new AppError.MissingId('addAccountParent', 'No account ID provided.')}
         if (!mongoose.Types.ObjectId.isValid(accountId)) { throw new AppError.InvalidId('addAccountParent', 'The account Id you provided is invalid') }
     
-        const  { parentId } = req.body.parent;
-        if (!parentId) { throw new AppError.MissingId('addAccountParent','The parent account Id is missing') }
+        const  parent  = req.body.parent;
+        if (!parent) { throw new AppError.MissingId('addAccountParent','The parent account Id is missing') }        
+        if (!mongoose.Types.ObjectId.isValid(parent)) { throw new AppError.MissingId('addAccountParent','The parent account Id you provided is invalid') }
+        if(!ValidationHelper.validateAccountId(parent)){ throw new AppError.AccountUpdate('addAccountParent','The parent account you provided does not exist') }
         
-        if (!mongoose.Types.ObjectId.isValid(parentId)) { 
-            throw new AppError.MissingId('addAccountParent','The parent account Id you provided is invalid') }
+        populate = req.query.populate;
+        let account;
+        if(populate === 'true'){
+            account =  await Account.findByIdAndUpdate( accountId, {parent: parent }, { new: true, runValidators: true})
+                .populate('parent')
+                .populate('children')
+                .populate('sibling')
+                .populate('custodian');
+        } else {
+            account =  await Account.findByIdAndUpdate( accountId, {parent: parent}, { new: true, runValidators: true});
+        }
 
-        const updateData = {};
-
-        if(parentId && !ValidationHelper.validateAccountId(parentId)){ 
-            throw new AppError.AccountUpdate('addAccountParent','The parent account you provided does not exist') }
-        
-        updateData.parent = req.body.parent;
-
-        const account =  await Account.findByIdAndUpdate( accountId, updateData, { new: true, runValidators: true})
-            .populate('parent').populate('children');
         if(!account){ throw new AppError.AccountUpdate('addAccountParent','Child account could not be found')}
 
-        const parentAccount = await Account.findByIdAndUpdate(parentId, {
+        const parentAccount = await Account.findByIdAndUpdate(parent, {
             $addToSet: { children: accountId }
         }, {new: true, runValidators: true});
 
@@ -219,8 +310,7 @@ const addAccountChildren = async (req, res, next) => {
 
         let account = await Account.findByIdAndUpdate(accountId, { 
             $addToSet: { children: { $each: validChildren } } 
-            }, { new: true, runValidators: true})
-            .populate('parent').populate('children');
+            }, { new: true, runValidators: true});
 
         if(!account){ throw new AppError.NotFound('addAccountChildren','The account could not be found with that Id.')}
 
@@ -228,6 +318,15 @@ const addAccountChildren = async (req, res, next) => {
             Account.findByIdAndUpdate(childId, {parent: accountId}, {new: true, runValidators: true})
         );
         await Promise.all(updateChildrenPromises);
+
+        const populate = req.query.populate;
+        if(populate === 'true'){
+            account = await Account.findById(accountId)
+                .populate('custodian')
+                .populate('parent')
+                .populate('children')
+                .populate('custodian');
+        }
 
         return res.status(200).json(account);
     }
@@ -257,11 +356,16 @@ const deleteAccountById = async (req, res, next) => {
     }
 }
 
+const addSiblingIds = async (sibling1Id, sibling2Id) => {
+    await Account.findByIdAndUpdate(sibling2Id, {sibling: sibling1Id}, {runValidators: true});
+}
+
 module.exports = {
-    addAccount,
+    createAccount,
     getAllAccounts,
     getAccountById,
     getAccountByName,
+    getAccountsByType,
     updateAccountById,
     updateAccountCustodian,
     addAccountParent,

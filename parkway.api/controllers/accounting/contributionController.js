@@ -5,46 +5,75 @@ const UserValidation = require('../../helpers/userValidation');
 const Deposit = require('../../models/accounting/depositModel');
 const AppError = require('../../applicationErrors')
 const Account = require('../../models/accounting/accountModel');
+const Transaction = require('../../models/accounting/transactionModel');
 
 const addContribution = async (req, res, next) => {
     try {
-        if(!req.body){throw new AppError.RequestBodyMissing('addContribution')};
+        const { gross, fees, net, accounts, contributorProfileId, depositId, transactionDate, type, notes } = req.body;
 
-        if(req.body.profile){
-            if (!mongoose.Types.ObjectId.isValid(req.body.profile)) { throw new AppError.InvalidId('addContribution')}
-            if(!await UserValidation.profileExists(req.body.profile)){throw new AppError.ProfileDoesNotExist('addContribution')}
+        if (!gross) { throw new AppError.MissingRequiredParameter('addContribution', 'The request body is missing the gross amount.'); }
+        if (fees === undefined || fees === null) { throw new AppError.MissingRequiredParameter('addContribution', 'The request body is missing the fees amount.'); }
+        if (!net) { throw new AppError.MissingRequiredParameter('addContribution', 'The request body is missing the net amount.'); }
+        if (!accounts || !Array.isArray(accounts)) { throw new AppError.MissingRequiredParameter('addContribution', 'The request body is missing the accounts array.'); }
+
+        if (contributorProfileId) {
+            if (!mongoose.Types.ObjectId.isValid(contributorProfileId)) { throw new AppError.InvalidId('addContribution', 'The supplied contributor profile Id is not valid.'); }
+            const profileExists = await UserValidation.profileExists(contributorProfileId);
+            if (!profileExists) { throw new AppError.ProfileDoesNotExist('addContribution', 'The specified contributor profile does not exist.'); }
         }
 
-        if (!req.body.accounts || req.body.accounts.length === 0){
-            let generalFund = await Account.findOne({name: 'General Fund'});
-            if(!generalFund){
-                generalFund = new Account({name: 'General Fund', type: 'fund'});
-                await generalFund.save();
-            }
-            req.body.accounts = [{account: generalFund._id, amount: req.body.net}];
-        }
-
-        const accountIds = req.body.accounts.map(account => account.account);
-        const accountErrors = await ValidationHelper.validateAccountIds(accountIds);
+        const accountErrors = await ValidationHelper.validateAccountIds(req.body.accounts);
         if (accountErrors.length > 0) { throw new AppError.Validation('addContribution', accountErrors); }
 
+        const accountsTotal = accounts.reduce((total, account) => total + account.amount, 0);
+        if (net !== accountsTotal) { throw new AppError.Validation('addContribution', 'The sum of the accounts does not equal the contribution net amount.'); }
+        
         let deposit;
-        if(req.body.depositId){
-            if (!mongoose.Types.ObjectId.isValid(req.body.depositId)) { throw new AppError.InvalidId('addContribution')}
-            deposit = await Deposit.findById(req.body.depositId);
-            if(!deposit){throw new AppError.DepositDoesNotExist('addContribution')}
-        }        
+        if (depositId) {
+            if (!mongoose.Types.ObjectId.isValid(depositId)) { throw new AppError.InvalidId('addContribution', 'The supplied deposit Id is not valid.'); }
+            deposit = await Deposit.findById(depositId);
+            if (!deposit) { throw new AppError.DepositDoesNotExist('addContribution', 'The specified deposit does not exist.'); }
+        }      
 
-        const contribution = new Contribution(req.body);
+        const contribution = new Contribution({
+            contributorProfileId,
+            gross,
+            fees,
+            net,
+            accounts,
+            transactionDate,
+            depositId,
+            type,
+            notes
+        });
 
         const validationError = contribution.validateSync();
-
         if (validationError) { throw new AppError.Validation('addContribution', validationError.message) }
 
-        await contribution.save({new: true});
+        await contribution.save({ new: true });
 
-        deposit.contributions.push(contribution._id);
-        await deposit.save();
+        if (deposit) {
+            deposit.contributions.push(contribution._id);
+            await deposit.save();
+        }
+
+
+        //TODO: Add the transaction to the ledger
+        // for(let i = 0; i < contribution.accounts.length; i++){
+        //     const accountId = contribution.accounts[i].accountId
+        //     let account = await Account.findById(accountId);
+
+        //     if(!account){ throw new AppError.NotFound('addContribution', `The account with the id ${accountId} was not found.`)}
+
+        //     const sourceAccount = await Account.findOne({name: 'Unallocated'});
+        //     const transaction = new Transaction({
+        //         amount: contribution.accounts[i].amount,
+        //         type: 'deposit',
+        //         toAccount: { accountId: accountId },
+        //         createdBy: contribution.profile,
+        //         contributionId: contribution._id
+        //     });
+        // }
 
         return res.status(201).json(contribution);
 
@@ -256,6 +285,27 @@ const updateContribution = async (req, res, next) => {
 
         const contribution = await Contribution.findById(req.params.id);
         if(!contribution){ throw new AppError.NotFound('updateContribution')}
+
+        let protected = false;
+        if(contribution.processedDate){ protected = true }
+
+        if(protected){
+            if(req.body.hasOwnProperty('net') && req.body.net !== contribution.net){
+                throw new AppError.ProtectedContribution('updateContribution', 'The contribution is protected because it belongs to a processed deposit and you have included a net amount that is different than the original net amount.');
+            }
+            if(req.body.hasOwnProperty('gross') && req.body.gross !== contribution.gross){
+                throw new AppError.ProtectedContribution('updateContribution', 'The contribution is protected because it belongs to a processed deposit and you have included a gross amount that is different than the original gross amount.');
+            }
+            if(req.body.hasOwnProperty('fees') && req.body.fees !== contribution.fees){
+                throw new AppError.ProtectedContribution('updateContribution', 'The contribution is protected because it belongs to a processed deposit and you have included a fees amount that is different than the original fees amount.');
+            }
+            if(req.body.hasOwnProperty('depositId') && req.body.depositId !== contribution.depositId){
+                throw new AppError.ProtectedContribution('updateContribution', 'The contribution is protected because it belongs to a processed deposit and you have included a depositId that is different than the original depositId.');
+            }
+            if(req.body.hasOwnProperty('processedDate') && req.body.processedDate !== contribution.processedDate){
+                throw new AppError.ProtectedContribution('updateContribution', 'The contribution is protected because it belongs to a processed deposit and you have included a processedDate that is different than the original processedDate.');
+            }
+        }
 
         Object.keys(req.body).forEach(key => {
             contribution[key] = req.body[key];

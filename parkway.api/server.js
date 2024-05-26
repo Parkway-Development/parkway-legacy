@@ -26,6 +26,7 @@ const donationRoutes = require('./routes/accounting/donations');
 const accountRoutes = require('./routes/accounting/accounts');
 const contributionRoutes = require('./routes/accounting/contributions');
 const depositRoutes = require('./routes/accounting/deposits');
+const ledgerRoutes = require('./routes/accounting/ledger');
 
 //express app
 const app = express();
@@ -77,6 +78,7 @@ app.use('/accounting/donations', donationRoutes);
 app.use('/accounting/accounts', accountRoutes);
 app.use('/accounting/contributions', contributionRoutes);
 app.use('/accounting/deposits', depositRoutes);
+app.use('/accounting/ledger', ledgerRoutes);
 
 // Catch-all route for undefined paths
 //TODO: Add logging.....lots and lots of logging

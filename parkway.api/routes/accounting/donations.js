@@ -1,8 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const{
-    addDonation,
+    createDonation,
     getAllDonations,
+    getDonationsByDateRange,
     getDonationById,
     getDonationsByProfile,
     updateDonation,
@@ -10,10 +11,13 @@ const{
 } = require('../../controllers/accounting/donationController')
 
 const { addNotFoundHandler, configureBaseApiRoutes } = require('../baseApiRouter');
-configureBaseApiRoutes(router, addDonation, getAllDonations, getDonationById, updateDonation, deleteDonation);
 
 //add additional routes here
 router.get('/profile/:id', getDonationsByProfile)
+router.get('/bydaterange', getDonationsByDateRange)
+
+configureBaseApiRoutes(router, createDonation, getAllDonations, getDonationById, updateDonation, deleteDonation);
+
 
 addNotFoundHandler(router);
 module.exports = router;
