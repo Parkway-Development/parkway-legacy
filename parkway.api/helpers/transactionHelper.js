@@ -80,26 +80,26 @@ const createTransfer = async (amount, destinationAccountId, sourceAccountId, cre
     }
 };
 
-const createDeposit = async (amount, destinationAccountId, creatorId) => {
-    try {
-        //TODO: The Unallocated account should be found in a client based setting in platform settings
-        const sourceAccount = await Account.findOne({ name: 'Unallocated' });
-        if (!sourceAccount) { throw new AppError.NotFound('createTransaction', 'The source account Unallocated could not be found'); }
+// const createDeposit = async (amount, destinationAccountId, creatorId) => {
+//     try {
+//         //TODO: The Unallocated account should be found in a client based setting in platform settings
+//         const sourceAccount = await Account.findOne({ name: 'Unallocated' });
+//         if (!sourceAccount) { throw new AppError.NotFound('createTransaction', 'The source account Unallocated could not be found'); }
         
-        const transaction = new Transaction(amount, 'deposit', destinationAccountId, null, creatorId);
+//         const transaction = new Transaction(amount, 'deposit', destinationAccountId, null, creatorId);
 
-        const destinationAccount = await Account.findById(destinationAccountId);
-        if (!destinationAccount) { throw new AppError.NotFound('createTransaction', 'The destination account could not be found'); }
-        if (destinationAccount.type === 'asset' || destinationAccount.type === 'expense') { destinationAccount.type = 'debit'; }
-        else { destinationAccount.type = 'credit'; }
+//         const destinationAccount = await Account.findById(destinationAccountId);
+//         if (!destinationAccount) { throw new AppError.NotFound('createTransaction', 'The destination account could not be found'); }
+//         if (destinationAccount.type === 'asset' || destinationAccount.type === 'expense') { destinationAccount.type = 'debit'; }
+//         else { destinationAccount.type = 'credit'; }
 
-        return transaction;
-    }
-    catch (error) {
-        console.log({ method: error.method, message: error.message });
-        next(error);
-    }
-};
+//         return transaction;
+//     }
+//     catch (error) {
+//         console.log({ method: error.method, message: error.message });
+//         next(error);
+//     }
+// };
 
 const adjustBalances = async (destinationAccount, sourceAccount, amount) => {
     try {

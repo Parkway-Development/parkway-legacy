@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Account = require('../models/accounting/accountModel');
 const Profile = require('../models/profileModel');
-const Client = require('../models/clientModel');
+const Organization = require('../models/organizationModel');
 const AppError = require('../applicationErrors');
 class ValidationHelper {
 
@@ -40,17 +40,11 @@ class ValidationHelper {
         return errors;
     }
 
-    static validateAccountId = async (accountId, isDonation) => {
+    static validateAccountId = async (accountId) => {
         if (!mongoose.Types.ObjectId.isValid(accountId)) { return ({message: `Invalid account Id: ${accountId}`, result: false}) }
         
         const account = await Account.findById(accountId);
         if (!account) { return ({message: `Account does not exist for Id: ${accountId}`, result: false})}
-        if(isDonation){
-            const client= await Client.findOne({titheAccountId: accountId});
-            if (client) {
-                return ({message: `Account is a tithe account for ${client.name}: ClientId: ${accountId}, `, result: false})                
-            }
-        }
 
         return ({message: `Account found Id: ${accountId}`, result: true})    
     }
