@@ -5,7 +5,7 @@ const {DepositStatus} = require('../constants');
 const depositHistorySchema = new mongoose.Schema({
     status: {
         type: String,
-        enum: Object.values(DepositStatus),
+        enum: Object.values(DepositStatus)
     },
     date: {
         type: Date,

@@ -46,7 +46,7 @@ const getAllDonations = async (req, res, next) => {
             donations = await Deposit.find();
         }
 
-        if (donations.length === 0) { throw new appError.NotFound('getAllDeposits'); }
+        if (donations.length === 0) { return res.status(204).json({ message: "No donations found." }); }
 
         return res.status(200).json(donations);
     } catch (error) {

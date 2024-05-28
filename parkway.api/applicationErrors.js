@@ -204,6 +204,15 @@ class DonationDoesNotExist extends ApplicationError {
     }
 }
 
+//ORGANIZATIONS
+class OrganizationDoesNotExist extends ApplicationError {
+    constructor(method,
+        customMessage = 'The organization specified does not exist.', 
+        customErrorCode = 'ORGANIZATIONS_001') {
+            super(customMessage, 400, method, customErrorCode);
+    }
+}
+
 module.exports = {
     ApplicationError,
     BadRequest,
@@ -229,6 +238,7 @@ module.exports = {
     ProfileDoesNotExist,
     ProtectedContribution,
     ContributionDoesNotExist,
-    DonationDoesNotExist
+    DonationDoesNotExist,
+    OrganizationDoesNotExist
 }
 
