@@ -2,9 +2,6 @@ const mongoose = require('mongoose');
 const Donation = require('../../models/accounting/donationModel');
 const ValidationHelper = require('../../helpers/validationHelper');
 const appError = require('../../applicationErrors');
-const Organization = require('../../models/organizationModel');
-const User = require('../../models/userModel');
-const jwt = require('jsonwebtoken');
 const titheAccountId = '664cee912f4c2fc061ce5c98'
 const titheOfTithesAccountId = '664cfb958f28a61f59decfdb'
 
