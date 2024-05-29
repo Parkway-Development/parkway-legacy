@@ -6,6 +6,11 @@ const profileSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     },
+    currentOrganizationId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Organization',
+        required: true
+    },
     firstName: {
         required: true,
         type: String
@@ -58,11 +63,20 @@ const profileSchema = new mongoose.Schema({
         ref: 'Preferences',
         required: false
     },
-    clients: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Clients',
-        required: true
-    }],
+    organizations: [{
+        organizationId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Organization'
+        },
+        isDefault: {
+            type: Boolean,
+            default: false
+        },
+        isActive: {
+            type: Boolean,
+            default: false
+        }
+    }]
 }, {timestamps: true})
 
 module.exports = mongoose.model('Profile', profileSchema, 'profiles')
