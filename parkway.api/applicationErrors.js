@@ -156,7 +156,7 @@ class InvalidDateRange extends ApplicationError {
 class MissingId extends ApplicationError {
     constructor(method,
         customMessage = 'This method requires and Id, but no Id was provided', 
-        customErrorCode = 'REQUIRED_PARAMETERS_005') {
+        customErrorCode = 'ID_001') {
             super(customMessage, 400, method, customErrorCode);
     }
 }
@@ -164,7 +164,56 @@ class MissingId extends ApplicationError {
 class InvalidId extends ApplicationError {
     constructor(method,
         customMessage = 'The provided Id is not valid Mongo Id', 
-        customErrorCode = 'REQUIRED_PARAMETERS_006') {
+        customErrorCode = 'ID_002') {
+            super(customMessage, 400, method, customErrorCode);
+    }
+}
+
+//USERS
+class DuplicateEmail extends ApplicationError {
+    constructor(method,
+        customMessage = 'The email you provided already exists and cannot be reused.', 
+        customErrorCode = 'USER_001') {
+            super(customMessage, 400, method, customErrorCode);
+    }
+}
+
+class PasswordStrength extends ApplicationError {
+    constructor(method,
+        customMessage = 'The password you provided does not meet the specified organizataions complexity requirements.', 
+        customErrorCode = 'USER_002') {
+            super(customMessage, 400, method, customErrorCode);
+    }
+}
+
+class UserDoesNotBelongToOrganization extends ApplicationError {
+    constructor(method,
+        customMessage = 'The email and password you provided do not belong to the organization you specified.', 
+        customErrorCode = 'USER_003') {
+            super(customMessage, 400, method, customErrorCode);
+    }
+}
+
+class UserDoesNotExist extends ApplicationError {
+    constructor(method,
+        customMessage = 'No user exists with that email.', 
+        customErrorCode = 'USER_004') {
+            super(customMessage, 400, method, customErrorCode);
+    }
+}
+
+class FailedLogin extends ApplicationError {
+    constructor(method,
+        customMessage = 'The email and password combination are incorrect.', 
+        customErrorCode = 'USER_005') {
+            super(customMessage, 400, method, customErrorCode);
+    }
+}
+
+class PasswordResetTokenExpired extends ApplicationError {
+    constructor(method,
+        customMessage = 'The password reset token has expired.', 
+        customErrorCode = 'USER_006') {
             super(customMessage, 400, method, customErrorCode);
     }
 }
@@ -213,6 +262,15 @@ class OrganizationDoesNotExist extends ApplicationError {
     }
 }
 
+//CLAIMS
+class InvalidClaimValue extends ApplicationError {
+    constructor(method,
+        customMessage = 'The value specified for the claim is invalid.', 
+        customErrorCode = 'ORGANIZATIONS_001') {
+            super(customMessage, 400, method, customErrorCode);
+    }
+}
+
 module.exports = {
     ApplicationError,
     BadRequest,
@@ -239,6 +297,13 @@ module.exports = {
     ProtectedContribution,
     ContributionDoesNotExist,
     DonationDoesNotExist,
-    OrganizationDoesNotExist
+    OrganizationDoesNotExist,
+    DuplicateEmail,
+    PasswordStrength,
+    UserDoesNotBelongToOrganization,
+    UserDoesNotExist,
+    FailedLogin,
+    InvalidClaimValue,
+    PasswordResetTokenExpired
 }
 

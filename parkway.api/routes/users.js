@@ -5,7 +5,6 @@ const {
     passwordReset,
     signupUser, 
     loginUser,
-    signupWixUser,
     getAllUsers, 
     getUserById,
     getUserByEmail,
@@ -17,7 +16,6 @@ const { requireSpecOpsClaim } = require('../middleware/claimsValidation');
 
 router.post('/login', loginUser)
 router.post('/connect', signupUser)
-router.post('/wixconnect', signupWixUser)
 router.post('/requestpasswordreset', requestPasswordReset)
 router.post('/passwordreset', passwordReset)
 

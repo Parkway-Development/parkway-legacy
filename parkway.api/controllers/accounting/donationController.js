@@ -2,6 +2,11 @@ const mongoose = require('mongoose');
 const Donation = require('../../models/accounting/donationModel');
 const ValidationHelper = require('../../helpers/validationHelper');
 const appError = require('../../applicationErrors');
+const Organization = require('../../models/organizationModel');
+const User = require('../../models/userModel');
+const jwt = require('jsonwebtoken');
+const titheAccountId = '664cee912f4c2fc061ce5c98'
+const titheOfTithesAccountId = '664cfb958f28a61f59decfdb'
 
 const createDonation = async (req, res, next) => {
     try {
@@ -12,9 +17,14 @@ const createDonation = async (req, res, next) => {
             const profileValid = await ValidationHelper.validateProfileId(donorProfileId);
             if (!profileValid.result) { throw new appError.ProfileDoesNotExist('addDonation', profileValid.message); }
         }
+
         if (accounts) {
             let accountTotal = 0;
             for (let i = 0; i < accounts.length; i++) {
+                
+                if(accounts[i].accountId === titheAccountId ){ throw new appError.Validation('addDonation', 'Donations cannot be tithes'); }
+                if(accounts[i].accountId === titheOfTithesAccountId ){ throw new appError.Validation('addDonation', 'Tithe of '); }
+
                 const accountValid = await ValidationHelper.validateAccountId(accounts[i].accountId);
                 if (!accountValid.result) { throw new appError.AccountDoesNotExist('addDonation', accountValid.message); }
                 accountTotal += accounts[i].amount;
