@@ -45,11 +45,37 @@ const ApprovedCountries = Object.freeze({
     US: 'United States'
 })
 
+const TransactionType = Object.freeze({
+    TRANSFER: 'transfer',
+    DEPOSIT: 'deposit',
+    WITHDRAWAL: 'withdrawal',
+    ADJUSTMENT: 'adjustment',
+    REVERSAL: 'reversal'
+})
+
+const AccountTransactionType = Object.freeze({
+    DEBIT: 'debit',
+    CREDIT: 'credit'
+})
+
+const MonetaryInstrument = Object.freeze({
+    CASH: 'cash',
+    CHECK: 'check',
+    CREDIT: 'credit',
+    DEBIT: 'debit',
+    ACH: 'ach',
+    WIRE: 'wire',
+    CRYPTO: 'crypto'
+})
+
 module.exports = {
     DepositStatus,
     AccountType,
     AccountRestriction,
     SubscriptionType,
     ApprovedCountries,
-    RenewalInterval
+    RenewalInterval,
+    TransactionType,
+    AccountTransactionType,
+    MonetaryInstrument
 };

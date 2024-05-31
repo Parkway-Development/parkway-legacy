@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const { validateAccountSumMatchesAmount } = require('../../helpers/validationHelper');
+const { MonetaryInstrument } = require('../constants');
 
 const contributionSchema = new mongoose.Schema({
     contributorProfileId: {
@@ -53,6 +54,7 @@ const contributionSchema = new mongoose.Schema({
     type: {
         required: true,
         type: String,
+        enum: Object.values(MonetaryInstrument),
         default: 'cash'
     },
     notes: [{
