@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const { TransactionType } = require('../constants');
+const { AccountTransactionType } = require('../constants');
 
 const accountDetailSchema = new mongoose.Schema({
     accountId: {
@@ -7,7 +9,8 @@ const accountDetailSchema = new mongoose.Schema({
         required: true
     },
     type: {
-        type: String,  // 'debit' or 'credit'
+        type: String,
+        enum: Object.values(AccountTransactionType),
         required: true
     }
 });
@@ -18,18 +21,26 @@ const transactionSchema = new mongoose.Schema({
         required: true
     },
     type: {
-        type: String, // 'transfer', 'deposit', 'withdrawal', 'adjustment', 'reversal'
+        type: String,
+        enum: Object.values(TransactionType),
         required: true
     },
-    toAccount: [accountDetailSchema],
-    fromAccount: [accountDetailSchema],
-    createdBy: {
+    destinationAccount: {
+        type: [accountDetailSchema],
+        required: true
+    },
+    sourceAccount: {
+        type: [accountDetailSchema],
+        required: true
+    },
+    responsiblePartyId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Profile'
     },
     notes: [ 
         {
-            type: String
+            type: String,
+            default: []
         }
     ]
 }, { timestamps: true });

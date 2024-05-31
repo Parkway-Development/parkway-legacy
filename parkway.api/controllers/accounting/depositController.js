@@ -4,6 +4,8 @@ const AppError = require('../../applicationErrors')
 const ValidationHelper = require('../../helpers/validationHelper')
 const UserValidation = require('../../helpers/userValidation')
 const {DepositStatus} = require('../../models/constants')
+const {createTransaction} = require('../../helpers/transactionHelper')
+const {TransactionType} = require('../../models/constants')
 
 const createDeposit = async (req, res, next) => {
         try {
@@ -53,7 +55,6 @@ const getAllDeposits = async (req, res, next) => {
         next(error);
     }
 };
-
 
 const getDepositById = async (req, res, next) => {
     try {
@@ -267,12 +268,46 @@ const processDeposit = async (req, res, next) => {
             deposit.contributions[i].depositId = deposit._id;
             deposit.contributions[i].processedDate = deposit.statusDate;
             await deposit.contributions[i].save();
+            await createTransactionsForContributions(deposit.contributions, deposit.approverProfileId);
+        }
+
+        for(let i = 0; i < deposit.donations.length; i++){
+            deposit.donations[i].depositId = deposit._id;
+            deposit.donations[i].processedDate = deposit.statusDate;
+            await deposit.donations[i].save();
+            await createTransactionsForDonations(deposit.donations, deposit.approverProfileId);
         }
 
         return res.status(200).json(deposit);
     } catch (error) {
         next(error)
         console.log({method: error.method, message: error.message});
+    }
+}
+
+const createTransactionsForContributions = async (contributions, responsiblePartyProfileId) => {
+    try {
+        for (let i = 0; i < contributions.length; i++) {
+            let contribution = contributions[i];
+            const transaction = await createTransaction(contribution.net, TransactionType.DEPOSIT, contribution.accountId, null, responsiblePartyProfileId);
+            if(!transaction){ throw new AppError.TransactionFailed('createTransactionsForContributions','The transaction for the contribution failed to create.')}
+        }
+    } catch (error) {
+        console.log({ method: 'createTransactionsForContributions', message: error.message });
+        throw error;
+    }
+}
+
+const createTransactionsForDonations = async (donations, responsiblePartyProfileId) => {
+    try {
+        for (let i = 0; i < donations.length; i++) {
+            let donation = donations[i];
+            const transaction = await createTransaction(donation.amount, TransactionType.DEPOSIT, donation.accountId, null, responsiblePartyProfileId);
+            if(!transaction){ throw new AppError.TransactionFailed('createTransactionsForDonations','The transaction for the contribution failed to create.')}
+        }
+    } catch (error) {
+        console.log({ method: 'createTransactionsForContributions', message: error.message });
+        throw error;
     }
 }
 

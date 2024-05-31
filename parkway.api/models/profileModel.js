@@ -79,4 +79,8 @@ const profileSchema = new mongoose.Schema({
     }]
 }, {timestamps: true})
 
+// profileSchema.index({ lastName: 1 }, { collation: { locale: 'en_US', strength: 2}} ) 
+// profileSchema.index({ firstName: 1 }, { collation: { locale: 'en_US', strength: 2}} ) 
+
+
 module.exports = mongoose.model('Profile', profileSchema, 'profiles')

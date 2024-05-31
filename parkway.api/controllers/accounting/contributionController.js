@@ -6,6 +6,7 @@ const Deposit = require('../../models/accounting/depositModel');
 const AppError = require('../../applicationErrors')
 const Account = require('../../models/accounting/accountModel');
 const Transaction = require('../../models/accounting/transactionModel');
+const { TransactionType } = require('../../models/constants');
 
 const addContribution = async (req, res, next) => {
     try {
@@ -56,24 +57,6 @@ const addContribution = async (req, res, next) => {
             deposit.contributions.push(contribution._id);
             await deposit.save();
         }
-
-
-        //TODO: Add the transaction to the ledger
-        // for(let i = 0; i < contribution.accounts.length; i++){
-        //     const accountId = contribution.accounts[i].accountId
-        //     let account = await Account.findById(accountId);
-
-        //     if(!account){ throw new AppError.NotFound('addContribution', `The account with the id ${accountId} was not found.`)}
-
-        //     const sourceAccount = await Account.findOne({name: 'Unallocated'});
-        //     const transaction = new Transaction({
-        //         amount: contribution.accounts[i].amount,
-        //         type: 'deposit',
-        //         toAccount: { accountId: accountId },
-        //         createdBy: contribution.profile,
-        //         contributionId: contribution._id
-        //     });
-        // }
 
         return res.status(201).json(contribution);
 

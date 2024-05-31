@@ -271,6 +271,15 @@ class InvalidClaimValue extends ApplicationError {
     }
 }
 
+//TRANSACTIONS
+class TransactionFailed extends ApplicationError {
+    constructor(method,
+        customMessage = 'The transaction was not saved.', 
+        customErrorCode = 'ORGANIZATIONS_001') {
+            super(customMessage, 400, method, customErrorCode);
+    }
+}
+
 module.exports = {
     ApplicationError,
     BadRequest,
