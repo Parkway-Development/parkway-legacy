@@ -1,12 +1,4 @@
-import {
-  Breadcrumb,
-  Checkbox,
-  DatePicker,
-  Form,
-  Input,
-  Radio,
-  TimePicker
-} from 'antd';
+import { Breadcrumb, Checkbox, DatePicker, Form, Input, Radio } from 'antd';
 import { Link, useParams } from 'react-router-dom';
 import UserProfileSelect from '../user-profile-select';
 import { Event } from '../../types';
@@ -23,14 +15,20 @@ import { useAuth } from '../../hooks/useAuth.tsx';
 import EventStatus from './EventStatus.tsx';
 import EventMessages from './EventMessages.tsx';
 import { BaseSelect, BaseSelectionProps } from '../base-select';
+import TimeSelect, {
+  getTimeSelectHours,
+  getTimeSelectMinutes,
+  getTimeSelectValue,
+  isEndTimeAfterStart
+} from '../time-select';
 
 type EventWithoutId = Omit<Event, '_id'>;
 
 type EventFormFields = Omit<EventWithoutId, 'start' | 'end'> & {
   startDate: Dayjs;
-  startTime: Dayjs;
+  startTime: string;
   endDate: Dayjs;
-  endTime: Dayjs;
+  endTime: string;
   updateSeries?: 'this' | 'future' | 'all';
 };
 
@@ -141,7 +139,6 @@ const EventForm = ({
       ? deleteById
       : (id: string) => deleteBySchedule({ _id: id, updateSeries });
 
-  const [endTimeOpen, setEndTimeOpen] = useState<boolean>(false);
   const [repeats, setRepeats] = useState<boolean>(
     initialValues !== undefined && initialValues.schedule !== undefined
   );
@@ -161,9 +158,9 @@ const EventForm = ({
     ? {
         ...initialValues,
         startDate: transformDateToDayjs(initialValues.start),
-        startTime: transformDateToDayjs(initialValues.start),
+        startTime: getTimeSelectValue(new Date(initialValues.start)),
         endDate: transformDateToDayjs(initialValues.end),
-        endTime: transformDateToDayjs(initialValues.end),
+        endTime: getTimeSelectValue(new Date(initialValues.end)),
         updateSeries: 'this'
       }
     : addDate
@@ -173,13 +170,17 @@ const EventForm = ({
           status: eventStatusMapping['Tentative'],
           organizer: user!.profileId,
           allDay: false,
-          schedule: undefined
+          schedule: undefined,
+          startTime: undefined,
+          endTime: undefined
         }
       : {
           status: eventStatusMapping['Tentative'],
           organizer: user!.profileId,
           allDay: false,
-          schedule: undefined
+          schedule: undefined,
+          startTime: undefined,
+          endTime: undefined
         };
 
   const isCalendarAdmin = hasClaim('calendarManagement');
@@ -200,12 +201,12 @@ const EventForm = ({
       end.setMinutes(59);
       end.setSeconds(59);
     } else {
-      start.setHours(startTime.hour());
-      start.setMinutes(startTime.minute());
+      start.setHours(getTimeSelectHours(startTime));
+      start.setMinutes(getTimeSelectMinutes(startTime));
       start.setSeconds(0);
 
-      end.setHours(endTime.hour());
-      end.setMinutes(endTime.minute());
+      end.setHours(getTimeSelectHours(endTime));
+      end.setMinutes(getTimeSelectMinutes(endTime));
       end.setSeconds(0);
     }
 
@@ -221,16 +222,16 @@ const EventForm = ({
 
   const validateEndDate = (_: unknown, value: Dayjs) => {
     const startDate: Dayjs = form.getFieldValue('startDate');
-    if (value && startDate && value < startDate) {
+    if (value && startDate && value.isBefore(startDate, 'day')) {
       return Promise.reject('End date cannot be before the start date');
     }
 
     return Promise.resolve();
   };
 
-  const validateEndTime = (_: unknown, value: Dayjs) => {
+  const validateEndTime = (_: unknown, value: string) => {
     const startDate: Dayjs = form.getFieldValue('startDate');
-    const startTime: Dayjs = form.getFieldValue('startTime');
+    const startTime: string = form.getFieldValue('startTime');
     const endDate: Dayjs = form.getFieldValue('endDate');
 
     if (
@@ -239,7 +240,7 @@ const EventForm = ({
       startTime &&
       value &&
       isSameDate(startDate.toDate(), endDate.toDate()) &&
-      value <= startTime
+      !isEndTimeAfterStart(startTime, value)
     ) {
       return Promise.reject('End time cannot be after the start time');
     }
@@ -340,19 +341,7 @@ const EventForm = ({
                 labelCol={{ flex: 0 }}
                 wrapperCol={{ flex: 1 }}
               >
-                <TimePicker
-                  use12Hours
-                  format="h:mm a"
-                  minuteStep={15}
-                  onChange={(value) => {
-                    const currentEndTime = form.getFieldValue('endTime');
-
-                    if (!currentEndTime) {
-                      form.setFieldsValue({ endTime: value });
-                      setEndTimeOpen(true);
-                    }
-                  }}
-                />
+                <TimeSelect />
               </Form.Item>
             )}
           </div>
@@ -385,13 +374,7 @@ const EventForm = ({
                 labelCol={{ flex: 0 }}
                 wrapperCol={{ flex: 1 }}
               >
-                <TimePicker
-                  use12Hours
-                  format="h:mm a"
-                  minuteStep={15}
-                  open={endTimeOpen}
-                  onOpenChange={setEndTimeOpen}
-                />
+                <TimeSelect />
               </Form.Item>
             )}
           </div>
