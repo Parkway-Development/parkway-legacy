@@ -81,7 +81,7 @@ const getAllAccounts = async (req, res, next) => {
             accounts = await Account.find({});
         }
 
-        if(accounts.length === 0){ return res.status(200).json('No accounts found.');}
+        if(accounts.length === 0){ return res.status(204).json('No accounts found.');}
 
         return res.status(200).json(accounts);
     } catch (error) {
@@ -109,7 +109,7 @@ const getAccountById = async (req, res, next) => {
             account = await Account.findById(id);
         }
 
-        if(!account){ return res.status(200).json('No account found for that Id.')}
+        if(!account){ return res.status(204).json('No account found for that Id.')}
 
         res.status(200).json(account);
 
@@ -138,7 +138,7 @@ const getAccountsByType = async (req, res, next) => {
                 accounts = await Account.findById(id);
             }
     
-            if(accounts.length === 0){ return res.status(200).json('No accounts found with that type.')}
+            if(accounts.length === 0){ return res.status(204).json('No accounts found with that type.')}
 
             return res.status(200).json(accounts);
         }
@@ -167,7 +167,7 @@ const getAccountByName = async (req, res, next) => {
             account = await Account.findOne({name: name }).collation({locale: "en", strength: 2});
         }
 
-        if(!account){ return res.status(200).json('No account found with that name.')}
+        if(!account){ return res.status(204).json('No account found with that name.')}
 
         return res.status(200).json(account);
 

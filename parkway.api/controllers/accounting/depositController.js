@@ -45,9 +45,7 @@ const getAllDeposits = async (req, res, next) => {
             deposits = await Deposit.find();
         }
 
-        if (deposits.length === 0) {
-            return res.status(200).json('No deposits found.');
-        }
+        if (deposits.length === 0) { return res.status(204).json('No deposits found.'); }
 
         return res.status(200).json(deposits);
     } catch (error) {
@@ -70,7 +68,8 @@ const getDepositById = async (req, res, next) => {
             deposit = await Deposit.findById(req.params.id);
         }
 
-        if(!deposit){ return res.status(200).json('No deposit found for that Id.')}
+        if(!deposit){ return res.status(204).json('No deposit found for that Id.')}
+
         return res.status(200).json(deposit);
     } catch (error) {
         next(error)
@@ -93,7 +92,6 @@ const getDepositsByStatus = async (req, res, next) => {
 
         if(!startDate || !endDate){ 
             deposits = await Deposit.find({currentStatus: status});
-            if(deposits.length === 0){ return res.status(200).json('No deposits found for that status.')}
         }else{
             if(!ValidationHelper.checkDateOrder(startDate, endDate)){ throw new AppError.InvalidDateRange('getDepositByStatus')}
             deposits = await Deposit.find({
@@ -103,8 +101,9 @@ const getDepositsByStatus = async (req, res, next) => {
                     $lte: new Date(endDate).toISOString()
                 }
             }).sort({ statusDate: 1});
-            if(deposits.length === 0){ return res.status(200).json('No deposits found for that status and date range.')}
         }
+
+        if(deposits.length === 0){ return res.status(204).json('No deposits found')}
 
         if(req.query.populate){
             deposits = await Deposit.find({currentStatus: status})
@@ -147,7 +146,7 @@ const getDepositsByDateRange = async (req, res, next) => {
             }).sort({ date: 1});
         }
 
-        if(deposits.length === 0){ return res.status(200).json('No deposits found for that date range.')}
+        if(deposits.length === 0){ return res.status(204).json('No deposits found for that date range.')}
 
         return res.status(200).json(deposits);
     } catch (error) {

@@ -69,11 +69,11 @@ const getDonationsByDateRange = async (req, res, next) => {
         if (startDate && endDate) {
             if (!ValidationHelper.checkDateOrder(startDate, endDate)) { throw new appError.InvalidDateRange('getAllDonations'); }
             donations = await Donation.find({ date: { $gte: startDate, $lte: endDate } }).sort({ date: -1 });
-            if (donations.length === 0) { throw new appError.NotFound('getAllDonations', 'No donations found for the specified date range.'); }
         } else {
             donations = await Donation.find().sort({ date: -1 });
-            if (donations.length === 0) { throw new appError.NotFound('getAllDonations'); }
         }
+
+        if (donations.length === 0) { return res.status(204).json({ message: "No donations found." }); }
 
         if (populate === 'true') {
             await donations.populate('donorProfile accounts').execPopulate();
@@ -99,7 +99,7 @@ const getDonationById = async (req, res, next) => {
             donation = await Donation.findById(req.params.id);
         }
 
-        if (!donation) { throw new appError.DonationDoesNotExist('getDonationById'); }
+        if (!donation) { return res.status(204).json({ message: "No donation found." }); }
 
         return res.status(200).json(donation);
     } catch (error) {
@@ -121,12 +121,12 @@ const getDonationsByProfile = async (req, res, next) => {
         if (startDate && endDate) {
             if (!ValidationHelper.checkDateOrder(startDate, endDate)) { throw new appError.InvalidDateRange('getDonationsByProfile'); }
             donations = await Donation.find({ donorProfileId: donorProfileId, date: { $gte: startDate, $lte: endDate } }).sort({ date: -1 });
-            if (donations.length === 0) { throw new appError.NotFound('getDonationsByProfile', 'No donations found for the specified date range in the specified profile.');}
         } else {
             donations = await Donation.find({ donorProfileId: donorProfileId }).sort({ date: -1 });
-            if (donations.length === 0) { throw new appError.NotFound('getDonationsByProfile', `No donations were found for donorProfileId ${donorProfileId}`);}
         }
 
+        if (donations.length === 0) { return res.status(204).json({ message: "No donations found." }); }
+        
         return res.status(200).json(donations);
     } catch (error) {
         console.log({ method: error.method, message: error.message });
