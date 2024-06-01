@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 const Profile = require('../models/profileModel')
 const User = require('../models/userModel')
+const appErrors = require('../applicationErrors')
 
 const mapToLimitedProfile = (user) => {
     return {
@@ -55,158 +56,167 @@ const addProfile = async (req, res) => {
     }
 }
 
-const getAllProfiles = async (req, res) => {
+const getAllProfiles = async (req, res, next) => {
     try {
-        const profiles = await Profile.find({})
-        .populate('family')
-        .populate('preferences')
-        .populate('teams')
-        .sort({lastname: 1, firstname: 1});
-        if(!profiles){ throw new Error("No profiles were returned.")}
+        const populate = req.query.populate;
+        let profiles;
+        if(!populate){ profiles = await Profile.find({}).sort({lastName: 1, firstName: 1}); } 
+        else { profiles = await Profile.find({}).populate('preferences', 'teams').sort({lastName: 1, firstName: 1}); }
+
+        if(!profiles){ return res.status(204).json({message: "No profiles were found."})}
 
         res.status(200).json(profiles)
 
     } catch (error) {
-        console.log(error);
-        return res.status(500).json(error)
+        next(error)
+        console.log({method: error.method, message: error.message});        
     }
 }
 
-const getAllLimitedProfiles = async (req, res) => {
+const getAllLimitedProfiles = async (req, res, next) => {
     try {
         const profiles = await Profile.find({})
             .sort({lastname: 1, firstname: 1});
-        if(!profiles){ throw new Error("No profiles were returned.")}
+
+        if(!profiles){ return res.status(204).json({message: 'No profiles were returned.'}) }
 
         const limitedProfiles = profiles.map(user => mapToLimitedProfile(user));
 
         res.status(200).json(limitedProfiles);
+
     } catch (error) {
-        console.log(error);
-        return res.status(500).json(error);
+        next(error)
+        console.log({method: error.method, message: error.message});        
     }
 }
 
-const getProfileById = async (req, res) => {
+const getProfileById = async (req, res, next) => {
     try {
         const {id} = req.params;
+        const populate = req.query.populate;
 
-        if(!id){ throw new Error("No ID was submitted.")}
-        if(!mongoose.Types.ObjectId.isValid(id)){ throw new Error("Invalid ID was submitted.")}
+        if(!id){ throw new appErrors.MissingId('getProfileById')}
+        if(!mongoose.Types.ObjectId.isValid(id)){ throw new appErrors.InvalidId('getProfileById')}
     
-        const profile = await Profile.findById(id)
-        .populate('family')
-        .populate('preferences')
-        .populate('teams');
+        let profile;
+        if(!populate){ profile = await Profile.findById(id); } 
+        else { profile = await Profile.findById(id).populate('preferences', 'teams'); }
 
-        if(!profile){ throw new Error("No profile was found.")}
+        if(!profile){ return res.status(204).json({message: "No profile was found."}) }
 
         return res.status(200).json(profile)
     } catch (error) {
-        console.log(error);
-        return res.status(500).json(error)
+        next(error)
+        console.log({method: error.method, message: error.message});        
     }
 }
 
-const getProfilesByLastName = async (req, res) => {
+const getProfilesByLastName = async (req, res, next) => {
     try {
         const {lastName} = req.params;
+        const populate = req.query.populate;
 
-        if(!lastName){ throw new Error("No last name was submitted.")}
+        if(!lastName){ throw new appErrors.MissingRequiredParameter('getProfilesByLastName','No last name was submitted')}
 
-        const profiles = await Profile.find({$text: {$search: lastName}})
-            .populate('family')
-            .populate('preferences')
-            .populate('teams');
-    
-        if(profiles.length  === 0){ throw new Error("No profiles were found.") }
+        let profiles;
+        if(!populate){ profiles = await Profile.find({$text: {$search: lastName}}); }
+        else { profiles = await Profile.find({$text: {$search: lastName}}).populate('preferences', 'teams'); }
+
+        if(profiles.length  === 0){ return res.status(204).json({message: 'No profiles were found'}) }
 
         res.status(200).json(profiles)
+        
     } catch (error) {
-        console.log(error);
-        return res.status(500).json(error)
+        next(error)
+        console.log({method: error.method, message: error.message});        
     }
 }
 
-const getProfilesByMobilePhone = async (req, res) => {
+const getProfilesByMobilePhone = async (req, res, next) => {
     try {
         const mobilePhone = req.params;
-        if(!mobilePhone){ throw new Error("No mobile phone number was submitted.")}
+        const populate = req.query.populate;
 
-        const profiles = await Profile.find({mobilePhone: req.params.mobilePhone})
-            .populate('family')
-            .populate('preferences')
-            .populate('teams');
-    
-        if( profiles.length === 0 ){ throw new Error("No profiles were found.") }
+        if(!mobilePhone){ throw new appErrors.MissingRequiredParameter('getProfilesByMobilePhone','No mobile phone number was submitted')}
+
+        let profiles;
+        if(!populate){ profiles = await Profile.find({mobilePhone: mobilePhone}); }
+        else { profiles = await Profile.find({mobilePhone: mobilePhone}).populate('preferences', 'teams'); }
+
+        if( profiles.length === 0 ){ return res.status(204).json({message: 'No profiles were found'}) }
 
         res.status(200).json(profiles)
     
     }catch (error) {
-        console.log(error);
-        return res.status(500).json(error)
+        next(error)
+        console.log({method: error.method, message: error.message});        
     }
 }
 
-const getProfilesByHomePhone = async (req, res) => {
+const getProfilesByHomePhone = async (req, res, next) => {
     try {
         const homePhone = req.params;
+        const populate = req.query.populate;
         if(!homePhone){ throw new Error("No home phone number was submitted.") }
 
-        const profiles = await Profile.find({homePhone: req.params.homePhone})
-            .populate('family')
-            .populate('preferences')
-            .populate('teams');
-    
-        if( profiles.length === 0){ throw new Error("No profiles were found.") }
+        let profiles;
+        if(!populate){ profiles = await Profile.find({homePhone: homePhone}); }
+        else { profiles = await Profile.find({homePhone: homePhone}).populate('preferences', 'teams'); }
+
+        if( profiles.length === 0){ return res.status(204).json({message: 'No profiles were found'}) }
 
         res.status(200).json(profiles)
     
     } catch (error) {
-        console.log(error);
-        return res.status(500).json( error )
+        next(error)
+        console.log({method: error.method, message: error.message});        
     }
 }
 
-const updateProfile = async (req, res) => {
+const updateProfile = async (req, res, next) => {
     try{
         const {id} = req.params;
-        if(!id){ throw new Error("No ID was submitted.")}
+        const populate = req.query.populate;
 
-        if (!mongoose.Types.ObjectId.isValid(id)) { throw new Error("Invalid ID was submitted.") }
+        if(!id){ throw new appErrors.MissingId('updateProfile')}
+        if (!mongoose.Types.ObjectId.isValid(id)) { throw new appErrors.InvalidId('updateProfile') }
 
-        let profile = await Profile.findOneAndUpdate({ _id: id }, 
+        let profile;
+        if(!populate){ 
+            profile = await Profile.findOneAndUpdate({ _id: id }, 
             { ...req.body }, 
-            { new: true }
-        );
+            { new: true });
+        } 
+        else {
+            profile = await Profile.findOneAndUpdate({ _id: id },
+            { ...req.body },
+            { new: true }).populate('preferences', 'teams');
+        }
 
-        if(!profile){ throw new Error("No profile was found.")}
-
-        profile = await Profile.populate(profile, [{ path: 'family' }, { path: 'preferences' }, { path: 'teams' }]);
+        if(!profile){ return res.status(204).json({message: "No profile was found."}) }
 
         return res.status(200).json(profile);
     } catch (error) {
-        console.log(error);
-        return res.status(500).json(error);
+        next(error)
+        console.log({method: error.method, message: error.message});        
     };
 }
 
 const deleteProfile = async (req, res) => {
     try {
         const {id} = req.params;
-        if(!id){ throw new Error("No ID was submitted.")}
-
-        if(!mongoose.Types.ObjectId.isValid(id)){ throw new Error("Invalid ID was submitted.")}
+        if(!id){ throw new appErrors.MissingId('deleteProfile')}
+        if(!mongoose.Types.ObjectId.isValid(id)){ throw new appErrors.InvalidId('deleteProfile')}
     
         const profile = await Profile.findOneAndDelete({_id: id});
     
-        if(!profile){ throw new Error("No profile was found.")}
+        if(!profile){ return res.status(204).json({message: 'No profile was deleted.'}) }
     
-        res.status(200).json(`The profile for ${profile.firstName + " " + profile.lastName} has been deleted.`)
+        res.status(200).json(`The profile for ${profile.firstName} ${profile.lastName} has been deleted.`)
     
     } catch (error) {
-        console.log(error);
-        return res.status(500).json(error)
+        next(error)
+        console.log({method: error.method, message: error.message});        
     }
 }
 
@@ -214,37 +224,28 @@ const connectUserAndProfile = async (req, res) => {
     try {
         const { userId } = req.body;
         const { profileId } = req.params;
+        const populate = req.query.populate;
     
-        if(!profileId){ throw new Error("No profile ID was submitted.")}    
-        if(!userId){ throw new Error("No user ID was submitted.")}    
-        if(!mongoose.Types.ObjectId.isValid(userId)){ throw new Error("Invalid user ID was submitted.")}    
-        if(!mongoose.Types.ObjectId.isValid(profileId)){ throw new Error("Invalid profile ID was submitted.")}
+        if(!userId){ throw new appErrors.MissingId('connectUserAndProfile', 'Missing user id')}
+        if(!profileId){ throw new appErrors.MissingId('connectUserAndProfile', 'Missing profile id')}    
+        if(!mongoose.Types.ObjectId.isValid(userId) || !mongoose.Types.ObjectId.isValid(profileId)){ throw new appErrors.InvalidId('connectUserAndProfile', 'Invalid user id')}    
+        if(!mongoose.Types.ObjectId.isValid(profileId)){ throw new appErrors.InvalidId('connectUserAndProfile', 'Invalid profile id')}    
     
-        //get the User and add the profileId to it
         let profile = await Profile.findById(profileId);
-        if(!profile){ throw new Error("No profile was found.")}
+        if(!profile){ return res.status(204).json({message: 'No profile for the profile id was found.'})}
 
         const user = await User.findByIdAndUpdate(userId, {profile: profile}, {new: true});
-        if(!user){ throw new Error("There was a problem connecting the user to the profile.  The user object was not returned.")}
+        if(!user){ return res.status(204).json({message: 'No user for the user id was found.'})}
 
-        //get the Profile and add the userId to it
         profile = await Profile.findByIdAndUpdate(profileId, {user: user}, {new: true});
-        if(!profile){ throw new Error("There was a problem connecting the profile to the user.  The profile object was not returned.")}
 
-        profile = await Profile.populate(profile, [{ path: 'family' }, { path: 'preferences' }, { path: 'teams' }]);
+        if(populate){ profile.populate('preferences', 'teams') }
 
         return res.status(200).json(profile)
-
-        // const cleanedProfile = profile.toObject();
-        // if(cleanedProfile.user){
-        //     delete cleanedProfile.user.password;
-        // }
-        
-        // return res.status(200).json(cleanedProfile)
     
     } catch (error) {
-        console.log(error);
-        return res.status(500).json(error)
+        next(error)
+        console.log({method: error.method, message: error.message});        
     }
 }
 

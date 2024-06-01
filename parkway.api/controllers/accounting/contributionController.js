@@ -72,7 +72,7 @@ const getAllContributions = async (req, res, next) => {
     try {
         const contributions = await Contribution.find({});
         
-        if(contributions.length === 0) { return res.status(200).json({contributions: contributions, message: 'No contributions were returned.'})}
+        if(contributions.length === 0) { return res.status(204).json({contributions: contributions, message: 'No contributions were returned.'})}
         
         return res.status(200).json(contributions);
     } catch (error) {
@@ -106,7 +106,7 @@ const getContributionsByDateRange = async (req, res, next) => {
             }).sort({ transactionDate: 1});
         }
 
-        if(contributions.length === 0){ return res.status(200).json({contributions: contributions, message: 'No contributions were returned.'})}
+        if(contributions.length === 0){ return res.status(204).json({contributions: contributions, message: 'No contributions were returned.'})}
 
         return res.status(200).json(contributions);
     } catch (error) {
@@ -121,7 +121,7 @@ const getContributionById = async (req, res, next) => {
         if(!mongoose.Types.ObjectId.isValid(req.params.id)){ throw new AppError.InvalidId('getContributionById')}
 
         const contribution = await Contribution.findById(req.params.id);
-        if(!contribution) { return res.status(200).json({message: 'No contribution found for that Id.'})};
+        if(!contribution) { return res.status(204).json({message: 'No contribution found for that Id.'})};
 
         return res.status(200).json(contribution);
     } catch (error) {
@@ -160,7 +160,7 @@ const getContributionsByType = async (req, res, next) => {
                     }
                 }).sort({ transactionDate: 1});
             }
-            if(contributions.length === 0) { return res.status(200).json({message: 'No contributions were returned for the given type in the specified date range.'})}
+            if(contributions.length === 0) { return res.status(204).json({message: 'No contributions were returned for the given type in the specified date range.'})}
         }
         if(contributions.length === 0) { return res.status(200).json({message: 'No contributions were returned.'})} 
         return res.status(200).json(contributions);
@@ -203,7 +203,7 @@ const getContributionsByProfileId = async (req, res, next) => {
                     }
                 }).sort({ transactionDate: 1});
             }
-            if(contributions.length === 0) { return res.status(200).json({message: 'No contributions were returned for the given profile Id and the specified date range.'})}
+            if(contributions.length === 0) { return res.status(204).json({message: 'No contributions were returned for the given profile Id and the specified date range.'})}
         }
 
         if(contributions.length === 0) { return res.status(200).json({message: 'No contributions were returned.'})}
@@ -247,7 +247,7 @@ const getContributionsByAccountId = async (req, res, next) => {
                     }
                 }).sort({ transactionDate: 1});
             }
-            if(contributions.length === 0) { return res.status(200).json({message: 'No contributions were returned for the given account Id and the specified date range.'})}
+            if(contributions.length === 0) { return res.status(204).json({message: 'No contributions were returned for the given account Id and the specified date range.'})}
         }
 
         if(contributions.length === 0) { return res.status(200).json({message: 'No contributions were returned.'})}
