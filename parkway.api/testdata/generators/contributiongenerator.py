@@ -2,41 +2,25 @@ import json
 import random
 import os
 from datetime import datetime
-import logging
-import glob
-
-# Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 def load_json(filename):
-    try:
-        with open(filename, 'r') as file:
-            logging.info(f"Loading JSON from {filename}")
-            return json.load(file)
-    except Exception as e:
-        logging.error(f"Error loading JSON from {filename}: {e}")
-        return None
+    with open(filename, 'r') as file:
+        return json.load(file)
 
 def save_json(filename, data):
-    try:
-        with open(filename, 'w') as file:
-            json.dump(data, file, indent=4)
-            logging.info(f"Saved JSON to {filename}")
-    except Exception as e:
-        logging.error(f"Error saving JSON to {filename}: {e}")
+    with open(filename, 'w') as file:
+        json.dump(data, file, indent=4)
 
-def generate_contribution(profile_ids, account_ids, net_amount, transaction_date, deposit_id):
+def generate_contribution(profile_ids, account_ids, net_amount, transaction_date):
     contribution = {
         "contributorProfileId": random.choice(profile_ids),
         "gross": net_amount,
         "fees": 0,
         "net": net_amount,
         "accounts": [],
-        "deposit_id": deposit_id,
         "transactionDate": transaction_date,
         "type": random.choice(["cash", "check"]),
-        "notes": ["Generated contribution"],
-        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
+        "notes": ["Generated contribution"]
     }
 
     remaining_amount = net_amount
@@ -61,7 +45,7 @@ def generate_contribution(profile_ids, account_ids, net_amount, transaction_date
 
     return contribution
 
-def generate_unassigned_contribution(general_fund_account_id, deposit_amount, transaction_date, deposit_id):
+def generate_unassigned_contribution(general_fund_account_id, deposit_amount, transaction_date):
     unassigned_amount = random.randint(500, int(deposit_amount * 0.25))
     return {
         "contributorProfileId": None,
@@ -74,89 +58,51 @@ def generate_unassigned_contribution(general_fund_account_id, deposit_amount, tr
                 "amount": unassigned_amount
             }
         ],
-        "deposit_id": deposit_id,
         "transactionDate": transaction_date,
         "type": random.choice(["cash", "check"]),
         "notes": ["Generated unassigned contribution"]
     }
 
-def delete_old_contribution_files(base_dir):
-    pattern = os.path.join(base_dir, "**", "*-con-*.json")
-    old_files = glob.glob(pattern, recursive=True)
-    for old_file in old_files:
-        logging.info(f"Deleting old contribution file: {old_file}")
-        os.remove(old_file)
-
-def process_deposits(profiles_file, accounts_file):
+def process_deposits(deposit_files, profiles_file, accounts_file):
     profiles = load_json(profiles_file)
     accounts = load_json(accounts_file)
 
-    if profiles is None or accounts is None:
-        logging.error("Failed to load profiles or accounts.")
-        return
-
-    profile_ids = [profile["_id"]["$oid"] for profile in profiles]
+    profile_ids = [profile["_id"] for profile in profiles]
     account_ids = [account["_id"] for account in accounts]
-    general_fund_account_id = next((account["_id"] for account in accounts if account.get("name") == "General Fund"), None)
-
-    if general_fund_account_id is None:
-        logging.error("General Fund account not found.")
-        return
-
-    # Locate all deposit files matching the new pattern
-    deposit_files = glob.glob("../**/**-dep-*.json", recursive=True)
-    logging.info(f"Found {len(deposit_files)} deposit files")
-
-    # Delete old contribution files
-    delete_old_contribution_files("..")
+    general_fund_account_id = next(account["_id"] for account in accounts if account.get("name") == "General Fund")
 
     for deposit_file in deposit_files:
-        deposit = load_json(deposit_file)
-        if deposit is None:
-            logging.error(f"Failed to load deposit from {deposit_file}")
-            continue
+        deposits = load_json(deposit_file)
 
-        logging.info(f"Processing {deposit_file}")
-
-        contributions = []
-        try:
+        for deposit in deposits:
+            contributions = []
             deposit_amount = deposit["amount"]
             transaction_date = deposit["depositDate"]
-            deposit_id = deposit["depositId"]
-        except KeyError as e:
-            logging.error(f"Missing expected key {e} in deposit: {deposit}")
-            continue
+            transaction_date_obj = datetime.strptime(transaction_date, "%Y-%m-%dT%H:%M:%SZ")
+            year_month = transaction_date_obj.strftime("%Y-%m")
+            output_dir = os.path.join("..", year_month)
 
-        transaction_date_obj = datetime.strptime(transaction_date, "%Y-%m-%d")
-        year_month = transaction_date_obj.strftime("%Y-%m")
-        output_dir = os.path.join("..", year_month)
+            os.makedirs(output_dir, exist_ok=True)
 
-        os.makedirs(output_dir, exist_ok=True)
+            if 'wednesday' in deposit_file:
+                num_contributions = random.randint(25, 50)
+            elif 'sunday' in deposit_file:
+                num_contributions = random.randint(200, 300)
+            else:
+                num_contributions = random.randint(10, 20)  # Default case for other days if any
 
-        if '-dep-wed.json' in deposit_file:
-            num_contributions = random.randint(25, 50)
-        elif '-dep-sun.json' in deposit_file:
-            num_contributions = random.randint(200, 300)
-        else:
-            num_contributions = random.randint(10, 20)  # Default case for other days if any
+            for _ in range(num_contributions):
+                net_amount = random.randint(500, 5000)
+                contributions.append(generate_contribution(profile_ids, account_ids, net_amount, transaction_date))
 
-        logging.info(f"Generating {num_contributions} contributions")
+            contributions.append(generate_unassigned_contribution(general_fund_account_id, deposit_amount, transaction_date))
 
-        for _ in range(num_contributions):
-            net_amount = random.randint(500, 5000)
-            contributions.append(generate_contribution(profile_ids, account_ids, net_amount, transaction_date, deposit_id))
-
-        contributions.append(generate_unassigned_contribution(general_fund_account_id, deposit_amount, transaction_date, deposit_id))
-
-        # Set the filename of the contributions to match the deposit filename, replacing "dep" with "con"
-        contribution_filename = deposit_file.replace("-dep-", "-con-")
-        output_filename = os.path.join(output_dir, os.path.basename(contribution_filename))
-        
-        save_json(output_filename, contributions)
-        logging.info(f"Saved contributions to {output_filename}")
+            output_filename = os.path.join(output_dir, f'contributions-{transaction_date[:10]}.json')
+            save_json(output_filename, contributions)
 
 if __name__ == "__main__":
+    deposit_files = ["deposits-sunday.json", "deposits-wednesday.json"]
     profiles_file = "../profiles.json"
     accounts_file = "../accounts.json"
 
-    process_deposits(profiles_file, accounts_file)
+    process_deposits(deposit_files, profiles_file, accounts_file)

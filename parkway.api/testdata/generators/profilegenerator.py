@@ -81,6 +81,7 @@ for _ in range(1500):
         "firstName": first_name,
         "lastName": last_name,
         "middleInitial": middle_initial,
+        "nickname": nickname,
         "dateOfBirth": datetime.combine(date_of_birth, datetime.min.time()).isoformat() + 'Z',
         "gender": gender,
         "email": email,
@@ -89,6 +90,7 @@ for _ in range(1500):
         "address": address,
         "member": random.random() < 0.5,  # 50% chance of being a member
         "teams": [],
+        "family": None,
         "preferences": None,
         "organizations": [
             {
