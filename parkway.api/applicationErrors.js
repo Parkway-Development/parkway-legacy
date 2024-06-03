@@ -280,6 +280,15 @@ class TransactionFailed extends ApplicationError {
     }
 }
 
+//DEVELOPER
+class DuplicateApplication extends ApplicationError {
+    constructor(method,
+        customMessage = 'An application already exists with that name.', 
+        customErrorCode = 'DEVELOPER_001') {
+            super(customMessage, 400, method, customErrorCode);
+    }
+}
+
 module.exports = {
     ApplicationError,
     BadRequest,
@@ -313,6 +322,8 @@ module.exports = {
     UserDoesNotExist,
     FailedLogin,
     InvalidClaimValue,
-    PasswordResetTokenExpired
+    PasswordResetTokenExpired,
+    TransactionFailed,
+    DuplicateApplication
 }
 

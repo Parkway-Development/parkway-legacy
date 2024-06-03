@@ -13,7 +13,7 @@ const accountDetailSchema = new mongoose.Schema({
         enum: Object.values(AccountTransactionType),
         required: true
     }
-});
+}, { _id: false });
 
 const transactionSchema = new mongoose.Schema({
     amount: {
@@ -26,12 +26,12 @@ const transactionSchema = new mongoose.Schema({
         required: true
     },
     destinationAccount: {
-        type: [accountDetailSchema],
-        required: true
+        type: accountDetailSchema,
+        required: true,
     },
     sourceAccount: {
-        type: [accountDetailSchema],
-        required: true
+        type: accountDetailSchema,
+        default: null
     },
     responsiblePartyId: {
         type: mongoose.Schema.Types.ObjectId,

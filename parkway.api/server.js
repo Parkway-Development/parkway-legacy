@@ -18,7 +18,7 @@ const songRoutes = require('./routes/songs');
 const eventRoutes = require('./routes/events');
 const eventCategoryRoutes = require('./routes/eventCategories');
 const uploadRoutes = require('./routes/uploads');
-const healhRoutes = require('./routes/health');
+const healthRoutes = require('./routes/health');
 const developerRoutes = require('./routes/developer');
 const applicationClaimsRoutes = require('./routes/applicationClaims');
 const organizationRoutes = require('./routes/organizations');
@@ -59,6 +59,12 @@ app.use((req, res, next) => {
 app.use(validateAppAndKey);
 app.use(express.json());
 
+app.use('/test', (req, res) => {
+    console.log('Test endpoint hit');
+    console.log (req.body);
+    return res.status(200).json({ message: 'Test successful', body: req.body});
+});
+
 //Routes
 app.get ('/', (req, res) => { res.send('Welcome to the Parkway API'); });
 app.use('/users', userRoutes);
@@ -70,7 +76,7 @@ app.use('/songs', songRoutes);
 app.use('/events', eventRoutes);
 app.use('/eventCategories', eventCategoryRoutes);
 app.use('/uploads', uploadRoutes);
-app.use('/health', healhRoutes);
+app.use('/health', healthRoutes);
 app.use('/developer', developerRoutes);
 app.use('/applicationclaims', applicationClaimsRoutes);
 app.use('/organizations', organizationRoutes);

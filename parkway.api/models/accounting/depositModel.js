@@ -28,6 +28,11 @@ const depositSchema = new mongoose.Schema({
         enum: Object.values(DepositStatus),
         default: DepositStatus.UNDEPOSITED
     },
+    responsiblePartyProfileId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Profile',
+        required: true
+    },
     statusDate: {
         type: Date,
         required: true
