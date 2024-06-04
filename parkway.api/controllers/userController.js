@@ -31,6 +31,8 @@ const loginUser = async (req, res, next) => {
         let activeUser = await User.findOne({email}).populate('applicationClaims');
         if (!activeUser) { throw new appError.UserDoesNotExist('loginUser') } 
 
+        console.log({message: `${email} attempting to log in.`})
+
         let validUserOrganizationPair = false;
         for(let i = 0; i < activeUser.organizations.length; i++){
             if(activeUser.organizations[i].organizationId.toString() === organizationId){
@@ -54,6 +56,7 @@ const loginUser = async (req, res, next) => {
         }
 
         const token = createToken(activeUser);
+        console.log({message: `${email} logged in.`})
         return res.status(200).json({email: email, token: token, message: 'No profile found'});
     } catch (error) {
         next(error);

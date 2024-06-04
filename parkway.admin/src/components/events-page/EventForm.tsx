@@ -185,6 +185,8 @@ const EventForm = ({
 
   const isCalendarAdmin = hasClaim('calendarManagement');
 
+  const isCalendarAdmin = hasClaim('calendarManagement');
+
   const handleSave = (values: EventFormFields) => {
     const { startDate, startTime, endDate, endTime, allDay, ...remaining } =
       values;
