@@ -15,10 +15,8 @@ parkway-dev.profiles.json
 # misc
 .DS_Store
 .env.local
-.env.development
-.env.development.local
+.env.staging
 .env.production
-.env.production.local
 .env
 
 npm-debug.log*
