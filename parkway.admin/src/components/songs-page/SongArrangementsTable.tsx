@@ -7,13 +7,13 @@ import { BasicDeleteButton } from '../delete-button';
 import { BaseFormFooter } from '../base-data-table-page';
 import UserProfileSelect from '../user-profile-select';
 import { trimStrings } from '../../utilities';
-import { UserNameDisplayById } from '../user-name-display';
+import { UserNameDisplay } from '../user-name-display';
 import { EditOutlined } from '@ant-design/icons';
 
-type SongArrangementsTableProps = {
+interface SongArrangementsTableProps {
   songArrangements: SongArrangement[] | undefined;
   onUpdate: (songArrangements: SongArrangement[]) => void;
-};
+}
 
 type SongArrangementModalItem = SongArrangement & {
   isEditing: boolean;
@@ -31,7 +31,7 @@ const SongArrangementsTable = ({
 
   useEffect(() => {
     onUpdate(data);
-  }, [data]);
+  }, [data, onUpdate]);
 
   useEffect(() => {
     if (arrangementNameRef.current?.input) {
@@ -71,7 +71,7 @@ const SongArrangementsTable = ({
         return;
       }
 
-      const { isEditing, ...newArrangement } = values;
+      const newArrangement = { ...values, isEditing: false };
 
       setData((prev) => [...prev, newArrangement]);
       setIsModalOpen(false);
@@ -101,7 +101,7 @@ const SongArrangementsTable = ({
         setIsModalOpen(true);
       }
     },
-    [data]
+    [data, modalForm]
   );
 
   const columns: OrderedColumnsType<SongArrangement> = useMemo(
@@ -118,7 +118,10 @@ const SongArrangementsTable = ({
             <Button onClick={() => handleEdit(value)} size="small">
               <EditOutlined />
             </Button>
-            <BasicDeleteButton onDelete={() => handleDelete(value)} isIconButton />
+            <BasicDeleteButton
+              onDelete={() => handleDelete(value)}
+              isIconButton
+            />
           </div>
         )
       },
@@ -128,7 +131,7 @@ const SongArrangementsTable = ({
         key: 'vocalist',
         displayOrder: 1,
         render: (value: SongArrangement['vocalist']) => (
-          <UserNameDisplayById id={value} />
+          <UserNameDisplay user={value} />
         )
       },
       {
@@ -150,7 +153,7 @@ const SongArrangementsTable = ({
         displayOrder: 4
       }
     ],
-    [handleDelete]
+    [handleDelete, handleEdit]
   );
 
   return (

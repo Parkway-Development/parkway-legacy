@@ -24,11 +24,12 @@ import {
   UsersApiType,
   VendorsApiType
 } from '../api';
+import { QueryClient } from '@tanstack/react-query';
 
-export type GenericResponse = Promise<AxiosResponse<any, any>>;
+export type GenericResponse = Promise<AxiosResponse<unknown, unknown>>;
 export type TypedResponse<T> = Promise<Omit<AxiosResponse<T>, 'config'>>;
 
-export type BaseApiTypes = {
+export interface BaseApiTypes {
   accountsApi: AccountsApiType;
   assetsApi: AssetsApiType;
   contributionsApi: ContributionsApiType;
@@ -39,7 +40,7 @@ export type BaseApiTypes = {
   teamsApi: TeamsApiType;
   usersApi: UsersApiType;
   vendorsApi: VendorsApiType;
-};
+}
 
 export type ApiType = BaseApiTypes & {
   formatError: (error: Error | null) => string;
@@ -60,9 +61,16 @@ export type QueryType =
   | 'vendors';
 
 export const buildQueryKey = (queryType: QueryType, id?: string) => {
-  const result: any[] = [queryType];
+  const result: unknown[] = [queryType];
   if (id) result.push({ _id: id });
   return result;
+};
+
+export const invalidateQueries = (
+  queryClient: QueryClient,
+  queryType: QueryType
+) => {
+  return queryClient.invalidateQueries({ queryKey: [queryType] });
 };
 
 const createInstance = (token: string | undefined) =>

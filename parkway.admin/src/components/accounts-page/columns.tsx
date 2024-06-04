@@ -1,13 +1,17 @@
 import { Account } from '../../types';
 import { OrderedColumnsType } from '../../hooks/useColumns.tsx';
-import MoneyDisplay from '../money-display';
+import { Link } from 'react-router-dom';
+import UserNameDisplay from '../user-name-display/UserNameDisplay.tsx';
 
 export const accountColumns: OrderedColumnsType<Account> = [
   {
     title: 'Name',
     dataIndex: 'name',
     key: 'name',
-    displayOrder: 1
+    displayOrder: 1,
+    render: (value: Account['name'], account) => (
+      <Link to={`/accounts/${account._id}`}>{value}</Link>
+    )
   },
   {
     title: 'Description',
@@ -16,26 +20,44 @@ export const accountColumns: OrderedColumnsType<Account> = [
     displayOrder: 2
   },
   {
-    title: 'Target Amount',
-    dataIndex: 'targetAmount',
-    align: 'right',
-    key: 'targetAmount',
-    displayOrder: 3,
-    render: (value: Account['targetAmount']) => <MoneyDisplay money={value} />
+    title: 'Type',
+    dataIndex: 'type',
+    key: 'type',
+    displayOrder: 3
   },
   {
-    title: 'Current Amount',
-    dataIndex: 'currentAmount',
-    key: 'currentAmount',
-    align: 'right',
-    displayOrder: 4,
-    render: (value: Account['currentAmount']) => <MoneyDisplay money={value} />
+    title: 'Sub Type',
+    dataIndex: 'subtype',
+    key: 'subtype',
+    displayOrder: 4
+  },
+  {
+    title: 'Parent',
+    dataIndex: 'parent',
+    key: 'parent',
+    displayOrder: 5,
+    render: (value: Account['parent']) =>
+      value ? <Link to={`/accounts/${value._id}`}>{value.name}</Link> : null
+  },
+  {
+    title: 'Children',
+    dataIndex: 'children',
+    key: 'children',
+    displayOrder: 6,
+    render: (value: Account['children']) => value?.length ?? 0
+  },
+  {
+    title: 'Custodian',
+    dataIndex: 'custodian',
+    key: 'custodian',
+    displayOrder: 7,
+    render: (value: Account['custodian']) => <UserNameDisplay user={value} />
   },
   {
     title: 'Notes',
     dataIndex: 'notes',
     key: 'notes',
-    displayOrder: 5,
+    displayOrder: 8,
     render: (value: Account['notes']) => value?.length ?? 0
   }
 ];

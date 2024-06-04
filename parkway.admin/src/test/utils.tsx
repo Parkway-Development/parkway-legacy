@@ -110,14 +110,28 @@ export const mockApi = (
       joinProfileAndUser: vi.fn(),
       login: vi.fn(),
       signup: vi.fn(),
+      getAllLimitedProfile: vi.fn(),
+      requestPasswordReset: vi.fn(),
+      passwordReset: vi.fn(),
       ...usersApi
     },
-    accountsApi: mockBaseApi<Account>(accountsApi),
+    accountsApi: {
+      ...mockBaseApi<Account>(accountsApi),
+      updateCustodian: vi.fn(),
+      addParent: vi.fn(),
+      addChildren: vi.fn()
+    },
     assetsApi: mockBaseApi<Asset>(assetsApi),
     contributionsApi: mockBaseApi<Contribution>(contributionsApi),
     enumsApi: mockBaseApi<Enum>(enumsApi),
     eventCategoriesApi: mockBaseApi<EventCategory>(eventCategoriesApi),
-    eventsApi: mockBaseApi<Event>(eventsApi),
+    eventsApi: {
+      ...mockBaseApi<Event>(eventsApi),
+      addMessage: vi.fn(),
+      reject: vi.fn(),
+      approve: vi.fn(),
+      deleteBySchedule: vi.fn()
+    },
     songsApi: mockBaseApi<Song>(songsApi),
     teamsApi: mockBaseApi<Team>(teamsApi),
     generalApi: {
@@ -136,7 +150,9 @@ type ExtractReturnType<
   T,
   K1 extends keyof T,
   K2 extends keyof T[K1]
-> = T[K1][K2] extends (...args: any[]) => any ? ReturnType<T[K1][K2]> : never;
+> = T[K1][K2] extends (...args: unknown[]) => unknown
+  ? ReturnType<T[K1][K2]>
+  : never;
 
 const buildResolvedMock = <
   K extends keyof ApiType,
@@ -147,6 +163,7 @@ const buildResolvedMock = <
   resolvedValue: ExtractDataType<ExtractReturnType<ApiType, K, K2>>
 ): Mock => {
   const mock = vi.fn<
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     any,
     TypedResponse<ExtractDataType<ExtractReturnType<ApiType, K, K2>>>
   >();
@@ -177,10 +194,10 @@ export const buildMocks = <
   mocks.forEach(([key, key2, data]) => {
     // noinspection SuspiciousTypeOfGuard
     if (typeof data === 'string') {
-      // @ts-ignore
+      // @ts-expect-error required for mocking
       overrides[key][key2] = vi.fn().mockRejectedValue({ message: data });
     } else {
-      // @ts-ignore
+      // @ts-expect-error required for mocking
       overrides[key][key2] = buildResolvedMock(key, key2, data);
     }
   });

@@ -1,52 +1,47 @@
 import { Contribution } from '../../types';
 import { OrderedColumnsType } from '../../hooks/useColumns.tsx';
-import { UserNameDisplayById } from '../user-name-display';
-import { LockOutlined } from '@ant-design/icons';
+import { UserNameDisplay } from '../user-name-display';
 import DateDisplay from '../date-display';
 import MoneyDisplay from '../money-display';
 
 export const contributionColumns: OrderedColumnsType<Contribution> = [
   {
-    title: 'Total',
-    dataIndex: 'totalAmount',
-    key: 'totalAmount',
+    title: 'Gross',
+    dataIndex: 'gross',
+    key: 'gross',
     align: 'right',
     displayOrder: 1,
-    render: (value: Contribution['totalAmount']) => (
-      <MoneyDisplay money={value} />
-    )
+    render: (value: Contribution['gross']) => <MoneyDisplay money={value} />
+  },
+  {
+    title: 'Fees',
+    dataIndex: 'fees',
+    key: 'fees',
+    align: 'right',
+    displayOrder: 2,
+    render: (value: Contribution['fees']) => <MoneyDisplay money={value} />
+  },
+  {
+    title: 'Net',
+    dataIndex: 'net',
+    key: 'net',
+    align: 'right',
+    displayOrder: 3,
+    render: (value: Contribution['net']) => <MoneyDisplay money={value} />
   },
   {
     title: 'Transaction Date',
     dataIndex: 'transactionDate',
     key: 'transactionDate',
-    displayOrder: 2,
+    displayOrder: 4,
     render: (value: Contribution['transactionDate']) => (
       <DateDisplay date={value} />
     )
   },
   {
-    title: 'Deposit Date',
-    dataIndex: 'depositDate',
-    key: 'depositDate',
-    displayOrder: 3,
-    render: (value: Contribution['depositDate']) => <DateDisplay date={value} />
-  },
-  {
-    title: 'Locked',
-    dataIndex: 'locked',
-    align: 'center',
-    key: 'locked',
-    displayOrder: 4,
-    render: (value: Contribution['locked']) => {
-      if (!value) return undefined;
-      return <LockOutlined />;
-    }
-  },
-  {
-    title: 'Deposit Batch Id',
-    dataIndex: 'depositBatchId',
-    key: 'depositBatchId',
+    title: 'Deposit Id',
+    dataIndex: 'depositId',
+    key: 'depositId',
     displayOrder: 5
   },
   {
@@ -68,7 +63,7 @@ export const contributionColumns: OrderedColumnsType<Contribution> = [
     width: 200,
     dataIndex: 'profile',
     render: (value: Contribution['profile']) => (
-      <UserNameDisplayById id={value} />
+      <UserNameDisplay user={value} />
     ),
     key: 'profile',
     displayOrder: 8

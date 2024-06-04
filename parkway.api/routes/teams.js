@@ -2,26 +2,18 @@ const express = require('express');
 const router = express.Router();
 const {
     addTeam,
-    getAll,
-    getById,
-    getByName,
-    updateTeam,
-    deleteTeam,
-    addLeader,
-    removeLeader,
-    addMembers,
-    removeMembers
+    getAllTeams,
+    getTeamById,
+    getTeamByName,
+    updateTeamById,
+    deleteTeamById
 } = require('../controllers/teamController');
 const { addNotFoundHandler, configureBaseApiRoutes } = require("./baseApiRouter");
 
-configureBaseApiRoutes(router, addTeam, getAll, getById, updateTeam, deleteTeam);
+configureBaseApiRoutes(router, addTeam, getAllTeams, getTeamById, updateTeamById, deleteTeamById);
 
 //add additional routes here
-router.get('/name/:name', getByName)
-router.post('/leader/add/:id', addLeader)
-router.post('/leader/remove/:id', removeLeader)
-router.post('/members/add/:id', addMembers)
-router.post('/members/remove/:id', removeMembers)
+router.get('/name/:name', getTeamByName);
 
 addNotFoundHandler(router);
 module.exports = router;

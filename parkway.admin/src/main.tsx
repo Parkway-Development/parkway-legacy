@@ -72,6 +72,9 @@ import {
 } from './components/enums-page';
 import ClaimRoute from './components/claim-route/ClaimRoute.tsx';
 import { isAxiosError } from 'axios';
+import ResetPasswordPage from './components/reset-password-page';
+import ForgotPasswordPage from './components/forgot-password-page';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 const MAX_RETRIES = 6;
 const HTTP_STATUS_TO_NOT_RETRY = [400, 401, 403, 404];
@@ -101,6 +104,8 @@ createRoot(document.getElementById('root')!).render(
           <Routes>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
+            <Route path="/forgot" element={<ForgotPasswordPage />} />
+            <Route path="/reset/:resetToken" element={<ResetPasswordPage />} />
             <Route
               path="/"
               element={
@@ -192,6 +197,7 @@ createRoot(document.getElementById('root')!).render(
               <Route path="*" element={<NotFoundPage />} />
             </Route>
           </Routes>
+          <ReactQueryDevtools initialIsOpen={false} />
         </QueryClientProvider>
       </AuthProvider>
     </BrowserRouter>

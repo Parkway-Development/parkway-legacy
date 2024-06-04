@@ -1,59 +1,54 @@
 const jwt = require('jsonwebtoken');
+const User = require('../models/userModel');
+const appError = require('../applicationErrors');
 
-const authenticateToken = (req, res, next) => {
+
+const authenticateToken = async (req, res, next) => {
     const authHeader = req.header('Authorization');
-    const token = authHeader && authHeader.split(' ')[1]
+    const token = authHeader && authHeader.split(' ')[1];
 
-    if (token ) {
+    if (token) {
         try {
-            req.user = jwt.verify(token, process.env.JWT_SECRET)
-        }catch (err) {
+            const decoded = jwt.verify(token, process.env.JWT_SECRET);
+            const user = await User.findById(decoded._id).populate('organizations.organizationId');
+            if (!user) {
+                return next(new appError.UserDoesNotExist('authenticateToken'));
+            }
+            req.user = user;
+            next();
+        } catch (err) {
             return res.status(403).send('The token is invalid.');
         }
-    }
-    else {
+    } else {
         return res.status(401).send('Access denied.');
     }
-    
-    next();
 };
 
-const requireClaim = (req, res, requiredClaim) => {
+const requireClaim = (req, res, next, requiredClaim) => {
     const authHeader = req.header('Authorization');
-    const token = authHeader && authHeader.split(' ')[1]
+    const token = authHeader && authHeader.split(' ')[1];
 
     if (!token) {
-        res.status(401).send('Access denied. No token provided.');
+        return next(new appError.AccessDenied('requireClaim'));
     } else {
         try {
             const payload = jwt.verify(token, process.env.JWT_SECRET);
-            req.user = payload._id;
+            req.userId = payload._id;
 
             if (requiredClaim) {
                 const claimValue = payload.claims ? payload.claims[requiredClaim] : undefined;
 
                 if (claimValue !== true && claimValue !== 'true') {
-                    res.status(403).send('Access denied. Claim not found.');
-                    return false;
+                    return next(new appError.AccessDenied('requireClaim'));
                 }
             }
 
-            return true;
+            next();
         } catch (error) {
-            res.status(401).send('Invalid token.');
+            return res.status(401).send('Invalid token.');
         }
     }
-
-    return false;
 };
-
-// const requireAuthorization = (router) => {
-//     router.use((req, res, next) => {
-//         if (authenticateToken(req, res)) {
-//             next();
-//         }
-//     });
-// };
 
 module.exports = {
     authenticateToken,

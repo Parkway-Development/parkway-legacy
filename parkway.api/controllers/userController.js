@@ -1,33 +1,49 @@
 const User = require('../models/userModel')
 const Profile = require('../models/profileModel')
+const Organization = require('../models/organizationModel')
 const ApplicationClaim = require('../models/applicationClaimModel')
 const bcrypt = require('bcrypt');
 const removeSensitiveData = require('../helpers/objectSanitizer');
 const crypto = require('crypto');
 const { sendPasswordResetEmail } = require('../helpers/sendgdrid');
+const appError = require('../applicationErrors');
 const { validatePassword, 
     hashPassword, 
     validateEmail,
     createToken,
     generatePasswordResetToken
- } = require('../helpers/accountValidation');
+ } = require('../helpers/userValidation');
 
-const loginUser = async (req, res) => {
-    const {email, password} = req.body
+ //  manually setting the parkway org id here.  this needs to be pulled when a user is created or logs in
+ //  This will probably be picked up by the url of the request at signup or login using a route hint like /?=parkway or something like that.  TBD.
+ const parkwayId = '6655f7bfb4b37e6e6a743b65'  
 
+const loginUser = async (req, res, next) => {
     try {
-        if(!email || !password) {
-            throw Error('All fields are required.')
-        }
+        if(!req.body.organizationId) { req.body.organizationId = parkwayId }  //TODO: This needs to be set to the organization that is passed in the request
+
+        const {email, password, organizationId} = req.body
+        if(!email || !password || !organizationId ) { throw new appError.MissingRequiredParameter('signupUser','Email, Password, and Organization Id are required.') }
     
-        const activeUser = await User.findOne({email})
-            .populate('applicationClaims');
+        const organization = await Organization.findById(organizationId);
+        if(!organization) { throw new appError.OrganizationDoesNotExist('loginUser') }
+
+        let activeUser = await User.findOne({email}).populate('applicationClaims');
+        if (!activeUser) { throw new appError.UserDoesNotExist('loginUser') } 
+
+        console.log({message: `${email} attempting to log in.`})
+
+        let validUserOrganizationPair = false;
+        for(let i = 0; i < activeUser.organizations.length; i++){
+            if(activeUser.organizations[i].organizationId.toString() === organizationId){
+                validUserOrganizationPair = true;
+                activeUser.organizations[i].isActive = true;
+            }
+        }
+        if(!validUserOrganizationPair) { throw new appError.UserDoesNotBelongToOrganization('loginUser') }
 
         const authenticate = await bcrypt.compare(password, activeUser.password)
-
-        if(!authenticate) {
-            throw Error('Invalid credentials.')
-        }
+        if(!authenticate) { throw new appError.FailedLogin('loginUser') }
 
         const profile = await Profile.findOne({email})
             .populate('teams')
@@ -40,28 +56,36 @@ const loginUser = async (req, res) => {
         }
 
         const token = createToken(activeUser);
+        console.log({message: `${email} logged in.`})
         return res.status(200).json({email: email, token: token, message: 'No profile found'});
     } catch (error) {
-        return res.status(400).json({error: error.message})
+        next(error);
+        console.log({ method: error.method, message: error.message });
     }
 }
 
-const signupUser = async (req, res) => {
-    const {email, password} = req.body
+const signupUser = async (req, res, next) => {
     try {
-        if(!email || !password) { throw Error('All fields are required.') }
+        if(!req.body.organizationId) { req.body.organizationId = parkwayId }  //TODO: This needs to be set to the organization that is passed in the request
+
+        const {email, password, organizationId} = req.body
+        if(!email || !password || !organizationId ) { throw new appError.MissingRequiredParameter('signupUser','Email, Password, and Organization Id are required.') }
     
-        if(!validateEmail(email)) { throw Error('Invalid email') }
+        if(!validateEmail(email)) { throw new appError.Validation('signupUser', 'Invalid email') }
     
-        const exists = await User.findOne({email})
-        if(exists) { throw Error('Email already exists') }
+        const userExists = await User.findOne({email})
+        if(userExists) { throw new appError.DuplicateEmail('signupUser') }
     
-        const isValid = validatePassword(password)
-        if (!isValid) { throw Error('Password is not strong enough'); }
+        const passwordIsValid = validatePassword(password)
+        if (!passwordIsValid) { throw new appError.PasswordStrength('signupUser'); }
+
+        const organization = await Organization.findById(organizationId);
+        if(!organization) { throw new appError.OrganizationDoesNotExist('signupUser') }
 
         let newUser = new User({
             email: email,
             password: await hashPassword(password),
+            organizations: [{ organizationId: parkwayId, isDefault: true, isActive: true }],  
             applicationClaims: [{ name: 'role', value: 'user' }]  // Manually setting the claim here
         });
 
@@ -79,93 +103,94 @@ const signupUser = async (req, res) => {
         return res.status(200).json({email: email, token: token, message: 'No profile found'});
     
     } catch (error) {
-    
-        return res.status(400).json({error: error.message})
-    
+        next(error);
+        console.log({ method: error.method, message: error.message });
     }
 }
 
-const signupWixUser = async (req, res) => {
-    
-    const wixUser = req.body;
-    return res.status(200).json({message: 'Wix User Signup'})
-}
-
-const getAll = async (req, res) => {
+const getAllUsers = async (req, res, next) => {
     try {
         const users = await User.find({});
 
-        if(users.length === 0){
-            return res.status(404).json({message: "No users found."});
-        }
+        if(users.length === 0){ return res.status(204).json({ message: 'No users found.' }) }
 
         return res.status(200).json(removeSensitiveData(users));
+
     } catch (error) {
-        return res.status(400).json({error: error.message});
+        next(error);
+        console.log({ method: error.method, message: error.message });
     }
 };
 
-const getById = async (req, res) => {
-    const { id } = req.params;
-    const user = await User.findById(id)
-    if(!user){
-        return res.status(404).json({message: "No such user found."})
+const getUserById = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        if(!id) { throw new appError.MissingId('getUserById') }
+        if(!mongoose.Types.ObjectId.isValid(id)) { throw new appError.InvalidId('getUserById') }
+    
+        const user = await User.findById(id)
+        if(!user){ return res.status(204).json({ message: 'No user found.' }) }
+
+        return res.status(200).json(removeSensitiveData(user))
+    
+    } catch (error) {
+        next(error);
+        console.log({ method: error.method, message: error.message });
     }
-    return res.status(200).json(removeSensitiveData(user))
-}
+};
 
-const getByEmail = async (req, res) => {
-    const { email } = req.params;
-    const user = await User.findOne({email})
-    if(!user){
-        return res.status(404).json({message: "No such user found."})
+const getUserByEmail = async (req, res) => {
+    try {
+        const { email } = req.params;
+        if(!email) { throw new appError.MissingRequiredParameter('getUserByEmail') }
+
+        const user = await User.findOne({email})
+        if(!user){ return res.status(204).json({ message: 'No user found.' }) }
+    
+        return res.status(200).json(removeSensitiveData(user))
+    
+    } catch (error) {
+        next(error);
+        console.log({ method: error.method, message: error.message });
     }
+};
 
-    return res.status(200).json(removeSensitiveData(user))
-}
-
-const addApplicationClaim = async (req, res) => {
+const addApplicationClaimToUser = async (req, res, next) => {
     try{
         const { id } = req.params;
-        const { name, value } = req.body
-        
-        console.log('id: ', id);
-        console.log('name: ', name);
-        console.log('value: ', value);
+        if(!id) { throw new appError.MissingId('addApplicationClaimToUser') }
+        if(!mongoose.Types.ObjectId.isValid(id)) { throw new appError.InvalidId('addApplicationClaimToUser') }
 
-        // is it a legit claim
+        const { name, value } = req.body
+        if(!name || !value) { throw new appError.MissingRequiredParameter('addApplicationClaimToUser') }
+        
         const applicationClaim = await ApplicationClaim.findOne({name: name});
-        if(!applicationClaim){
-            return res.status(404).json({message: "No such application claim found."})
-        }
+        if(!applicationClaim){ return res.status(204).json({ message: 'No application claim found.' }) }
         
         const user = await User.findById(id);
-        if(!user){
-            return res.status(404).json({message: "No such user found."})
-        }
+        if(!user){ return res.status(204).json({ message: 'No user found.' }) }
 
         const valueExists = applicationClaim.values.includes(value);
-        if(!valueExists){
-            return res.status(400).json({message: "Invalid value for the application claim."})
-        }
+        if(!valueExists){ throw new appError.InvalidClaimValue('addApplicationClaimToUser') }
         
         user.applicationClaims.push({ name, value });
         await user.save({new: true});
 
         return res.status(200).json(removeSensitiveData(user));
     } catch (error) {
-        return res.status(400).json({message: error.message});
+        next(error);
+        console.log({ method: error.method, message: error.message });
     }
-}
+};
 
-const requestPasswordReset = async (req, res) => {
+const requestPasswordReset = async (req, res, next) => {
 
     try {
         const toEmail = req.body.email;
-        if (!toEmail) { throw new Error('Email is required.'); }
+        if (!toEmail) { throw new appError.MissingRequiredParameter('requestPasswordReset'); }
 
         const user = await User.findOne({ email: toEmail});
-        if (!user) { throw new Error('There was a problem resetting your password.'); }
+        if (!user) { throw new appError.UserDoesNotExist('requestPasswordReset'); }
 
         const resetToken = await generatePasswordResetToken(user);
 
@@ -174,37 +199,32 @@ const requestPasswordReset = async (req, res) => {
 
         res.status(200).json({ message: 'If we found an account that matched your email, instructions on resetting your password were forwarded to that address.' });
     } catch (error) {
-        console.log('Error: ', error.message)
-        res.status(400).json({ message: 'Check the logs for any issues.'});
+        next(error);
+        console.log({ method: error.method, message: error.message });
     }
 };
 
-const passwordReset = async (req, res) => {
-    const { token, email, password } = req.body;
+const passwordReset = async (req, res, next) => {
 
     try {
-        const user = await User.findOne({ email }).select('+resetPasswordToken +resetPasswordExpires');
+        const { resetToken, password } = req.body;
+        if (!resetToken || !password) { throw new appError.MissingRequiredParameter('passwordReset'); }
 
-        if (!user) {
-            return res.status(404).json({ error: 'User not found. Please contact support.' });
-        }
+        const user = await User.findOne({ resetToken });
+        if (!user) { throw new appError.UserDoesNotExist('passwordReset'); }
 
-        const tokenIsValid = await bcrypt.compare(token, user.resetPasswordToken);
-        const tokenNotExpired = user.resetPasswordExpires > Date.now();
-
-        if (!tokenIsValid || !tokenNotExpired) {
-            const errorMessage = !tokenIsValid ? 'Invalid reset token.' : 'Reset token has expired.';
-            return res.status(400).json({ error: errorMessage });
-        }
+        const valid = user.resetTokenExpiration > Date.now();
+        if (!valid) { throw new appError.PasswordResetTokenExpired('passwordReset'); }
 
         user.password = await hashPassword(password);
-        user.resetPasswordToken = undefined;
-        user.resetPasswordExpires = undefined;
+        user.resetToken = undefined;
+        user.resetTokenExpiration = undefined;
         await user.save();
-
+        
         res.status(200).json({ message: 'Password successfully reset.' });
     } catch (error) {
-        res.status(500).json({ error: 'Internal server error. Please try again later.' });
+        next(error);
+        console.log({ method: error.method, message: error.message });
     }
 };
 
@@ -213,9 +233,8 @@ module.exports = {
     loginUser,
     requestPasswordReset,
     passwordReset,
-    getAll,
-    getById,
-    getByEmail,
-    signupWixUser,
-    addApplicationClaim
+    getAllUsers,
+    getUserById,
+    getUserByEmail,
+    addApplicationClaimToUser
 }

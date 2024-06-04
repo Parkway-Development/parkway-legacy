@@ -39,11 +39,7 @@ const BaseDisplayPage = <T extends BaseEntity>({
     );
   }
 
-  if (!id) {
-    return <Alert type="error" message="Invalid id" />;
-  }
-
-  const queryFn = buildQueryFn(baseApiEntity, id);
+  const queryFn = buildQueryFn(baseApiEntity, id ?? 'undefined');
   const { delete: deletefn } = baseApiEntity;
 
   const {
@@ -51,14 +47,18 @@ const BaseDisplayPage = <T extends BaseEntity>({
     data: response,
     error
   } = useQuery<
-    Omit<AxiosResponse<T, any>, 'config'>,
+    Omit<AxiosResponse<T, unknown>, 'config'>,
     Error,
-    Omit<AxiosResponse<T, any>, 'config'>,
-    any[]
+    Omit<AxiosResponse<T, unknown>, 'config'>,
+    unknown[]
   >({
     queryFn,
     queryKey: buildQueryKey(queryKeyProp, id)
   });
+
+  if (!id) {
+    return <Alert type="error" message="Invalid id" />;
+  }
 
   if (error) {
     return <Alert type="error" message={formatError(error)} />;

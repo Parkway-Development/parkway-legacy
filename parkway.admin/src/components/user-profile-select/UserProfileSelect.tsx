@@ -3,33 +3,38 @@ import { useQuery } from '@tanstack/react-query';
 import { SelectProps } from 'antd';
 import { useEffect, useState } from 'react';
 import { BaseSelect, BaseSelectionProps } from '../base-select';
+import { DefaultOptionType } from 'antd/lib/select/index';
 
-type UserProfileSelectProps = Omit<BaseSelectionProps, 'value'> & {
+type UserProfileSelectProps<T> = Omit<BaseSelectionProps<T>, 'value'> & {
   excludedUserId?: string;
-  initialValue?: BaseSelectionProps['value'];
+  initialValue?: T;
 };
 
-const UserProfileSelect = ({
-  isMultiSelect = false,
+const UserProfileSelect = <T,>({
   onChange,
   excludedUserId,
-  initialValue
-}: UserProfileSelectProps) => {
-  const [value, setValue] = useState<string | string[] | undefined>(
-    initialValue
-  );
+  initialValue,
+  ...props
+}: UserProfileSelectProps<T>) => {
+  const [value, setValue] = useState<T | undefined>(initialValue);
 
   const {
-    usersApi: { getAll }
+    usersApi: { getAllLimitedProfile }
   } = useApi();
 
   const { isPending, data: response } = useQuery({
-    queryFn: getAll,
+    queryFn: getAllLimitedProfile,
     queryKey: buildQueryKey('profiles')
   });
 
-  const handleOnChange = (changeValue: any) => {
-    onChange(changeValue);
+  const handleOnChange = (
+    changeValue: T,
+    option: DefaultOptionType | DefaultOptionType[]
+  ) => {
+    if (onChange) {
+      onChange(changeValue, option);
+    }
+
     setValue(changeValue);
   };
 
@@ -40,19 +45,19 @@ const UserProfileSelect = ({
   useEffect(() => {
     if (!excludedUserId) return;
 
-    if (isMultiSelect) {
-      setValue((prev) =>
-        prev && Array.isArray(prev) && prev.includes(excludedUserId)
-          ? prev.filter((x) => x !== excludedUserId)
-          : prev
-      );
-    } else {
-      setValue((prev) =>
-        prev && !Array.isArray(prev) && prev === excludedUserId
-          ? undefined
-          : prev
-      );
-    }
+    setValue((prev) => {
+      if (!prev) {
+        return prev;
+      }
+
+      if (!Array.isArray(prev) && prev === excludedUserId) {
+        return undefined;
+      } else if (Array.isArray(prev) && prev.includes(excludedUserId)) {
+        return prev.filter((x) => x !== excludedUserId) as T;
+      } else {
+        return prev;
+      }
+    });
   }, [excludedUserId]);
 
   let options: SelectProps['options'] = [];
@@ -71,12 +76,12 @@ const UserProfileSelect = ({
   }
 
   return (
-    <BaseSelect
-      isMultiSelect={isMultiSelect}
+    <BaseSelect<T>
+      {...props}
       onChange={handleOnChange}
       loading={isPending}
-      options={options}
       value={value}
+      options={options}
     />
   );
 };

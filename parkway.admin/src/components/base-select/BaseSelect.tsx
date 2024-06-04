@@ -1,32 +1,24 @@
 import { Select, SelectProps } from 'antd';
 
-type BaseSelection<T> = Pick<SelectProps, 'options' | 'value' | 'loading'> & {
-  onChange: (values: T | undefined) => void;
-};
-
-export type SingleSelectionProps = BaseSelection<string> & {
+export type SingleSelectionProps<T> = SelectProps<T> & {
   isMultiSelect?: false;
 };
 
-export type MultipleSelectionProps = BaseSelection<string[]> & {
+export type MultipleSelectionProps<T> = SelectProps<T> & {
   isMultiSelect: true;
 };
 
-export type BaseSelectionProps = SingleSelectionProps | MultipleSelectionProps;
+export type BaseSelectionProps<T> =
+  | SingleSelectionProps<T>
+  | MultipleSelectionProps<T>;
 
-export const BaseSelect = ({
+export const BaseSelect = <T,>({
   isMultiSelect = false,
-  onChange,
   ...props
-}: BaseSelectionProps) => {
-  const handleOnChange = (changeValue: any) => {
-    onChange(changeValue);
-  };
-
+}: BaseSelectionProps<T>) => {
   return (
-    <Select
+    <Select<T>
       mode={isMultiSelect ? 'multiple' : undefined}
-      onChange={handleOnChange}
       optionFilterProp="label"
       allowClear
       showSearch

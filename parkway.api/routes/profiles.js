@@ -2,23 +2,26 @@ const express = require('express');
 const router = express.Router();
 const {
     addProfile,
-    getAll,
-    getById,
-    getByLastName,
-    getByMobileNumber,
-    getByHomeNumber,
+    getAllProfiles,
+    getProfileById,
+    getProfilesByLastName,
+    getProfilesByMobilePhone,
+    getProfilesByHomePhone,
     updateProfile,
     deleteProfile,
-    connectUserAndProfile
+    connectUserAndProfile,
+    getAllLimitedProfiles
 } = require('../controllers/profileController')
 const { addNotFoundHandler, configureBaseApiRoutes } = require("./baseApiRouter");
 
-configureBaseApiRoutes(router, addProfile, getAll, getById, updateProfile, deleteProfile);
+router.get('/limited', getAllLimitedProfiles)
+
+configureBaseApiRoutes(router, addProfile, getAllProfiles, getProfileById, updateProfile, deleteProfile);
 
 //add additional routes here
-router.get('/lastname/:lastName', getByLastName)
-router.get('/mobilenumber/:mobileNumber', getByMobileNumber)
-router.get('/homenumber/:homeNumber', getByHomeNumber)
+router.get('/lastname/:lastName', getProfilesByLastName)
+router.get('/mobilephone/:mobilePhone', getProfilesByMobilePhone)
+router.get('/homephone/:homePhone', getProfilesByHomePhone)
 router.post('/join/:profileId', connectUserAndProfile)
 
 addNotFoundHandler(router);

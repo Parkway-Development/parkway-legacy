@@ -25,7 +25,7 @@ type BaseDataTableListProps<T extends BaseEntity> = Pick<
   'responsiveCardRenderer'
 > & {
   queryFn: () => TypedResponse<T[]>;
-  queryKey: any[];
+  queryKey: unknown[];
   columns: OrderedColumnsType<T>;
 };
 
@@ -91,6 +91,10 @@ const BaseDataTableList = <T extends BaseEntity>({
       size="small"
       bordered
       scroll={{ x: 'auto' }}
+      expandable={{
+        expandIcon: () => null,
+        expandRowByClick: false
+      }}
     />
   ) : (
     <ResponsiveTable
@@ -114,12 +118,16 @@ type BaseApiDataTablePageProps<T extends BaseEntity> = SharedBasePageProps &
     'title' | 'addLinkTitle' | 'responsiveCardRenderer'
   > & {
     columns: OrderedColumnsType<T>;
+    allowDelete?: boolean;
+    allowEdit?: boolean;
   };
 
 export const BaseApiDataTablePage = <T extends BaseEntity>({
   queryKey: queryKeyProp,
   columns: columnsProp,
   baseApiType,
+  allowEdit = true,
+  allowDelete = true,
   ...props
 }: BaseApiDataTablePageProps<T>) => {
   const queryClient = useQueryClient();
@@ -146,8 +154,8 @@ export const BaseApiDataTablePage = <T extends BaseEntity>({
   const { columns } = useColumns({
     columns: columnsProp,
     columnType: `${queryKeyProp}Page`,
-    deleteAction,
-    editLink: ({ _id }) => `./${_id}/edit`
+    deleteAction: allowDelete ? deleteAction : undefined,
+    editLink: allowEdit ? ({ _id }) => `./${_id}/edit` : undefined
   });
 
   return (

@@ -1,220 +1,263 @@
 const mongoose = require('mongoose')
 const Profile = require('../models/profileModel')
 const User = require('../models/userModel')
+const appErrors = require('../applicationErrors')
 
-//Search for a pre-existing profile
-const searchForAProfile = async (inboundProfile) => {
-
-    const inProfile = inboundProfile;
-
-    let profile = null;
-    if(inProfile.firstName && inProfile.lastName){ profile = await Profile.findOne({firstName: inProfile.firstName, lastName: inProfile.lastName}) } 
-    else if(inProfile.mobilePhone){ profile = Profile.findOne({mobilePhone: inProfile.mobilePhone}) }
-    else if(inProfile.homePhone){ profile = Profile.findOne({homePhone: inProfile.homePhone}) }
-
-    if(!profile){ return null}
-
-    profile = await Profile.populate(profile, [{ path: 'family' }, { path: 'preferences' }, { path: 'teams' }]);
-    
-    return profile
-}
-
-//Post a profile
-const addProfile = async (req, res) => {
-    const submittedProfile = new Profile(req.body)
-
-    const existingProfile = await searchForAProfile(submittedProfile)
-    if(existingProfile){
-        return res.status(400).json({
-            submittedProfile,
-            existingProfile: existingProfile, 
-            message: "There is a possible matching profile. Please check the details and try again."})
-    }
-
-    const savedProfile = await submittedProfile.save();
-
-    savedProfile = await Profile.populate(savedProfile, [{ path: 'family' }, { path: 'preferences' }, { path: 'teams' }]);
-
-    if(!savedProfile){
-    return res.status(404).json({message: "The save failed."})}
-
-    res.status(200).json(savedProfile)
-}
-
-//Get all profiles
-const getAll = async (req, res) => {
-    const profiles = await Profile.find({})
-        .populate('family')
-        .populate('preferences')
-        .populate('teams')
-        .sort({lastname: 1, firstname: 1});
-    if(!profiles){
-        return res.status(404).json({message: "No profiles were returned."})
-    }
-    res.status(200).json(profiles)
-}
-
-//Get Profile by ID
-const getById = async (req, res) => {
-
-    const { id } = req.params;
-
-    if(!mongoose.Types.ObjectId.isValid(id)){
-        return res.status(404).json({error: 'No such profile.'})
-    }
-    const profile = await Profile.findById(id)
-        .populate('family')
-        .populate('preferences')
-        .populate('teams');
-
-    if(!profile){
-        return res.status(404).json({message: "No such profile found."})
-    }
-        
-    res.status(200).json(profile)
-}
-
-//Get profile by last name
-const getByLastName = async (req, res) => {
-
-    const { lastName } = req.params;
-
-    const profiles = await Profile.find({$text: {$search: lastName}})
-        .populate('family')
-        .populate('preferences')
-        .populate('teams');
-
-    if(profiles.length  === 0){
-        return res.status(404).json({message: "No profiles found."})
-    }
-    res.status(200).json(profiles)
-}
-
-//Get profiles by mobile number
-const getByMobileNumber = async (req, res) => {
-    const { mobileNumber } = req.params;
-    const profiles = await Profile.find({mobileNumber: req.params.mobileNumber})
-        .populate('family')
-        .populate('preferences')
-        .populate('teams');
-
-    if(!profiles){
-        return res.status(404).json({message: "No profiles found."})
-    }
-    res.status(200).json(profiles)
-}
-
-//Get profiles by home number
-const getByHomeNumber = async (req, res) => {
-    const { homeNumber } = req.params;
-    const profiles = await Profile.find({homeNumber: req.params.homeNumber})
-        .populate('family')
-        .populate('preferences')
-        .populate('teams');
-
-    if(!profiles){
-        return res.status(404).json({message: "No profiles found."})
-    }
-    res.status(200).json(profiles)
-}
-
-//Update profile by ID
-const updateProfile = async (req, res) => {
-    try{
-        const { id } = req.params;
-
-        if (!mongoose.Types.ObjectId.isValid(id)) {
-            return res.status(404).json({ error: 'No such profile.' });
-        }
-
-        let profile = await Profile.findOneAndUpdate({ _id: id }, 
-            { ...req.body }, 
-            { new: true }
-        );
-
-        if (profile) {
-            profile = await Profile.populate(profile, [{ path: 'family' }, { path: 'preferences' }, { path: 'teams' }]);
-            return res.status(200).json(profile);
-        } else {
-            return res.status(404).json({ error: "There was a problem updating the profile." });
-        }
-    } catch (error) {
-        console.log(error);
-        return res.status(500).json({ error: "There was a problem updating the profile." });
+const mapToLimitedProfile = (user) => {
+    return {
+        _id: user._id,
+        firstName: user.firstName,
+        middleInitial: user.middleInitial,
+        lastName: user.lastName,
+        nickname: user.nickname
     };
 }
 
-//Delete profile by ID
-const deleteProfile = async (req, res) => {
-    const id = req.params.id;
+const searchForAProfile = async (inboundProfile) => {
+    try{
+        const inProfile = inboundProfile;
+        if(!inboundProfile){ throw new Error("No profile was submitted.") }
 
-    if(!mongoose.Types.ObjectId.isValid(id)){
-        return res.status(404).json({error: 'No such profile.'})
+        let profile = null;
+        if(inProfile.firstName && inProfile.lastName){ profile = await Profile.findOne({firstName: inProfile.firstName, lastName: inProfile.lastName}) } 
+        else if(inProfile.mobilePhone){ profile = Profile.findOne({mobilePhone: inProfile.mobilePhone}) }
+        else if(inProfile.homePhone){ profile = Profile.findOne({homePhone: inProfile.homePhone}) }
+    
+        if(!profile) { return null; }
+
+        profile = await Profile.populate(profile, [{ path: 'family' }, { path: 'preferences' }, { path: 'teams' }]);
+
+        return profile
+
+    } catch (error) {
+        console.log(error);    
+        return res.status(500).json(error) 
     }
-
-    const profile = await Profile.findOneAndDelete({_id: id});
-
-    if(!profile){
-        return res.status(500).json({message: "Something went wrong with the deletion."})
-    }
-
-    res.status(200).json(`The profile for ${profile.firstName + " " + profile.lastName} has been deleted.`)
 }
 
-//Join a profile to a user
+const addProfile = async (req, res) => {
+
+    try {
+        if(!req.body){ throw new Error("No profile was submitted.")}
+        const submittedProfile = new Profile(req.body)
+
+        const existingProfile = await searchForAProfile(submittedProfile)
+        if(existingProfile){ throw new Error("There is a possible matching profile. Please check the details and try again.")} 
+
+        const savedProfile = await submittedProfile.save();
+        if(!savedProfile){ throw new Error("There was a problem saving the profile.")}
+        
+        await Profile.populate(savedProfile, [{ path: 'family' }, { path: 'preferences' }, { path: 'teams' }]);
+
+        return res.status(200).json(savedProfile)
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json(error)
+    }
+}
+
+const getAllProfiles = async (req, res, next) => {
+    try {
+        const populate = req.query.populate;
+        let profiles;
+        if(!populate){ profiles = await Profile.find({}).sort({lastName: 1, firstName: 1}); } 
+        else { profiles = await Profile.find({}).populate('preferences', 'teams').sort({lastName: 1, firstName: 1}); }
+
+        if(!profiles){ return res.status(204).json({message: "No profiles were found."})}
+
+        res.status(200).json(profiles)
+
+    } catch (error) {
+        next(error)
+        console.log({method: error.method, message: error.message});        
+    }
+}
+
+const getAllLimitedProfiles = async (req, res, next) => {
+    try {
+        const profiles = await Profile.find({})
+            .sort({lastname: 1, firstname: 1});
+
+        if(!profiles){ return res.status(204).json({message: 'No profiles were returned.'}) }
+
+        const limitedProfiles = profiles.map(user => mapToLimitedProfile(user));
+
+        res.status(200).json(limitedProfiles);
+
+    } catch (error) {
+        next(error)
+        console.log({method: error.method, message: error.message});        
+    }
+}
+
+const getProfileById = async (req, res, next) => {
+    try {
+        const {id} = req.params;
+        const populate = req.query.populate;
+
+        if(!id){ throw new appErrors.MissingId('getProfileById')}
+        if(!mongoose.Types.ObjectId.isValid(id)){ throw new appErrors.InvalidId('getProfileById')}
+    
+        let profile;
+        if(!populate){ profile = await Profile.findById(id); } 
+        else { profile = await Profile.findById(id).populate('preferences', 'teams'); }
+
+        if(!profile){ return res.status(204).json({message: "No profile was found."}) }
+
+        return res.status(200).json(profile)
+    } catch (error) {
+        next(error)
+        console.log({method: error.method, message: error.message});        
+    }
+}
+
+const getProfilesByLastName = async (req, res, next) => {
+    try {
+        const {lastName} = req.params;
+        const populate = req.query.populate;
+
+        if(!lastName){ throw new appErrors.MissingRequiredParameter('getProfilesByLastName','No last name was submitted')}
+
+        let profiles;
+        if(!populate){ profiles = await Profile.find({$text: {$search: lastName}}); }
+        else { profiles = await Profile.find({$text: {$search: lastName}}).populate('preferences', 'teams'); }
+
+        if(profiles.length  === 0){ return res.status(204).json({message: 'No profiles were found'}) }
+
+        res.status(200).json(profiles)
+        
+    } catch (error) {
+        next(error)
+        console.log({method: error.method, message: error.message});        
+    }
+}
+
+const getProfilesByMobilePhone = async (req, res, next) => {
+    try {
+        const mobilePhone = req.params;
+        const populate = req.query.populate;
+
+        if(!mobilePhone){ throw new appErrors.MissingRequiredParameter('getProfilesByMobilePhone','No mobile phone number was submitted')}
+
+        let profiles;
+        if(!populate){ profiles = await Profile.find({mobilePhone: mobilePhone}); }
+        else { profiles = await Profile.find({mobilePhone: mobilePhone}).populate('preferences', 'teams'); }
+
+        if( profiles.length === 0 ){ return res.status(204).json({message: 'No profiles were found'}) }
+
+        res.status(200).json(profiles)
+    
+    }catch (error) {
+        next(error)
+        console.log({method: error.method, message: error.message});        
+    }
+}
+
+const getProfilesByHomePhone = async (req, res, next) => {
+    try {
+        const homePhone = req.params;
+        const populate = req.query.populate;
+        if(!homePhone){ throw new Error("No home phone number was submitted.") }
+
+        let profiles;
+        if(!populate){ profiles = await Profile.find({homePhone: homePhone}); }
+        else { profiles = await Profile.find({homePhone: homePhone}).populate('preferences', 'teams'); }
+
+        if( profiles.length === 0){ return res.status(204).json({message: 'No profiles were found'}) }
+
+        res.status(200).json(profiles)
+    
+    } catch (error) {
+        next(error)
+        console.log({method: error.method, message: error.message});        
+    }
+}
+
+const updateProfile = async (req, res, next) => {
+    try{
+        const {id} = req.params;
+        const populate = req.query.populate;
+
+        if(!id){ throw new appErrors.MissingId('updateProfile')}
+        if (!mongoose.Types.ObjectId.isValid(id)) { throw new appErrors.InvalidId('updateProfile') }
+
+        let profile;
+        if(!populate){ 
+            profile = await Profile.findOneAndUpdate({ _id: id }, 
+            { ...req.body }, 
+            { new: true });
+        } 
+        else {
+            profile = await Profile.findOneAndUpdate({ _id: id },
+            { ...req.body },
+            { new: true }).populate('preferences', 'teams');
+        }
+
+        if(!profile){ return res.status(204).json({message: "No profile was found."}) }
+
+        return res.status(200).json(profile);
+    } catch (error) {
+        next(error)
+        console.log({method: error.method, message: error.message});        
+    };
+}
+
+const deleteProfile = async (req, res) => {
+    try {
+        const {id} = req.params;
+        if(!id){ throw new appErrors.MissingId('deleteProfile')}
+        if(!mongoose.Types.ObjectId.isValid(id)){ throw new appErrors.InvalidId('deleteProfile')}
+    
+        const profile = await Profile.findOneAndDelete({_id: id});
+    
+        if(!profile){ return res.status(204).json({message: 'No profile was deleted.'}) }
+    
+        res.status(200).json(`The profile for ${profile.firstName} ${profile.lastName} has been deleted.`)
+    
+    } catch (error) {
+        next(error)
+        console.log({method: error.method, message: error.message});        
+    }
+}
+
 const connectUserAndProfile = async (req, res) => {
-
-    const { userId } = req.body;
-    const { profileId } = req.params;
-
-    if(!profileId){
-        return res.status(400).json({error: 'No such profile for: ' + profileId})
-    }
-
-    if(!userId){
-        return res.status(400).json({error: 'Required parameters not supplied in body.'})
-    }
-
-    if(!mongoose.Types.ObjectId.isValid(userId)){
-        return res.status(404).json({error: 'No such user account.'})
-    }
-
-    if(!mongoose.Types.ObjectId.isValid(profileId)){
-        return res.status(404).json({error: 'No such profile.'})
-    }
-
-    //get the User and add the profileId to it
-    let profile = await Profile.findById(profileId);
-    const user = await User.findByIdAndUpdate(userId, {profile: profile}, {new: true});
-
-    if(!user){
-        return res.status(404).json({error: 'There was a problem connecting the user to the profile.  The user object was not returned.'})
-    }
+    try {
+        const { userId } = req.body;
+        const { profileId } = req.params;
+        const populate = req.query.populate;
     
-    //get the Profile and add the userId to it
-    profile = await Profile.findByIdAndUpdate(profileId, {user: user}, {new: true});
-    if(!profile){
-        return res.status(404).json({error: 'There was a problem connecting the profile to the user.  The profile object was not returned.'})
-    }
-
-    profile = await Profile.findById(profile._id).populate('user','family preferences teams').exec()
-
-    const cleanedProfile = profile.toObject();
-    if(cleanedProfile.user){
-        delete cleanedProfile.user.password;
-    }
+        if(!userId){ throw new appErrors.MissingId('connectUserAndProfile', 'Missing user id')}
+        if(!profileId){ throw new appErrors.MissingId('connectUserAndProfile', 'Missing profile id')}    
+        if(!mongoose.Types.ObjectId.isValid(userId) || !mongoose.Types.ObjectId.isValid(profileId)){ throw new appErrors.InvalidId('connectUserAndProfile', 'Invalid user id')}    
+        if(!mongoose.Types.ObjectId.isValid(profileId)){ throw new appErrors.InvalidId('connectUserAndProfile', 'Invalid profile id')}    
     
-    return res.status(200).json(cleanedProfile)
+        let profile = await Profile.findById(profileId);
+        if(!profile){ return res.status(204).json({message: 'No profile for the profile id was found.'})}
+
+        const user = await User.findByIdAndUpdate(userId, {profile: profile}, {new: true});
+        if(!user){ return res.status(204).json({message: 'No user for the user id was found.'})}
+
+        profile = await Profile.findByIdAndUpdate(profileId, {user: user}, {new: true});
+
+        if(populate){ profile.populate('preferences', 'teams') }
+
+        return res.status(200).json(profile)
+    
+    } catch (error) {
+        next(error)
+        console.log({method: error.method, message: error.message});        
+    }
 }
 
 module.exports = { 
     addProfile, 
-    getAll, 
-    getById, 
-    getByLastName, 
-    getByMobileNumber,
-    getByHomeNumber, 
+    getAllProfiles, 
+    getProfileById, 
+    getProfilesByLastName, 
+    getProfilesByMobilePhone,
+    getProfilesByHomePhone, 
     updateProfile, 
     deleteProfile,
-    connectUserAndProfile 
+    connectUserAndProfile,
+    getAllLimitedProfiles
 }

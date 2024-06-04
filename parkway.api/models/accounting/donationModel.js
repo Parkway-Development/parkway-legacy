@@ -5,18 +5,35 @@ const donationSchema = new mongoose.Schema({
         required: true,
         type: String
     },
-    amount: {
-        type: Number
+    value: {
+        type: Number,
+        default: 0
     },
-    transactionDate: {
-        required: true,
-        type: Date,
-        default: Date.now()
-    },
-    profile: {
+    donorProfileId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Profile'
-    }
+    },
+    accounts: [
+        {
+            _id: false,
+            accountId: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'Account',
+            },
+            amount: {
+                type: Number,
+                validate: {
+                    validator: function(v) {
+                        return v > 0;
+                    },
+                    message: props => `${props.value} is not a valid amount.`
+                }
+            }
+        }
+    ],
+    notes:[{
+        type: String
+    }]
 }, {timestamps: true})
 
 module.exports = mongoose.model('Donation', donationSchema,'donations');

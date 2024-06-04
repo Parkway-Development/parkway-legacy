@@ -14,22 +14,22 @@ import { addProfileInitialValues } from '../directory-page';
 import { UserProfile } from '../../types';
 import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
 
-type ProfileVerificationProps = {
+interface ProfileVerificationProps {
   loginResponse: InternalLoginResponse;
-};
+}
 
-type InputComparison = {
+interface InputComparison {
   placeholder: string;
   field: keyof UserProfile;
   input?: string;
   compareFn: (input?: string) => boolean;
   isValid?: boolean;
-};
+}
 
 const stringComparison = (
   input: string | undefined,
   expected: string,
-  isPhoneNumber: boolean = false
+  isPhoneNumber = false
 ) => {
   if (expected === input) return true;
   if (!input?.trim().length) return false;
@@ -147,19 +147,22 @@ const ProfileVerification = ({ loginResponse }: ProfileVerificationProps) => {
     mutationFn: create
   });
 
-  const handleJoin = (profileId: string) => {
-    performJoin(
-      { userId: user.id, profileId },
-      {
-        onSuccess: () => {
-          storeProfileId(profileId, user);
-          window.location.href = '/profiles/me';
+  const handleJoin = useCallback(
+    (profileId: string) => {
+      performJoin(
+        { userId: user.id, profileId },
+        {
+          onSuccess: () => {
+            storeProfileId(profileId, user);
+            window.location.href = '/profiles/me';
+          }
         }
-      }
-    );
-  };
+      );
+    },
+    [performJoin, storeProfileId, user]
+  );
 
-  const createNewUserProfile = () => {
+  const createNewUserProfile = useCallback(() => {
     const payload = {
       ...addProfileInitialValues,
       firstName: 'NewUser',
@@ -172,13 +175,13 @@ const ProfileVerification = ({ loginResponse }: ProfileVerificationProps) => {
         handleJoin(data._id);
       }
     });
-  };
+  }, [createProfile, handleJoin, user.email]);
 
   useEffect(() => {
     if (!profile) {
       createNewUserProfile();
     }
-  }, []);
+  }, [createNewUserProfile, profile]);
 
   const handleInputChange = useCallback(
     (e: SyntheticEvent<HTMLInputElement>) => {

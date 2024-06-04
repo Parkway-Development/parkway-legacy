@@ -1,102 +1,179 @@
 const mongoose = require('mongoose');
-const Donations = require('../../models/accounting/donationModel');
+const Donation = require('../../models/accounting/donationModel');
 const ValidationHelper = require('../../helpers/validationHelper');
+const appError = require('../../applicationErrors');
+const titheAccountId = '664cee912f4c2fc061ce5c98'
+const titheOfTithesAccountId = '664cfb958f28a61f59decfdb'
 
-//Post a donation
-const addDonation = async (req, res) => {
+const createDonation = async (req, res, next) => {
+    try {
+        const { description, value, donorProfileId, accounts, notes } = req.body;
 
-    const donation = new Donations(req.body);
+        if (!description) { throw new appError.MissingRequiredParameter('addDonation'); }
+        if (donorProfileId) {
+            const profileValid = await ValidationHelper.validateProfileId(donorProfileId);
+            if (!profileValid.result) { throw new appError.ProfileDoesNotExist('addDonation', profileValid.message); }
+        }
 
-    const validationError = donation.validateSync();
-    if(validationError){ return res.status(400).json( validationError.message ) }
+        if (accounts) {
+            let accountTotal = 0;
+            for (let i = 0; i < accounts.length; i++) {
+                
+                if(accounts[i].accountId === titheAccountId ){ throw new appError.Validation('addDonation', 'Donations cannot be tithes'); }
+                if(accounts[i].accountId === titheOfTithesAccountId ){ throw new appError.Validation('addDonation', 'Tithe of '); }
 
-    try{
+                const accountValid = await ValidationHelper.validateAccountId(accounts[i].accountId);
+                if (!accountValid.result) { throw new appError.AccountDoesNotExist('addDonation', accountValid.message); }
+                accountTotal += accounts[i].amount;
+            }
+
+            if (accountTotal !== value) { throw new appError.Validation('addDonation', 'The sum of the accounts does not equal the value of the donation'); }
+        }
+
+        const donation = new Donation({ description, value, donorProfileId, accounts, notes });
+
+        const validationError = donation.validateSync();
+        if (validationError) { throw new appError.Validation(validationError.message); }
+
         await donation.save();
+        // TODO: If there are accounts and values, update account balances and create a transaction
         return res.status(201).json(donation);
+    } catch (error) {
+        console.log({ method: error.method, message: error.message });
+        next(error);
     }
-    catch (error){
-        return res.status(500).json(error.message)
+};
+
+const getAllDonations = async (req, res, next) => {
+    try {
+        let donations;
+        if (req.query.populate === 'true') {
+            donations = await Donation.find().populate('donorProfileId accounts.accountId');
+        } else {
+            donations = await Deposit.find();
+        }
+
+        if (donations.length === 0) { return res.status(204).json({ message: "No donations found." }); }
+
+        return res.status(200).json(donations);
+    } catch (error) {
+        console.log({ method: 'getAllDeposits', message: error.message });
+        next(error);
     }
-}
+};
 
-//Get all donations
-const getAllDonations = async (req, res) => {
+const getDonationsByDateRange = async (req, res, next) => {
+    try {
+        const { startDate, endDate, populate } = req.query;
+        let donations;
+        if (startDate && endDate) {
+            if (!ValidationHelper.checkDateOrder(startDate, endDate)) { throw new appError.InvalidDateRange('getAllDonations'); }
+            donations = await Donation.find({ date: { $gte: startDate, $lte: endDate } }).sort({ date: -1 });
+        } else {
+            donations = await Donation.find().sort({ date: -1 });
+        }
 
-    try{
-        const donations = await Donations.find({}).sort({date: -1});
-        if(!donations){ return res.status(200).json({message: "No donations were returned."}) }
-        return res.status(200).json(donations)
-    } catch (error){
-        return res.status(500).json(error.message)
+        if (donations.length === 0) { return res.status(204).json({ message: "No donations found." }); }
+
+        if (populate === 'true') {
+            await donations.populate('donorProfile accounts').execPopulate();
+        }
+
+        return res.status(200).json(donations);
+    } catch (error) {
+        console.log({ method: error.method, message: error.message });
+        next(error);
     }
-}
+};
 
-//Get donation by ID
-const getDonationById = async (req, res) => {
+const getDonationById = async (req, res, next) => {
+    try {
+        const { populate } = req.query;
+        if (!req.params.id) { throw new appError.MissingId('getDonationById'); }
+        if (!mongoose.Types.ObjectId.isValid(req.params.id)) { throw new appError.InvalidId('getDonationById'); }
 
-    if(!req.params.id){ return res.status(400).json({error: 'No Account ID provided.'})}
-    if(!ValidationHelper.validateId(req.params.id)){ return res.status(404).json({error: 'Id is not valid.'}) }
+        let donation;
+        if (populate === 'true') {
+            donation = await Donation.findById(req.params.id).populate('donorProfileId accounts.accountId');
+        } else {
+            donation = await Donation.findById(req.params.id);
+        }
 
-    try{
-        const donation = await Donations.findById( req.params.id );
-        if(!donation){ return res.status(200).json({message: "No donation found."}) }
-        return res.status(200).json(donation)
-    } catch (error){
-        return res.status(500).json(error.message)
-    }
-}
+        if (!donation) { return res.status(204).json({ message: "No donation found." }); }
 
-//Get donations by profile
-const getDonationsByProfile = async (req, res) => {
-
-    if(!req.params.id){ return res.status(400).json({error: 'No Profile ID provided.'})}
-    if(!ValidationHelper.validateId(req.params.id)){ return res.status(404).json({error: 'Id is not valid.'}) }
-
-    try{
-        const donations = await Donations.find({profile: req.params.id}).sort({date: -1});
-        if(donations.length === 0){ return res.status(200).json({message: "No donations found."}) }
-        return res.status(200).json(donations)
-    } catch (error){
-        return res.status(500).json(error.message)
-    }
-}
-
-//Update a donation by ID
-const updateDonation = async (req, res) => {
-
-    if(!req.params.id){ return res.status(400).json({error: 'No Donation ID provided.'})}
-    if(!ValidationHelper.validateId(req.params.id)){ return res.status(404).json({error: 'Id is not valid.'}) }
-
-    try{
-        let donation = await Donations.findByIdAndUpdate({ _id: id }, { ...req.body }, { new: true, runValidators: true});
-        if(!donation){ return res.status(404).json({error: "The update failed."}) }
         return res.status(200).json(donation);
+    } catch (error) {
+        console.log({ method: error.method, message: error.message });
+        next(error);
     }
-    catch (error){
-        return res.status(500).json(error.message)
+};
+
+const getDonationsByProfile = async (req, res, next) => {
+    try {
+        const { startDate, endDate } = req.query;
+
+        if (!req.params.donorProfileId) { throw new appError.MissingId('getDonationsByProfile'); }
+        if (!mongoose.Types.ObjectId.isValid(req.params.donorProfileId)) { throw new appError.InvalidId('getDonationsByProfile'); }
+        if (!await ValidationHelper.validateId(req.params.donorProfileId)) { throw new appError.ProfileDoesNotExist('getDonationsByProfile'); }
+
+        const donorProfileId = req.params.donorProfileId;
+        let donations;
+        if (startDate && endDate) {
+            if (!ValidationHelper.checkDateOrder(startDate, endDate)) { throw new appError.InvalidDateRange('getDonationsByProfile'); }
+            donations = await Donation.find({ donorProfileId: donorProfileId, date: { $gte: startDate, $lte: endDate } }).sort({ date: -1 });
+        } else {
+            donations = await Donation.find({ donorProfileId: donorProfileId }).sort({ date: -1 });
+        }
+
+        if (donations.length === 0) { return res.status(204).json({ message: "No donations found." }); }
+        
+        return res.status(200).json(donations);
+    } catch (error) {
+        console.log({ method: error.method, message: error.message });
+        next(error);
     }
-}
+};
 
-//Delete a donation by ID
-const deleteDonation = async (req, res) => {
+const updateDonation = async (req, res, next) => {
+    try {
+        const { populate } = req.query;
+        if (!req.params.donationId) { throw new appError.MissingId('updateDonation'); }
+        if (!mongoose.Types.ObjectId.isValid(req.params.donationId)) { throw new appError.InvalidId('updateDonation'); }
 
-    if(!req.params.id){ return res.status(400).json({error: 'No Donation ID provided.'})}
-    if(!ValidationHelper.validateId(req.params.id)){ return res.status(404).json({error: 'Id is not valid.'}) }
+        const donation = await Donation.findByIdAndUpdate(req.params.donationId, req.body, { new: true, runValidators: true });
+        if (!donation) { return res.status(404).json({ error: "The update failed." }); }
 
-    try{
-        const donation = await Donations.findByIdAndDelete(req.params.id);
-        if(!donation){ return res.status(404).json({message: "Donation could not be found.  Donation was not deleted."}) }
-        return res.status(200).json({message: 'Donation ' + donation._id + ' was deleted.', donation: donation});
-    } catch (error){
-        return res.status(500).json(error.message)
+        if (populate === 'true') {
+            await donation.populate('donorProfile accounts').execPopulate();
+        }
+
+        return res.status(200).json(donation);
+    } catch (error) {
+        console.log({ method: error.method, message: error.message });
+        next(error);
     }
-}
+};
+
+const deleteDonation = async (req, res, next) => {
+    try {
+        if (!req.params.id) { return res.status(400).json({ error: 'No Donation ID provided.' }); }
+        if (!mongoose.Types.ObjectId.isValid(req.params.id)) { throw new appError.InvalidId('deleteDonation'); }
+
+        const donation = await Donation.findByIdAndDelete(req.params.id);
+        if (!donation) { return res.status(404).json({ message: "Donation could not be found. Donation was not deleted." }); }
+        return res.status(200).json({ message: `Donation ${donation._id} was deleted.`, donation });
+    } catch (error) {
+        console.log({ method: error.method, message: error.message });
+        next(error);
+    }
+};
 
 module.exports = {
-    addDonation,
+    createDonation,
     getAllDonations,
+    getDonationsByDateRange,
     getDonationById,
     getDonationsByProfile,
     updateDonation,
     deleteDonation
-}
+};

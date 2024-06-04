@@ -1,6 +1,6 @@
 import { Song } from '../../types';
 import { Card, Descriptions, DescriptionsProps } from 'antd';
-import { UserNameDisplayById } from '../user-name-display';
+import { UserNameDisplay } from '../user-name-display';
 import styles from './SongDisplay.module.css';
 
 const SongDisplay = (song: Song) => {
@@ -43,7 +43,7 @@ const SongDisplay = (song: Song) => {
           {
             key: 1,
             label: 'Vocalist',
-            children: <UserNameDisplayById id={arrangement.vocalist} />
+            children: <UserNameDisplay user={arrangement.vocalist} />
           },
           {
             key: 2,

@@ -49,16 +49,12 @@ function App() {
   if (hasClaim('accounting')) {
     items.push({
       key: itemKey++,
-      label: (
-        <ResponsiveLink to="/accounts" onClick={() => setSideCollapsed(true)}>
-          Accounts
-        </ResponsiveLink>
-      ),
+      label: <ResponsiveLink to="/accounts">Accounts</ResponsiveLink>,
       children: [
-        {
+        /*{
           key: itemKey++,
           label: <ResponsiveLink to="/accounts/assets">Assets</ResponsiveLink>
-        },
+        },*/
         {
           key: itemKey++,
           label: (
@@ -66,11 +62,11 @@ function App() {
               Contributions
             </ResponsiveLink>
           )
-        },
-        {
+        }
+        /*{
           key: itemKey++,
           label: <ResponsiveLink to="/accounts/vendors">Vendors</ResponsiveLink>
-        }
+        }*/
       ]
     });
   }
@@ -104,6 +100,7 @@ function App() {
     });
   }
 
+  /*
   if (hasClaim('systemSettings')) {
     items.push({
       key: itemKey++,
@@ -112,6 +109,7 @@ function App() {
       )
     });
   }
+   */
 
   // TODO: What app claim is required for this
   if (hasClaim('mediaManagement')) {

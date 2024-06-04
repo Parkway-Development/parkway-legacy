@@ -90,6 +90,9 @@ const LoginPage = () => {
         <p>
           <Link to="/signup">Signup</Link> for an account.
         </p>
+        <p>
+          <Link to="/forgot">Forgot Password?</Link>
+        </p>
       </Card>
     </div>
   );

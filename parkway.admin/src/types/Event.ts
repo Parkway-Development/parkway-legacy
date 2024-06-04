@@ -1,4 +1,5 @@
 import { BaseEntity } from './BaseEntity.ts';
+import { EventSchedule } from './EventSchedule.ts';
 
 export type Event = BaseEntity & {
   name: string;
@@ -6,6 +7,7 @@ export type Event = BaseEntity & {
   organizer?: string;
   start: Date;
   end: Date;
+  allDay: boolean;
   location?: string;
   category?: string;
   status: EventStatus;
@@ -14,6 +16,14 @@ export type Event = BaseEntity & {
   approvedDate?: Date;
   rejectedBy?: string;
   rejectedDate?: Date;
+  messages?: EventMessage[];
+  schedule?: EventSchedule;
 };
+
+export interface EventMessage {
+  profile: string;
+  messageDate: Date;
+  message: string;
+}
 
 export type EventStatus = 'Active' | 'Tentative' | 'Rejected';

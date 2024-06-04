@@ -4,16 +4,16 @@ import { Skeleton } from 'antd';
 import { WarningOutlined } from '@ant-design/icons';
 import UserNameDisplay from './UserNameDisplay.tsx';
 
-interface UserDisplayProps {
+interface UserNameDisplayByIdProps {
   id?: string;
 }
 
-export const UserNameDisplayById = ({ id }: UserDisplayProps) => {
+export const UserNameDisplayById = ({ id }: UserNameDisplayByIdProps) => {
   const {
-    usersApi: { getAll }
+    usersApi: { getAllLimitedProfile }
   } = useApi();
   const { isPending, data: response } = useQuery({
-    queryFn: getAll,
+    queryFn: getAllLimitedProfile,
     queryKey: buildQueryKey('profiles')
   });
 

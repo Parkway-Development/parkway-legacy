@@ -1,162 +1,332 @@
 const mongoose = require('mongoose')
 const Contribution = require('../../models/accounting/contributionModel')
 const ValidationHelper = require('../../helpers/validationHelper');
+const UserValidation = require('../../helpers/userValidation');
+const Deposit = require('../../models/accounting/depositModel');
+const AppError = require('../../applicationErrors')
+const { TransactionType } = require('../../models/constants');
+const { createTransaction } = require('../../helpers/transactionHelper');
 
-//Create a new contribution
-const addContribution = async (req, res) => {
-
-    // Validate the request body is present, the profile id is present, and the profile id is valid
-    if(!req.body){ return res.status(400).json({error: 'No contribution data provided.'}) }
-    if(!req.body.profile){ return res.status(400).json({error: 'No profile ID provided.'}) }
-    if(!ValidationHelper.validateId(req.body.profile)){ return res.status(404).json({error: 'Profile ID is not valid.'}) }
-    
-    // Validate the account IDs are valid and that they exist in the database
-    const accountIds = req.body.accounts.map(account => account.account);
-    const accountErrors = await ValidationHelper.validateAccountIds(accountIds);
-    if (accountErrors) { return res.status(400).json({ errors: accountErrors }); }
-    
-    // Create a new contribution
-    const contribution = new Contribution(req.body);
-    
-    // Validate the contribution
-    const validationError = contribution.validateSync();
-    if (validationError) { return res.status(400).json({ error: validationError.message }) }
-
+//TODO: Check to see if this is a duplicate contribution
+const addContribution = async (req, res, next) => {
     try {
-        await contribution.save();
+        const { gross, fees, net, accounts, contributorProfileId, depositId, transactionDate, type, notes, responsiblePartyProfileId } = req.body;
+
+        if (!gross) { throw new AppError.MissingRequiredParameter('addContribution', 'The request body is missing the gross amount'); }
+        if (fees === undefined || fees === null) { throw new AppError.MissingRequiredParameter('addContribution', 'The request body is missing the fees amount'); }
+        if (!net) { throw new AppError.MissingRequiredParameter('addContribution', 'The request body is missing the net amount'); }
+        if (!accounts || !Array.isArray(accounts)) { throw new AppError.MissingRequiredParameter('addContribution', 'The request body is missing the accounts array'); }
+        if (!responsiblePartyProfileId){ throw new AppError.MissingRequiredParameter('addContribution', 'The request body is missing the responsible party profile Id'); }
+        if (!mongoose.Types.ObjectId.isValid(responsiblePartyProfileId)){ throw new AppError.InvalidId('addContribution', 'The responsible party profile Id is not valid'); }
+        if (!ValidationHelper.validateProfileId(responsiblePartyProfileId)){ throw new AppError.ProfileDoesNotExist('addContribution', 'The responsible party profile does not exist'); }
+
+        if (contributorProfileId) {
+            if (!mongoose.Types.ObjectId.isValid(contributorProfileId)) { throw new AppError.InvalidId('addContribution', `${contributorProfileId} is not a valid mongo id`); }
+            const profileExists = await UserValidation.profileExists(contributorProfileId);
+            if (!profileExists) { throw new AppError.ProfileDoesNotExist('addContribution', 'The specified contributor profile does not exist'); }
+        }
+
+        const accountErrors = await ValidationHelper.validateAccountIds(req.body.accounts);
+        if (accountErrors.length > 0) { throw new AppError.Validation('addContribution', accountErrors); }
+
+        const accountsTotal = accounts.reduce((total, account) => total + account.amount, 0);
+        if (net !== accountsTotal) { throw new AppError.Validation('addContribution', 'The sum of the accounts does not equal the contribution net amount'); }
+        
+        let deposit;
+        if (depositId) {
+            if (!mongoose.Types.ObjectId.isValid(depositId)) { throw new AppError.InvalidId('addContribution', 'The supplied deposit Id is not valid'); }
+            deposit = await Deposit.findById(depositId);
+            if (!deposit) { throw new AppError.DepositDoesNotExist('addContribution', 'The specified deposit does not exist'); }
+        }      
+
+        const contribution = new Contribution({
+            contributorProfileId,
+            responsiblePartyProfileId,
+            gross,
+            fees,
+            net,
+            accounts,
+            transactionDate,
+            depositId,
+            type,
+            notes
+        });
+
+        const validationError = contribution.validateSync();
+        if (validationError) { throw new AppError.Validation('addContribution', validationError.message) }
+
+        await contribution.save({ new: true });
+
+        if (deposit) {
+            deposit.contributions.push(contribution._id);
+            await deposit.save();
+        }
+
+        for (let account of accounts) { await createTransaction(account.amount, TransactionType.DEPOSIT, account.accountId, null, responsiblePartyProfileId); }
+
         return res.status(201).json(contribution);
+
     } catch (error) {
-        return res.status(500).json(error.message);
+        next(error)
+        console.log({method: error.method, message: error.message});
     }
 }
 
-//TODO: Add Date range
 //TODO: Add pagination
-//Get all contributions
-const getAllContributions = async (req, res) => {
+const getAllContributions = async (req, res, next) => {
 
     try {
         const contributions = await Contribution.find({});
-        if(contributions.length === 0) return res.status(200).json({ message: 'No contributions were returned.' });
+        
+        if(contributions.length === 0) { return res.status(204).json({contributions: contributions, message: 'No contributions were returned.'})}
+        
         return res.status(200).json(contributions);
     } catch (error) {
-        return res.status(500).json(error.message);
+        next(error)
+        console.log({method: error.method, message: error.message});
     }
 }
 
-//Get contribution by ID
-const getContributionById = async (req, res) => {
-
-    if(!req.params.id){ return res.status(400).json({error: 'No Contribution ID provided.'})}
-    if(!ValidationHelper.validateId(req.params.id)){ return res.status(404).json({error: 'Id is not valid.'}) }
-
+const getContributionsByDateRange = async (req, res, next) => {
     try {
+        const { startDate, endDate, dateType } = req.query;
+        if(!startDate || !endDate){ throw new AppError.MissingDateRange('getContributionsByDateRange')}
+        if(ValidationHelper.checkDateOrder(startDate, endDate)){ throw new AppError.InvalidDateRange('getContributionsByDateRange')}
+        if(!dateType === 'transactionDate'){ dateType = 'depositDate'}
+
+        let contributions;
+
+        if(dateType === 'depositDate'){
+            contributions = await Contribution.find({
+                depositDate: {
+                    $gte: startDate,
+                    $lte: endDate
+                }
+            }).sort({ depositDate: 1});
+        } else {
+            contributions = await Contribution.find({
+                transactionDate: {
+                    $gte: startDate,
+                    $lte: endDate
+                }
+            }).sort({ transactionDate: 1});
+        }
+
+        if(contributions.length === 0){ return res.status(204).json({contributions: contributions, message: 'No contributions were returned.'})}
+
+        return res.status(200).json(contributions);
+    } catch (error) {
+        next(error)
+        console.log({method: error.method, message: error.message});
+    }
+}
+
+const getContributionById = async (req, res, next) => {
+    try {
+        if(!req.params.id){ throw new AppError.MissingId('getContributionById')}
+        if(!mongoose.Types.ObjectId.isValid(req.params.id)){ throw new AppError.InvalidId('getContributionById')}
+
         const contribution = await Contribution.findById(req.params.id);
-        if(!contribution) return res.status(200).json({ message: 'No contribution found.' });
+        if(!contribution) { return res.status(204).json({message: 'No contribution found for that Id.'})};
+
         return res.status(200).json(contribution);
     } catch (error) {
-        return res.status(500).json(error.message);
+        next(error)
+        console.log({method: error.method, message: error.message});
     }
 }
 
-//TODO: Make case insensitive
-//TODO: Add Date range
 //TODO: Add pagination
-//Get contributions by type
-const getContributionsByType = async (req, res) => {
-
-    if(!req.params.type){ return res.status(400).json({error: 'No Contribution type provided.'})}
-
+const getContributionsByType = async (req, res, next) => {
     try {
-        const contributions = await Contribution.find({ type: req.params.type });
-        if(contributions.length === 0) return res.status(200).json({ message: 'No contributions were returned.' });
+        if(!req.params.type){ throw new AppError.MissingRequiredParameter('getContributionsByType','No Contribution type provided.')}
+        const { startDate, endDate, dateType } = req.query;
+
+        let contributions;
+
+        if(!startDate || !endDate){
+            contributions = await Contribution.find({ type: req.params.type });
+        } else {
+            if(!dateType === 'transactionDate'){ dateType = 'depositDate'}
+
+            if(dateType === 'depositDate'){
+                contributions = await Contribution.find({
+                    type: req.params.type,
+                    depositDate: {
+                        $gte: startDate,
+                        $lte: endDate
+                    }
+                }).sort({ depositDate: 1});
+            } else {
+                contributions = await Contribution.find({
+                    type: req.params.type,
+                    transactionDate: {
+                        $gte: startDate,
+                        $lte: endDate
+                    }
+                }).sort({ transactionDate: 1});
+            }
+            if(contributions.length === 0) { return res.status(204).json({message: 'No contributions were returned for the given type in the specified date range.'})}
+        }
+        if(contributions.length === 0) { return res.status(200).json({message: 'No contributions were returned.'})} 
+        return res.status(200).json(contributions);
+    }
+    catch (error) {
+        next(error)
+        console.log({method: error.method, message: error.message});
+    }
+}
+
+//TODO: Add pagination
+const getContributionsByProfileId = async (req, res, next) => {
+    try {
+        if(!req.params.id){ throw new AppError.MissingId('getContributionsByProfileId')}
+        if(!mongoose.Types.ObjectId.isValid(req.params.id)){ throw new AppError.InvalidId('getContributionsByProfile')}
+
+        const { startDate, endDate, dateType } = req.query;
+
+        let contributions;
+
+        if(!startDate || !endDate){
+            contributions = await Contribution.find({ profile: req.params.id });
+        } else {
+            if(!dateType === 'transactionDate'){ dateType = 'depositDate'}
+
+            if(dateType === 'depositDate'){
+                contributions = await Contribution.find({
+                    profile: req.params.id,
+                    depositDate: {
+                        $gte: startDate,
+                        $lte: endDate
+                    }
+                }).sort({ depositDate: 1});
+            } else {
+                contributions = await Contribution.find({
+                    profile: req.params.id,
+                    transactionDate: {
+                        $gte: startDate,
+                        $lte: endDate
+                    }
+                }).sort({ transactionDate: 1});
+            }
+            if(contributions.length === 0) { return res.status(204).json({message: 'No contributions were returned for the given profile Id and the specified date range.'})}
+        }
+
+        if(contributions.length === 0) { return res.status(200).json({message: 'No contributions were returned.'})}
+        
         return res.status(200).json(contributions);
     } catch (error) {
-        return res.status(500).json(error.message);
+        next(error)
+        console.log({method: error.method, message: error.message});
     }
 }
 
-//TODO: Add Date range
 //TODO: Add pagination
-//Get contributions by Profile ID
-const getContributionsByProfileId = async (req, res) => {
-
-    if(!req.params.id){ return res.status(400).json({error: 'No Profile ID provided.'})}
-    if(!ValidationHelper.validateId(req.params.id)){ return res.status(404).json({error: 'Id is not valid.'}) }
-
+const getContributionsByAccountId = async (req, res, next) => {
     try {
-        const contributions = await Contribution.find({ profile: req.params.id });
-        if(contributions.length === 0) return res.status(200).json({ message: 'No contributions were returned.' });
+        if(!req.params.id){ throw new AppError.MissingId('getContributionsByAccountId')}
+        if(!mongoose.Types.ObjectId.isValid(req.params.id)){ throw new AppError.InvalidId('getContributionsByAccountId')}
+
+        const { startDate, endDate, dateType } = req.query;
+
+        let contributions;
+
+        if(!startDate || !endDate){
+            contributions = await Contribution.find({ 'accounts.account': req.params.id });
+        } else {
+            if(!dateType === 'transactionDate'){ dateType = 'depositDate'}
+
+            if(dateType === 'depositDate'){
+                contributions = await Contribution.find({
+                    'accounts.account': req.params.id,
+                    depositDate: {
+                        $gte: startDate,
+                        $lte: endDate
+                    }
+                }).sort({ depositDate: 1});
+            } else {
+                contributions = await Contribution.find({
+                    'accounts.account': req.params.id,
+                    transactionDate: {
+                        $gte: startDate,
+                        $lte: endDate
+                    }
+                }).sort({ transactionDate: 1});
+            }
+            if(contributions.length === 0) { return res.status(204).json({message: 'No contributions were returned for the given account Id and the specified date range.'})}
+        }
+
+        if(contributions.length === 0) { return res.status(200).json({message: 'No contributions were returned.'})}
+
         return res.status(200).json(contributions);
     } catch (error) {
-        return res.status(500).json(error.message);
+        next(error)
+        console.log({method: error.method, message: error.message});
     }
 }
 
-//TODO: Add Date range
-//TODO: Add pagination
-//Get contributions by Account ID
-const getContributionsByAccountId = async (req, res) => {
-
-    if(!req.params.id){ return res.status(400).json({error: 'No Account ID provided.'})}
-    if(!ValidationHelper.validateId(req.params.id)){ return res.status(404).json({error: 'Id is not valid.'}) }
-
+const updateContribution = async (req, res, next) => {
     try {
-        const contributions = await Contribution.find({ 'accounts.account': req.params.id });
-        if(contributions.length === 0) return res.status(200).json({ message: 'No contributions were returned.' });
-        return res.status(200).json(contributions);
-    } catch (error) {
-        return res.status(500).json(error.message);
-    }
-}
+        if(!req.params.id){ throw new AppError.MissingId('updateContribution')}
+        if(!mongoose.Types.ObjectId.isValid(req.params.id)){ throw new AppError.InvalidId('updateContribution')}
+        if (!req.body) { throw new AppError.MissingRequestBody('updateContribution') }
+        if (Object.keys(req.body).length === 0) { throw new AppError.MissingRequiredParameter('updateContribution','The request body did not have any keys.') }
 
-//Update a contribution by ID
-const updateContribution = async (req, res) => {
-
-    // Validate the request body is present, the profile id is present, and the profile id is valid
-    if(!req.params.id){ return res.status(400).json({error: 'No Contribution ID provided.'})}
-    if(!req.body || Object.keys(req.body).length === 0){ return res.status(400).json({error: 'No contribution updates provided.  The request body either did not contain an object, or the object did not have any keys.'}) }
-    if(!ValidationHelper.validateId(req.params.id)){ return res.status(404).json({error: 'Id is not valid.'}) }
-
-    try {
-
-        //Get the contribution in question
         const contribution = await Contribution.findById(req.params.id);
-        if(!contribution){ return res.status(404).json({error: 'Contribution not found.'}) }
+        if(!contribution){ throw new AppError.NotFound('updateContribution')}
 
-        // If this deposit is already deposited, it cannot be updated
-        if(req.body.totalAmount && contribution.depositDate){ return res.status(200).json({message: 'This contribution has already been deposited and the total amount cannot be updated.'}) }
+        let protected = false;
+        if(contribution.processedDate){ protected = true }
 
-        // Apply updates dynamically
+        if(protected){
+            if(req.body.hasOwnProperty('net') && req.body.net !== contribution.net){
+                throw new AppError.ProtectedContribution('updateContribution', 'The contribution is protected because it belongs to a processed deposit and you have included a net amount that is different than the original net amount.');
+            }
+            if(req.body.hasOwnProperty('gross') && req.body.gross !== contribution.gross){
+                throw new AppError.ProtectedContribution('updateContribution', 'The contribution is protected because it belongs to a processed deposit and you have included a gross amount that is different than the original gross amount.');
+            }
+            if(req.body.hasOwnProperty('fees') && req.body.fees !== contribution.fees){
+                throw new AppError.ProtectedContribution('updateContribution', 'The contribution is protected because it belongs to a processed deposit and you have included a fees amount that is different than the original fees amount.');
+            }
+            if(req.body.hasOwnProperty('depositId') && req.body.depositId !== contribution.depositId){
+                throw new AppError.ProtectedContribution('updateContribution', 'The contribution is protected because it belongs to a processed deposit and you have included a depositId that is different than the original depositId.');
+            }
+            if(req.body.hasOwnProperty('processedDate') && req.body.processedDate !== contribution.processedDate){
+                throw new AppError.ProtectedContribution('updateContribution', 'The contribution is protected because it belongs to a processed deposit and you have included a processedDate that is different than the original processedDate.');
+            }
+        }
+
         Object.keys(req.body).forEach(key => {
             contribution[key] = req.body[key];
         });
-        // contribution.totalAmount = req.body.totalAmount || contribution.totalAmount;
         
-        //Do the update
+        const validationError = contribution.validateSync();
+        if (validationError) { throw new AppError.Validation('updateContribution', validationError.message ) }
+        
         const updatedContribution = await contribution.save();
-        if(!updatedContribution) return res.status(404).json({error: "Update failed."});
+        if(!updatedContribution) throw new AppError.UpdateFailed('updateContribution');
+
         return res.status(200).json(updatedContribution);
     } catch (error) {
-        return res.status(500).json(error.message);
+        next(error)
+        console.log({method: error.method, message: error.message});
     }
 }
 
-//Delete an asset by ID
 //TODO:  Adjust the ledger before removing the contribution
 const deleteContribution = async (req, res) => {
-
-    if(!req.params.id){ return res.status(400).json({error: 'No Contribution ID provided.'})}
-    if(!ValidationHelper.validateId(req.params.id)){ return res.status(404).json({error: 'Id is not valid.'}) }
-
     try {
-        const contribution = await Contribution.findByIdAndDelete(req.params.id);
-        if(!contribution){ return res.status(404).json({message: "Contribution could not be found.  Contribution was not deleted."})};
-        if(contribution.depositDate){ return res.status(200).json({message: 'This contribution has already been deposited and cannot be deleted.  You may only assign it to another profile or change the distribution between accounts.'}) }
+        if(!req.params.id){ throw new AppError.MissingId('deleteContribution') }
+        if(!ValidationHelper.validateId(req.params.id)){ throw new AppError.InvalidId('deleteContribution')}
 
+        const contribution = await Contribution.findById(req.params.id);
+        if(!contribution){ throw new AppError.NotFound('deleteContribution', 'The specified contribution was not found.')};
+        if(contribution.depositDate){ throw new AppError.DeleteFailed('deleteContribution', 'This contribution has already been deposited and cannot be deleted.  You may only assign it to another profile or change the distribution between accounts.')}
+        
         return res.status(200).json({message: "Contribution deleted", contribution: contribution});
     } catch (error) {
-        return res.status(500).json(error.message);
+        next(error)
+        console.log({method: error.method, message: error.message});
     }
 }
 
@@ -167,6 +337,7 @@ module.exports = {
     getContributionsByType,
     getContributionsByProfileId,
     getContributionsByAccountId,
+    getContributionsByDateRange,
     updateContribution,
     deleteContribution
 }

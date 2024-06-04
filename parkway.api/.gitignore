@@ -15,18 +15,17 @@ parkway-dev.profiles.json
 # misc
 .DS_Store
 .env.local
-.env.development
-.env.development.local
+.env.staging
 .env.production
-.env.production.local
 .env
 
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-platform/
-localnotes.txt
-uploads/
+gitignore/
+localstuff/
+uploads/*
 parkway.api.code-workspace
 azure-env-settings/
+.funcignore
 

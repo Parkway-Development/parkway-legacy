@@ -13,11 +13,11 @@ import ColumnConfigurationModal, {
   modalProps
 } from '../components/column-configuration-modal';
 
-type LocalStorageColumnsType = {
+interface LocalStorageColumnsType {
   key: string;
   displayOrder: number;
   hidden: boolean;
-};
+}
 
 type OrderedColumnType<T> = ColumnType<T> & {
   displayOrder: number;
@@ -27,17 +27,17 @@ type OrderedColumnType<T> = ColumnType<T> & {
 
 export type OrderedColumnsType<T> = OrderedColumnType<T>[];
 
-export type DeleteAction = {
+export interface DeleteAction {
   deleteFn: (id: string) => GenericResponse;
   handleDelete: () => void;
-};
+}
 
-type UseColumnOptions<T extends BaseEntity> = {
+interface UseColumnOptions<T extends BaseEntity> {
   columns: OrderedColumnsType<T>;
   columnType: string;
   deleteAction?: DeleteAction;
   editLink?: (value: T) => To;
-};
+}
 
 type BuildActionsColumnOptions<T extends BaseEntity> = Omit<
   UseColumnOptions<T>,
@@ -78,7 +78,7 @@ const buildActionsColumn = <T extends BaseEntity>({
     return nodes;
   };
 
-  const itemWidth = 30;
+  const itemWidth = 35;
   let width = 0;
   if (editLink) width += itemWidth;
   if (deleteAction) width += itemWidth;

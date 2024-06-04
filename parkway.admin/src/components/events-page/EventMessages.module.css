@@ -1,0 +1,18 @@
+.eventMessages {
+    margin: 1em;
+    max-width: 600px;
+}
+
+.eventMessages button {
+    margin-top: 1em;
+}
+
+.eventMessages table {
+    border-collapse: collapse;
+    margin-bottom: 1em;
+}
+
+.eventMessages td {
+    padding: 0 0.5em;
+    border-top: 1px solid #ccc;
+}

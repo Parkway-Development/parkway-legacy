@@ -1,17 +1,17 @@
 import { BaseEntity } from './BaseEntity.ts';
 
 export type Contribution = BaseEntity & {
-  totalAmount: number;
-  transactionDate: Date;
-  depositDate?: Date;
-  locked: boolean;
-  depositBatchId?: string;
-  type: string;
-  accounts: ContributionAccount[];
   profile: string;
+  gross: number;
+  fees: number;
+  net: number;
+  accounts: ContributionAccount[];
+  transactionDate: Date;
+  depositId?: string;
+  type: string;
 };
 
-export type ContributionAccount = {
+export interface ContributionAccount {
   account: string;
   amount: number;
-};
+}

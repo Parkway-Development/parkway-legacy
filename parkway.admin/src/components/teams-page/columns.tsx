@@ -1,5 +1,5 @@
 import { Team } from '../../types';
-import { UserNameDisplayById } from '../user-name-display';
+import { UserNameDisplay } from '../user-name-display';
 import { OrderedColumnsType } from '../../hooks/useColumns.tsx';
 
 export const teamColumns: OrderedColumnsType<Team> = [
@@ -14,7 +14,7 @@ export const teamColumns: OrderedColumnsType<Team> = [
     title: 'Leader',
     width: 200,
     dataIndex: 'leader',
-    render: (value: Team['leader']) => <UserNameDisplayById id={value} />,
+    render: (value: Team['leader']) => <UserNameDisplay user={value} />,
     key: 'leader',
     displayOrder: 2
   },

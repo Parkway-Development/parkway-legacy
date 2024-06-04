@@ -40,7 +40,7 @@ const applicationSchema = new mongoose.Schema({
     previousKeys: [{
         type: String
     }],
-    owner: {
+    ownerProfileId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true

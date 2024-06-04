@@ -1,9 +1,9 @@
 import { TypedResponse } from '../hooks/useApi.ts';
 import { AxiosInstance } from 'axios';
 
-export type GeneralApiType = {
+export interface GeneralApiType {
   getPasswordSettings: () => TypedResponse<PasswordSettings>;
-};
+}
 
 export interface PasswordSettings {
   minimumLength: number;
@@ -15,5 +15,5 @@ export interface PasswordSettings {
 
 export const buildGeneralApi = (instance: AxiosInstance): GeneralApiType => ({
   getPasswordSettings: () =>
-    instance.get<PasswordSettings>('/api/settings/password')
+    instance.get<PasswordSettings>('/settings/password')
 });

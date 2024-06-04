@@ -22,6 +22,11 @@ const eventSchema = new mongoose.Schema({
         required: true,
         type: Date
     },
+    allDay: {
+        required: true,
+        type: Boolean,
+        default: false
+    },
     location: {
         required: false,
         type: String
@@ -58,6 +63,26 @@ const eventSchema = new mongoose.Schema({
     rejectedDate: {
         required: false,
         type: Date
+    },
+    messages: [{
+        profile: {
+            required: true,
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Profile'
+        },
+        messageDate: {
+            required: true,
+            type: Date
+        },
+        message: {
+            required: true,
+            type: String
+        }
+    }],
+    schedule: {
+        required: false,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'EventSchedule'
     }
 });
 

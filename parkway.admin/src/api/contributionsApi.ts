@@ -7,4 +7,4 @@ export type ContributionsApiType = BaseApiType<Contribution>;
 export const buildContributionsApi = (
   instance: AxiosInstance
 ): ContributionsApiType =>
-  buildBaseApi<Contribution>(instance, '/api/accounting/contributions');
+  buildBaseApi<Contribution>(instance, '/accounting/contributions');

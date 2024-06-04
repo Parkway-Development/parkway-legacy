@@ -7,4 +7,4 @@ export type EventCategoriesApiType = BaseApiType<EventCategory>;
 export const buildEventCategoriesApi = (
   instance: AxiosInstance
 ): EventCategoriesApiType =>
-  buildBaseApi<EventCategory>(instance, '/api/eventCategories');
+  buildBaseApi<EventCategory>(instance, '/eventCategories');

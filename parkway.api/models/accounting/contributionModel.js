@@ -1,43 +1,28 @@
 const mongoose = require('mongoose');
 const { validateAccountSumMatchesAmount } = require('../../helpers/validationHelper');
+const { MonetaryInstrument } = require('../constants');
 
 const contributionSchema = new mongoose.Schema({
-    totalAmount: {
-        required: true,
-        type: Number
-    },
-    transactionDate: {
-        required: true,
-        type: Date,
-        default: Date.now()
-    },
-    depositDate: {
-        type: Date
-    },
-    approvalDate: {
-        type: Date
-    },
-    approvedBy: {
+    contributorProfileId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Profile'
     },
-    locked: {
-        type: Boolean,
+    gross: {
         required: true,
-        default: false
+        type: Number
     },
-    depositBatchId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'DepositBatch'
-    },
-    type: {
+    fees: {
         required: true,
-        type: String
+        type: Number
+    },
+    net: {
+        required: true,
+        type: Number
     },
     accounts: [
         {
             _id: false,
-            account: {
+            accountId: {
                 type: mongoose.Schema.Types.ObjectId,
                 ref: 'Account',
                 required: true
@@ -54,14 +39,32 @@ const contributionSchema = new mongoose.Schema({
             }
         }
     ],
-    profile: {
+    transactionDate: {
+        required: true,
+        type: Date,
+        default: Date.now
+    },
+    depositId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Profile'
-    }
-}, {timestamps: true})
+        ref: 'Deposits'
+    },
+    processedDate: {
+        type: Date
+    },
+    type: {
+        required: true,
+        type: String,
+        enum: Object.values(MonetaryInstrument),
+        default: 'cash'
+    },
+    notes: [{
+        type: String
+    }]
+
+}, {timestamps: true});
 
 contributionSchema.path('accounts').validate(function (accounts) {
-    return validateAccountSumMatchesAmount(this.totalAmount, accounts);
+    return validateAccountSumMatchesAmount(this.net, accounts);
 }, 'The sum of accounts amounts must equal the total amount.');
 
-module.exports = mongoose.model('Contribution', contributionSchema,'contributions');
+module.exports = mongoose.model('Contribution', contributionSchema, 'contributions');

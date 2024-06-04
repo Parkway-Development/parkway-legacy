@@ -1,9 +1,15 @@
 const mongoose = require('mongoose');
+const { addressSchema } = require('./sharedModels');
 
 const profileSchema = new mongoose.Schema({
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
+    },
+    currentOrganizationId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Organization',
+        required: true
     },
     firstName: {
         required: true,
@@ -14,52 +20,28 @@ const profileSchema = new mongoose.Schema({
         type: String
     },
     middleInitial: {
-        required: false,
         type: String
     },
     nickname: {
-        required: false,
         type: String
     },
     dateOfBirth: {
-        required: false,
         type: Date
     },
     gender: {
-        required: false,
         type: String
     },
     email: {
-        required: false,
         type: String
     },
     mobilePhone: {
-        required: false,
         type: String
     },
     homePhone: {
-        required: false,
         type: String
     },
-    streetAddress1: {
-        required: false,
-        type: String
-    },
-    streetAddress2: {
-        required: false,
-        type: String
-    },
-    city: {
-        required: false,
-        type: String
-    },
-    state: {
-        required: false,
-        type: String
-    },
-    zip: {
-        required: false,
-        type: String
+    address:{
+        type: addressSchema
     },
     member:{
         required: true,
@@ -81,6 +63,24 @@ const profileSchema = new mongoose.Schema({
         ref: 'Preferences',
         required: false
     },
+    organizations: [{
+        organizationId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Organization'
+        },
+        isDefault: {
+            type: Boolean,
+            default: false
+        },
+        isActive: {
+            type: Boolean,
+            default: false
+        }
+    }]
 }, {timestamps: true})
+
+// profileSchema.index({ lastName: 1 }, { collation: { locale: 'en_US', strength: 2}} ) 
+// profileSchema.index({ firstName: 1 }, { collation: { locale: 'en_US', strength: 2}} ) 
+
 
 module.exports = mongoose.model('Profile', profileSchema, 'profiles')

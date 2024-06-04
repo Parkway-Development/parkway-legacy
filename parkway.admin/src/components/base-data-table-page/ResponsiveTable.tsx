@@ -4,11 +4,11 @@ import { ReactNode } from 'react';
 import { BaseEntity } from '../../types';
 import { useNavigate } from 'react-router-dom';
 
-export type ResponsiveTableProps<T extends BaseEntity> = {
+export interface ResponsiveTableProps<T extends BaseEntity> {
   data: T[];
   rowKey: (record: T) => string;
   responsiveCardRenderer: (item: T) => ReactNode;
-};
+}
 
 const ResponsiveTable = <T extends BaseEntity>({
   data,
