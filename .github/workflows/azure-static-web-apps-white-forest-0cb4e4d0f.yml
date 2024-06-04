@@ -36,6 +36,6 @@ jobs:
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_WHITE_FOREST_0CB4E4D0F }}
           repo_token: ${{ secrets.GITHUB_TOKEN }} # Used for Github integrations (i.e. PR comments)
-          action: deploy
+          action: "upload"
           app_location: "./parkway.admin"
           output_location: "./parkway.admin/dist"
