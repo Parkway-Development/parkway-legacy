@@ -4,6 +4,7 @@ import { UserNameDisplay } from '../user-name-display';
 import DateDisplay from '../date-display';
 import BooleanDisplay from '../boolean-display/BooleanDisplay.tsx';
 import EventCategoryDisplay from '../event-category-display';
+import TeamNameDisplay from '../team-name-display';
 
 const EventDisplay = (event: Event) => {
   const items: DescriptionsProps['items'] = [
@@ -50,7 +51,15 @@ const EventDisplay = (event: Event) => {
     {
       key: 9,
       label: 'Teams',
-      children: event.teams
+      children: event.teams?.length ? (
+        <ul>
+          {event.teams?.map((t) => (
+            <li key={t}>
+              <TeamNameDisplay team={t} />
+            </li>
+          ))}
+        </ul>
+      ) : null
     }
   ];
 
