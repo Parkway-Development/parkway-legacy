@@ -56,6 +56,7 @@ import {
 import {
   AddEventPage,
   EditEventPage,
+  EventPage,
   EventsPage
 } from './components/events-page';
 import {
@@ -164,6 +165,7 @@ createRoot(document.getElementById('root')!).render(
                   <Route index element={<EventCategoriesPage />} />
                 </Route>
                 <Route path="add" element={<AddEventPage />} />
+                <Route path=":id" element={<EventPage />} />
                 <Route path=":id/edit" element={<EditEventPage />} />
                 <Route index element={<EventsPage />} />
               </Route>

@@ -56,7 +56,7 @@ const Calendar = () => {
 
   const navigateToItem = (event: Event, e?: SyntheticEvent<HTMLLIElement>) => {
     e?.stopPropagation();
-    navigate(`/events/${event._id}/edit`);
+    navigate(`/events/${event._id}`);
   };
 
   if (date) {
