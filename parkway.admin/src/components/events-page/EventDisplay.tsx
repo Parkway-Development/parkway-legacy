@@ -3,6 +3,7 @@ import { Descriptions, DescriptionsProps } from 'antd';
 import { UserNameDisplay } from '../user-name-display';
 import DateDisplay from '../date-display';
 import BooleanDisplay from '../boolean-display/BooleanDisplay.tsx';
+import EventCategoryDisplay from '../event-category-display';
 
 const EventDisplay = (event: Event) => {
   const items: DescriptionsProps['items'] = [
@@ -44,7 +45,7 @@ const EventDisplay = (event: Event) => {
     {
       key: 8,
       label: 'Category',
-      children: event.category
+      children: <EventCategoryDisplay eventCategory={event.category} />
     },
     {
       key: 9,

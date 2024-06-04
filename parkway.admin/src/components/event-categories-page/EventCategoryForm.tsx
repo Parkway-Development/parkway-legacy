@@ -4,7 +4,7 @@ import { EventCategory } from '../../types';
 import { AddBaseApiFormProps, BaseFormFooter } from '../base-data-table-page';
 import { Color } from 'antd/lib/color-picker';
 import styles from './EventCategoryForm.module.css';
-import EventCategoryDisplay from './EventCategoryDisplay.tsx';
+import EventCategoryDisplay from '../event-category-display';
 
 type EventCategoryWithoutId = Omit<EventCategory, '_id'>;
 
@@ -78,9 +78,11 @@ const EventCategoryForm = ({
         <div className={styles.previewContainer}>
           <span className={styles.label}>Preview:</span>
           <EventCategoryDisplay
-            name={nameValue}
-            backgroundColor={backgroundColorString}
-            fontColor={fontColorString}
+            eventCategory={{
+              name: nameValue,
+              backgroundColor: backgroundColorString,
+              fontColor: fontColorString
+            }}
           />
         </div>
 

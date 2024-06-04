@@ -5,7 +5,7 @@ import {
 } from '../base-data-table-page';
 import { BaseDisplayPage } from '../base-display-page/BaseDisplayPage.tsx';
 import { SharedBasePageProps } from '../base-data-table-page/types.ts';
-import EventCategoryDisplay from './EventCategoryDisplay.tsx';
+import EventCategoryDisplay from '../event-category-display';
 import EventCategoryForm from './EventCategoryForm.tsx';
 import { eventCategoryColumns } from './columns.tsx';
 import { EventCategory } from '../../types';
@@ -29,7 +29,9 @@ const EventCategoriesPage = () => (
 const EventCategoryPage = () => (
   <BaseDisplayPage
     {...sharedProps}
-    render={(item: EventCategory) => <EventCategoryDisplay {...item} />}
+    render={(item: EventCategory) => (
+      <EventCategoryDisplay eventCategory={item} />
+    )}
   />
 );
 

@@ -34,7 +34,7 @@ export const EventCategoryDisplayById = ({
   const eventCategory = response.data.find((category) => category._id === id);
 
   return eventCategory ? (
-    <EventCategoryDisplay {...eventCategory} isSmall={isSmall} />
+    <EventCategoryDisplay eventCategory={eventCategory} isSmall={isSmall} />
   ) : (
     <WarningOutlined />
   );

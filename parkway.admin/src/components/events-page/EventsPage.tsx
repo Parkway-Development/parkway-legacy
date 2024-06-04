@@ -6,7 +6,7 @@ import DateDisplay from '../date-display';
 import { useState } from 'react';
 import Calendar from './Calendar.tsx';
 import { Switch } from 'antd';
-import { EventCategoryDisplayById } from '../event-categories-page/EventCategoryDisplayById.tsx';
+import { EventCategoryDisplayById } from '../event-category-display/EventCategoryDisplayById.tsx';
 import styles from './EventsPage.module.css';
 import { Link } from 'react-router-dom';
 
