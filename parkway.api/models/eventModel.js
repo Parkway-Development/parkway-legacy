@@ -83,7 +83,43 @@ const eventSchema = new mongoose.Schema({
         required: false,
         type: mongoose.Schema.Types.ObjectId,
         ref: 'EventSchedule'
-    }
+    },
+    allowRegistrations: {
+        required: true,
+        type: Boolean,
+        default: false
+    },
+    registrationSlots: [{
+        slotId: {
+            required: true,
+            type: String
+        },
+        name: {
+            required: true,
+            type: String
+        },
+        description: {
+            required: false,
+            type: String
+        },
+        start: {
+            required: true,
+            type: Date
+        },
+        end: {
+            required: true,
+            type: Date
+        },
+        available: {
+            required: true,
+            type: Boolean,
+            default: true
+        },
+        deleted: {
+            required: false,
+            type: Date
+        }
+    }]
 });
 
 module.exports = mongoose.model('Event', eventSchema, 'events')

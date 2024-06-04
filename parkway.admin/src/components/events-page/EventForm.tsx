@@ -1,11 +1,11 @@
 import { Breadcrumb, Checkbox, DatePicker, Form, Input, Radio } from 'antd';
 import { Link, useParams } from 'react-router-dom';
 import UserProfileSelect from '../user-profile-select';
-import { Event } from '../../types';
+import { Event, RegistrationSlot } from '../../types';
 import { AddBaseApiFormProps, BaseFormFooter } from '../base-data-table-page';
 import { isSameDate, transformDateToDayjs } from '../../utilities';
 import { Dayjs } from 'dayjs';
-import { useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import styles from './EventForm.module.css';
 import DeleteButton from '../delete-button';
 import useApi from '../../hooks/useApi.ts';
@@ -21,6 +21,7 @@ import TimeSelect, {
   getTimeSelectValue,
   isEndTimeAfterStart
 } from '../time-select';
+import RegistrationSlotInput from './RegistrationSlotInput.tsx';
 
 type EventWithoutId = Omit<Event, '_id'>;
 
@@ -132,7 +133,22 @@ const EventForm = ({
   const weekDays = Form.useWatch(['schedule', 'week_days'], form);
   const monthWeeks = Form.useWatch(['schedule', 'month_weeks'], form);
   const allDay = Form.useWatch('allDay', form);
+  const allowRegistrations = Form.useWatch('allowRegistrations', form);
   const updateSeries = Form.useWatch('updateSeries', form);
+  const startDate = Form.useWatch('startDate', form);
+  const endDate = Form.useWatch('endDate', form);
+  const startTime = Form.useWatch('startTime', form);
+  const endTime = Form.useWatch('endTime', form);
+
+  const eventDates = useMemo(
+    () => ({
+      startDate,
+      startTime,
+      endDate,
+      endTime
+    }),
+    [endDate, endTime, startDate, startTime]
+  );
 
   const deleteFn =
     !initialValues || !updateSeries || updateSeries === 'this'
@@ -259,6 +275,15 @@ const EventForm = ({
       teams: values
     });
   };
+
+  const handleRegistrationSlotsChange = useCallback(
+    (registrationSlots: RegistrationSlot[]) => {
+      form.setFieldsValue({
+        registrationSlots
+      });
+    },
+    [form]
+  );
 
   return (
     <>
@@ -532,6 +557,31 @@ const EventForm = ({
             onChange={handleTeamsChange}
           />
         </Form.Item>
+
+        <Form.Item<EventFormFields>
+          label="Allow Registrations"
+          name="allowRegistrations"
+        >
+          <Checkbox
+            checked={allowRegistrations}
+            onChange={(e) =>
+              form.setFieldsValue({ allowRegistrations: e.target.checked })
+            }
+          />
+        </Form.Item>
+
+        {allowRegistrations && (
+          <Form.Item<EventFormFields>
+            label="Registration Slots"
+            name="registrationSlots"
+          >
+            <RegistrationSlotInput
+              onChange={handleRegistrationSlotsChange}
+              initialValue={initialValues?.registrationSlots ?? []}
+              eventDates={eventDates}
+            />
+          </Form.Item>
+        )}
 
         {initialValues?.schedule && (
           <Form.Item<EventFormFields> label="Series Update" name="updateSeries">
