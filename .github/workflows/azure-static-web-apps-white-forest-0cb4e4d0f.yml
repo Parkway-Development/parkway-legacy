@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - dev
+    paths:
+      - 'parkway.admin/**'
 
   workflow_dispatch:
 
