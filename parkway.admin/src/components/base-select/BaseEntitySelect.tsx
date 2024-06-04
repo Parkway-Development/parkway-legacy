@@ -28,6 +28,7 @@ type BaseEntitySelectProps<
   queryKey: QueryType;
   baseApiType: TBaseApiKey;
   renderer: (value: T) => string;
+  enabledIds?: string[];
 };
 
 export const BaseEntitySelect = <
