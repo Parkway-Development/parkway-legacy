@@ -1,3 +1,5 @@
+@import '../../styles/_mixins.scss';
+
 .childrenList {
     margin: 0;
     padding: 0 0 0 1em;
@@ -8,12 +10,7 @@
 }
 
 .registrationSlots {
-    border-collapse: collapse;
-
-    th, td {
-        border: 1px solid #000;
-        padding: 0 8px;
-    }
+    @include collapsedTable;
 
     td:not(:first-child) {
         text-align: center;

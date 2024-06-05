@@ -1,0 +1,10 @@
+@import './variables';
+
+@mixin collapsedTable() {
+  border-collapse: collapse;
+
+  th, td {
+    border: 1px solid $border-color;
+    padding: 0 8px;
+  }
+}

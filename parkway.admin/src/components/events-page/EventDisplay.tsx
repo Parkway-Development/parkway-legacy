@@ -5,7 +5,7 @@ import DateDisplay from '../date-display';
 import BooleanDisplay from '../boolean-display/BooleanDisplay.tsx';
 import EventCategoryDisplay from '../event-category-display';
 import TeamNameDisplay from '../team-name-display';
-import styles from './EventDisplay.module.css';
+import styles from './EventDisplay.module.scss';
 
 const EventDisplay = (event: Event) => {
   const items: DescriptionsProps['items'] = [

@@ -1,6 +1,6 @@
 import { RegistrationSlot } from '../../types';
 import { useEffect, useRef, useState } from 'react';
-import styles from './RegistrationSlotInput.module.css';
+import styles from './RegistrationSlotInput.module.scss';
 import DateDisplay from '../date-display';
 import BooleanDisplay from '../boolean-display/BooleanDisplay.tsx';
 import { Button, Checkbox, DatePicker, Form, Input, Modal } from 'antd';

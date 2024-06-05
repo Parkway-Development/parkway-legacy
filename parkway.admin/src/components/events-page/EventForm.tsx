@@ -1,5 +1,5 @@
 import { Breadcrumb, Checkbox, DatePicker, Form, Input, Radio } from 'antd';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import UserProfileSelect from '../user-profile-select';
 import { Event, RegistrationSlot } from '../../types';
 import { AddBaseApiFormProps, BaseFormFooter } from '../base-data-table-page';
@@ -110,14 +110,10 @@ const monthWeekOptions: BaseSelectionProps<number>['options'] = [
   }
 ];
 
-const EventForm = ({
-  isSaving,
-  initialValues,
-  onSave,
-  onCancel
-}: EventFormProps) => {
+const EventForm = ({ isSaving, initialValues, onSave }: EventFormProps) => {
   const { hasClaim, user } = useAuth();
   const params = useParams();
+  const navigate = useNavigate();
   const id = params.id;
   const searchParams = new URLSearchParams(window.location.search);
   const date = searchParams.get('date');
@@ -139,6 +135,8 @@ const EventForm = ({
   const endDate = Form.useWatch('endDate', form);
   const startTime = Form.useWatch('startTime', form);
   const endTime = Form.useWatch('endTime', form);
+
+  const handleCancel = () => navigate(`/events/${id}`);
 
   const eventDates = useMemo(
     () => ({
@@ -596,13 +594,13 @@ const EventForm = ({
         <BaseFormFooter
           isDisabled={isSaving}
           isLoading={isSaving}
-          onCancel={onCancel}
+          onCancel={handleCancel}
         >
           {initialValues && id && (
             <DeleteButton
               id={id}
               deleteFn={deleteFn}
-              onSuccess={onCancel}
+              onSuccess={handleCancel}
               isIconButton={false}
             />
           )}

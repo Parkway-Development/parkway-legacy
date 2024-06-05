@@ -10,7 +10,7 @@ import {
 import { Dayjs } from 'dayjs';
 import useApi, { buildQueryKey } from '../../hooks/useApi.ts';
 import { useQuery } from '@tanstack/react-query';
-import styles from './Calendar.module.css';
+import styles from './Calendar.module.scss';
 import { Event } from '../../types';
 import { isSameDate } from '../../utilities';
 import { useNavigate } from 'react-router-dom';
