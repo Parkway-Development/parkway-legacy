@@ -1,5 +1,6 @@
 import {
   Alert,
+  Button,
   Calendar as CalendarControl,
   Col,
   Row,
@@ -10,7 +11,7 @@ import {
 import { Dayjs } from 'dayjs';
 import useApi, { buildQueryKey } from '../../hooks/useApi.ts';
 import { useQuery } from '@tanstack/react-query';
-import styles from './Calendar.module.css';
+import styles from './Calendar.module.scss';
 import { Event } from '../../types';
 import { isSameDate } from '../../utilities';
 import { useNavigate } from 'react-router-dom';
@@ -56,7 +57,7 @@ const Calendar = () => {
 
   const navigateToItem = (event: Event, e?: SyntheticEvent<HTMLLIElement>) => {
     e?.stopPropagation();
-    navigate(`/events/${event._id}/edit`);
+    navigate(`/events/${event._id}`);
   };
 
   if (date) {
@@ -150,6 +151,9 @@ const Calendar = () => {
 
         const year = value.year();
         const month = value.month();
+        const previousMonth = value.add(-1, 'month');
+        const nextMonth = value.add(1, 'month');
+
         const options = [];
         for (let i = year - 10; i < year + 10; i += 1) {
           options.push(
@@ -161,6 +165,11 @@ const Calendar = () => {
         return (
           <div style={{ padding: 8 }}>
             <Row gutter={8}>
+              <Col>
+                <Button size="small" onClick={() => onChange(previousMonth)}>
+                  Previous
+                </Button>
+              </Col>
               <Col>
                 <Select
                   size="small"
@@ -187,6 +196,11 @@ const Calendar = () => {
                 >
                   {monthOptions}
                 </Select>
+              </Col>
+              <Col>
+                <Button size="small" onClick={() => onChange(nextMonth)}>
+                  Next
+                </Button>
               </Col>
             </Row>
           </div>

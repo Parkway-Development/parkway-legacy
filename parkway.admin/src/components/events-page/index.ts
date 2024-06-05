@@ -1,5 +1,4 @@
-import AddEventPage from './AddEventPage.tsx';
-import EditEventPage from './EditEventPage.tsx';
+import { AddEventPage, EditEventPage, EventPage } from './EventPages.tsx';
 import EventsPage from './EventsPage.tsx';
 
-export { AddEventPage, EditEventPage, EventsPage };
+export { AddEventPage, EditEventPage, EventsPage, EventPage };

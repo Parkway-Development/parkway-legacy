@@ -6,15 +6,19 @@ import DateDisplay from '../date-display';
 import { useState } from 'react';
 import Calendar from './Calendar.tsx';
 import { Switch } from 'antd';
-import { EventCategoryDisplayById } from '../event-categories-page/EventCategoryDisplayById.tsx';
+import { EventCategoryDisplayById } from '../event-category-display/EventCategoryDisplayById.tsx';
 import styles from './EventsPage.module.css';
+import { Link } from 'react-router-dom';
 
 const eventColumns: OrderedColumnsType<Event> = [
   {
     title: 'Name',
     dataIndex: 'name',
     key: 'name',
-    displayOrder: 1
+    displayOrder: 1,
+    render: (value: Event['name'], event) => (
+      <Link to={`/events/${event._id}`}>{value}</Link>
+    )
   },
   {
     title: 'Description',

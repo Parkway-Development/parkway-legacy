@@ -1,11 +1,11 @@
 import { Breadcrumb, Checkbox, DatePicker, Form, Input, Radio } from 'antd';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import UserProfileSelect from '../user-profile-select';
-import { Event } from '../../types';
+import { Event, RegistrationSlot } from '../../types';
 import { AddBaseApiFormProps, BaseFormFooter } from '../base-data-table-page';
 import { isSameDate, transformDateToDayjs } from '../../utilities';
 import { Dayjs } from 'dayjs';
-import { useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import styles from './EventForm.module.css';
 import DeleteButton from '../delete-button';
 import useApi from '../../hooks/useApi.ts';
@@ -21,15 +21,20 @@ import TimeSelect, {
   getTimeSelectValue,
   isEndTimeAfterStart
 } from '../time-select';
+import RegistrationSlotInput from './RegistrationSlotInput.tsx';
+import { EventSchedule } from '../../types/EventSchedule.ts';
 
 type EventWithoutId = Omit<Event, '_id'>;
 
-type EventFormFields = Omit<EventWithoutId, 'start' | 'end'> & {
+type EventFormFields = Omit<EventWithoutId, 'start' | 'end' | 'schedule'> & {
   startDate: Dayjs;
   startTime: string;
   endDate: Dayjs;
   endTime: string;
   updateSeries?: 'this' | 'future' | 'all';
+  schedule: Omit<EventSchedule, 'end_date'> & {
+    end_date: Dayjs;
+  };
 };
 
 type EventFormProps = AddBaseApiFormProps<Event> & {
@@ -55,7 +60,9 @@ const frequencyOptions: BaseSelectionProps<string>['options'] = [
   }
 ];
 
-const weekDayOptions: BaseSelectionProps<number>['options'] = [
+export const weekDayOptions: NonNullable<
+  BaseSelectionProps<number>['options']
+> = [
   {
     label: 'Sunday',
     value: 0
@@ -86,7 +93,9 @@ const weekDayOptions: BaseSelectionProps<number>['options'] = [
   }
 ];
 
-const monthWeekOptions: BaseSelectionProps<number>['options'] = [
+export const monthWeekOptions: NonNullable<
+  BaseSelectionProps<number>['options']
+> = [
   {
     label: 'First',
     value: 1
@@ -109,14 +118,10 @@ const monthWeekOptions: BaseSelectionProps<number>['options'] = [
   }
 ];
 
-const EventForm = ({
-  isSaving,
-  initialValues,
-  onSave,
-  onCancel
-}: EventFormProps) => {
+const EventForm = ({ isSaving, initialValues, onSave }: EventFormProps) => {
   const { hasClaim, user } = useAuth();
   const params = useParams();
+  const navigate = useNavigate();
   const id = params.id;
   const searchParams = new URLSearchParams(window.location.search);
   const date = searchParams.get('date');
@@ -132,7 +137,24 @@ const EventForm = ({
   const weekDays = Form.useWatch(['schedule', 'week_days'], form);
   const monthWeeks = Form.useWatch(['schedule', 'month_weeks'], form);
   const allDay = Form.useWatch('allDay', form);
+  const allowRegistrations = Form.useWatch('allowRegistrations', form);
   const updateSeries = Form.useWatch('updateSeries', form);
+  const startDate = Form.useWatch('startDate', form);
+  const endDate = Form.useWatch('endDate', form);
+  const startTime = Form.useWatch('startTime', form);
+  const endTime = Form.useWatch('endTime', form);
+
+  const handleCancel = () => navigate(`/events/${id}`);
+
+  const eventDates = useMemo(
+    () => ({
+      startDate,
+      startTime,
+      endDate,
+      endTime
+    }),
+    [endDate, endTime, startDate, startTime]
+  );
 
   const deleteFn =
     !initialValues || !updateSeries || updateSeries === 'this'
@@ -161,6 +183,12 @@ const EventForm = ({
         startTime: getTimeSelectValue(new Date(initialValues.start)),
         endDate: transformDateToDayjs(initialValues.end),
         endTime: getTimeSelectValue(new Date(initialValues.end)),
+        schedule: initialValues.schedule
+          ? {
+              ...initialValues.schedule,
+              end_date: transformDateToDayjs(initialValues.schedule?.end_date)
+            }
+          : undefined,
         updateSeries: 'this'
       }
     : addDate
@@ -214,7 +242,13 @@ const EventForm = ({
       ...remaining,
       allDay,
       start,
-      end
+      end,
+      schedule: remaining.schedule
+        ? {
+            ...remaining.schedule,
+            end_date: remaining.schedule.end_date?.toDate()
+          }
+        : undefined
     };
 
     onSave(finalPayload);
@@ -260,6 +294,15 @@ const EventForm = ({
     });
   };
 
+  const handleRegistrationSlotsChange = useCallback(
+    (registrationSlots: RegistrationSlot[]) => {
+      form.setFieldsValue({
+        registrationSlots
+      });
+    },
+    [form]
+  );
+
   return (
     <>
       <Breadcrumb
@@ -293,7 +336,7 @@ const EventForm = ({
         {initialValues && (
           <Form.Item<EventFormFields> label="Status" name="status">
             <EventStatus
-              schedule={initial.schedule}
+              hasSchedule={!!initial.schedule}
               status={initial.status}
               isCalendarAdmin={isCalendarAdmin}
               eventId={id!}
@@ -533,6 +576,31 @@ const EventForm = ({
           />
         </Form.Item>
 
+        <Form.Item<EventFormFields>
+          label="Allow Registrations"
+          name="allowRegistrations"
+        >
+          <Checkbox
+            checked={allowRegistrations}
+            onChange={(e) =>
+              form.setFieldsValue({ allowRegistrations: e.target.checked })
+            }
+          />
+        </Form.Item>
+
+        {allowRegistrations && (
+          <Form.Item<EventFormFields>
+            label="Registration Slots"
+            name="registrationSlots"
+          >
+            <RegistrationSlotInput
+              onChange={handleRegistrationSlotsChange}
+              initialValue={initialValues?.registrationSlots ?? []}
+              eventDates={eventDates}
+            />
+          </Form.Item>
+        )}
+
         {initialValues?.schedule && (
           <Form.Item<EventFormFields> label="Series Update" name="updateSeries">
             <Radio.Group>
@@ -546,13 +614,13 @@ const EventForm = ({
         <BaseFormFooter
           isDisabled={isSaving}
           isLoading={isSaving}
-          onCancel={onCancel}
+          onCancel={handleCancel}
         >
           {initialValues && id && (
             <DeleteButton
               id={id}
               deleteFn={deleteFn}
-              onSuccess={onCancel}
+              onSuccess={handleCancel}
               isIconButton={false}
             />
           )}

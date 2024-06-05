@@ -1,0 +1,24 @@
+@import '../../styles/mixins';
+
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+    align-items: flex-start;
+
+    table {
+        @include collapsedTable;
+
+        td:not(:nth-child(2)) {
+            text-align: center;
+        }
+
+        .dateColumn {
+            width: 160px;
+        }
+
+        .openColumn {
+            width: 40px;
+        }
+    }
+}

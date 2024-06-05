@@ -179,7 +179,9 @@ const updateEventById = async (req, res) => {
             allDay: req.body.allDay,
             location: req.body.location ?? null,
             category: req.body.category ?? null,
-            teams: req.body.teams
+            teams: req.body.teams,
+            allowRegistrations: req.body.allowRegistrations ?? false,
+            registrationSlots: req.body.registrationSlots
         };
 
         const { updateSeries, schedule } = req.body;
