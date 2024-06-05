@@ -3,15 +3,17 @@ import { useEffect, useRef, useState } from 'react';
 import styles from './RegistrationSlotInput.module.scss';
 import DateDisplay from '../date-display';
 import BooleanDisplay from '../boolean-display/BooleanDisplay.tsx';
-import { Button, Checkbox, DatePicker, Form, Input, Modal } from 'antd';
+import { Alert, Button, Checkbox, DatePicker, Form, Input, Modal } from 'antd';
 import { BaseFormFooter } from '../base-data-table-page';
 import { Dayjs } from 'dayjs';
 import TimeSelect, {
   getTimeSelectHours,
   getTimeSelectMinutes,
+  getTimeSelectValue,
   isEndTimeAfterStart
 } from '../time-select';
-import { isSameDate } from '../../utilities';
+import { isSameDate, transformDateToDayjs } from '../../utilities';
+import { EditOutlined } from '@ant-design/icons';
 
 interface RegistrationSlotInputProps {
   onChange: (registrationSlots: RegistrationSlot[], isValid: boolean) => void;
@@ -29,7 +31,9 @@ const RegistrationSlotInput = ({
   initialValue,
   eventDates
 }: RegistrationSlotInputProps) => {
+  const [hasPendingChanges, setHasPendingChanges] = useState<boolean>(false);
   const slotsRef = useRef<RegistrationSlot[]>(initialValue);
+  const [editSlot, setEditSlot] = useState<RegistrationSlot>();
   const [registrationSlots, setRegistrationSlots] =
     useState<RegistrationSlot[]>(initialValue);
 
@@ -40,8 +44,18 @@ const RegistrationSlotInput = ({
     }
   }, [onChange, registrationSlots]);
 
-  const handleAdd = (registrationSlot: RegistrationSlot) => {
-    setRegistrationSlots((prev) => [...prev, registrationSlot]);
+  const handleSave = (registrationSlot: RegistrationSlot, isNew: boolean) => {
+    if (isNew) {
+      setRegistrationSlots((prev) => [...prev, registrationSlot]);
+    } else {
+      setRegistrationSlots((prev) =>
+        prev.map((p) =>
+          p.slotId === registrationSlot.slotId ? registrationSlot : p
+        )
+      );
+    }
+
+    setHasPendingChanges(true);
   };
 
   const rows = registrationSlots
@@ -49,6 +63,25 @@ const RegistrationSlotInput = ({
     .map((input) => {
       return (
         <tr key={input.slotId}>
+          <td>
+            <Button
+              size="small"
+              type="text"
+              onClick={() => {
+                const registrationInput = {
+                  ...input,
+                  startDate: transformDateToDayjs(input.start),
+                  startTime: getTimeSelectValue(new Date(input.start)),
+                  endDate: transformDateToDayjs(input.end),
+                  endTime: getTimeSelectValue(new Date(input.end))
+                };
+
+                setEditSlot(registrationInput);
+              }}
+            >
+              <EditOutlined />
+            </Button>
+          </td>
           <td>{input.name}</td>
           <td>
             <DateDisplay date={input.start} displayTime />
@@ -65,9 +98,10 @@ const RegistrationSlotInput = ({
 
   return (
     <div className={styles.container}>
-      <AddModal
-        onAdd={handleAdd}
-        registrationSlot={{
+      <AddEditModal
+        onSave={handleSave}
+        registrationSlot={editSlot}
+        defaultValues={{
           slotId: '',
           name: '',
           description: '',
@@ -78,6 +112,7 @@ const RegistrationSlotInput = ({
       <table>
         <thead>
           <tr>
+            <th>&nbsp;</th>
             <th>Name</th>
             <th className={styles.dateColumn}>Start</th>
             <th className={styles.dateColumn}>End</th>
@@ -86,6 +121,12 @@ const RegistrationSlotInput = ({
         </thead>
         <tbody>{rows}</tbody>
       </table>
+      {hasPendingChanges && (
+        <Alert
+          message="Changes are not persisted until you click Submit"
+          type="warning"
+        />
+      )}
     </div>
   );
 };
@@ -98,25 +139,34 @@ type RegistrationSlotFormFields = Omit<RegistrationSlot, 'start' | 'end'> & {
 };
 
 type AddModalProps = {
-  registrationSlot: RegistrationSlotFormFields;
-  onAdd: (registrationSlot: RegistrationSlot) => void;
+  registrationSlot: RegistrationSlotFormFields | undefined;
+  defaultValues: RegistrationSlotFormFields;
+  onSave: (registrationSlot: RegistrationSlot, isNew: boolean) => void;
 };
 
-const AddModal = ({ onAdd, registrationSlot }: AddModalProps) => {
+const AddEditModal = ({
+  onSave,
+  registrationSlot,
+  defaultValues
+}: AddModalProps) => {
+  const slotId = useRef<string>();
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [modalForm] = Form.useForm<RegistrationSlotFormFields>();
   const available = Form.useWatch('available', modalForm);
 
-  const initialValues: Omit<RegistrationSlotFormFields, 'slotId'> = {
-    ...registrationSlot
-  };
+  useEffect(() => {
+    if (registrationSlot?.slotId) {
+      modalForm.setFieldsValue(registrationSlot);
+      slotId.current = registrationSlot.slotId;
+      setIsModalOpen(true);
+    }
+  }, [modalForm, registrationSlot]);
 
   const handleModalSave = (values: RegistrationSlotFormFields) => {
     const { startDate, startTime, endDate, endTime, ...remaining } = values;
 
-    if (registrationSlot.slotId === '') {
-      remaining.slotId = crypto.randomUUID();
-    }
+    remaining.slotId = slotId.current ?? crypto.randomUUID();
+
     const start = startDate!.toDate();
     const end = endDate!.toDate();
 
@@ -134,12 +184,15 @@ const AddModal = ({ onAdd, registrationSlot }: AddModalProps) => {
       end
     };
 
-    onAdd(finalValues);
-    modalForm.resetFields();
+    onSave(finalValues, slotId.current === undefined);
+    modalForm.setFieldsValue(defaultValues);
+    slotId.current = undefined;
     setIsModalOpen(false);
   };
 
   const handleModalCancel = () => {
+    modalForm.setFieldsValue(defaultValues);
+    slotId.current = undefined;
     setIsModalOpen(false);
   };
 
@@ -188,7 +241,6 @@ const AddModal = ({ onAdd, registrationSlot }: AddModalProps) => {
           wrapperCol={{ span: 12 }}
           onFinish={handleModalSave}
           autoComplete="off"
-          initialValues={initialValues}
         >
           <Form.Item<RegistrationSlotFormFields>
             label="Name"

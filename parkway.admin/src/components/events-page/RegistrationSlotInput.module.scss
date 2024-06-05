@@ -9,7 +9,7 @@
     table {
         @include collapsedTable;
 
-        td:not(:first-child) {
+        td:not(:nth-child(2)) {
             text-align: center;
         }
 
