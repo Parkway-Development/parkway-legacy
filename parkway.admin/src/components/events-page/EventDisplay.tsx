@@ -6,6 +6,8 @@ import BooleanDisplay from '../boolean-display/BooleanDisplay.tsx';
 import EventCategoryDisplay from '../event-category-display';
 import TeamNameDisplay from '../team-name-display';
 import styles from './EventDisplay.module.scss';
+import { EventSchedule } from '../../types/EventSchedule.ts';
+import { monthWeekOptions, weekDayOptions } from './EventForm.tsx';
 
 const EventDisplay = (event: Event) => {
   const items: DescriptionsProps['items'] = [
@@ -42,8 +44,7 @@ const EventDisplay = (event: Event) => {
     {
       key: 7,
       label: 'Repeats',
-      // TODO: Fill out schedule details here
-      children: event.schedule ? 'Has schedule' : 'No'
+      children: <EventScheduleSummary schedule={event.schedule} />
     },
     {
       key: 8,
@@ -129,6 +130,52 @@ const EventDisplay = (event: Event) => {
       />
       {registrationSlots}
     </>
+  );
+};
+
+interface EventScheduleSummaryProps {
+  schedule: EventSchedule | undefined;
+}
+
+const EventScheduleSummary = ({ schedule }: EventScheduleSummaryProps) => {
+  if (!schedule) return <span>No</span>;
+
+  const { interval, frequency, week_days, month_weeks, end_date } = schedule;
+
+  let result = '';
+
+  if (frequency === 'custom') {
+    const weeks = month_weeks
+      ?.map((week) => monthWeekOptions.find((o) => o.value === week)?.label)
+      .filter((x) => x !== undefined)
+      .join(', ');
+    const days = week_days
+      ?.map((day) => weekDayOptions.find((o) => o.value === day)?.label)
+      .filter((x) => x !== undefined)
+      .join(', ');
+    result = `The ${weeks} monthly occurrences on ${days}`;
+  } else {
+    result = `Every ${interval} `;
+
+    if (frequency === 'weekly') {
+      result += 'week(s)';
+    } else if (frequency === 'yearly') {
+      result += 'year(s)';
+    } else {
+      result += 'month(s)';
+    }
+  }
+
+  return (
+    <span>
+      {result}
+      {end_date && (
+        <>
+          {' '}
+          until <DateDisplay date={end_date} />
+        </>
+      )}
+    </span>
   );
 };
 

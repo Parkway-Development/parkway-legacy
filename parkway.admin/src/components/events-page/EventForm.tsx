@@ -22,15 +22,19 @@ import TimeSelect, {
   isEndTimeAfterStart
 } from '../time-select';
 import RegistrationSlotInput from './RegistrationSlotInput.tsx';
+import { EventSchedule } from '../../types/EventSchedule.ts';
 
 type EventWithoutId = Omit<Event, '_id'>;
 
-type EventFormFields = Omit<EventWithoutId, 'start' | 'end'> & {
+type EventFormFields = Omit<EventWithoutId, 'start' | 'end' | 'schedule'> & {
   startDate: Dayjs;
   startTime: string;
   endDate: Dayjs;
   endTime: string;
   updateSeries?: 'this' | 'future' | 'all';
+  schedule: Omit<EventSchedule, 'end_date'> & {
+    end_date: Dayjs;
+  };
 };
 
 type EventFormProps = AddBaseApiFormProps<Event> & {
@@ -56,7 +60,9 @@ const frequencyOptions: BaseSelectionProps<string>['options'] = [
   }
 ];
 
-const weekDayOptions: BaseSelectionProps<number>['options'] = [
+export const weekDayOptions: NonNullable<
+  BaseSelectionProps<number>['options']
+> = [
   {
     label: 'Sunday',
     value: 0
@@ -87,7 +93,9 @@ const weekDayOptions: BaseSelectionProps<number>['options'] = [
   }
 ];
 
-const monthWeekOptions: BaseSelectionProps<number>['options'] = [
+export const monthWeekOptions: NonNullable<
+  BaseSelectionProps<number>['options']
+> = [
   {
     label: 'First',
     value: 1
@@ -175,6 +183,12 @@ const EventForm = ({ isSaving, initialValues, onSave }: EventFormProps) => {
         startTime: getTimeSelectValue(new Date(initialValues.start)),
         endDate: transformDateToDayjs(initialValues.end),
         endTime: getTimeSelectValue(new Date(initialValues.end)),
+        schedule: initialValues.schedule
+          ? {
+              ...initialValues.schedule,
+              end_date: transformDateToDayjs(initialValues.schedule?.end_date)
+            }
+          : undefined,
         updateSeries: 'this'
       }
     : addDate
@@ -228,7 +242,13 @@ const EventForm = ({ isSaving, initialValues, onSave }: EventFormProps) => {
       ...remaining,
       allDay,
       start,
-      end
+      end,
+      schedule: remaining.schedule
+        ? {
+            ...remaining.schedule,
+            end_date: remaining.schedule.end_date?.toDate()
+          }
+        : undefined
     };
 
     onSave(finalPayload);
@@ -316,7 +336,7 @@ const EventForm = ({ isSaving, initialValues, onSave }: EventFormProps) => {
         {initialValues && (
           <Form.Item<EventFormFields> label="Status" name="status">
             <EventStatus
-              schedule={initial.schedule}
+              hasSchedule={!!initial.schedule}
               status={initial.status}
               isCalendarAdmin={isCalendarAdmin}
               eventId={id!}
