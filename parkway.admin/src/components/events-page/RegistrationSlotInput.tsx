@@ -166,8 +166,10 @@ const AddEditModal = ({
       modalForm.setFieldsValue(registrationSlot);
       slotId.current = registrationSlot.slotId;
       setIsModalOpen(true);
+    } else if (defaultValues) {
+      modalForm.setFieldsValue(defaultValues);
     }
-  }, [modalForm, registrationSlot]);
+  }, [modalForm, registrationSlot, defaultValues]);
 
   const handleModalSave = (values: RegistrationSlotFormFields) => {
     const { startDate, startTime, endDate, endTime, ...remaining } = values;
