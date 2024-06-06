@@ -109,18 +109,25 @@ const RegistrationSlotInput = ({
           ...eventDates
         }}
       />
-      <table>
-        <thead>
-          <tr>
-            <th>&nbsp;</th>
-            <th>Name</th>
-            <th className={styles.dateColumn}>Start</th>
-            <th className={styles.dateColumn}>End</th>
-            <th className={styles.openColumn}>Open</th>
-          </tr>
-        </thead>
-        <tbody>{rows}</tbody>
-      </table>
+      {rows.length > 0 ? (
+        <table>
+          <thead>
+            <tr>
+              <th>&nbsp;</th>
+              <th>Name</th>
+              <th className={styles.dateColumn}>Start</th>
+              <th className={styles.dateColumn}>End</th>
+              <th className={styles.openColumn}>Open</th>
+            </tr>
+          </thead>
+          <tbody>{rows}</tbody>
+        </table>
+      ) : (
+        <span>
+          A general registration slot will be created automatically if no slots
+          are added.
+        </span>
+      )}
       {hasPendingChanges && (
         <Alert
           message="Changes are not persisted until you click Submit"

@@ -238,6 +238,18 @@ const EventForm = ({ isSaving, initialValues, onSave }: EventFormProps) => {
       end.setSeconds(0);
     }
 
+    if (remaining.allowRegistrations && !remaining.registrationSlots?.length) {
+      remaining.registrationSlots = [
+        {
+          slotId: crypto.randomUUID(),
+          start,
+          end,
+          name: 'General Registration',
+          available: true
+        }
+      ];
+    }
+
     const finalPayload: EventWithoutId = {
       ...remaining,
       allDay,
