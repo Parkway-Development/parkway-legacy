@@ -144,7 +144,7 @@ const EventScheduleSummary = ({ schedule }: EventScheduleSummaryProps) => {
 
   const { interval, frequency, week_days, month_weeks, end_date } = schedule;
 
-  let result = '';
+  let result;
 
   if (frequency === 'custom') {
     const weeks = month_weeks
