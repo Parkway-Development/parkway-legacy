@@ -8,6 +8,7 @@ import TeamNameDisplay from '../team-name-display';
 import styles from './EventDisplay.module.scss';
 import { EventSchedule } from '../../types/EventSchedule.ts';
 import { monthWeekOptions, weekDayOptions } from './EventForm.tsx';
+import RegisterUserModal from './RegisterUserModal.tsx';
 
 const EventDisplay = (event: Event) => {
   const items: DescriptionsProps['items'] = [
@@ -115,6 +116,7 @@ const EventDisplay = (event: Event) => {
           </thead>
           <tbody>{rows}</tbody>
         </table>
+        <RegisterUserModal slots={slotsToDisplay} eventId={event._id} />
       </div>
     );
   }
