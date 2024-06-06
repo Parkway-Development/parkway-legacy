@@ -1,5 +1,12 @@
-import { Event } from '../../types';
-import { Descriptions, DescriptionsProps } from 'antd';
+import { Event, RegistrationSlot } from '../../types';
+import {
+  Descriptions,
+  DescriptionsProps,
+  Table,
+  TableColumnsType,
+  Tabs,
+  TabsProps
+} from 'antd';
 import { UserNameDisplay } from '../user-name-display';
 import DateDisplay from '../date-display';
 import BooleanDisplay from '../boolean-display/BooleanDisplay.tsx';
@@ -9,6 +16,7 @@ import styles from './EventDisplay.module.scss';
 import { EventSchedule } from '../../types/EventSchedule.ts';
 import { monthWeekOptions, weekDayOptions } from './EventForm.tsx';
 import RegisterUserModal from './RegisterUserModal.tsx';
+import { EventRegistration } from '../../types/EventRegistration.ts';
 
 const EventDisplay = (event: Event) => {
   const items: DescriptionsProps['items'] = [
@@ -77,60 +85,23 @@ const EventDisplay = (event: Event) => {
     }
   ];
 
-  let registrationSlots = null;
-  const slotsToDisplay = event.registrationSlots?.filter(
-    (slot) => !slot.deleted
-  );
-
-  if (event.allowRegistrations && slotsToDisplay?.length) {
-    const rows = slotsToDisplay.map((input) => {
-      return (
-        <tr key={input.slotId}>
-          <td>{input.name}</td>
-          <td>{input.description}</td>
-          <td>
-            <DateDisplay date={input.start} displayTime />
-          </td>
-          <td>
-            <DateDisplay date={input.end} displayTime />
-          </td>
-          <td>
-            <BooleanDisplay value={input.available} />
-          </td>
-        </tr>
-      );
-    });
-
-    registrationSlots = (
-      <div className={styles.registrationSlotContainer}>
-        <h3>Registration Slots: ({slotsToDisplay.length})</h3>
-        <table className={styles.registrationSlots}>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Description</th>
-              <th className={styles.dateColumn}>Start</th>
-              <th className={styles.dateColumn}>End</th>
-              <th className={styles.openColumn}>Open</th>
-            </tr>
-          </thead>
-          <tbody>{rows}</tbody>
-        </table>
-        <RegisterUserModal slots={slotsToDisplay} eventId={event._id} />
-      </div>
-    );
-  }
+  const tabItems: TabsProps['items'] = [
+    {
+      key: '1',
+      label: 'Details',
+      children: <Descriptions size="small" items={items} bordered column={1} />
+    },
+    {
+      key: '2',
+      label: 'Registrations',
+      children: <RegistrationDisplay event={event} />
+    }
+  ];
 
   return (
     <>
-      <Descriptions
-        size="small"
-        title={event.name}
-        items={items}
-        bordered
-        column={1}
-      />
-      {registrationSlots}
+      <h3 className={styles.title}>{event.name}</h3>
+      <Tabs items={tabItems} />
     </>
   );
 };
@@ -178,6 +149,84 @@ const EventScheduleSummary = ({ schedule }: EventScheduleSummaryProps) => {
         </>
       )}
     </span>
+  );
+};
+
+const registrationDisplayColumns: TableColumnsType<RegistrationSlot> = [
+  { title: 'Name', key: 'name', dataIndex: 'name' },
+  { title: 'Description', key: 'description', dataIndex: 'description' },
+  {
+    title: 'Start',
+    key: 'start',
+    dataIndex: 'start',
+    render: (value: Date) => <DateDisplay date={value} displayTime />
+  },
+  {
+    title: 'End',
+    key: 'end',
+    dataIndex: 'end',
+    render: (value: Date) => <DateDisplay date={value} displayTime />
+  },
+  {
+    title: 'Open',
+    key: 'open',
+    dataIndex: 'available',
+    render: (value: boolean) => <BooleanDisplay value={value} />
+  },
+  { title: 'Count', key: 'count', render: () => 'todo' }
+];
+
+const RegistrationDisplay = ({ event }: { event: Event }) => {
+  const slotsToDisplay = event.registrationSlots?.filter(
+    (slot) => !slot.deleted
+  );
+
+  if (!event.allowRegistrations || !slotsToDisplay?.length) {
+    return <span>This event is not accepting registrations.</span>;
+  }
+
+  const expandedRowRender = () => {
+    const columns: TableColumnsType<EventRegistration> = [
+      {
+        title: 'Name',
+        dataIndex: 'profile',
+        key: 'profile',
+        render: (value: string) => <UserNameDisplay user={value} />
+      },
+      {
+        title: 'Date',
+        dataIndex: 'created',
+        key: 'date',
+        render: (value: Date) => <DateDisplay date={value} displayTime />
+      }
+    ];
+
+    const data = [];
+    for (let i = 0; i < 3; ++i) {
+      data.push({
+        key: i.toString(),
+        created: new Date(),
+        profile: 'This is production name',
+        event: 'Upgraded: 56',
+        _id: i.toString(),
+        registrationSlots: []
+      });
+    }
+    return <Table columns={columns} dataSource={data} pagination={false} />;
+  };
+
+  return (
+    <div className={styles.registrationSlotContainer}>
+      <h3>Registration Slots: ({slotsToDisplay.length})</h3>
+      <Table
+        rowKey="slotId"
+        columns={registrationDisplayColumns}
+        expandable={{ expandedRowRender }}
+        dataSource={slotsToDisplay}
+        size="small"
+      />
+      <RegisterUserModal slots={slotsToDisplay} eventId={event._id} />
+    </div>
   );
 };
 
