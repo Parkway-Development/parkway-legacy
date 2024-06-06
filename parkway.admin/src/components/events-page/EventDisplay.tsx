@@ -1,5 +1,14 @@
-import { Event } from '../../types';
-import { Descriptions, DescriptionsProps } from 'antd';
+import { Event, RegistrationSlot } from '../../types';
+import {
+  Alert,
+  Descriptions,
+  DescriptionsProps,
+  Spin,
+  Table,
+  TableColumnsType,
+  Tabs,
+  TabsProps
+} from 'antd';
 import { UserNameDisplay } from '../user-name-display';
 import DateDisplay from '../date-display';
 import BooleanDisplay from '../boolean-display/BooleanDisplay.tsx';
@@ -8,6 +17,11 @@ import TeamNameDisplay from '../team-name-display';
 import styles from './EventDisplay.module.scss';
 import { EventSchedule } from '../../types/EventSchedule.ts';
 import { monthWeekOptions, weekDayOptions } from './EventForm.tsx';
+import RegisterUserModal from './RegisterUserModal.tsx';
+import { EventRegistration } from '../../types/EventRegistration.ts';
+import useApi, { buildQueryKey } from '../../hooks/useApi.ts';
+import { useQuery } from '@tanstack/react-query';
+import { useMemo } from 'react';
 
 const EventDisplay = (event: Event) => {
   const items: DescriptionsProps['items'] = [
@@ -76,59 +90,23 @@ const EventDisplay = (event: Event) => {
     }
   ];
 
-  let registrationSlots = null;
-  const slotsToDisplay = event.registrationSlots?.filter(
-    (slot) => !slot.deleted
-  );
-
-  if (event.allowRegistrations && slotsToDisplay?.length) {
-    const rows = slotsToDisplay.map((input) => {
-      return (
-        <tr key={input.slotId}>
-          <td>{input.name}</td>
-          <td>{input.description}</td>
-          <td>
-            <DateDisplay date={input.start} displayTime />
-          </td>
-          <td>
-            <DateDisplay date={input.end} displayTime />
-          </td>
-          <td>
-            <BooleanDisplay value={input.available} />
-          </td>
-        </tr>
-      );
-    });
-
-    registrationSlots = (
-      <div className={styles.registrationSlotContainer}>
-        <h3>Registration Slots: ({slotsToDisplay.length})</h3>
-        <table className={styles.registrationSlots}>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Description</th>
-              <th className={styles.dateColumn}>Start</th>
-              <th className={styles.dateColumn}>End</th>
-              <th className={styles.openColumn}>Open</th>
-            </tr>
-          </thead>
-          <tbody>{rows}</tbody>
-        </table>
-      </div>
-    );
-  }
+  const tabItems: TabsProps['items'] = [
+    {
+      key: '1',
+      label: 'Details',
+      children: <Descriptions size="small" items={items} bordered column={1} />
+    },
+    {
+      key: '2',
+      label: 'Registrations',
+      children: <RegistrationDisplay event={event} />
+    }
+  ];
 
   return (
     <>
-      <Descriptions
-        size="small"
-        title={event.name}
-        items={items}
-        bordered
-        column={1}
-      />
-      {registrationSlots}
+      <h3 className={styles.title}>{event.name}</h3>
+      <Tabs items={tabItems} />
     </>
   );
 };
@@ -142,7 +120,7 @@ const EventScheduleSummary = ({ schedule }: EventScheduleSummaryProps) => {
 
   const { interval, frequency, week_days, month_weeks, end_date } = schedule;
 
-  let result = '';
+  let result;
 
   if (frequency === 'custom') {
     const weeks = month_weeks
@@ -176,6 +154,117 @@ const EventScheduleSummary = ({ schedule }: EventScheduleSummaryProps) => {
         </>
       )}
     </span>
+  );
+};
+
+type RegistrationSlotWithCount = RegistrationSlot & {
+  count: number;
+};
+
+const registrationDisplayColumns: TableColumnsType<RegistrationSlotWithCount> =
+  [
+    { title: 'Count', key: 'count', dataIndex: 'count', align: 'center' },
+    { title: 'Name', key: 'name', dataIndex: 'name' },
+    { title: 'Description', key: 'description', dataIndex: 'description' },
+    {
+      title: 'Start',
+      key: 'start',
+      dataIndex: 'start',
+      render: (value: Date) => <DateDisplay date={value} displayTime />
+    },
+    {
+      title: 'End',
+      key: 'end',
+      dataIndex: 'end',
+      render: (value: Date) => <DateDisplay date={value} displayTime />
+    },
+    {
+      title: 'Open',
+      key: 'open',
+      dataIndex: 'available',
+      render: (value: boolean) => <BooleanDisplay value={value} />
+    }
+  ];
+
+const RegistrationDisplay = ({ event }: { event: Event }) => {
+  const {
+    eventsApi: { getRegistrations },
+    formatError
+  } = useApi();
+  const { data, error, isLoading } = useQuery({
+    queryKey: buildQueryKey('eventRegistrations'),
+    queryFn: () => getRegistrations(event)
+  });
+
+  const slotsToDisplay: RegistrationSlotWithCount[] = useMemo(() => {
+    return (
+      event.registrationSlots
+        ?.filter((slot) => !slot.deleted)
+        .map((slot) => {
+          const count =
+            data?.data.reduce(
+              (prev, current) =>
+                current.registrationSlots.includes(slot.slotId)
+                  ? prev + 1
+                  : prev,
+              0
+            ) ?? 0;
+
+          return {
+            ...slot,
+            count
+          };
+        }) ?? []
+    );
+  }, [event.registrationSlots, data]);
+
+  if (!event.allowRegistrations || !slotsToDisplay.length) {
+    return <span>This event is not accepting registrations.</span>;
+  }
+
+  if (isLoading) {
+    return <Spin />;
+  }
+
+  if (error) {
+    return <Alert message={formatError(error)} type="error" />;
+  }
+
+  const expandedRowRender = (registrationSlot: RegistrationSlotWithCount) => {
+    const columns: TableColumnsType<EventRegistration> = [
+      {
+        title: 'Name',
+        dataIndex: 'profile',
+        key: 'profile',
+        render: (value: string) => <UserNameDisplay user={value} />
+      },
+      {
+        title: 'Date',
+        dataIndex: 'created',
+        key: 'date',
+        render: (value: Date) => <DateDisplay date={value} displayTime />
+      }
+    ];
+
+    const rowData = data?.data.filter((registration) =>
+      registration.registrationSlots.includes(registrationSlot.slotId)
+    );
+
+    return <Table columns={columns} dataSource={rowData} pagination={false} />;
+  };
+
+  return (
+    <div>
+      <span>Total Slots: {slotsToDisplay.length}</span>
+      <Table
+        rowKey="slotId"
+        columns={registrationDisplayColumns}
+        expandable={{ expandedRowRender }}
+        dataSource={slotsToDisplay}
+        size="small"
+      />
+      <RegisterUserModal slots={slotsToDisplay} eventId={event._id} />
+    </div>
   );
 };
 

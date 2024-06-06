@@ -144,7 +144,8 @@ const EventForm = ({ isSaving, initialValues, onSave }: EventFormProps) => {
   const startTime = Form.useWatch('startTime', form);
   const endTime = Form.useWatch('endTime', form);
 
-  const handleCancel = () => navigate(`/events/${id}`);
+  const handleCancel = () =>
+    id ? navigate(`/events/${id}`) : navigate(`/events`);
 
   const eventDates = useMemo(
     () => ({
@@ -236,6 +237,18 @@ const EventForm = ({ isSaving, initialValues, onSave }: EventFormProps) => {
       end.setHours(getTimeSelectHours(endTime));
       end.setMinutes(getTimeSelectMinutes(endTime));
       end.setSeconds(0);
+    }
+
+    if (remaining.allowRegistrations && !remaining.registrationSlots?.length) {
+      remaining.registrationSlots = [
+        {
+          slotId: crypto.randomUUID(),
+          start,
+          end,
+          name: 'General Registration',
+          available: true
+        }
+      ];
     }
 
     const finalPayload: EventWithoutId = {

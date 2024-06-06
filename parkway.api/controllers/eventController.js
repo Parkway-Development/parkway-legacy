@@ -1,10 +1,13 @@
 const mongoose = require('mongoose');
 const Event = require('../models/eventModel');
+const EventRegistration = require('../models/eventRegistrationModel');
 const EventSchedule = require('../models/eventScheduleModel');
+const Profile = require('../models/profileModel');
 const { requireClaim } = require("../middleware/auth");
 const { addMonths, addWeeks, set, endOfDay, differenceInDays, addDays, addYears, startOfMonth, eachDayOfInterval,
     getDay
 } = require("date-fns");
+const AppError = require("../applicationErrors");
 
 const createEvents = async (event, eventSchedule) => {
     const today = new Date();
@@ -357,6 +360,78 @@ const addEventMessageById = async (req, res) => {
     }
 }
 
+const registerForEvent = async (req, res, next) => {
+    try {
+        const {id} = req.params;
+        if (!id) { throw new AppError.MissingId('registerForEvent'); }
+        if (!mongoose.Types.ObjectId.isValid(id)) { throw new AppError.InvalidId('registerForEvent') ;}
+
+        const { profile, slots } = req.body;
+        if (!profile || !slots || !slots.length ) { throw new AppError.MissingRequiredParameter('registerForEvent','Profile and Slots are required.'); }
+
+        const event = await Event.findById(id);
+        if (!event) { res.status(404).json({ message: 'No event found for that id' }); }
+
+        // Validate slots
+        slots.forEach(slot => {
+            const registrationSlot = event.registrationSlots.find(s => s.slotId === slot);
+
+            if (!registrationSlot || registrationSlot.deleted) {
+                return res.status(404).json({ message: 'No registration slot found for that id' });
+            } else if (!registrationSlot.available) {
+                return res.status(400).json({ message: 'Registration slot is no longer accepting registrations' });
+            }
+        });
+
+        const userProfile = await Profile.findById(profile);
+        if (!userProfile) { return res.status(404).json({ message: 'No profile found for that id' }); }
+
+        let registration = await EventRegistration.findOneAndUpdate({ event: event.id, profile },
+            {
+                registrationSlots: slots
+            },
+            { new: true });
+
+        if (!registration) {
+            // Create new if we didn't find one to update
+            registration = new EventRegistration({
+                event,
+                profile,
+                created: new Date(),
+                registrationSlots: slots
+            });
+
+            const validationError = registration.validateSync();
+
+            if (validationError) {
+                return res.status(400).json({message: validationError.message});
+            }
+
+            await registration.save();
+        }
+
+        return res.status(201).json(registration);
+    } catch (error) {
+        next(error)
+        console.log({method: error.method, message: error.message});
+    }
+}
+
+const getEventRegistrations = async (req, res, next) => {
+    try {
+        const {id} = req.params;
+        if (!id) { throw new AppError.MissingId('getEventRegistrations'); }
+        if (!mongoose.Types.ObjectId.isValid(id)) { throw new AppError.InvalidId('getEventRegistrations') ;}
+
+        const events = await EventRegistration.find({ event: id }).sort({created: 'asc'});
+
+        return res.status(200).json(events ?? []);
+    } catch (error) {
+        next(error)
+        console.log({method: error.method, message: error.message});
+    }
+};
+
 module.exports = {
     addEvent, 
     getAllEvents, 
@@ -366,5 +441,7 @@ module.exports = {
     deleteEventBySchedule,
     approveEventById, 
     rejectEventById, 
-    addEventMessageById
+    addEventMessageById,
+    registerForEvent,
+    getEventRegistrations
 };

@@ -54,6 +54,7 @@ export type QueryType =
   | 'enums'
   | 'eventCategories'
   | 'events'
+  | 'eventRegistrations'
   | 'passwordSettings'
   | 'profiles'
   | 'songs'

@@ -1,26 +1,10 @@
 @import '../../styles/_mixins.scss';
 
+.title {
+    margin-bottom: 0;
+}
+
 .childrenList {
     margin: 0;
     padding: 0 0 0 1em;
-}
-
-.registrationSlotContainer {
-    margin-top: 1em;
-}
-
-.registrationSlots {
-    @include collapsedTable;
-
-    td:not(:first-child) {
-        text-align: center;
-    }
-
-    .dateColumn {
-        width: 160px;
-    }
-
-    .openColumn {
-        width: 40px;
-    }
 }
