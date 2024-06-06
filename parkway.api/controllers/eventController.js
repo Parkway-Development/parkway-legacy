@@ -417,6 +417,21 @@ const registerForEvent = async (req, res, next) => {
     }
 }
 
+const getEventRegistrations = async (req, res, next) => {
+    try {
+        const {id} = req.params;
+        if (!id) { throw new AppError.MissingId('getEventRegistrations'); }
+        if (!mongoose.Types.ObjectId.isValid(id)) { throw new AppError.InvalidId('getEventRegistrations') ;}
+
+        const events = await EventRegistration.find({ event: id }).sort({created: 'asc'});
+
+        return res.status(200).json(events ?? []);
+    } catch (error) {
+        next(error)
+        console.log({method: error.method, message: error.message});
+    }
+};
+
 module.exports = {
     addEvent, 
     getAllEvents, 
@@ -427,5 +442,6 @@ module.exports = {
     approveEventById, 
     rejectEventById, 
     addEventMessageById,
-    registerForEvent
+    registerForEvent,
+    getEventRegistrations
 };

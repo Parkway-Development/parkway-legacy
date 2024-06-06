@@ -4,8 +4,8 @@ import { useCallback, useRef, useState } from 'react';
 import { BaseFormFooter } from '../base-data-table-page';
 import UserProfileSelect from '../user-profile-select';
 import { RegisterForEventPayload } from '../../api';
-import useApi from '../../hooks/useApi.ts';
-import { useMutation } from '@tanstack/react-query';
+import useApi, { buildQueryKey } from '../../hooks/useApi.ts';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import styles from './RegisterUserModal.module.scss';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 
@@ -30,6 +30,7 @@ const RegisterUserModal = ({ slots, eventId }: RegisterUserModalProps) => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [modalForm] = Form.useForm<EventRegistrationFormFields>();
   const checkedSlots = useRef<string[]>([]);
+  const queryClient = useQueryClient();
 
   const handleModalSave = (values: EventRegistrationFormFields) => {
     const payload: RegisterForEventPayload = {
@@ -42,6 +43,9 @@ const RegisterUserModal = ({ slots, eventId }: RegisterUserModalProps) => {
       onSuccess: () => {
         modalForm.resetFields();
         setIsModalOpen(false);
+        queryClient.invalidateQueries({
+          queryKey: buildQueryKey('eventRegistrations')
+        });
       }
     });
   };

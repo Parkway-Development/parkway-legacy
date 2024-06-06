@@ -10,7 +10,8 @@ const {
     approveEventById,
     rejectEventById,
     addEventMessageById,
-    registerForEvent
+    registerForEvent,
+    getEventRegistrations
 } = require('../controllers/eventController');
 const { addNotFoundHandler, configureBaseApiRoutes } = require("./baseApiRouter");
 
@@ -21,6 +22,7 @@ router.patch('/:id/reject', rejectEventById);
 router.post('/:id/message', addEventMessageById);
 router.delete('/:id/schedule/:updateSeries', deleteEventBySchedule);
 router.post('/:id/register', registerForEvent);
+router.get('/:id/registrations', getEventRegistrations);
 
 addNotFoundHandler(router);
 module.exports = router;

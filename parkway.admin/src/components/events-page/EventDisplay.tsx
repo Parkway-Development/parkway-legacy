@@ -1,7 +1,9 @@
 import { Event, RegistrationSlot } from '../../types';
 import {
+  Alert,
   Descriptions,
   DescriptionsProps,
+  Spin,
   Table,
   TableColumnsType,
   Tabs,
@@ -17,6 +19,9 @@ import { EventSchedule } from '../../types/EventSchedule.ts';
 import { monthWeekOptions, weekDayOptions } from './EventForm.tsx';
 import RegisterUserModal from './RegisterUserModal.tsx';
 import { EventRegistration } from '../../types/EventRegistration.ts';
+import useApi, { buildQueryKey } from '../../hooks/useApi.ts';
+import { useQuery } from '@tanstack/react-query';
+import { useMemo } from 'react';
 
 const EventDisplay = (event: Event) => {
   const items: DescriptionsProps['items'] = [
@@ -152,40 +157,80 @@ const EventScheduleSummary = ({ schedule }: EventScheduleSummaryProps) => {
   );
 };
 
-const registrationDisplayColumns: TableColumnsType<RegistrationSlot> = [
-  { title: 'Name', key: 'name', dataIndex: 'name' },
-  { title: 'Description', key: 'description', dataIndex: 'description' },
-  {
-    title: 'Start',
-    key: 'start',
-    dataIndex: 'start',
-    render: (value: Date) => <DateDisplay date={value} displayTime />
-  },
-  {
-    title: 'End',
-    key: 'end',
-    dataIndex: 'end',
-    render: (value: Date) => <DateDisplay date={value} displayTime />
-  },
-  {
-    title: 'Open',
-    key: 'open',
-    dataIndex: 'available',
-    render: (value: boolean) => <BooleanDisplay value={value} />
-  },
-  { title: 'Count', key: 'count', render: () => 'todo' }
-];
+type RegistrationSlotWithCount = RegistrationSlot & {
+  count: number;
+};
+
+const registrationDisplayColumns: TableColumnsType<RegistrationSlotWithCount> =
+  [
+    { title: 'Count', key: 'count', dataIndex: 'count', align: 'center' },
+    { title: 'Name', key: 'name', dataIndex: 'name' },
+    { title: 'Description', key: 'description', dataIndex: 'description' },
+    {
+      title: 'Start',
+      key: 'start',
+      dataIndex: 'start',
+      render: (value: Date) => <DateDisplay date={value} displayTime />
+    },
+    {
+      title: 'End',
+      key: 'end',
+      dataIndex: 'end',
+      render: (value: Date) => <DateDisplay date={value} displayTime />
+    },
+    {
+      title: 'Open',
+      key: 'open',
+      dataIndex: 'available',
+      render: (value: boolean) => <BooleanDisplay value={value} />
+    }
+  ];
 
 const RegistrationDisplay = ({ event }: { event: Event }) => {
-  const slotsToDisplay = event.registrationSlots?.filter(
-    (slot) => !slot.deleted
-  );
+  const {
+    eventsApi: { getRegistrations },
+    formatError
+  } = useApi();
+  const { data, error, isLoading } = useQuery({
+    queryKey: buildQueryKey('eventRegistrations'),
+    queryFn: () => getRegistrations(event)
+  });
 
-  if (!event.allowRegistrations || !slotsToDisplay?.length) {
+  const slotsToDisplay: RegistrationSlotWithCount[] = useMemo(() => {
+    return (
+      event.registrationSlots
+        ?.filter((slot) => !slot.deleted)
+        .map((slot) => {
+          const count =
+            data?.data.reduce(
+              (prev, current) =>
+                current.registrationSlots.includes(slot.slotId)
+                  ? prev + 1
+                  : prev,
+              0
+            ) ?? 0;
+
+          return {
+            ...slot,
+            count
+          };
+        }) ?? []
+    );
+  }, [event.registrationSlots, data]);
+
+  if (!event.allowRegistrations || !slotsToDisplay.length) {
     return <span>This event is not accepting registrations.</span>;
   }
 
-  const expandedRowRender = () => {
+  if (isLoading) {
+    return <Spin />;
+  }
+
+  if (error) {
+    return <Alert message={formatError(error)} type="error" />;
+  }
+
+  const expandedRowRender = (registrationSlot: RegistrationSlotWithCount) => {
     const columns: TableColumnsType<EventRegistration> = [
       {
         title: 'Name',
@@ -201,23 +246,16 @@ const RegistrationDisplay = ({ event }: { event: Event }) => {
       }
     ];
 
-    const data = [];
-    for (let i = 0; i < 3; ++i) {
-      data.push({
-        key: i.toString(),
-        created: new Date(),
-        profile: 'This is production name',
-        event: 'Upgraded: 56',
-        _id: i.toString(),
-        registrationSlots: []
-      });
-    }
-    return <Table columns={columns} dataSource={data} pagination={false} />;
+    const rowData = data?.data.filter((registration) =>
+      registration.registrationSlots.includes(registrationSlot.slotId)
+    );
+
+    return <Table columns={columns} dataSource={rowData} pagination={false} />;
   };
 
   return (
-    <div className={styles.registrationSlotContainer}>
-      <h3>Registration Slots: ({slotsToDisplay.length})</h3>
+    <div>
+      <span>Total Slots: {slotsToDisplay.length}</span>
       <Table
         rowKey="slotId"
         columns={registrationDisplayColumns}

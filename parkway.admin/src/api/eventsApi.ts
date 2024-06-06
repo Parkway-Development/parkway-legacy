@@ -34,6 +34,9 @@ export type EventsApiType = BaseApiType<Event> & {
   register: (
     payload: RegisterForEventPayload
   ) => TypedResponse<EventRegistration>;
+  getRegistrations: (
+    payload: Pick<Event, '_id'>
+  ) => TypedResponse<EventRegistration[]>;
 };
 
 const basePath = '/events';
@@ -49,5 +52,7 @@ export const buildEventsApi = (instance: AxiosInstance): EventsApiType => ({
   deleteBySchedule: ({ _id: id, updateSeries }: DeleteBySchedulePayload) =>
     instance.delete(`${basePath}/${id}/schedule/${updateSeries}`),
   register: ({ eventId: id, ...payload }: RegisterForEventPayload) =>
-    instance.post(`${basePath}/${id}/register`, payload)
+    instance.post(`${basePath}/${id}/register`, payload),
+  getRegistrations: ({ _id: id }: Pick<Event, '_id'>) =>
+    instance.get(`${basePath}/${id}/registrations`)
 });
