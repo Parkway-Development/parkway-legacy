@@ -144,7 +144,8 @@ const EventForm = ({ isSaving, initialValues, onSave }: EventFormProps) => {
   const startTime = Form.useWatch('startTime', form);
   const endTime = Form.useWatch('endTime', form);
 
-  const handleCancel = () => navigate(`/events/${id}`);
+  const handleCancel = () =>
+    id ? navigate(`/events/${id}`) : navigate(`/events`);
 
   const eventDates = useMemo(
     () => ({
