@@ -4,17 +4,38 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-        
         {
+            "name": "Launch Local Dev",
             "type": "node",
             "request": "launch",
-            "name": "Launch Backend API",
-            "skipFiles": [ "<node_internals>/**"],
             "program": "${workspaceFolder}/server.js",
-            "restart": true,
-            "runtimeExecutable": "nodemon",
-            "envFile": "${workspaceFolder}/.env",
-            "console": "integratedTerminal"
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "name": "Launch Staging",
+            "type": "node",
+            "request": "launch",
+            "program": "${workspaceFolder}/server.js",
+            "envFile": "${workspaceFolder}/.env.staging"
+        },
+        {
+            "name": "Launch Production",
+            "type": "node",
+            "request": "launch",
+            "program": "${workspaceFolder}/server.js",
+            "envFile": "${workspaceFolder}/.env.production"
         }
+
+        // {
+        //     "type": "node",
+        //     "request": "launch",
+        //     "name": "Launch Backend API",
+        //     "skipFiles": [ "<node_internals>/**"],
+        //     "program": "${workspaceFolder}/server.js",
+        //     "restart": true,
+        //     "runtimeExecutable": "nodemon",
+        //     "envFile": "${workspaceFolder}/.env",
+        //     "console": "integratedTerminal"
+        // }
     ]
 }

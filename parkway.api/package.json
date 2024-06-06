@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "start": "node server.js",
-    "start:local": "nodemon --trace-warnings server.js"
+    "start:local": "nodemon --trace-warnings server.js",
+    "build:staging": "dotenv -e .env.staging -- npm run build",
+    "build:production": "dotenv -e .env.production -- npm run build"
   },
   "author": "Jay Davis",
   "license": "ISC",
