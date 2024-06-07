@@ -21,3 +21,4 @@ ALLOWED_ORIGINS=http://localhost:5173 -- this value is used for local, this can 
 ## Development
 
 Run `npm run start` to launch api.
+Run `npm run start:local` to launch api for active local development.
