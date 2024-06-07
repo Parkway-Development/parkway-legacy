@@ -3,6 +3,8 @@ const Profile = require('../models/profileModel')
 const User = require('../models/userModel')
 const appErrors = require('../applicationErrors')
 
+const parkwayId = '6655f7bfb4b37e6e6a743b65'  
+
 const mapToLimitedProfile = (user) => {
     return {
         _id: user._id,
@@ -41,13 +43,16 @@ const addProfile = async (req, res) => {
         if(!req.body){ throw new Error("No profile was submitted.")}
         const submittedProfile = new Profile(req.body)
 
+        // stop gap for org issue
+        if(!submittedProfile.organizationId){ submittedProfile.organizationId = parkwayId }
+
         const existingProfile = await searchForAProfile(submittedProfile)
         if(existingProfile){ throw new Error("There is a possible matching profile. Please check the details and try again.")} 
 
         const savedProfile = await submittedProfile.save();
         if(!savedProfile){ throw new Error("There was a problem saving the profile.")}
         
-        await Profile.populate(savedProfile, [{ path: 'family' }, { path: 'preferences' }, { path: 'teams' }]);
+        await Profile.populate(savedProfile, [{ path: 'preferences' }, { path: 'teams' }]);
 
         return res.status(200).json(savedProfile)
     } catch (error) {
