@@ -1,3 +1,5 @@
+name: API Staging CI/CD
+
 # This workflow will build and push a node.js application to an Azure Web App when a commit is pushed to your default branch.
 #
 # This workflow assumes you have already created the target Azure App Service web app.
@@ -20,6 +22,8 @@
 on:
   push:
     branches: [ "dev" ]
+    paths:
+      - 'parkway.api/**'
   workflow_dispatch:
 
 env:
@@ -47,12 +51,18 @@ jobs:
         npm install
         npm run build --if-present
         npm run test --if-present
+      working-directory: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
+      
+    - name: Zip artifact for deployment
+      run: |
+        cd ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
+        zip release.zip ./* -r
 
     - name: Upload artifact for deployment job
       uses: actions/upload-artifact@v3
       with:
         name: node-app
-        path: .
+        path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/release.zip
 
   deploy:
     permissions:
@@ -69,10 +79,12 @@ jobs:
       with:
         name: node-app
 
+    - name: Unzip artifact for deployment
+      run: unzip release.zip
+
     - name: 'Deploy to Azure WebApp'
       id: deploy-to-webapp
       uses: azure/webapps-deploy@v2
       with:
         app-name: ${{ env.AZURE_WEBAPP_NAME }}
         publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-        package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
