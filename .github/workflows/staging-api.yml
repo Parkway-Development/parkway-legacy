@@ -1,3 +1,5 @@
+name: API Staging CI/CD
+
 # This workflow will build and push a node.js application to an Azure Web App when a commit is pushed to your default branch.
 #
 # This workflow assumes you have already created the target Azure App Service web app.
@@ -23,10 +25,6 @@ on:
     paths:
       - 'parkway.api/**'
   workflow_dispatch:
-  pull_request:
-    types: [opened, synchronize]
-    branches:
-      - dev
 
 env:
   AZURE_WEBAPP_NAME: staging-pkwy-backend    # set this to your application's name
