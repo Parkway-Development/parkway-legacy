@@ -69,8 +69,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     const hasClaim = (claimKey: AppClaimKeys): boolean => {
       if (!tokenPayload) return false;
-      const claimValue = tokenPayload.claims[claimKey];
-      return claimValue === true || claimValue === 'true';
+
+      const keysToCheck: AppClaimKeys[] = [claimKey, 'isspecops'];
+      let canAccess = false;
+
+      keysToCheck.forEach((key) => {
+        const claimValue = tokenPayload.claims[key];
+        if (claimValue === true || claimValue === 'true') {
+          canAccess = true;
+        }
+      });
+
+      return canAccess;
     };
 
     const teamsLed =
@@ -132,6 +142,7 @@ export interface LoginResponse {
 interface TokenPayload {
   _id: string;
   claims: {
+    isspecops: boolean | string;
     systemSettings: boolean | string;
     memberVetting: boolean | string;
     userManagement: boolean | string;
