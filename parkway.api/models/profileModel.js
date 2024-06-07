@@ -6,7 +6,7 @@ const profileSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     },
-    currentOrganizationId: {
+    organizationId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Organization',
         required: true
@@ -62,21 +62,7 @@ const profileSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Preferences',
         required: false
-    },
-    organizations: [{
-        organizationId: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Organization'
-        },
-        isDefault: {
-            type: Boolean,
-            default: false
-        },
-        isActive: {
-            type: Boolean,
-            default: false
-        }
-    }]
+    }
 }, {timestamps: true})
 
 // profileSchema.index({ lastName: 1 }, { collation: { locale: 'en_US', strength: 2}} ) 
