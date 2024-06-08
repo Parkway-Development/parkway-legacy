@@ -1,4 +1,4 @@
-import { Breadcrumb, Checkbox, DatePicker, Form, Input, Radio } from 'antd';
+import { Breadcrumb, Checkbox, Form, Input, Radio } from 'antd';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import UserProfileSelect from '../user-profile-select';
 import { Event, RegistrationSlot } from '../../types';
@@ -23,6 +23,7 @@ import TimeSelect, {
 } from '../time-select';
 import RegistrationSlotInput from './RegistrationSlotInput.tsx';
 import { EventSchedule } from '../../types/EventSchedule.ts';
+import DatePickerExtended from '../date-picker-extended';
 
 type EventWithoutId = Omit<Event, '_id'>;
 
@@ -380,7 +381,7 @@ const EventForm = ({ isSaving, initialValues, onSave }: EventFormProps) => {
               labelCol={{ flex: 0 }}
               wrapperCol={{ flex: 1 }}
             >
-              <DatePicker
+              <DatePickerExtended
                 onChange={(value) => form.setFieldsValue({ endDate: value })}
               />
             </Form.Item>
@@ -412,7 +413,7 @@ const EventForm = ({ isSaving, initialValues, onSave }: EventFormProps) => {
               labelCol={{ flex: 0 }}
               wrapperCol={{ flex: 1 }}
             >
-              <DatePicker />
+              <DatePickerExtended />
             </Form.Item>
 
             {!allDay && (
@@ -565,7 +566,7 @@ const EventForm = ({ isSaving, initialValues, onSave }: EventFormProps) => {
               label="Repeat Until"
               name={['schedule', 'end_date']}
             >
-              <DatePicker />
+              <DatePickerExtended />
             </Form.Item>
           </>
         )}

@@ -27,6 +27,7 @@ type BaseDataTableListProps<T extends BaseEntity> = Pick<
   queryFn: () => TypedResponse<T[]>;
   queryKey: unknown[];
   columns: OrderedColumnsType<T>;
+  skipPagination?: boolean;
 };
 
 export const BaseDataTablePage = <T extends BaseEntity>({
@@ -56,7 +57,8 @@ const BaseDataTableList = <T extends BaseEntity>({
   queryFn,
   queryKey,
   columns,
-  responsiveCardRenderer
+  responsiveCardRenderer,
+  skipPagination
 }: BaseDataTableListProps<T>) => {
   const { aboveBreakpoint } = useResponsive();
   const { formatError } = useApi();
@@ -90,6 +92,7 @@ const BaseDataTableList = <T extends BaseEntity>({
       rowKey={(record: T) => record._id}
       size="small"
       bordered
+      pagination={skipPagination ? false : undefined}
       scroll={{ x: 'auto' }}
       expandable={{
         expandIcon: () => null,
@@ -115,7 +118,7 @@ const BaseDataTableList = <T extends BaseEntity>({
 type BaseApiDataTablePageProps<T extends BaseEntity> = SharedBasePageProps &
   Pick<
     BaseDataTablePageProps<T>,
-    'title' | 'addLinkTitle' | 'responsiveCardRenderer'
+    'title' | 'addLinkTitle' | 'responsiveCardRenderer' | 'skipPagination'
   > & {
     columns: OrderedColumnsType<T>;
     allowDelete?: boolean;

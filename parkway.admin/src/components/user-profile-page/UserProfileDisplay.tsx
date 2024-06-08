@@ -2,6 +2,7 @@ import { UserProfile } from '../../types';
 import { Button, Card } from 'antd';
 import styles from './UserProfileDisplay.module.css';
 import { InfoRow } from '../base-display-page';
+import DateDisplay from '../date-display';
 
 interface UserProfileDisplay {
   profile: UserProfile;
@@ -9,6 +10,7 @@ interface UserProfileDisplay {
 }
 
 const UserProfileDisplay = ({ profile, onEdit }: UserProfileDisplay) => {
+  const { address } = profile;
   return (
     <>
       {onEdit && (
@@ -29,11 +31,7 @@ const UserProfileDisplay = ({ profile, onEdit }: UserProfileDisplay) => {
         <InfoRow label="Middle Initial" value={profile.middleInitial} />
         <InfoRow
           label="Date of Birth"
-          value={
-            profile.dateOfBirth
-              ? new Date(profile.dateOfBirth).toLocaleDateString()
-              : undefined
-          }
+          value={<DateDisplay date={profile.dateOfBirth} />}
         />
       </Card>
       <Card title="Phone Numbers" className={styles.card}>
@@ -41,11 +39,17 @@ const UserProfileDisplay = ({ profile, onEdit }: UserProfileDisplay) => {
         <InfoRow label="Home" value={profile.homePhone} />
       </Card>
       <Card title="Address" className={styles.card}>
-        <p>{profile.streetAddress1}</p>
-        {profile.streetAddress2 && <p>{profile.streetAddress2}</p>}
-        <p>
-          {profile.city}, {profile.state} {profile.zip}
-        </p>
+        {address ? (
+          <>
+            <p>{address.streetAddress1}</p>
+            {address.streetAddress2 && <p>{address.streetAddress2}</p>}
+            <p>
+              {address.city}, {address.state} {address.zip}
+            </p>
+          </>
+        ) : (
+          'Not on file'
+        )}
       </Card>
     </>
   );

@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import styles from './RegistrationSlotInput.module.scss';
 import DateDisplay from '../date-display';
 import BooleanDisplay from '../boolean-display/BooleanDisplay.tsx';
-import { Alert, Button, Checkbox, DatePicker, Form, Input, Modal } from 'antd';
+import { Alert, Button, Checkbox, Form, Input, Modal } from 'antd';
 import { BaseFormFooter } from '../base-data-table-page';
 import { Dayjs } from 'dayjs';
 import TimeSelect, {
@@ -14,6 +14,7 @@ import TimeSelect, {
 } from '../time-select';
 import { isSameDate, transformDateToDayjs } from '../../utilities';
 import { EditOutlined } from '@ant-design/icons';
+import DatePickerExtended from '../date-picker-extended';
 
 interface RegistrationSlotInputProps {
   onChange: (registrationSlots: RegistrationSlot[], isValid: boolean) => void;
@@ -60,6 +61,7 @@ const RegistrationSlotInput = ({
 
   const rows = registrationSlots
     .filter((slot) => !slot.deleted)
+    .sort((a, b) => a.start.getDate() - b.start.getDate())
     .map((input) => {
       return (
         <tr key={input.slotId}>
@@ -271,7 +273,7 @@ const AddEditModal = ({
             name="startDate"
             rules={[{ required: true, message: 'Start date is required.' }]}
           >
-            <DatePicker
+            <DatePickerExtended
               onChange={(value) => modalForm.setFieldsValue({ endDate: value })}
             />
           </Form.Item>
@@ -292,7 +294,7 @@ const AddEditModal = ({
               { validator: validateEndDate }
             ]}
           >
-            <DatePicker />
+            <DatePickerExtended />
           </Form.Item>
           <Form.Item<RegistrationSlotFormFields>
             label="End Time"

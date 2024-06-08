@@ -1,4 +1,4 @@
-import { genderMapping, UserProfile } from '../../types';
+import { Address, genderMapping, UserProfile } from '../../types';
 import { CheckCircleOutlined } from '@ant-design/icons';
 import { translateMapping } from '../../utilities';
 import { OrderedColumnsType } from '../../hooks/useColumns.tsx';
@@ -66,33 +66,38 @@ export const directoryColumns: OrderedColumnsType<UserProfile> = [
   },
   {
     title: 'Street Address 1',
-    dataIndex: 'streetAddress1',
+    dataIndex: 'address',
     key: 'streetAddress1',
-    displayOrder: 10
+    displayOrder: 10,
+    render: (value?: Address) => value?.streetAddress1
   },
   {
     title: 'Street Address 2',
-    dataIndex: 'streetAddress2',
+    dataIndex: 'address',
     key: 'streetAddress2',
-    displayOrder: 11
+    displayOrder: 11,
+    render: (value?: Address) => value?.streetAddress2
   },
   {
     title: 'City',
-    dataIndex: 'city',
+    dataIndex: 'address',
     key: 'city',
-    displayOrder: 12
+    displayOrder: 12,
+    render: (value?: Address) => value?.city
   },
   {
     title: 'State',
-    dataIndex: 'state',
+    dataIndex: 'address',
     key: 'state',
-    displayOrder: 13
+    displayOrder: 13,
+    render: (value?: Address) => value?.state
   },
   {
     title: 'Zip',
-    dataIndex: 'zip',
+    dataIndex: 'address',
     key: 'zip',
-    displayOrder: 14
+    displayOrder: 14,
+    render: (value?: Address) => value?.zip
   },
   {
     title: 'User Linked',

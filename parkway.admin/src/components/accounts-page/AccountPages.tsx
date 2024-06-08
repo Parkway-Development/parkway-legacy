@@ -22,6 +22,7 @@ const AccountsPage = () => (
     responsiveCardRenderer={(account) => account.name}
     allowEdit={false}
     allowDelete={false}
+    skipPagination
   />
 );
 

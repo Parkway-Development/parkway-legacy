@@ -11,7 +11,7 @@ import {
 import { useMutation } from '@tanstack/react-query';
 import useApi from '../../hooks/useApi.ts';
 import { addProfileInitialValues } from '../directory-page';
-import { UserProfile } from '../../types';
+import { Address, UserProfile } from '../../types';
 import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
 
 interface ProfileVerificationProps {
@@ -20,7 +20,7 @@ interface ProfileVerificationProps {
 
 interface InputComparison {
   placeholder: string;
-  field: keyof UserProfile;
+  field: keyof UserProfile | ['address', keyof Address];
   input?: string;
   compareFn: (input?: string) => boolean;
   isValid?: boolean;
@@ -84,43 +84,48 @@ const ProfileVerification = ({ loginResponse }: ProfileVerificationProps) => {
         });
       }
 
-      if (profile.streetAddress1) {
+      if (profile.address?.streetAddress1) {
+        const addressLine1 = profile.address.streetAddress1;
         result.push({
           placeholder: 'Address Line 1',
-          field: 'streetAddress1',
-          compareFn: (input) => stringComparison(input, profile.streetAddress1!)
+          field: ['address', 'streetAddress1'],
+          compareFn: (input) => stringComparison(input, addressLine1)
         });
       }
 
-      if (profile.streetAddress2) {
+      if (profile.address?.streetAddress2) {
+        const addressLine2 = profile.address.streetAddress2;
         result.push({
           placeholder: 'Address Line 2',
-          field: 'streetAddress2',
-          compareFn: (input) => stringComparison(input, profile.streetAddress2!)
+          field: ['address', 'streetAddress2'],
+          compareFn: (input) => stringComparison(input, addressLine2)
         });
       }
 
-      if (profile.city) {
+      if (profile.address?.city) {
+        const city = profile.address.city;
         result.push({
           placeholder: 'City',
-          field: 'city',
-          compareFn: (input) => stringComparison(input, profile.city!)
+          field: ['address', 'city'],
+          compareFn: (input) => stringComparison(input, city)
         });
       }
 
-      if (profile.state) {
+      if (profile.address?.state) {
+        const state = profile.address.state;
         result.push({
           placeholder: 'State',
-          field: 'state',
-          compareFn: (input) => stringComparison(input, profile.state!)
+          field: ['address', 'state'],
+          compareFn: (input) => stringComparison(input, state)
         });
       }
 
-      if (profile.zip) {
+      if (profile.address?.zip) {
+        const zip = profile.address.zip;
         result.push({
           placeholder: 'Zip',
-          field: 'zip',
-          compareFn: (input) => stringComparison(input, profile.zip!)
+          field: ['address', 'zip'],
+          compareFn: (input) => stringComparison(input, zip)
         });
       }
 
@@ -247,6 +252,16 @@ const ProfileVerification = ({ loginResponse }: ProfileVerificationProps) => {
 
     const processing = isJoining || isAdding;
 
+    const getFieldValueAsString = (field: InputComparison['field']) => {
+      if (Array.isArray(field)) {
+        if (field.length === 2 && field[0] === 'address' && profile.address) {
+          return profile.address[field[1]]?.toString();
+        }
+      } else {
+        return profile[field]?.toString();
+      }
+    };
+
     content = (
       <Card className={styles.verifyMatch}>
         <div className={styles.header}>
@@ -264,34 +279,37 @@ const ProfileVerification = ({ loginResponse }: ProfileVerificationProps) => {
             </tr>
           </thead>
           <tbody>
-            {inputComparisons.map(({ placeholder, input, isValid, field }) => (
-              <tr key={field}>
-                <td>
-                  <Input
-                    placeholder={placeholder}
-                    value={input}
-                    onChange={handleInputChange}
-                    name={field}
-                    autoComplete="off"
-                    readOnly={processing}
-                  />
-                </td>
-                <td className={styles.validColumn}>
-                  {isValid ? (
-                    <CheckOutlined style={{ color: 'green' }} />
-                  ) : (
-                    <CloseOutlined style={{ color: 'red' }} />
-                  )}
-                  <Input
-                    readOnly
-                    tabIndex={-1}
-                    placeholder={
-                      isValid ? profile[field]?.toString() : '********'
-                    }
-                  />
-                </td>
-              </tr>
-            ))}
+            {inputComparisons.map(({ placeholder, input, isValid, field }) => {
+              const fieldName = Array.isArray(field) ? field.join('.') : field;
+              return (
+                <tr key={fieldName}>
+                  <td>
+                    <Input
+                      placeholder={placeholder}
+                      value={input}
+                      onChange={handleInputChange}
+                      name={fieldName}
+                      autoComplete="off"
+                      readOnly={processing}
+                    />
+                  </td>
+                  <td className={styles.validColumn}>
+                    {isValid ? (
+                      <CheckOutlined style={{ color: 'green' }} />
+                    ) : (
+                      <CloseOutlined style={{ color: 'red' }} />
+                    )}
+                    <Input
+                      readOnly
+                      tabIndex={-1}
+                      placeholder={
+                        isValid ? getFieldValueAsString(field) : '********'
+                      }
+                    />
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
           <tfoot>
             <tr>

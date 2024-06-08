@@ -11,15 +11,20 @@ export type UserProfile = BaseEntity & {
   email?: string;
   mobilePhone?: string;
   homePhone?: string;
-  streetAddress1?: string;
-  streetAddress2?: string;
-  city?: string;
-  state?: string;
-  zip?: string;
+  address?: Address | null;
   member: boolean;
   teams?: string[];
   family?: string;
   preferences?: string;
+};
+
+export type Address = {
+  streetAddress1: string;
+  streetAddress2?: string;
+  city: string;
+  state: string;
+  zip: string;
+  country: string;
 };
 
 export type LimitedUserProfile = Pick<
