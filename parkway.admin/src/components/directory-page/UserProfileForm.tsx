@@ -128,23 +128,29 @@ const UserProfileForm = ({
           <Input />
         </FormItem>
 
-        <FormItem label="Street Address Line 1" name="streetAddress1">
+        <FormItem
+          label="Street Address Line 1"
+          name={['address', 'streetAddress1']}
+        >
           <Input />
         </FormItem>
 
-        <FormItem label="Street Address Line 2" name="streetAddress2">
+        <FormItem
+          label="Street Address Line 2"
+          name={['address', 'streetAddress2']}
+        >
           <Input />
         </FormItem>
 
-        <FormItem label="City" name="city">
+        <FormItem label="City" name={['address', 'city']}>
           <Input />
         </FormItem>
 
-        <FormItem label="State" name="state">
+        <FormItem label="State" name={['address', 'state']}>
           <Input />
         </FormItem>
 
-        <FormItem label="Zip" name="zip">
+        <FormItem label="Zip" name={['address', 'zip']}>
           <Input />
         </FormItem>
 
