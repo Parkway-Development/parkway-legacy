@@ -49,12 +49,16 @@ function App() {
   if (hasClaim('accounting')) {
     items.push({
       key: itemKey++,
-      label: <ResponsiveLink to="/accounts">Accounts</ResponsiveLink>,
+      label: 'Accounting',
       children: [
         /*{
           key: itemKey++,
           label: <ResponsiveLink to="/accounts/assets">Assets</ResponsiveLink>
         },*/
+        {
+          key: itemKey++,
+          label: <ResponsiveLink to="/accounts">Accounts</ResponsiveLink>
+        },
         {
           key: itemKey++,
           label: (
@@ -71,20 +75,13 @@ function App() {
     });
   }
 
-  if (hasClaim('userManagement')) {
-    items.push({
-      key: itemKey++,
-      label: <ResponsiveLink to="/profiles">Directory</ResponsiveLink>
-    });
-  }
-
   const hasCalendarManagement = hasClaim('calendarManagement');
   const isTeamLeader = teamsLed.length > 0;
 
   if (hasCalendarManagement || isTeamLeader) {
     items.push({
       key: itemKey++,
-      label: <ResponsiveLink to="/events">Events</ResponsiveLink>,
+      label: <ResponsiveLink to="/events">Calendar</ResponsiveLink>,
       children: hasCalendarManagement
         ? [
             {
@@ -116,6 +113,13 @@ function App() {
     items.push({
       key: itemKey++,
       label: <ResponsiveLink to="/songs">Songs</ResponsiveLink>
+    });
+  }
+
+  if (hasClaim('userManagement')) {
+    items.push({
+      key: itemKey++,
+      label: <ResponsiveLink to="/profiles">People</ResponsiveLink>
     });
   }
 
