@@ -108,18 +108,18 @@ function App() {
   }
    */
 
+  if (hasClaim('userManagement')) {
+    items.push({
+      key: itemKey++,
+      label: <ResponsiveLink to="/profiles">People</ResponsiveLink>
+    });
+  }
+
   // TODO: What app claim is required for this
   if (hasClaim('mediaManagement')) {
     items.push({
       key: itemKey++,
       label: <ResponsiveLink to="/songs">Songs</ResponsiveLink>
-    });
-  }
-
-  if (hasClaim('userManagement')) {
-    items.push({
-      key: itemKey++,
-      label: <ResponsiveLink to="/profiles">People</ResponsiveLink>
     });
   }
 
