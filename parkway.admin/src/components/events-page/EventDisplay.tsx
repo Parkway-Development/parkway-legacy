@@ -200,6 +200,9 @@ const RegistrationDisplay = ({ event }: { event: Event }) => {
     return (
       event.registrationSlots
         ?.filter((slot) => !slot.deleted)
+        .sort(
+          (a, b) => new Date(a.start).getDate() - new Date(b.start).getDate()
+        )
         .map((slot) => {
           const count =
             data?.data.reduce(

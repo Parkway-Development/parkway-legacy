@@ -1,8 +1,9 @@
-import { Breadcrumb, DatePicker, Form, Input, Radio, Switch } from 'antd';
+import { Breadcrumb, Form, Input, Radio, Switch } from 'antd';
 import { UserProfile } from '../../types';
 import { transformDateToDayjs, trimStrings } from '../../utilities';
 import { AddBaseApiFormProps, BaseFormFooter } from '../base-data-table-page';
 import { Link } from 'react-router-dom';
+import DatePickerExtended from '../date-picker-extended';
 
 export type UserProfileFormFields = Omit<
   UserProfile,
@@ -175,7 +176,7 @@ const UserProfileForm = ({
         </FormItem>
 
         <FormItem label="Date of Birth" name="dateOfBirth">
-          <DatePicker />
+          <DatePickerExtended />
         </FormItem>
 
         <FormItem label="Gender" name="gender">

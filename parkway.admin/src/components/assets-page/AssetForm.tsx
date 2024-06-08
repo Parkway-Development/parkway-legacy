@@ -1,8 +1,9 @@
-import { Breadcrumb, DatePicker, Form, Input } from 'antd';
+import { Breadcrumb, Form, Input } from 'antd';
 import { Link } from 'react-router-dom';
 import { Asset } from '../../types';
 import { AddBaseApiFormProps, BaseFormFooter } from '../base-data-table-page';
 import { transformDateToDayjs } from '../../utilities';
+import DatePickerExtended from '../date-picker-extended';
 
 type AssetWithoutId = Omit<Asset, '_id'>;
 type AssetFields = Omit<AssetWithoutId, 'notes'> & {
@@ -82,7 +83,7 @@ const AssetForm = ({
         </Form.Item>
 
         <Form.Item<AssetFields> label="Purchase Date" name="purchaseDate">
-          <DatePicker />
+          <DatePickerExtended />
         </Form.Item>
 
         <Form.Item<AssetFields>
@@ -98,7 +99,7 @@ const AssetForm = ({
           name="inServiceDate"
           rules={[{ required: true, message: 'Required' }]}
         >
-          <DatePicker />
+          <DatePickerExtended />
         </Form.Item>
 
         <Form.Item<AssetFields>

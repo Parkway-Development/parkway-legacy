@@ -1,4 +1,4 @@
-import { Breadcrumb, DatePicker, Form, Input } from 'antd';
+import { Breadcrumb, Form, Input } from 'antd';
 import { Link } from 'react-router-dom';
 import { Contribution, ContributionAccount } from '../../types';
 import { AddBaseApiFormProps, BaseFormFooter } from '../base-data-table-page';
@@ -7,6 +7,7 @@ import { transformDateToDayjs } from '../../utilities';
 import AccountsInput from './AccountsInput.tsx';
 import { useState } from 'react';
 import MoneyDisplay from '../money-display';
+import DatePickerExtended from '../date-picker-extended';
 
 type ContributionWithoutId = Omit<Contribution, '_id'>;
 
@@ -120,7 +121,7 @@ const ContributionForm = ({
           name="transactionDate"
           rules={[{ required: true, message: 'Transaction date is required.' }]}
         >
-          <DatePicker />
+          <DatePickerExtended />
         </Form.Item>
 
         <Form.Item<ContributionWithoutId> label="Deposit Id" name="depositId">
