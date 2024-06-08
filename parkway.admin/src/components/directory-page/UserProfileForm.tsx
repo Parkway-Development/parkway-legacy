@@ -45,11 +45,86 @@ const UserProfileForm = ({
   const handleSubmit = (values: UserProfileFormFields) => {
     let payload = trimStrings(values);
 
+    form.setFields([
+      {
+        name: ['address', 'streetAddress1'],
+        errors: []
+      },
+      {
+        name: ['address', 'city'],
+        errors: []
+      },
+      {
+        name: ['address', 'state'],
+        errors: []
+      },
+      {
+        name: ['address', 'zip'],
+        errors: []
+      }
+    ]);
+
+    let address = payload.address;
+
+    if (address) {
+      const streetAddress1Valid = address.streetAddress1?.length > 0;
+      const cityValid = address.city?.length > 0;
+      const stateValid = address.state?.length > 0;
+      const zipValid =
+        address.zip?.length > 0 &&
+        address.zip?.match(/^\d{5}(-\d{4})?$/) !== null;
+
+      const anyValid =
+        streetAddress1Valid || cityValid || stateValid || zipValid;
+      const allValid =
+        streetAddress1Valid && cityValid && stateValid && zipValid;
+
+      if (!anyValid) {
+        address = null;
+      } else if (anyValid && !allValid) {
+        if (!streetAddress1Valid) {
+          form.setFields([
+            {
+              name: ['address', 'streetAddress1'],
+              errors: ['Required']
+            }
+          ]);
+        }
+        if (!cityValid) {
+          form.setFields([
+            {
+              name: ['address', 'city'],
+              errors: ['Required']
+            }
+          ]);
+        }
+        if (!stateValid) {
+          form.setFields([
+            {
+              name: ['address', 'state'],
+              errors: ['Required']
+            }
+          ]);
+        }
+        if (!zipValid) {
+          form.setFields([
+            {
+              name: ['address', 'zip'],
+              errors: ['Invalid zip']
+            }
+          ]);
+        }
+
+        return;
+      }
+    }
+
     if (isMyProfile) {
       payload = {
         ...payload,
         user: initial.user,
-        member: initial.member
+        member: initial.member,
+        address
       };
     }
 

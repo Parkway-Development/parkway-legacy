@@ -11,7 +11,7 @@ export type UserProfile = BaseEntity & {
   email?: string;
   mobilePhone?: string;
   homePhone?: string;
-  address?: Address;
+  address?: Address | null;
   member: boolean;
   teams?: string[];
   family?: string;
