@@ -15,17 +15,17 @@ import { LogoutOutlined, UserOutlined } from '@ant-design/icons';
 import useResponsive from './hooks/useResponsive.ts';
 import useApi, { buildQueryKey } from './hooks/useApi.ts';
 import { useQuery } from '@tanstack/react-query';
-import { Team } from './types';
+import SplashScreen from './components/splash-screen';
 
 function App() {
-  const { isLoggedIn, logout, hasClaim, teams, teamsLed } = useAuth();
+  const { isLoggedIn, logout, hasClaim, teamsLed, user } = useAuth();
   const { aboveBreakpoint, mainBreakpoint } = useResponsive();
   const [sideCollapsed, setSideCollapsed] = useState<boolean>(false);
   const {
     token: { colorBgContainer, borderRadiusLG }
   } = theme.useToken();
 
-  if (!isLoggedIn) {
+  if (!isLoggedIn || !user) {
     window.location.href = '/login';
   }
 
@@ -58,11 +58,10 @@ function App() {
 
   const { data, isLoading } = useQuery({
     queryFn: getAll,
-    queryKey: buildQueryKey('teams'),
-    staleTime: Infinity
+    queryKey: buildQueryKey('teams')
   });
 
-  if (isLoading) return 'Loading...';
+  if (isLoading) return <SplashScreen />;
 
   const items: MenuProps['items'] = [];
   let itemKey = 1;
@@ -151,28 +150,19 @@ function App() {
   }
 
   const hasTeamManagementClaim = hasClaim('teamManagement');
+  const teamsData = data?.data ?? [];
+  const userTeams =
+    user?.profileId !== undefined
+      ? teamsData
+          .filter(
+            (team) =>
+              team.leader?.includes(user.profileId!) ||
+              team.members?.includes(user.profileId!)
+          )
+          .sort((a, b) => (a.name > b.name ? -1 : 1))
+      : [];
 
-  if (teams.length || teamsLed.length || hasTeamManagementClaim) {
-    const teamsData = data?.data ?? [];
-
-    const userTeams: Team[] = [];
-
-    teams.forEach((teamId) => {
-      const team = teamsData.find((t) => t._id === teamId);
-
-      if (team) userTeams.push(team);
-    });
-
-    teamsLed
-      .filter((teamId) => !teams.includes(teamId))
-      .forEach((teamId) => {
-        const team = teamsData.find((t) => t._id === teamId);
-
-        if (team) userTeams.push(team);
-      });
-
-    userTeams.sort((a, b) => (a.name > b.name ? -1 : 1));
-
+  if (userTeams.length || hasTeamManagementClaim) {
     items.push({
       key: itemKey++,
       label: hasTeamManagementClaim ? (
