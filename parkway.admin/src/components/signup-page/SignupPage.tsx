@@ -39,10 +39,18 @@ const PasswordRequirement = ({ count, display }: PasswordRequirementProps) => {
 const SignupPage = () => {
   const { login } = useAuth();
   const {
-    generalApi: { getPasswordSettings },
+    generalApi: { getOrganizationId, getPasswordSettings },
     usersApi: { signup },
     formatError
   } = useApi();
+  const {
+    data,
+    error: organizationIdError,
+    isLoading
+  } = useQuery({
+    queryFn: getOrganizationId,
+    queryKey: buildQueryKey('organizationId')
+  });
   const { data: passwordSettings, isPending: passwordSettingsLoading } =
     useQuery({
       queryFn: getPasswordSettings,
@@ -53,9 +61,13 @@ const SignupPage = () => {
   });
   const [loginResponse, setLoginResponse] = useState<InternalLoginResponse>();
 
-  const handleSignup = ({ email, password }: SignupFields) =>
+  const organizationId = data?.data;
+
+  const handleSignup = ({ email, password }: SignupFields) => {
+    if (!organizationId) return;
+
     mutate(
-      { email, password },
+      { email, password, organizationId },
       {
         onSuccess: ({ data }) => {
           const result = login(data);
@@ -68,6 +80,7 @@ const SignupPage = () => {
         }
       }
     );
+  };
 
   const settings = passwordSettings?.data
     ? passwordSettings?.data
@@ -80,6 +93,8 @@ const SignupPage = () => {
   if (loginResponse) {
     return <ProfileVerification loginResponse={loginResponse} />;
   }
+
+  const disabled = isPending || isLoading || !organizationId;
 
   return (
     <div className="entryPage">
@@ -97,13 +112,20 @@ const SignupPage = () => {
             alt="Parkway Ministries"
           />
         </div>
+        {organizationIdError || (!organizationId && !isLoading) ? (
+          <Alert
+            className={styles.configError}
+            type="error"
+            message="Unable to load organization configuration."
+          />
+        ) : null}
         <Form
           name="basic"
           labelCol={{ span: 8 }}
           wrapperCol={{ span: 16 }}
           onFinish={handleSignup}
           autoComplete="off"
-          disabled={isPending}
+          disabled={disabled}
         >
           <Form.Item<SignupFields>
             label="Email"

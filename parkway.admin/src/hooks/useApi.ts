@@ -55,6 +55,7 @@ export type QueryType =
   | 'eventCategories'
   | 'events'
   | 'eventRegistrations'
+  | 'organizationId'
   | 'passwordSettings'
   | 'profiles'
   | 'songs'

@@ -3,6 +3,7 @@ import { AxiosInstance } from 'axios';
 
 export interface GeneralApiType {
   getPasswordSettings: () => TypedResponse<PasswordSettings>;
+  getOrganizationId: () => TypedResponse<string>;
 }
 
 export interface PasswordSettings {
@@ -15,5 +16,6 @@ export interface PasswordSettings {
 
 export const buildGeneralApi = (instance: AxiosInstance): GeneralApiType => ({
   getPasswordSettings: () =>
-    instance.get<PasswordSettings>('/settings/password')
+    instance.get<PasswordSettings>('/settings/password'),
+  getOrganizationId: () => instance.get<string>('/organizations/lookup')
 });

@@ -2,8 +2,8 @@ import styles from './LoginPage.module.css';
 import { Alert, Button, Card, Form, Image, Input } from 'antd';
 import { InternalLoginResponse, useAuth } from '../../hooks/useAuth.tsx';
 import { Link } from 'react-router-dom';
-import useApi from '../../hooks/useApi.ts';
-import { useMutation } from '@tanstack/react-query';
+import useApi, { buildQueryKey } from '../../hooks/useApi.ts';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { LoginFields } from '../../api';
 import { useState } from 'react';
 import ProfileVerification from '../profile-verification';
@@ -11,28 +11,47 @@ import ProfileVerification from '../profile-verification';
 const LoginPage = () => {
   const { login } = useAuth();
   const {
+    generalApi: { getOrganizationId },
     usersApi: { login: loginFn },
     formatError
   } = useApi();
+  const {
+    data,
+    error: organizationIdError,
+    isLoading
+  } = useQuery({
+    queryFn: getOrganizationId,
+    queryKey: buildQueryKey('organizationId')
+  });
   const { mutate, error, isPending } = useMutation({ mutationFn: loginFn });
   const [loginResponse, setLoginResponse] = useState<InternalLoginResponse>();
 
-  const handleLogin = (formFields: LoginFields) =>
-    mutate(formFields, {
-      onSuccess: ({ data }) => {
-        const result = login(data);
+  const organizationId = data?.data;
 
-        if (result.hasValidProfile) {
-          window.location.href = '/';
-        } else {
-          setLoginResponse(result);
+  const handleLogin = (formFields: LoginFields) => {
+    if (!organizationId) return;
+
+    mutate(
+      { ...formFields, organizationId },
+      {
+        onSuccess: ({ data }) => {
+          const result = login(data);
+
+          if (result.hasValidProfile) {
+            window.location.href = '/';
+          } else {
+            setLoginResponse(result);
+          }
         }
       }
-    });
+    );
+  };
 
   if (loginResponse) {
     return <ProfileVerification loginResponse={loginResponse} />;
   }
+
+  const disabled = isPending || isLoading || !organizationId;
 
   return (
     <div className="entryPage">
@@ -50,13 +69,20 @@ const LoginPage = () => {
             alt="Parkway Ministries"
           />
         </div>
+        {organizationIdError || (!organizationId && !isLoading) ? (
+          <Alert
+            className={styles.configError}
+            type="error"
+            message="Unable to load organization configuration."
+          />
+        ) : null}
         <Form
           name="basic"
           labelCol={{ span: 6 }}
           wrapperCol={{ span: 16 }}
           onFinish={handleLogin}
           autoComplete="off"
-          disabled={isPending}
+          disabled={disabled}
         >
           <Form.Item<LoginFields>
             label="Email"
