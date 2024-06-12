@@ -13,7 +13,7 @@ const organizationSchema = new mongoose.Schema({
         required: true,
         unique: true
     },
-    address: { 
+    address: {
         type: addressSchema,
         required: true
     },
@@ -43,8 +43,10 @@ const organizationSchema = new mongoose.Schema({
         type: subscriptionSchema,
         required: true,
         default: {subscriptionType: SubscriptionType.TRIAL}
-        }
-    }
-);
+    },
+    allowedOrigins: [{
+        type: String
+    }]
+});
 
 module.exports = mongoose.model('Organization', organizationSchema, 'organizations');

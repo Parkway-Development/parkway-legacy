@@ -262,6 +262,14 @@ class OrganizationDoesNotExist extends ApplicationError {
     }
 }
 
+class OrganizationOriginNotSpecified extends ApplicationError {
+  constructor(method,
+              customMessage = 'Origin could not be resolved.',
+              customErrorCode = 'ORGANIZATIONS_002') {
+    super(customMessage, 400, method, customErrorCode);
+  }
+}
+
 //CLAIMS
 class InvalidClaimValue extends ApplicationError {
     constructor(method,
@@ -316,6 +324,7 @@ module.exports = {
     ContributionDoesNotExist,
     DonationDoesNotExist,
     OrganizationDoesNotExist,
+    OrganizationOriginNotSpecified,
     DuplicateEmail,
     PasswordStrength,
     UserDoesNotBelongToOrganization,

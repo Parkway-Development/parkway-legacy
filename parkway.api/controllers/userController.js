@@ -14,14 +14,8 @@ const { validatePassword,
     generatePasswordResetToken
  } = require('../helpers/userValidation');
 
- //  manually setting the parkway org id here.  this needs to be pulled when a user is created or logs in
- //  This will probably be picked up by the url of the request at signup or login using a route hint like /?=parkway or something like that.  TBD.
- const parkwayId = '6655f7bfb4b37e6e6a743b65'  
-
 const loginUser = async (req, res, next) => {
     try {
-        if(!req.body.organizationId) { req.body.organizationId = parkwayId }  //TODO: This needs to be set to the organization that is passed in the request
-
         const {email, password, organizationId} = req.body
         if(!email || !password || !organizationId ) { throw new appError.MissingRequiredParameter('signupUser','Email, Password, and Organization Id are required.') }
     
@@ -66,8 +60,6 @@ const loginUser = async (req, res, next) => {
 
 const signupUser = async (req, res, next) => {
     try {
-        if(!req.body.organizationId) { req.body.organizationId = parkwayId }  //TODO: This needs to be set to the organization that is passed in the request
-
         const {email, password, organizationId} = req.body
         if(!email || !password || !organizationId ) { throw new appError.MissingRequiredParameter('signupUser','Email, Password, and Organization Id are required.') }
     
@@ -85,7 +77,7 @@ const signupUser = async (req, res, next) => {
         let newUser = new User({
             email: email,
             password: await hashPassword(password),
-            organizations: [{ organizationId: parkwayId, isDefault: true, isActive: true }],  
+            organizations: [{ organizationId, isDefault: true, isActive: true }],
             applicationClaims: [{ name: 'role', value: 'user' }]  // Manually setting the claim here
         });
 

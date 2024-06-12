@@ -8,11 +8,14 @@ const{
     getOrganizationByAccountNumber,
     getOrganizationByPhone,
     getOrganizationByEmail,
+    getOrganizationIdForHost,
     updateOrganization,
     deleteOrganization,
     updateAppSettings
 } = require('../controllers/organizationController')
 const { addNotFoundHandler, configureBaseApiRoutes } = require("./baseApiRouter");
+
+router.get('/lookup', getOrganizationIdForHost);
 
 configureBaseApiRoutes(router, createOrganization, getAllOrganizations, getOrganizationById, updateOrganization, deleteOrganization);
 

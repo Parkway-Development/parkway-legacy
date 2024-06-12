@@ -24,6 +24,7 @@ export type UsersApiType = BaseApiType<UserProfile> & {
 export interface LoginFields {
   email: string;
   password: string;
+  organizationId: string;
 }
 
 export interface JoinProfileInput {

@@ -76,6 +76,8 @@ import { isAxiosError } from 'axios';
 import ResetPasswordPage from './components/reset-password-page';
 import ForgotPasswordPage from './components/forgot-password-page';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import SpecOpsPage from './components/spec-ops-page';
+import TeamDashboardPage from './components/team-dashboard';
 
 const MAX_RETRIES = 6;
 const HTTP_STATUS_TO_NOT_RETRY = [400, 401, 403, 404];
@@ -169,6 +171,9 @@ createRoot(document.getElementById('root')!).render(
                 <Route path=":id/edit" element={<EditEventPage />} />
                 <Route index element={<EventsPage />} />
               </Route>
+              <Route path="specops" element={<ClaimRoute claim="isspecops" />}>
+                <Route index element={<SpecOpsPage />} />
+              </Route>
               <Route path="songs">
                 <Route path="add" element={<AddSongPage />} />
                 <Route path=":id" element={<SongPage />} />
@@ -185,6 +190,9 @@ createRoot(document.getElementById('root')!).render(
                   <Route path=":id/edit" element={<EditEnumPage />} />
                   <Route index element={<EnumsPage />} />
                 </Route>
+              </Route>
+              <Route path="team">
+                <Route path=":id" element={<TeamDashboardPage />} />
               </Route>
               <Route
                 path="teams"

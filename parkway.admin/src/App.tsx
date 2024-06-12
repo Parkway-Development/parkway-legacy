@@ -13,16 +13,19 @@ import { useAuth } from './hooks/useAuth.tsx';
 import { SyntheticEvent, useCallback, useState } from 'react';
 import { LogoutOutlined, UserOutlined } from '@ant-design/icons';
 import useResponsive from './hooks/useResponsive.ts';
+import useApi, { buildQueryKey } from './hooks/useApi.ts';
+import { useQuery } from '@tanstack/react-query';
+import SplashScreen from './components/splash-screen';
 
 function App() {
-  const { isLoggedIn, logout, hasClaim, teamsLed } = useAuth();
+  const { isLoggedIn, logout, hasClaim, teamsLed, user } = useAuth();
   const { aboveBreakpoint, mainBreakpoint } = useResponsive();
   const [sideCollapsed, setSideCollapsed] = useState<boolean>(false);
   const {
     token: { colorBgContainer, borderRadiusLG }
   } = theme.useToken();
 
-  if (!isLoggedIn) {
+  if (!isLoggedIn || !user) {
     window.location.href = '/login';
   }
 
@@ -31,17 +34,34 @@ function App() {
     logout();
   };
 
-  const ResponsiveLink = useCallback(
-    ({ ...props }: LinkProps) => {
-      return (
-        <Link
-          onClick={aboveBreakpoint ? undefined : () => setSideCollapsed(true)}
-          {...props}
-        />
-      );
+  const handleResponsiveLinkClick = useCallback(
+    (e: SyntheticEvent) => {
+      if (!aboveBreakpoint) {
+        setSideCollapsed(true);
+      }
+
+      e.stopPropagation();
     },
     [aboveBreakpoint]
   );
+
+  const ResponsiveLink = useCallback(
+    ({ ...props }: LinkProps) => {
+      return <Link onClick={handleResponsiveLinkClick} {...props} />;
+    },
+    [handleResponsiveLinkClick]
+  );
+
+  const {
+    teamsApi: { getAll }
+  } = useApi();
+
+  const { data, isLoading } = useQuery({
+    queryFn: getAll,
+    queryKey: buildQueryKey('teams')
+  });
+
+  if (isLoading) return <SplashScreen />;
 
   const items: MenuProps['items'] = [];
   let itemKey = 1;
@@ -115,7 +135,6 @@ function App() {
     });
   }
 
-  // TODO: What app claim is required for this
   if (hasClaim('mediaManagement')) {
     items.push({
       key: itemKey++,
@@ -123,10 +142,44 @@ function App() {
     });
   }
 
-  if (hasClaim('teamManagement')) {
+  if (hasClaim('isspecops')) {
     items.push({
       key: itemKey++,
-      label: <ResponsiveLink to="/teams">Teams</ResponsiveLink>
+      label: <ResponsiveLink to="/specops">Spec Ops</ResponsiveLink>
+    });
+  }
+
+  const hasTeamManagementClaim = hasClaim('teamManagement');
+  const teamsData = data?.data ?? [];
+  const userTeams =
+    user?.profileId !== undefined
+      ? teamsData
+          .filter(
+            (team) =>
+              team.leader?.includes(user.profileId!) ||
+              team.members?.includes(user.profileId!)
+          )
+          .sort((a, b) => (a.name > b.name ? -1 : 1))
+      : [];
+
+  if (userTeams.length || hasTeamManagementClaim) {
+    items.push({
+      key: itemKey++,
+      label: hasTeamManagementClaim ? (
+        <ResponsiveLink to="/teams">Teams</ResponsiveLink>
+      ) : (
+        'Teams'
+      ),
+      children: userTeams.length
+        ? userTeams.map((team) => ({
+            key: itemKey++,
+            label: (
+              <ResponsiveLink to={`/team/${team._id}`}>
+                {team.name}
+              </ResponsiveLink>
+            )
+          }))
+        : undefined
     });
   }
 
@@ -145,7 +198,7 @@ function App() {
               <Image src="/logo.png" preview={false} alt="Parkway Ministries" />
             </ResponsiveLink>
           </div>
-          <Menu theme="dark" mode="inline" items={items} />
+          <Menu theme="dark" mode="inline" items={items} selectable={false} />
         </Layout.Sider>
         {(aboveBreakpoint || sideCollapsed) && (
           <Layout>

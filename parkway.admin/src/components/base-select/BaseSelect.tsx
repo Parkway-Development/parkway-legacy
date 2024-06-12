@@ -14,6 +14,8 @@ export type BaseSelectionProps<T> =
 
 export const BaseSelect = <T,>({
   isMultiSelect = false,
+  loading,
+  value,
   ...props
 }: BaseSelectionProps<T>) => {
   return (
@@ -22,6 +24,8 @@ export const BaseSelect = <T,>({
       optionFilterProp="label"
       allowClear
       showSearch
+      loading={loading}
+      value={loading ? undefined : value}
       {...props}
     />
   );

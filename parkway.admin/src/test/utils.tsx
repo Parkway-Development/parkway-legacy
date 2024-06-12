@@ -138,6 +138,7 @@ export const mockApi = (
     teamsApi: mockBaseApi<Team>(teamsApi),
     generalApi: {
       getPasswordSettings: vi.fn(),
+      getOrganizationId: vi.fn(),
       ...generalApi
     },
     vendorsApi: mockBaseApi<Vendor>(vendorsApi),

@@ -1,5 +1,5 @@
 import styles from './SignupPage.module.css';
-import { Alert, Button, Card, Form, Input } from 'antd';
+import { Alert, Button, Card, Form, Image, Input } from 'antd';
 import { InternalLoginResponse, useAuth } from '../../hooks/useAuth';
 import { Link } from 'react-router-dom';
 import useApi, { buildQueryKey } from '../../hooks/useApi';
@@ -39,10 +39,18 @@ const PasswordRequirement = ({ count, display }: PasswordRequirementProps) => {
 const SignupPage = () => {
   const { login } = useAuth();
   const {
-    generalApi: { getPasswordSettings },
+    generalApi: { getOrganizationId, getPasswordSettings },
     usersApi: { signup },
     formatError
   } = useApi();
+  const {
+    data,
+    error: organizationIdError,
+    isLoading
+  } = useQuery({
+    queryFn: getOrganizationId,
+    queryKey: buildQueryKey('organizationId')
+  });
   const { data: passwordSettings, isPending: passwordSettingsLoading } =
     useQuery({
       queryFn: getPasswordSettings,
@@ -53,9 +61,13 @@ const SignupPage = () => {
   });
   const [loginResponse, setLoginResponse] = useState<InternalLoginResponse>();
 
-  const handleSignup = ({ email, password }: SignupFields) =>
+  const organizationId = data?.data;
+
+  const handleSignup = ({ email, password }: SignupFields) => {
+    if (!organizationId) return;
+
     mutate(
-      { email, password },
+      { email, password, organizationId },
       {
         onSuccess: ({ data }) => {
           const result = login(data);
@@ -68,6 +80,7 @@ const SignupPage = () => {
         }
       }
     );
+  };
 
   const settings = passwordSettings?.data
     ? passwordSettings?.data
@@ -81,6 +94,8 @@ const SignupPage = () => {
     return <ProfileVerification loginResponse={loginResponse} />;
   }
 
+  const disabled = isPending || isLoading || !organizationId;
+
   return (
     <div className="entryPage">
       <Card
@@ -88,13 +103,29 @@ const SignupPage = () => {
         bordered={false}
         style={{ width: '90vw', maxWidth: 500 }}
       >
+        <div className={styles.logoContainer}>
+          <Image
+            className={styles.logo}
+            height={175}
+            src="/logo.png"
+            preview={false}
+            alt="Parkway Ministries"
+          />
+        </div>
+        {organizationIdError || (!organizationId && !isLoading) ? (
+          <Alert
+            className={styles.configError}
+            type="error"
+            message="Unable to load organization configuration."
+          />
+        ) : null}
         <Form
           name="basic"
           labelCol={{ span: 8 }}
           wrapperCol={{ span: 16 }}
           onFinish={handleSignup}
           autoComplete="off"
-          disabled={isPending}
+          disabled={disabled}
         >
           <Form.Item<SignupFields>
             label="Email"

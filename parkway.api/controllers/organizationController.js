@@ -188,6 +188,24 @@ const deleteOrganization = async (req, res, next) => {
     }
 }
 
+const getOrganizationIdForHost = async (req, res, next) => {
+    try {
+        const origin = req.get('origin');
+
+        if (!origin) throw new appError.OrganizationOriginNotSpecified('getOrganizationIdForHost');
+
+        const organization = await Organization.findOne({ allowedOrigins: origin });
+
+        if (!organization) throw new appError.OrganizationDoesNotExist('getOrganizationIdForHost');
+
+        return res.status(200).json(organization._id);
+    }
+    catch (error) {
+        next(error)
+        console.log({method: error.method, message: error.message});
+    }
+};
+
 module.exports = { 
     createOrganization,
     getAllOrganizations,
@@ -198,5 +216,6 @@ module.exports = {
     getOrganizationByEmail,
     updateOrganization,
     deleteOrganization,
-    updateAppSettings
+    updateAppSettings,
+    getOrganizationIdForHost
 }
