@@ -1,5 +1,5 @@
 import styles from './SignupPage.module.css';
-import { Alert, Button, Card, Form, Input } from 'antd';
+import { Alert, Button, Card, Form, Image, Input } from 'antd';
 import { InternalLoginResponse, useAuth } from '../../hooks/useAuth';
 import { Link } from 'react-router-dom';
 import useApi, { buildQueryKey } from '../../hooks/useApi';
@@ -88,6 +88,15 @@ const SignupPage = () => {
         bordered={false}
         style={{ width: '90vw', maxWidth: 500 }}
       >
+        <div className={styles.logoContainer}>
+          <Image
+            className={styles.logo}
+            height={175}
+            src="/logo.png"
+            preview={false}
+            alt="Parkway Ministries"
+          />
+        </div>
         <Form
           name="basic"
           labelCol={{ span: 8 }}
