@@ -7,6 +7,12 @@
   justify-content: space-between;
 }
 
+.sidebar {
+  a {
+    color: unset;
+  }
+}
+
 .logo {
   margin: 1em;
 

@@ -1,5 +1,5 @@
 const SpecOpsPage = () => {
-  return <h3>Spec Ops Page TBD</h3>;
+  return <h2>Spec Ops Page TBD</h2>;
 };
 
 export default SpecOpsPage;

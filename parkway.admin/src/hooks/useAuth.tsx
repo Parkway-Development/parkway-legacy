@@ -24,6 +24,7 @@ interface AuthContextType {
   token: string | undefined;
   user: AuthUser | undefined;
   hasClaim: (claimKey: AppClaimKeys) => boolean;
+  teams: string[];
   teamsLed: string[];
 }
 
@@ -88,6 +89,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         ? tokenPayload.claims.teamsLed
         : [];
 
+    const teams =
+      tokenPayload?.claims?.teams && tokenPayload.claims.teams.length > 0
+        ? tokenPayload.claims.teams
+        : [];
+
     const clearState = () => {
       clearUser();
       clearToken();
@@ -120,6 +126,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       storeProfileId: (profileId: string, user: AuthUser) =>
         setUser({ ...user, profileId }),
       hasClaim,
+      teams,
       teamsLed,
       token
     };
