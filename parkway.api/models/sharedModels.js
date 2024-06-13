@@ -10,7 +10,8 @@ const appSettingsSchema = new mongoose.Schema({
     value: {
         type: String,
         required: true
-    }
+    },
+    _id: false
 });
 
 const addressSchema = new mongoose.Schema({
@@ -39,7 +40,8 @@ const addressSchema = new mongoose.Schema({
         enum: Object.values(ApprovedCountries),
         default: ApprovedCountries.US,
         required: true
-    }
+    },
+    _id: false
 });
 
 const subscriptionSchema = new mongoose.Schema({

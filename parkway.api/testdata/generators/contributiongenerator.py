@@ -4,6 +4,7 @@ import os
 from datetime import datetime
 import logging
 import glob
+from bson import ObjectId
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -123,7 +124,7 @@ def process_deposits(profiles_file, accounts_file):
         try:
             deposit_amount = deposit["amount"]
             transaction_date = deposit["depositDate"]
-            deposit_id = deposit["depositId"]
+            deposit_id = deposit["_id"]["$oid"]
         except KeyError as e:
             logging.error(f"Missing expected key {e} in deposit: {deposit}")
             continue

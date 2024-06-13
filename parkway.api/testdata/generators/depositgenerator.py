@@ -17,10 +17,10 @@ def generate_deposits(num_deposits, min_amount, max_amount, profile_id, start_da
         deposit_date_obj = datetime.strptime(deposit_date_str, "%Y-%m-%d")
         
         deposit = {
+            "_id":{ "$oid": str(ObjectId())},
             "amount": random.randint(min_amount, max_amount),
             "responsiblePartyProfileId": profile_id,
             "depositDate": deposit_date_str,
-            "depositId": str(ObjectId()),
             "currentStatus": "unallocated",
             "statusDate": deposit_date_str,
             "history": [
@@ -51,11 +51,11 @@ profile_id = "6658aac2692d5194441b6897"
 # Calculate the most recent past Sunday
 today = datetime.now()
 last_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
-start_date_sunday = last_sunday - timedelta(weeks=num_deposits)
+start_date_sunday = last_sunday - timedelta(weeks=num_deposits - 1)  # Adjusted to include the desired range
 
 # Calculate the most recent past Wednesday
 last_wednesday = today - timedelta(days=(today.weekday() - 2) % 7)
-start_date_wednesday = last_wednesday - timedelta(weeks=num_deposits)
+start_date_wednesday = last_wednesday - timedelta(weeks=num_deposits - 1)  # Adjusted to include the desired range
 
 # Generate Sunday deposits
 deposits_sunday = generate_deposits(num_deposits, min_amount_sunday, max_amount_sunday, profile_id, start_date_sunday, 6)

@@ -1,0 +1,22 @@
+{
+    "_id": {
+        "$oid": "666b317b41fcca94eac1eabe"
+    },
+    "amount": 1103864,
+    "responsiblePartyProfileId": "6658aac2692d5194441b6897",
+    "depositDate": "2023-11-26",
+    "currentStatus": "unallocated",
+    "statusDate": "2023-11-26",
+    "history": [
+        {
+            "status": "undeposited",
+            "date": "2023-11-26 00:00:00",
+            "responsiblePartyProfileId": "6658aac2692d5194441b6897"
+        },
+        {
+            "status": "unallocated",
+            "date": "2023-11-26 00:00:00",
+            "responsiblePartyProfileId": "6658aac2692d5194441b6897"
+        }
+    ]
+}
