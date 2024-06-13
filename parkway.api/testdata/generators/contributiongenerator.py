@@ -4,6 +4,7 @@ import os
 from datetime import datetime
 import logging
 import glob
+from bson import ObjectId
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -77,7 +78,8 @@ def generate_unassigned_contribution(general_fund_account_id, deposit_amount, tr
         "deposit_id": deposit_id,
         "transactionDate": transaction_date,
         "type": random.choice(["cash", "check"]),
-        "notes": ["Generated unassigned contribution"]
+        "notes": ["Generated unassigned contribution"],
+        "responsiblePartyProfileId": "6658aac2692d5194441b6897"  # Adding the responsiblePartyProfileId field
     }
 
 def delete_old_contribution_files(base_dir):
@@ -122,7 +124,7 @@ def process_deposits(profiles_file, accounts_file):
         try:
             deposit_amount = deposit["amount"]
             transaction_date = deposit["depositDate"]
-            deposit_id = deposit["depositId"]
+            deposit_id = deposit["_id"]["$oid"]
         except KeyError as e:
             logging.error(f"Missing expected key {e} in deposit: {deposit}")
             continue
@@ -135,10 +137,13 @@ def process_deposits(profiles_file, accounts_file):
 
         if '-dep-wed.json' in deposit_file:
             num_contributions = random.randint(25, 50)
+            day_of_week = 'wed'
         elif '-dep-sun.json' in deposit_file:
             num_contributions = random.randint(200, 300)
+            day_of_week = 'sun'
         else:
             num_contributions = random.randint(10, 20)  # Default case for other days if any
+            day_of_week = 'oth'
 
         logging.info(f"Generating {num_contributions} contributions")
 
@@ -148,12 +153,14 @@ def process_deposits(profiles_file, accounts_file):
 
         contributions.append(generate_unassigned_contribution(general_fund_account_id, deposit_amount, transaction_date, deposit_id))
 
-        # Set the filename of the contributions to match the deposit filename, replacing "dep" with "con"
-        contribution_filename = deposit_file.replace("-dep-", "-con-")
-        output_filename = os.path.join(output_dir, os.path.basename(contribution_filename))
-        
-        save_json(output_filename, contributions)
-        logging.info(f"Saved contributions to {output_filename}")
+        # Write contributions to files in chunks of 100
+        for i in range(0, len(contributions), 100):
+            chunk = contributions[i:i+100]
+            chunk_number = (i // 100) + 1
+            contribution_filename = f"{transaction_date}-con-{day_of_week}-{chunk_number:03d}.json"
+            output_filename = os.path.join(output_dir, contribution_filename)
+            save_json(output_filename, chunk)
+            logging.info(f"Saved contributions to {output_filename}")
 
 if __name__ == "__main__":
     profiles_file = "../profiles.json"

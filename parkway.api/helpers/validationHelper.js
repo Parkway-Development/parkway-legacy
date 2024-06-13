@@ -34,27 +34,33 @@ class ValidationHelper {
         for (let i = 0; i < accounts.length; i++) {
             const accountId = accounts[i].accountId;
             const response = await this.validateAccountId(accountId, isDonation);
-            if(response.result === false) { errors.push(result.message) }
+            if(response.result === false) { 
+                errors.push(response.message)
+            }
         }
 
         return errors;
     }
 
     static validateAccountId = async (accountId) => {
-        if (!mongoose.Types.ObjectId.isValid(accountId)) { return ({message: `Invalid account Id: ${accountId}`, result: false}) }
+        if (!mongoose.Types.ObjectId.isValid(accountId)) { 
+            return { message: `Invalid account Id: ${accountId}`, result: false }; 
+        }
         
         const account = await Account.findById(accountId);
-        if (!account) { return ({message: `Account does not exist for Id: ${accountId}`, result: false})}
-
-        return ({message: `Account found Id: ${accountId}`, result: true})    
+        if (!account) { 
+            return { message: `Account does not exist for Id: ${accountId}`, result: false };
+        }
+    
+        return { message: `Account found Id: ${accountId}`, result: true };
     }
-
+        
     static validateProfileIds = async (profiles) => {
         let errors = [];
         for (let i = 0; i < profiles.length; i++) {
             const profileId = profiles[i].profileId;
             const response = await this.validateProfileId(profileId);
-            if(response.result === false) { errors.push(result.message) }
+            if(response.result === false) { errors.push(response.message) }
         }
 
         return errors;

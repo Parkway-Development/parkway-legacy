@@ -12,7 +12,7 @@ const createTransaction = async (amount, type, destinationAccountId = null, sour
 
         if (!responsiblePartyProfileId) { throw new AppError.MissingId('createTransaction'); }
         if (!mongoose.Types.ObjectId.isValid(responsiblePartyProfileId)) { throw new AppError.InvalidId('createTransaction'); }
-        if (!Validation.validateProfileId(responsiblePartyProfileId)) { throw new AppError.ProfileDoesNotExist('createTransaction', 'The responsible party does not exist'); }
+        if (!await Validation.validateProfileId(responsiblePartyProfileId)) { throw new AppError.ProfileDoesNotExist('createTransaction', 'The responsible party does not exist'); }
 
         let transaction;
         switch (type) {
@@ -63,7 +63,6 @@ const adjustBalances = async (transaction) => {
     try {
         if(transaction.destinationAccount !== null) {
             const destinationAccount = await Account.findById(transaction.destinationAccount.accountId);
-            console.log("Destination Account Before Update:", destinationAccount);
 
             if((destinationAccount.type === 'expense' || destinationAccount.type === 'asset' || destinationAccount.type === 'cash') && transaction.destinationAccount.type === 'debit') {
                 await Account.findByIdAndUpdate(transaction.destinationAccount.accountId, { $inc: { balance: -transaction.amount } });
@@ -72,12 +71,10 @@ const adjustBalances = async (transaction) => {
             }
 
             const updatedDestinationAccount = await Account.findById(transaction.destinationAccount.accountId);
-            console.log("Destination Account After Update:", updatedDestinationAccount);
         }
 
         if(transaction.sourceAccount !== null) {
             const sourceAccount = await Account.findById(transaction.sourceAccount.accountId);
-            console.log("Source Account Before Update:", sourceAccount);
 
             if((sourceAccount.type === 'expense' || sourceAccount.type === 'asset' || sourceAccount.type === 'cash') && transaction.sourceAccount.type === 'debit') {
                 await Account.findByIdAndUpdate(transaction.sourceAccount.accountId, { $inc: { balance: transaction.amount } });
@@ -86,7 +83,6 @@ const adjustBalances = async (transaction) => {
             }
 
             const updatedSourceAccount = await Account.findById(transaction.sourceAccount.accountId);
-            console.log("Source Account After Update:", updatedSourceAccount);
         }
     } catch (error) {
         console.log({ method: error.method, message: error.message });
@@ -99,11 +95,11 @@ const createTransferTransaction = async (amount, destinationAccountId, sourceAcc
         let transaction = new Transaction({ amount, type: 'transfer', responsiblePartyProfileId });
 
         const destinationAccount = await Account.findById(destinationAccountId);
-        if (!destinationAccount) { throw new AppError.NotFound('createTransaction', 'The destination account could not be found'); }
+        if (!destinationAccount) { throw new AppError.NotFound('createTransaction', `Account ${destinationAccountId} could not be found`); }
 
         const destinationAccountDetail = {
             accountId: destinationAccountId,
-            type: determineTransactionTypeForAccount('transfer', destinationAccount, true)
+            type: determineTransactionTypeForAccount( destinationAccount, true)
         };
         transaction.destinationAccount = destinationAccountDetail;
 
@@ -112,7 +108,7 @@ const createTransferTransaction = async (amount, destinationAccountId, sourceAcc
 
         const sourceAccountDetail = {
             accountId: sourceAccountId,
-            type: determineTransactionTypeForAccount('transfer', sourceAccount, false)
+            type: determineTransactionTypeForAccount( sourceAccount, false)
         };
         transaction.sourceAccount = sourceAccountDetail;
 
@@ -136,11 +132,11 @@ const createDepositTransaction = async (amount, destinationAccountId, responsibl
 
         const destinationAccountDetail = {
             accountId: destinationAccountId,
-            type: determineTransactionTypeForAccount('deposit', destinationAccount, true)
+            type: determineTransactionTypeForAccount( destinationAccount, true)
         };
         transaction.destinationAccount = destinationAccountDetail;
 
-        transaction = await transaction.save();
+        transaction = await transaction.save({ validateBeforeSave: true },{ timestamps: true },{ new: true });
         transaction = await Transaction.findById(transaction._id).populate('destinationAccount.accountId').exec();
 
         return transaction;

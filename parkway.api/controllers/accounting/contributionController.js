@@ -7,70 +7,160 @@ const AppError = require('../../applicationErrors')
 const { TransactionType } = require('../../models/constants');
 const { createTransaction } = require('../../helpers/transactionHelper');
 
-//TODO: Check to see if this is a duplicate contribution
-const addContribution = async (req, res, next) => {
+const createContributions = async (req, res, next) => {
     try {
-        const { gross, fees, net, accounts, contributorProfileId, depositId, transactionDate, type, notes, responsiblePartyProfileId } = req.body;
+        const array = req.body;
+        const totalAccounts = array.reduce((acc, item) => acc + item.accounts.length, 0);
+        const results = await Promise.all(array.map(item => addContribution(item)));
 
-        if (!gross) { throw new AppError.MissingRequiredParameter('addContribution', 'The request body is missing the gross amount'); }
-        if (fees === undefined || fees === null) { throw new AppError.MissingRequiredParameter('addContribution', 'The request body is missing the fees amount'); }
-        if (!net) { throw new AppError.MissingRequiredParameter('addContribution', 'The request body is missing the net amount'); }
-        if (!accounts || !Array.isArray(accounts)) { throw new AppError.MissingRequiredParameter('addContribution', 'The request body is missing the accounts array'); }
-        if (!responsiblePartyProfileId){ throw new AppError.MissingRequiredParameter('addContribution', 'The request body is missing the responsible party profile Id'); }
-        if (!mongoose.Types.ObjectId.isValid(responsiblePartyProfileId)){ throw new AppError.InvalidId('addContribution', 'The responsible party profile Id is not valid'); }
-        if (!ValidationHelper.validateProfileId(responsiblePartyProfileId)){ throw new AppError.ProfileDoesNotExist('addContribution', 'The responsible party profile does not exist'); }
+        const successfulContributions = results.filter(result => result.errors.length === 0).map(result => result.contribution); 
+        const failedContributions = results.filter(result => result.errors.length > 0).map(result => ({ 
+            data: result.contribution, 
+            errors: result.errors 
+        })); 
+
+        return res.status(201).json({ successfulContributions, failedContributions }); 
+
+    } catch (error) {
+        next(error);
+    }
+};
+
+const addContribution = async (data) => {
+    const result = { contribution: null, errors: [] };
+    try {
+        const {
+            gross, fees, net, accounts,
+            contributorProfileId, depositId,
+            transactionDate, type, notes,
+            responsiblePartyProfileId
+        } = data;
+
+        if (!gross) throw new AppError.MissingRequiredParameter('addContribution', 'The request body is missing the gross amount');
+        if (fees === undefined || fees === null) throw new AppError.MissingRequiredParameter('addContribution', 'The request body is missing the fees amount');
+        if (!net) throw new AppError.MissingRequiredParameter('addContribution', 'The request body is missing the net amount');
+        if (!accounts || !Array.isArray(accounts)) throw new AppError.MissingRequiredParameter('addContribution', 'The request body is missing the accounts array');
+        if (!responsiblePartyProfileId) throw new AppError.MissingRequiredParameter('addContribution', 'The request body is missing the responsible party profile Id');
+        if (!mongoose.Types.ObjectId.isValid(responsiblePartyProfileId)) throw new AppError.InvalidId('addContribution', 'The responsible party profile Id is not valid');
+        if (!ValidationHelper.validateProfileId(responsiblePartyProfileId)) throw new AppError.ProfileDoesNotExist('addContribution', 'The responsible party profile does not exist');
 
         if (contributorProfileId) {
-            if (!mongoose.Types.ObjectId.isValid(contributorProfileId)) { throw new AppError.InvalidId('addContribution', `${contributorProfileId} is not a valid mongo id`); }
+            if (!mongoose.Types.ObjectId.isValid(contributorProfileId)) throw new AppError.InvalidId('addContribution', `${contributorProfileId} is not a valid mongo id`);
             const profileExists = await UserValidation.profileExists(contributorProfileId);
-            if (!profileExists) { throw new AppError.ProfileDoesNotExist('addContribution', 'The specified contributor profile does not exist'); }
+            if (!profileExists) result.errors.push(new AppError.ProfileDoesNotExist('addContribution', 'The specified contributor profile does not exist'));
         }
 
-        const accountErrors = await ValidationHelper.validateAccountIds(req.body.accounts);
-        if (accountErrors.length > 0) { throw new AppError.Validation('addContribution', accountErrors); }
+        const accountErrors = await ValidationHelper.validateAccountIds(accounts);
+        if (accountErrors.length > 0) {
+            result.errors.push(new AppError.Validation('addContribution', accountErrors.join(', '), 'VALIDATION_ERROR', accountErrors));
+        }
 
         const accountsTotal = accounts.reduce((total, account) => total + account.amount, 0);
-        if (net !== accountsTotal) { throw new AppError.Validation('addContribution', 'The sum of the accounts does not equal the contribution net amount'); }
-        
+        if (net !== accountsTotal) result.errors.push(new AppError.Validation('addContribution', 'The sum of the accounts does not equal the contribution net amount'));
+
         let deposit;
         if (depositId) {
-            if (!mongoose.Types.ObjectId.isValid(depositId)) { throw new AppError.InvalidId('addContribution', 'The supplied deposit Id is not valid'); }
+            if (!mongoose.Types.ObjectId.isValid(depositId)) throw new AppError.InvalidId('addContribution', 'The supplied deposit Id is not valid');
             deposit = await Deposit.findById(depositId);
-            if (!deposit) { throw new AppError.DepositDoesNotExist('addContribution', 'The specified deposit does not exist'); }
-        }      
+            if (!deposit) result.errors.push(new AppError.DepositDoesNotExist('addContribution', 'The specified deposit does not exist'));
+        }
 
         const contribution = new Contribution({
-            contributorProfileId,
-            responsiblePartyProfileId,
-            gross,
-            fees,
-            net,
-            accounts,
-            transactionDate,
-            depositId,
-            type,
-            notes
+            contributorProfileId, responsiblePartyProfileId,
+            gross, fees, net, accounts,
+            transactionDate, depositId, type, notes
         });
 
         const validationError = contribution.validateSync();
-        if (validationError) { throw new AppError.Validation('addContribution', validationError.message) }
+        if (validationError) result.errors.push(new AppError.Validation('addContribution', validationError.message));
 
-        await contribution.save({ new: true });
+        if (result.errors.length === 0) {
+            await contribution.save({ new: true });
+            result.contribution = contribution;
 
-        if (deposit) {
-            deposit.contributions.push(contribution._id);
-            await deposit.save();
+            if (deposit) {
+                deposit.contributions.push(contribution._id);
+                await deposit.save();
+            }
+
+            for (let account of accounts) {
+                await createTransaction(account.amount, TransactionType.DEPOSIT, account.accountId, null, responsiblePartyProfileId);
+            }
         }
 
-        for (let account of accounts) { await createTransaction(account.amount, TransactionType.DEPOSIT, account.accountId, null, responsiblePartyProfileId); }
-
-        return res.status(201).json(contribution);
-
+        return result;
     } catch (error) {
-        next(error)
-        console.log({method: error.method, message: error.message});
+        result.errors.push(error.message || error);
+        return result;
     }
-}
+};
+
+
+
+//TODO: Check to see if this is a duplicate contribution
+// const addContribution = async (req, res, next) => {
+//     try {
+//         const { gross, fees, net, accounts, contributorProfileId, depositId, transactionDate, type, notes, responsiblePartyProfileId } = req.body;
+
+//         if (!gross) { throw new AppError.MissingRequiredParameter('addContribution', 'The request body is missing the gross amount'); }
+//         if (fees === undefined || fees === null) { throw new AppError.MissingRequiredParameter('addContribution', 'The request body is missing the fees amount'); }
+//         if (!net) { throw new AppError.MissingRequiredParameter('addContribution', 'The request body is missing the net amount'); }
+//         if (!accounts || !Array.isArray(accounts)) { throw new AppError.MissingRequiredParameter('addContribution', 'The request body is missing the accounts array'); }
+//         if (!responsiblePartyProfileId){ throw new AppError.MissingRequiredParameter('addContribution', 'The request body is missing the responsible party profile Id'); }
+//         if (!mongoose.Types.ObjectId.isValid(responsiblePartyProfileId)){ throw new AppError.InvalidId('addContribution', 'The responsible party profile Id is not valid'); }
+//         if (!ValidationHelper.validateProfileId(responsiblePartyProfileId)){ throw new AppError.ProfileDoesNotExist('addContribution', 'The responsible party profile does not exist'); }
+
+//         if (contributorProfileId) {
+//             if (!mongoose.Types.ObjectId.isValid(contributorProfileId)) { throw new AppError.InvalidId('addContribution', `${contributorProfileId} is not a valid mongo id`); }
+//             const profileExists = await UserValidation.profileExists(contributorProfileId);
+//             if (!profileExists) { throw new AppError.ProfileDoesNotExist('addContribution', 'The specified contributor profile does not exist'); }
+//         }
+
+//         const accountErrors = await ValidationHelper.validateAccountIds(req.body.accounts);
+//         if (accountErrors.length > 0) { throw new AppError.Validation('addContribution', accountErrors); }
+
+//         const accountsTotal = accounts.reduce((total, account) => total + account.amount, 0);
+//         if (net !== accountsTotal) { throw new AppError.Validation('addContribution', 'The sum of the accounts does not equal the contribution net amount'); }
+        
+//         let deposit;
+//         if (depositId) {
+//             if (!mongoose.Types.ObjectId.isValid(depositId)) { throw new AppError.InvalidId('addContribution', 'The supplied deposit Id is not valid'); }
+//             deposit = await Deposit.findById(depositId);
+//             if (!deposit) { throw new AppError.DepositDoesNotExist('addContribution', 'The specified deposit does not exist'); }
+//         }      
+
+//         const contribution = new Contribution({
+//             contributorProfileId,
+//             responsiblePartyProfileId,
+//             gross,
+//             fees,
+//             net,
+//             accounts,
+//             transactionDate,
+//             depositId,
+//             type,
+//             notes
+//         });
+
+//         const validationError = contribution.validateSync();
+//         if (validationError) { throw new AppError.Validation('addContribution', validationError.message) }
+
+//         await contribution.save({ new: true });
+
+//         if (deposit) {
+//             deposit.contributions.push(contribution._id);
+//             await deposit.save();
+//         }
+
+//         for (let account of accounts) { await createTransaction(account.amount, TransactionType.DEPOSIT, account.accountId, null, responsiblePartyProfileId); }
+
+//         return res.status(201).json(contribution);
+
+//     } catch (error) {
+//         next(error)
+//         console.log({method: error.method, message: error.message});
+//     }
+// }
 
 //TODO: Add pagination
 const getAllContributions = async (req, res, next) => {
@@ -331,7 +421,8 @@ const deleteContribution = async (req, res) => {
 }
 
 module.exports = {
-    addContribution,
+    createContributions,
+    // addContribution,
     getAllContributions,
     getContributionById,
     getContributionsByType,
