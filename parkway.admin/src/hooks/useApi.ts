@@ -2,9 +2,10 @@ import { useAuth } from './useAuth.tsx';
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import {
   AccountsApiType,
-  AssetsApiType,
+  AssetsApiType, AttendanceApiType,
   buildAccountsApi,
   buildAssetsApi,
+  buildAttendanceApi,
   buildContributionsApi,
   buildEnumsApi,
   buildEventCategoriesApi,
@@ -32,6 +33,7 @@ export type TypedResponse<T> = Promise<Omit<AxiosResponse<T>, 'config'>>;
 export interface BaseApiTypes {
   accountsApi: AccountsApiType;
   assetsApi: AssetsApiType;
+  attendanceApi: AttendanceApiType;
   contributionsApi: ContributionsApiType;
   enumsApi: EnumsApiType;
   eventCategoriesApi: EventCategoriesApiType;
@@ -50,6 +52,7 @@ export type ApiType = BaseApiTypes & {
 export type QueryType =
   | 'accounts'
   | 'assets'
+  | 'attendance'
   | 'contributions'
   | 'enums'
   | 'eventCategories'
@@ -112,6 +115,7 @@ const useApi: () => ApiType = () => {
   return {
     accountsApi: buildAccountsApi(instance),
     assetsApi: buildAssetsApi(instance),
+    attendanceApi: buildAttendanceApi(instance),
     contributionsApi: buildContributionsApi(instance),
     enumsApi: buildEnumsApi(instance),
     eventCategoriesApi: buildEventCategoriesApi(instance),

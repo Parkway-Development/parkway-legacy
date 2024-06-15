@@ -147,6 +147,7 @@ interface TokenPayload {
     memberVetting: boolean | string;
     userManagement: boolean | string;
     accounting: boolean | string;
+    attendance: boolean | string;
     budgeting: boolean | string;
     teamManagement: boolean | string;
     calendarManagement: boolean | string;

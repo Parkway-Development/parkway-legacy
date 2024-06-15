@@ -78,6 +78,12 @@ import ForgotPasswordPage from './components/forgot-password-page';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import SpecOpsPage from './components/spec-ops-page';
 import TeamDashboardPage from './components/team-dashboard';
+import {
+  AddAttendancePage,
+  AttendancePage,
+  AttendancesPage,
+  EditAttendancePage
+} from "./components/attendance-page";
 
 const MAX_RETRIES = 6;
 const HTTP_STATUS_TO_NOT_RETRY = [400, 401, 403, 404];
@@ -153,6 +159,15 @@ createRoot(document.getElementById('root')!).render(
                 <Route path=":id" element={<AccountPage />} />
                 <Route path=":id/edit" element={<EditAccountPage />} />
                 <Route index element={<AccountsPage />} />
+              </Route>
+              <Route
+                path="attendance"
+                element={<ClaimRoute claim="attendance" />}
+              >
+                <Route path="add" element={<AddAttendancePage />} />
+                <Route path=":id" element={<AttendancePage />} />
+                <Route path=":id/edit" element={<EditAttendancePage />} />
+                <Route index element={<AttendancesPage />} />
               </Route>
               <Route
                 path="events"
