@@ -1,18 +1,5 @@
 require('dotenv').config();
 
-const apiKey = process.env.SENDGRID_API_KEY;
-const mongoDBURI = process.env.DATABASE_URL;
-
-if (!apiKey || !apiKey.startsWith("SG.")) {
-    console.error('API key does not start with "SG.".');
-    process.exit(1);
-}
-
-if (!mongoDBURI) {
-    console.error('MongoDB connection URI is not defined. Please check your environment variables.');
-    process.exit(1);
-}
-
 console.log('Environment variables loaded successfully.');
 
 const PORT = process.env.PORT || 3000;
