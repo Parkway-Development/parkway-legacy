@@ -7,7 +7,7 @@ import { BaseDisplayPage } from '../base-display-page/BaseDisplayPage.tsx';
 import { SharedBasePageProps } from '../base-data-table-page/types.ts';
 import AttendanceForm from './AttendanceForm.tsx';
 import { attendanceColumns } from './columns.tsx';
-import { Attendance } from '../../types';
+import AttendanceDisplay from './AttendanceDisplay.tsx';
 
 const sharedProps: SharedBasePageProps = {
   queryKey: 'attendance',
@@ -26,10 +26,7 @@ const AttendancesPage = () => (
 );
 
 const AttendancePage = () => (
-  <BaseDisplayPage
-    {...sharedProps}
-    render={(item: Attendance) => item.name}
-  />
+  <BaseDisplayPage {...sharedProps} render={AttendanceDisplay} />
 );
 
 const AddAttendancePage = () => (
