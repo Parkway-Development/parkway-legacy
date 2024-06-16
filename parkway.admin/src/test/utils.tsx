@@ -129,7 +129,8 @@ export const mockApi = (
     attendanceApi: {
       ...mockBaseApi<Attendance>(attendanceApi),
       addEntry: vi.fn(),
-      getEntries: vi.fn()
+      getEntries: vi.fn(),
+      deleteEntry: vi.fn()
     },
     contributionsApi: mockBaseApi<Contribution>(contributionsApi),
     enumsApi: mockBaseApi<Enum>(enumsApi),

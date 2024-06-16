@@ -7,7 +7,8 @@ import styles from './AttendanceDisplay.module.scss';
 import NumberFormat from '../number-format';
 import AddEntryModal from './AddEntryModal.tsx';
 import useApi, { buildQueryKey } from '../../hooks/useApi.ts';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import DeleteButton from '../delete-button';
 
 const AttendanceDisplay = (attendance: Attendance) => {
   const items: DescriptionsProps['items'] = [
@@ -38,41 +39,16 @@ type EntriesTableProps = {
   attendanceId: string;
 };
 
-const entriesColumns: OrderedColumnsType<AttendanceEntry> = [
-  {
-    title: 'Date',
-    dataIndex: 'date',
-    key: 'date',
-    displayOrder: 1,
-    width: 100,
-    render: (value: AttendanceEntry['date']) => <DateDisplay date={value} />
-  },
-  {
-    title: 'Count',
-    dataIndex: 'count',
-    key: 'count',
-    width: 100,
-    align: 'end',
-    displayOrder: 2,
-    render: (value: AttendanceEntry['count']) => <NumberFormat value={value} />
-  },
-  {
-    title: 'Notes',
-    dataIndex: 'notes',
-    key: 'notes',
-    displayOrder: 3
-  }
-];
-
 const EntriesTable = ({ attendanceId }: EntriesTableProps) => {
   const {
-    attendanceApi: { getEntries },
+    attendanceApi: { getEntries, deleteEntry },
     formatError
   } = useApi();
   const { data, isLoading, error } = useQuery({
     queryKey: buildQueryKey('attendanceEntry', attendanceId),
     queryFn: () => getEntries(attendanceId)
   });
+  const queryClient = useQueryClient();
 
   let content;
   const entries = data?.data ?? [];
@@ -84,6 +60,56 @@ const EntriesTable = ({ attendanceId }: EntriesTableProps) => {
   } else if (entries.length === 0) {
     content = <span>No attendance entries yet.</span>;
   } else {
+    const handleDelete = () =>
+      queryClient.invalidateQueries({
+        queryKey: buildQueryKey('attendanceEntry', attendanceId)
+      });
+
+    const entriesColumns: OrderedColumnsType<AttendanceEntry> = [
+      {
+        title: 'Actions',
+        dataIndex: '_id',
+        key: '_id',
+        displayOrder: 1,
+        width: 100,
+        render: (value: AttendanceEntry['_id']) => (
+          <DeleteButton
+            id={value}
+            isIconButton
+            deleteFn={() =>
+              deleteEntry({ attendanceId, attendanceEntryId: value })
+            }
+            onSuccess={handleDelete}
+          />
+        )
+      },
+      {
+        title: 'Date',
+        dataIndex: 'date',
+        key: 'date',
+        displayOrder: 2,
+        width: 100,
+        render: (value: AttendanceEntry['date']) => <DateDisplay date={value} />
+      },
+      {
+        title: 'Count',
+        dataIndex: 'count',
+        key: 'count',
+        width: 100,
+        align: 'end',
+        displayOrder: 3,
+        render: (value: AttendanceEntry['count']) => (
+          <NumberFormat value={value} />
+        )
+      },
+      {
+        title: 'Notes',
+        dataIndex: 'notes',
+        key: 'notes',
+        displayOrder: 4
+      }
+    ];
+
     content = (
       <Table
         columns={entriesColumns}

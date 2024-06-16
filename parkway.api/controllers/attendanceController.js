@@ -64,6 +64,23 @@ const getAttendanceEntries = async (req, res, next) => {
     }
 };
 
+const deleteAttendanceEntry = async (req, res, next) => {
+    try {
+        const {id} = req.params;
+        if(!id) { throw new appError.MissingId('deleteAttendanceEntry') }
+        if(!mongoose.Types.ObjectId.isValid(id)) { throw new appError.InvalidId('deleteAttendanceEntry') }
+
+        const entry = await AttendanceEntry.findByIdAndDelete(id);
+
+        if (!entry) { throw new Error("Attendance entry could not be created.") }
+
+        return res.status(201).json(entry);
+    } catch (error) {
+        next(error);
+        console.log({ method: error.method, message: error.message });
+    }
+};
+
 const getAllAttendances = async (req, res, next) => {
     try{
         const attendances = await Attendance.find({}).sort({name: 'asc'});
@@ -136,5 +153,6 @@ module.exports = {
     updateAttendance,
     deleteAttendance,
     addAttendanceEntry,
-    getAttendanceEntries
+    getAttendanceEntries,
+    deleteAttendanceEntry
 };

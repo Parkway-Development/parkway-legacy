@@ -7,7 +7,8 @@ const {
     updateAttendance,
     deleteAttendance,
     addAttendanceEntry,
-    getAttendanceEntries
+    getAttendanceEntries,
+    deleteAttendanceEntry
 } = require('../controllers/attendanceController')
 const { addNotFoundHandler, configureBaseApiRoutes } = require("./baseApiRouter");
 
@@ -15,6 +16,7 @@ configureBaseApiRoutes(router, addAttendance, getAllAttendances, getAttendanceBy
 
 router.post('/:id/addEntry', addAttendanceEntry);
 router.get('/:id/entries', getAttendanceEntries);
+router.delete('/:attendanceId/entries/:id', deleteAttendanceEntry);
 
 addNotFoundHandler(router);
 module.exports = router;
