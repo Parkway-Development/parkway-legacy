@@ -12,6 +12,7 @@ export type AttendanceApiType = BaseApiType<Attendance> & {
   addEntry: (
     addEntryPayload: AddEntryPayload
   ) => TypedResponse<AttendanceEntry>;
+  getEntries: (attendanceId: string) => TypedResponse<AttendanceEntry[]>;
 };
 
 const basePath = '/attendance';
@@ -21,5 +22,7 @@ export const buildAttendanceApi = (
 ): AttendanceApiType => ({
   ...buildBaseApi<Attendance>(instance, basePath),
   addEntry: ({ attendanceId, ...payload }: AddEntryPayload) =>
-    instance.post(`${basePath}/${attendanceId}/addEntry`, payload)
+    instance.post(`${basePath}/${attendanceId}/addEntry`, payload),
+  getEntries: (attendanceId) =>
+    instance.get(`${basePath}/${attendanceId}/entries`)
 });

@@ -18,7 +18,51 @@ const addAttendance = async (req, res, next) => {
         next(error);
         console.log({ method: error.method, message: error.message });
     }
-}
+};
+
+const addAttendanceEntry = async (req, res, next) => {
+    try {
+        const {id} = req.params;
+        if(!id) { throw new appError.MissingId('addAttendanceEntry') }
+        if(!mongoose.Types.ObjectId.isValid(id)) { throw new appError.InvalidId('addAttendanceEntry') }
+
+        const attendance = await Attendance.findById(id);
+
+        if (!attendance) { throw new Error("No attendance was found with that Id.") }
+
+        const attendanceEntry = new AttendanceEntry({
+            ...req.body,
+            attendance
+        });
+
+        if (!attendanceEntry) { throw new Error("Attendance entry could not be created.") }
+
+        const validationError = attendanceEntry.validateSync();
+
+        if (validationError) { throw new Error(validationError.message) }
+
+        await attendanceEntry.save();
+        return res.status(201).json(attendanceEntry);
+    } catch (error) {
+        next(error);
+        console.log({ method: error.method, message: error.message });
+    }
+};
+
+const getAttendanceEntries = async (req, res, next) => {
+    try {
+        const {id} = req.params;
+        if(!id) { throw new appError.MissingId('getAttendanceEntries') }
+        if(!mongoose.Types.ObjectId.isValid(id)) { throw new appError.InvalidId('getAttendanceEntries') }
+
+        const entries = await AttendanceEntry.find({ attendance: id }).sort({ date: 'desc' });
+
+        return res.status(201).json(entries ?? []);
+    } catch (error) {
+        next(error);
+        console.log({ method: error.method, message: error.message });
+    }
+};
 
 const getAllAttendances = async (req, res, next) => {
     try{
@@ -90,5 +134,7 @@ module.exports = {
     getAllAttendances,
     getAttendanceById,
     updateAttendance,
-    deleteAttendance
+    deleteAttendance,
+    addAttendanceEntry,
+    getAttendanceEntries
 };

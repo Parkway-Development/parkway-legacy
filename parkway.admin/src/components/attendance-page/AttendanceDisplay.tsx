@@ -1,32 +1,13 @@
 import { Attendance } from '../../types';
-import { Descriptions, DescriptionsProps, Table } from 'antd';
+import { Alert, Descriptions, DescriptionsProps, Spin, Table } from 'antd';
 import { AttendanceEntry } from '../../types/AttendanceEntry.ts';
 import { OrderedColumnsType } from '../../hooks/useColumns.tsx';
 import DateDisplay from '../date-display';
 import styles from './AttendanceDisplay.module.scss';
 import NumberFormat from '../number-format';
 import AddEntryModal from './AddEntryModal.tsx';
-
-const sampleEntries: AttendanceEntry[] = [
-  {
-    _id: '1',
-    date: new Date(2024, 5, 16),
-    attendance: '1234',
-    count: 100
-  },
-  {
-    _id: '2',
-    date: new Date(2024, 5, 9),
-    attendance: '1234',
-    count: 2314
-  },
-  {
-    _id: '3',
-    date: new Date(2024, 5, 2),
-    attendance: '1234',
-    count: 987
-  }
-];
+import useApi, { buildQueryKey } from '../../hooks/useApi.ts';
+import { useQuery } from '@tanstack/react-query';
 
 const AttendanceDisplay = (attendance: Attendance) => {
   const items: DescriptionsProps['items'] = [
@@ -48,13 +29,13 @@ const AttendanceDisplay = (attendance: Attendance) => {
         className={styles.descriptions}
       />
       <AddEntryModal attendanceId={attendance._id} />
-      <EntriesTable entries={sampleEntries} />
+      <EntriesTable attendanceId={attendance._id} />
     </>
   );
 };
 
 type EntriesTableProps = {
-  entries: AttendanceEntry[];
+  attendanceId: string;
 };
 
 const entriesColumns: OrderedColumnsType<AttendanceEntry> = [
@@ -83,10 +64,24 @@ const entriesColumns: OrderedColumnsType<AttendanceEntry> = [
   }
 ];
 
-const EntriesTable = ({ entries }: EntriesTableProps) => {
-  let content;
+const EntriesTable = ({ attendanceId }: EntriesTableProps) => {
+  const {
+    attendanceApi: { getEntries },
+    formatError
+  } = useApi();
+  const { data, isLoading, error } = useQuery({
+    queryKey: buildQueryKey('attendanceEntry', attendanceId),
+    queryFn: () => getEntries(attendanceId)
+  });
 
-  if (entries.length === 0) {
+  let content;
+  const entries = data?.data ?? [];
+
+  if (isLoading) {
+    return <Spin />;
+  } else if (error) {
+    return <Alert type="error" message={formatError(error)} />;
+  } else if (entries.length === 0) {
     content = <span>No attendance entries yet.</span>;
   } else {
     content = (
