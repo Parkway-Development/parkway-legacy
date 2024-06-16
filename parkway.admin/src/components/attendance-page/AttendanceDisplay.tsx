@@ -5,6 +5,7 @@ import { OrderedColumnsType } from '../../hooks/useColumns.tsx';
 import DateDisplay from '../date-display';
 import styles from './AttendanceDisplay.module.scss';
 import NumberFormat from '../number-format';
+import AddEntryModal from './AddEntryModal.tsx';
 
 const sampleEntries: AttendanceEntry[] = [
   {
@@ -39,7 +40,14 @@ const AttendanceDisplay = (attendance: Attendance) => {
   return (
     <>
       <h3>{attendance.name}</h3>
-      <Descriptions size="small" items={items} bordered column={1} />
+      <Descriptions
+        size="small"
+        items={items}
+        bordered
+        column={1}
+        className={styles.descriptions}
+      />
+      <AddEntryModal attendanceId={attendance._id} />
       <EntriesTable entries={sampleEntries} />
     </>
   );

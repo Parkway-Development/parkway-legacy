@@ -2,7 +2,8 @@ import { useAuth } from './useAuth.tsx';
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import {
   AccountsApiType,
-  AssetsApiType, AttendanceApiType,
+  AssetsApiType,
+  AttendanceApiType,
   buildAccountsApi,
   buildAssetsApi,
   buildAttendanceApi,
@@ -53,6 +54,7 @@ export type QueryType =
   | 'accounts'
   | 'assets'
   | 'attendance'
+  | 'attendanceEntry'
   | 'contributions'
   | 'enums'
   | 'eventCategories'
