@@ -1,7 +1,7 @@
 import styles from './SignupPage.module.css';
 import { Alert, Button, Card, Form, Image, Input } from 'antd';
 import { InternalLoginResponse, useAuth } from '../../hooks/useAuth';
-import { Link } from 'react-router-dom';
+import {Link, useNavigate} from 'react-router-dom';
 import useApi, { buildQueryKey } from '../../hooks/useApi';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { PasswordSettings } from '../../api';
@@ -60,6 +60,7 @@ const SignupPage = () => {
     mutationFn: signup
   });
   const [loginResponse, setLoginResponse] = useState<InternalLoginResponse>();
+  const navigate = useNavigate();
 
   const organizationId = data?.data;
 
@@ -73,7 +74,7 @@ const SignupPage = () => {
           const result = login(data);
 
           if (result.hasValidProfile) {
-            window.location.href = '/';
+            navigate('/');
           } else {
             setLoginResponse(result);
           }
