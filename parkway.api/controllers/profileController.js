@@ -2,6 +2,7 @@ const mongoose = require('mongoose')
 const Profile = require('../models/profileModel')
 const User = require('../models/userModel')
 const appErrors = require('../applicationErrors')
+const getGeocoordinates = require('../helpers/geocodeNominatim')
 
 const parkwayId = '6655f7bfb4b37e6e6a743b65'  
 
@@ -254,6 +255,19 @@ const connectUserAndProfile = async (req, res) => {
     }
 }
 
+const getGeoLocation = async (req, res) => {
+    const { address } = req.body;
+    if(!address){ return res.status(400).json({message: 'No address was submitted'}) }
+
+    try {
+        const location = await getGeocoordinates(address);
+        return res.status(200).json(location);
+    }
+    catch (error) {
+        return res.status(500).json(error);
+    }
+}
+
 module.exports = { 
     addProfile, 
     getAllProfiles, 
@@ -264,5 +278,6 @@ module.exports = {
     updateProfile, 
     deleteProfile,
     connectUserAndProfile,
-    getAllLimitedProfiles
+    getAllLimitedProfiles,
+    getGeoLocation
 }
