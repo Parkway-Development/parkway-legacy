@@ -62,6 +62,7 @@ export type QueryType =
   | 'eventRegistrations'
   | 'organizationId'
   | 'passwordSettings'
+  | 'limitedProfiles'
   | 'profiles'
   | 'songs'
   | 'teams'
