@@ -81,6 +81,29 @@ const deleteAttendanceEntry = async (req, res, next) => {
     }
 };
 
+const updateAttendanceEntry = async (req, res, next) => {
+    try {
+        const { id, attendanceId } = req.params;
+        if(!id) { throw new appError.MissingId('updateAttendanceEntry') }
+        if(!attendanceId) { throw new appError.MissingRequiredParameter('updateAttendanceEntry', 'Attendance is required') }
+        if(!mongoose.Types.ObjectId.isValid(id)) { throw new appError.InvalidId('updateAttendanceEntry') }
+
+        const update = {
+            ...req.body,
+            attendance: attendanceId
+        };
+
+        const updatedAttendance = await AttendanceEntry.findByIdAndUpdate(id, update, {new: true});
+
+        if (!updatedAttendance) { throw new Error("Attendance entry could not be found to update.") }
+
+        return res.status(201).json(updatedAttendance);
+    } catch (error) {
+        next(error);
+        console.log({ method: error.method, message: error.message });
+    }
+};
+
 const getAllAttendances = async (req, res, next) => {
     try{
         const attendances = await Attendance.find({}).sort({name: 'asc'});
@@ -154,5 +177,6 @@ module.exports = {
     deleteAttendance,
     addAttendanceEntry,
     getAttendanceEntries,
-    deleteAttendanceEntry
+    deleteAttendanceEntry,
+    updateAttendanceEntry
 };

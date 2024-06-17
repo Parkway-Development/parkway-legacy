@@ -8,6 +8,10 @@ export type AddEntryPayload = Omit<AttendanceEntry, '_id' | 'attendance'> & {
   attendanceId: string;
 };
 
+export type UpdateEntryPayload = Omit<AttendanceEntry, 'attendance'> & {
+  attendanceId: string;
+};
+
 export type AttendanceApiType = BaseApiType<Attendance> & {
   addEntry: (
     addEntryPayload: AddEntryPayload
@@ -17,6 +21,9 @@ export type AttendanceApiType = BaseApiType<Attendance> & {
     attendanceId: string;
     attendanceEntryId: string;
   }) => GenericResponse;
+  updateEntry: (
+    updateEntryPayload: UpdateEntryPayload
+  ) => TypedResponse<AttendanceEntry>;
 };
 
 const basePath = '/attendance';
@@ -30,5 +37,7 @@ export const buildAttendanceApi = (
   getEntries: (attendanceId) =>
     instance.get(`${basePath}/${attendanceId}/entries`),
   deleteEntry: ({ attendanceId, attendanceEntryId }) =>
-    instance.delete(`${basePath}/${attendanceId}/entries/${attendanceEntryId}`)
+    instance.delete(`${basePath}/${attendanceId}/entries/${attendanceEntryId}`),
+  updateEntry: ({ attendanceId, _id: id, ...payload }: UpdateEntryPayload) =>
+    instance.patch(`${basePath}/${attendanceId}/entries/${id}`, payload)
 });

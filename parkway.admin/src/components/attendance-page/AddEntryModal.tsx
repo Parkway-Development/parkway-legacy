@@ -1,13 +1,14 @@
 import { Alert, Button, Form, InputNumber, Modal } from 'antd';
 import { useState } from 'react';
 import { BaseFormFooter } from '../base-data-table-page';
-import useApi, { buildQueryKey } from '../../hooks/useApi.ts';
+import useApi, { buildQueryKey, TypedResponse } from '../../hooks/useApi.ts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import styles from './AddEntryModal.module.scss';
 import DatePickerExtended from '../date-picker-extended';
-import dayjs from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 import TextArea from 'antd/lib/input/TextArea';
-import { AddEntryPayload } from '../../api';
+import { AttendanceEntry } from '../../types/AttendanceEntry.ts';
+import { transformDateToDayjs } from '../../utilities';
 
 interface AddEntryModalProps {
   attendanceId: string;
@@ -19,28 +20,41 @@ interface AddEntryModalFormFields {
   notes?: string;
 }
 
-const AddEntryModal = ({ attendanceId }: AddEntryModalProps) => {
-  const {
-    attendanceApi: { addEntry },
-    formatError
-  } = useApi();
-  const { mutate, isPending, error } = useMutation({
-    mutationFn: addEntry
-  });
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [modalForm] = Form.useForm<AddEntryModalFormFields>();
+type BaseModalFormProps<T> = {
+  title: string;
+  isModalOpen: boolean;
+  onClose: () => void;
+  mutationFn: (payload: T) => TypedResponse<AttendanceEntry>;
+  attendanceId: string;
+  initialValues?: Omit<AttendanceEntry, 'date'> & { date: Dayjs };
+};
+
+const BaseModalForm = <T,>({
+  title,
+  isModalOpen,
+  onClose,
+  mutationFn,
+  attendanceId,
+  initialValues
+}: BaseModalFormProps<T>) => {
+  const { formatError } = useApi();
   const queryClient = useQueryClient();
+  const [modalForm] = Form.useForm<AddEntryModalFormFields>();
+  const { mutate, isPending, error } = useMutation({
+    mutationFn
+  });
 
   const handleModalSave = (values: AddEntryModalFormFields) => {
-    const payload: AddEntryPayload = {
+    const payload = {
+      _id: initialValues?._id,
       attendanceId,
       ...values
-    };
+    } as T;
 
     mutate(payload, {
       onSuccess: () => {
         modalForm.resetFields();
-        setIsModalOpen(false);
+        onClose();
         queryClient.invalidateQueries({
           queryKey: buildQueryKey('attendanceEntry', attendanceId)
         });
@@ -48,63 +62,110 @@ const AddEntryModal = ({ attendanceId }: AddEntryModalProps) => {
     });
   };
 
-  const handleModalOpen = () => {
-    setIsModalOpen(true);
-  };
+  return (
+    <Modal
+      title={title}
+      open={isModalOpen}
+      onOk={() => {}}
+      onCancel={onClose}
+      footer={() => <></>}
+    >
+      {error && <Alert message={formatError(error)} type="error" />}
+      <Form<AddEntryModalFormFields>
+        form={modalForm}
+        name={title}
+        onFinish={handleModalSave}
+        autoComplete="off"
+        className={styles.form}
+        initialValues={
+          initialValues ?? {
+            date: dayjs().startOf('day'),
+            count: 0,
+            notes: undefined
+          }
+        }
+      >
+        <Form.Item<AddEntryModalFormFields>
+          label="Date"
+          name="date"
+          rules={[{ required: true, message: 'Required' }]}
+        >
+          <DatePickerExtended />
+        </Form.Item>
+        <Form.Item<AddEntryModalFormFields>
+          label="Count"
+          name="count"
+          rules={[{ required: true, message: 'Required' }]}
+        >
+          <InputNumber min={0} step={1} precision={0} />
+        </Form.Item>
+        <Form.Item<AddEntryModalFormFields> label="Notes" name="notes">
+          <TextArea />
+        </Form.Item>
+        <BaseFormFooter
+          isDisabled={isPending}
+          isLoading={isPending}
+          onCancel={onClose}
+        />
+      </Form>
+    </Modal>
+  );
+};
 
-  const handleModalCancel = () => {
-    setIsModalOpen(false);
-  };
+const AddEntryModal = ({ attendanceId }: AddEntryModalProps) => {
+  const {
+    attendanceApi: { addEntry }
+  } = useApi();
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const handleModalOpen = () => setIsModalOpen(true);
+  const handleOnClose = () => setIsModalOpen(false);
 
   return (
     <>
       <Button onClick={handleModalOpen} type="primary">
         Add Entry
       </Button>
-      <Modal
+      <BaseModalForm
         title="Add Entry"
-        open={isModalOpen}
-        onOk={() => {}}
-        onCancel={handleModalCancel}
-        footer={() => <></>}
-      >
-        {error && <Alert message={formatError(error)} type="error" />}
-        <Form<AddEntryModalFormFields>
-          form={modalForm}
-          name="User Registration"
-          onFinish={handleModalSave}
-          autoComplete="off"
-          className={styles.form}
-          initialValues={{
-            date: dayjs().startOf('day'),
-            count: 0,
-            notes: undefined
-          }}
-        >
-          <Form.Item<AddEntryModalFormFields>
-            label="Date"
-            name="date"
-            rules={[{ required: true, message: 'Required' }]}
-          >
-            <DatePickerExtended />
-          </Form.Item>
-          <Form.Item<AddEntryModalFormFields>
-            label="Count"
-            name="count"
-            rules={[{ required: true, message: 'Required' }]}
-          >
-            <InputNumber min={0} step={1} precision={0} />
-          </Form.Item>
-          <Form.Item<AddEntryModalFormFields> label="Notes" name="notes">
-            <TextArea />
-          </Form.Item>
-          <BaseFormFooter
-            isDisabled={isPending}
-            isLoading={isPending}
-            onCancel={handleModalCancel}
-          />
-        </Form>
-      </Modal>
+        isModalOpen={isModalOpen}
+        onClose={handleOnClose}
+        attendanceId={attendanceId}
+        mutationFn={addEntry}
+      />
+    </>
+  );
+};
+
+type EditEntryModalProps = {
+  attendanceEntry: AttendanceEntry | undefined;
+  onClose: () => void;
+};
+
+export const EditEntryModal = ({
+  attendanceEntry,
+  onClose
+}: EditEntryModalProps) => {
+  const {
+    attendanceApi: { updateEntry }
+  } = useApi();
+
+  if (!attendanceEntry) return null;
+
+  const initialValues = {
+    ...attendanceEntry,
+    date: transformDateToDayjs(new Date(attendanceEntry.date))!
+  };
+
+  return (
+    <>
+      <BaseModalForm
+        title="Edit Entry"
+        isModalOpen
+        onClose={onClose}
+        attendanceId={attendanceEntry.attendance}
+        mutationFn={updateEntry}
+        initialValues={initialValues}
+      />
     </>
   );
 };

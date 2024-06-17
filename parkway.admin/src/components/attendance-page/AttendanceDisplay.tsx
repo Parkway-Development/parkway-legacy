@@ -1,14 +1,23 @@
 import { Attendance } from '../../types';
-import { Alert, Descriptions, DescriptionsProps, Spin, Table } from 'antd';
+import {
+  Alert,
+  Button,
+  Descriptions,
+  DescriptionsProps,
+  Spin,
+  Table
+} from 'antd';
 import { AttendanceEntry } from '../../types/AttendanceEntry.ts';
 import { OrderedColumnsType } from '../../hooks/useColumns.tsx';
 import DateDisplay from '../date-display';
 import styles from './AttendanceDisplay.module.scss';
 import NumberFormat from '../number-format';
-import AddEntryModal from './AddEntryModal.tsx';
+import AddEntryModal, { EditEntryModal } from './AddEntryModal.tsx';
 import useApi, { buildQueryKey } from '../../hooks/useApi.ts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import DeleteButton from '../delete-button';
+import { useState } from 'react';
+import { EditOutlined } from '@ant-design/icons';
 
 const AttendanceDisplay = (attendance: Attendance) => {
   const items: DescriptionsProps['items'] = [
@@ -49,6 +58,8 @@ const EntriesTable = ({ attendanceId }: EntriesTableProps) => {
     queryFn: () => getEntries(attendanceId)
   });
   const queryClient = useQueryClient();
+  const [editAttendanceEntry, setEditAttendanceEntry] =
+    useState<AttendanceEntry>();
 
   let content;
   const entries = data?.data ?? [];
@@ -72,15 +83,24 @@ const EntriesTable = ({ attendanceId }: EntriesTableProps) => {
         key: '_id',
         displayOrder: 1,
         width: 100,
-        render: (value: AttendanceEntry['_id']) => (
-          <DeleteButton
-            id={value}
-            isIconButton
-            deleteFn={() =>
-              deleteEntry({ attendanceId, attendanceEntryId: value })
-            }
-            onSuccess={handleDelete}
-          />
+        render: (value: AttendanceEntry['_id'], record) => (
+          <>
+            <Button
+              onClick={() => setEditAttendanceEntry(record)}
+              size="small"
+              className={styles.editButton}
+            >
+              <EditOutlined />
+            </Button>
+            <DeleteButton
+              id={value}
+              isIconButton
+              deleteFn={() =>
+                deleteEntry({ attendanceId, attendanceEntryId: value })
+              }
+              onSuccess={handleDelete}
+            />
+          </>
         )
       },
       {
@@ -111,12 +131,18 @@ const EntriesTable = ({ attendanceId }: EntriesTableProps) => {
     ];
 
     content = (
-      <Table
-        columns={entriesColumns}
-        dataSource={entries}
-        rowKey="_id"
-        size="small"
-      />
+      <>
+        <EditEntryModal
+          attendanceEntry={editAttendanceEntry}
+          onClose={() => setEditAttendanceEntry(undefined)}
+        />
+        <Table
+          columns={entriesColumns}
+          dataSource={entries}
+          rowKey="_id"
+          size="small"
+        />
+      </>
     );
   }
 
