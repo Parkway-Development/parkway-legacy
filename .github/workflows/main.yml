@@ -1,0 +1,36 @@
+name: Add new issues to project
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  add_issue_to_project:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Add issue to project
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const projectNumber = 1;
+            const org = 'Parkway-Development';
+            const projectOwnerId = context.payload.organization.id;
+            const issueId = context.payload.issue.node_id;
+
+            const mutation = `
+              mutation ($projectId: ID!, $contentId: ID!) {
+                addProjectV2ItemById(input: {projectId: $projectId, contentId: $contentId}) {
+                  item {
+                    id
+                  }
+                }
+              }
+            `;
+
+            await github.graphql(mutation, {
+              projectId: `PVT_kw${projectNumber}`,
+              contentId: issueId,
+            });
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
