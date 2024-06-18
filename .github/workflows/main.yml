@@ -33,4 +33,4 @@ jobs:
               contentId: issueId,
             });
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.ADD_ISSUES_TO_PROJECT_TOKEN }}
