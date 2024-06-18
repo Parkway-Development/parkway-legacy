@@ -10,6 +10,9 @@ async function getGeocoordinates(address) {
                 format: 'json',
                 addressdetails: 1,
             },
+            headers: {
+                'User-Agent': 'YourAppName/1.0 (your.email@example.com)', // Use a proper User-Agent
+            },
         });
 
         if (response.data.length > 0) {

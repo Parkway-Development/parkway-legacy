@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const { ApprovedCountries } = require('./constants');
 const { SubscriptionType } = require('./constants');
 
 const appSettingsSchema = new mongoose.Schema({
@@ -9,36 +8,6 @@ const appSettingsSchema = new mongoose.Schema({
     },
     value: {
         type: String,
-        required: true
-    },
-    _id: false
-});
-
-const addressSchema = new mongoose.Schema({
-    streetAddress1: {
-        type: String,
-        required: true
-    },
-    streetAddress2: {
-        type: String
-    },
-    city: {
-        type: String,
-        required: true
-    },
-    state: {
-        type: String,
-        required: true
-    },
-    zip: {
-        type: String,
-        required: true,
-        match: [/^\d{5}(-\d{4})?$/, 'Please fill a valid zip code']
-    },
-    country: {
-        type: String,
-        enum: Object.values(ApprovedCountries),
-        default: ApprovedCountries.US,
         required: true
     },
     _id: false
@@ -63,6 +32,5 @@ const subscriptionSchema = new mongoose.Schema({
 
 module.exports = {
     appSettingsSchema,
-    addressSchema,
     subscriptionSchema
 }

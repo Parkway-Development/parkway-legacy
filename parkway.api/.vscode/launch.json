@@ -8,11 +8,14 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Launch Backend API",
-            "skipFiles": [ "<node_internals>/**"],
+            "name": "Run Script: run:local",
             "program": "${workspaceFolder}/server.js",
             "restart": true,
             "runtimeExecutable": "nodemon",
+            "args": [
+                "server.js"
+            ],
+            "skipFiles": [ "<node_internals>/**"],
             "envFile": "${workspaceFolder}/.env",
             "console": "integratedTerminal"
         }

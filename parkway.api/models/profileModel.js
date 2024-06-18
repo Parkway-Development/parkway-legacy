@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const { addressSchema } = require('./sharedModels');
 
 const profileSchema = new mongoose.Schema({
     user: {
@@ -41,7 +40,8 @@ const profileSchema = new mongoose.Schema({
         type: String
     },
     address:{
-        type: addressSchema
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Address',
     },
     member:{
         required: true,
@@ -56,7 +56,6 @@ const profileSchema = new mongoose.Schema({
     family: {
         type:mongoose.Schema.Types.ObjectId,
         ref: 'Family',
-        required: false
     },
     preferences: {
         type: mongoose.Schema.Types.ObjectId,

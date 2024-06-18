@@ -52,7 +52,7 @@ def generate_phone_number(area_code):
 
 profiles = []
 
-for _ in range(1500):
+for _ in range(500):
     gender = random.choice(gender_distribution)
     first_name = fake.first_name_male() if gender == 'male' else fake.first_name_female()
     last_name = fake.last_name()
@@ -77,6 +77,7 @@ for _ in range(1500):
     
     profile = {
         "_id": str(ObjectId()),  # Generate a MongoDB ObjectId
+        "testData": True,
         "user": "",  # Empty user account
         "firstName": first_name,
         "lastName": last_name,

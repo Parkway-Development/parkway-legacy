@@ -15,6 +15,7 @@ def generate_password(email):
 def create_user_with_profile(profile):
     return {
         "_id": {"$oid": generate_object_id()},
+        "testData": "true",
         "email": profile["email"],
         "password": generate_password(profile["email"]),
         "applicationClaims": [

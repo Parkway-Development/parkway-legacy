@@ -10,7 +10,8 @@ const {
     updateProfile,
     deleteProfile,
     connectUserAndProfile,
-    getAllLimitedProfiles
+    getAllLimitedProfiles,
+    getGeoLocation
 } = require('../controllers/profileController')
 const { addNotFoundHandler, configureBaseApiRoutes } = require("./baseApiRouter");
 
@@ -23,6 +24,7 @@ router.get('/lastname/:lastName', getProfilesByLastName)
 router.get('/mobilephone/:mobilePhone', getProfilesByMobilePhone)
 router.get('/homephone/:homePhone', getProfilesByHomePhone)
 router.post('/join/:profileId', connectUserAndProfile)
+router.post('/geolocation', getGeoLocation)
 
 addNotFoundHandler(router);
 module.exports = router;
