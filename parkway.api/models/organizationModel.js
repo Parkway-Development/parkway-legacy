@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
-const { addressSchema, appSettingsSchema, subscriptionSchema } = require('./sharedModels');
+const { appSettingsSchema, subscriptionSchema } = require('./sharedModels');
+const { addressSchema } = require('./addressModel');
 const {SubscriptionType} = require('./constants');
 
 
@@ -13,9 +14,9 @@ const organizationSchema = new mongoose.Schema({
         required: true,
         unique: true
     },
-    address: {
-        type: addressSchema,
-        required: true
+    address:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Address',
     },
     phone: {
         type: String,
