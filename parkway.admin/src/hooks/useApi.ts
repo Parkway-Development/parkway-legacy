@@ -25,6 +25,7 @@ import {
   VendorsApiType
 } from '../api';
 import { QueryClient } from '@tanstack/react-query';
+import { addDateConversionInterceptor } from '../utilities';
 
 export type GenericResponse = Promise<AxiosResponse<unknown, unknown>>;
 export type TypedResponse<T> = Promise<Omit<AxiosResponse<T>, 'config'>>;
@@ -75,8 +76,8 @@ export const invalidateQueries = (
   return queryClient.invalidateQueries({ queryKey: [queryType] });
 };
 
-const createInstance = (token: string | undefined) =>
-  axios.create({
+const createInstance = (token: string | undefined) => {
+  const instance = axios.create({
     headers: {
       Authorization: token ? `Bearer ${token}` : undefined,
       'x-key': import.meta.env.VITE_APP_KEY,
@@ -84,6 +85,11 @@ const createInstance = (token: string | undefined) =>
     },
     baseURL: import.meta.env.VITE_API_URL
   });
+
+  addDateConversionInterceptor(instance);
+
+  return instance;
+};
 
 const useApi: () => ApiType = () => {
   const { token, logout } = useAuth();

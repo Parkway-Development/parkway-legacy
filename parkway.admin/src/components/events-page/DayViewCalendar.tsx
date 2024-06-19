@@ -6,11 +6,11 @@ import { Link } from 'react-router-dom';
 import CalendarTooltip from './CalendarTooltip.tsx';
 import { useQuery } from '@tanstack/react-query';
 import useApi, { buildQueryKey } from '../../hooks/useApi.ts';
+import { getDateString } from '../../utilities';
 
 interface DayViewCalendarProps {
   events: Event[];
   date: Date;
-  dateParam: string;
   onClickEvent: (event: Event) => void;
 }
 
@@ -24,7 +24,6 @@ interface EventGridPosition {
 const DayViewCalendar = ({
   events,
   date,
-  dateParam,
   onClickEvent
 }: DayViewCalendarProps) => {
   const {
@@ -41,12 +40,12 @@ const DayViewCalendar = ({
     content = <Empty />;
   } else {
     const earliestHour = events.reduce((prev, currentValue) => {
-      const itemHours = new Date(currentValue.start).getHours();
+      const itemHours = currentValue.start.getHours();
       return itemHours < prev ? itemHours : prev;
     }, 24);
 
     const latestHour = events.reduce((prev, currentValue) => {
-      const itemHours = new Date(currentValue.end).getHours();
+      const itemHours = currentValue.end.getHours();
       return itemHours > prev ? itemHours : prev;
     }, 0);
 
@@ -211,7 +210,7 @@ const DayViewCalendar = ({
         <Link to="/events">Back to Monthly View</Link>
       </div>
       <nav className={styles.nav}>
-        <Link to={`/events/add?date=${dateParam}`}>
+        <Link to={`/events/add?date=${getDateString(date)}`}>
           <Button type="primary">Add Event</Button>
         </Link>
       </nav>

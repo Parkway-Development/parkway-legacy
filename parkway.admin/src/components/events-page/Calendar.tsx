@@ -13,7 +13,6 @@ import useApi, { buildQueryKey } from '../../hooks/useApi.ts';
 import { useQuery } from '@tanstack/react-query';
 import styles from './Calendar.module.scss';
 import { Event } from '../../types';
-import { isSameDate } from '../../utilities';
 import { useNavigate } from 'react-router-dom';
 import { SyntheticEvent } from 'react';
 import { SelectInfo } from 'antd/lib/calendar/generateCalendar';
@@ -21,11 +20,12 @@ import CalendarTooltip from './CalendarTooltip.tsx';
 import DayViewCalendar from './DayViewCalendar.tsx';
 import classNames from 'classnames';
 import 'dayjs/plugin/localeData';
+import useDateQueryParam from '../../hooks/useDateQueryParam.ts';
+import { isSameDay } from 'date-fns';
 
 const Calendar = () => {
   const navigate = useNavigate();
-  const searchParams = new URLSearchParams(window.location.search);
-  const date = searchParams.get('date');
+  const date = useDateQueryParam();
 
   const {
     eventsApi: { getAll },
@@ -61,14 +61,12 @@ const Calendar = () => {
   };
 
   if (date) {
-    const searchDate = new Date(date.replace(/-/g, '/'));
-    const items = data?.data?.filter((x) => isSameDate(x.start, searchDate));
+    const items = data?.data?.filter((x) => isSameDay(x.start, date));
 
     return (
       <DayViewCalendar
         events={items ?? []}
-        date={searchDate}
-        dateParam={date}
+        date={date}
         onClickEvent={navigateToItem}
       />
     );
@@ -81,7 +79,7 @@ const Calendar = () => {
   };
 
   const cellRenderer = (date: Dayjs) => {
-    const items = data?.data?.filter((x) => isSameDate(x.start, date.toDate()));
+    const items = data?.data?.filter((x) => isSameDay(x.start, date.toDate()));
 
     if (!items.length) return undefined;
 

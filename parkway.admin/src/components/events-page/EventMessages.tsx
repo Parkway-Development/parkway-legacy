@@ -8,6 +8,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../../hooks/useAuth.tsx';
 import { AddEventMessagePayload } from '../../api';
 import { UserNameDisplay } from '../user-name-display';
+import DateDisplay from '../date-display';
 
 interface EventMessagesProps {
   eventId: string;
@@ -45,12 +46,10 @@ const EventMessages = ({
         </thead>
         <tbody>
           {messages.map((message, index) => {
-            const messageDate = new Date(message.messageDate);
             return (
               <tr key={index}>
                 <td>
-                  {messageDate.toLocaleDateString()}{' '}
-                  {messageDate.toLocaleTimeString()}
+                  <DateDisplay date={message.messageDate} displayTime />
                 </td>
                 <td>
                   <UserNameDisplay user={message.profile} />

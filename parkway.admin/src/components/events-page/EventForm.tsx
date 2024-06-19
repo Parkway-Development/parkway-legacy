@@ -3,8 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import UserProfileSelect from '../user-profile-select';
 import { Event, RegistrationSlot } from '../../types';
 import { AddBaseApiFormProps, BaseFormFooter } from '../base-data-table-page';
-import { isSameDate, transformDateToDayjs } from '../../utilities';
-import { Dayjs } from 'dayjs';
+import { getDateString, getTimeString } from '../../utilities';
 import { useCallback, useMemo, useState } from 'react';
 import styles from './EventForm.module.css';
 import DeleteButton from '../delete-button';
@@ -15,26 +14,27 @@ import { useAuth } from '../../hooks/useAuth.tsx';
 import EventStatus from './EventStatus.tsx';
 import EventMessages from './EventMessages.tsx';
 import { BaseSelect, BaseSelectionProps } from '../base-select';
-import TimeSelect, {
+import TimePicker, {
   getTimeSelectHours,
   getTimeSelectMinutes,
-  getTimeSelectValue,
   isEndTimeAfterStart
-} from '../time-select';
+} from '../time-picker';
 import RegistrationSlotInput from './RegistrationSlotInput.tsx';
 import { EventSchedule } from '../../types/EventSchedule.ts';
-import DatePickerExtended from '../date-picker-extended';
+import DatePicker from '../date-picker';
+import useDateQueryParam from '../../hooks/useDateQueryParam.ts';
+import { parseISO } from 'date-fns';
 
 type EventWithoutId = Omit<Event, '_id'>;
 
 type EventFormFields = Omit<EventWithoutId, 'start' | 'end' | 'schedule'> & {
-  startDate: Dayjs;
+  startDate: string;
   startTime: string;
-  endDate: Dayjs;
+  endDate: string;
   endTime: string;
   updateSeries?: 'this' | 'future' | 'all';
   schedule: Omit<EventSchedule, 'end_date'> & {
-    end_date: Dayjs;
+    end_date: string;
   };
 };
 
@@ -124,15 +124,12 @@ const EventForm = ({ isSaving, initialValues, onSave }: EventFormProps) => {
   const params = useParams();
   const navigate = useNavigate();
   const id = params.id;
-  const searchParams = new URLSearchParams(window.location.search);
-  const date = searchParams.get('date');
-  const addDate = date
-    ? transformDateToDayjs(new Date(date.replace(/-/g, '/')))
-    : undefined;
+  const addDate = useDateQueryParam();
 
   const {
     eventsApi: { delete: deleteById, deleteBySchedule }
   } = useApi();
+
   const [form] = Form.useForm<EventFormFields>();
   const frequency = Form.useWatch(['schedule', 'frequency'], form);
   const weekDays = Form.useWatch(['schedule', 'week_days'], form);
@@ -181,22 +178,22 @@ const EventForm = ({ isSaving, initialValues, onSave }: EventFormProps) => {
   const initial = initialValues
     ? {
         ...initialValues,
-        startDate: transformDateToDayjs(initialValues.start),
-        startTime: getTimeSelectValue(new Date(initialValues.start)),
-        endDate: transformDateToDayjs(initialValues.end),
-        endTime: getTimeSelectValue(new Date(initialValues.end)),
+        startDate: getDateString(initialValues.start),
+        startTime: getTimeString(initialValues.start),
+        endDate: getDateString(initialValues.end),
+        endTime: getTimeString(initialValues.end),
         schedule: initialValues.schedule
           ? {
               ...initialValues.schedule,
-              end_date: transformDateToDayjs(initialValues.schedule?.end_date)
+              end_date: getDateString(initialValues.schedule?.end_date)
             }
           : undefined,
         updateSeries: 'this'
       }
     : addDate
       ? {
-          startDate: addDate,
-          endDate: addDate,
+          startDate: getDateString(addDate),
+          endDate: getDateString(addDate),
           status: eventStatusMapping['Tentative'],
           organizer: user!.profileId,
           allDay: false,
@@ -219,8 +216,8 @@ const EventForm = ({ isSaving, initialValues, onSave }: EventFormProps) => {
     const { startDate, startTime, endDate, endTime, allDay, ...remaining } =
       values;
 
-    const start = startDate.toDate();
-    const end = endDate.toDate();
+    const start = parseISO(startDate);
+    const end = parseISO(endDate);
 
     if (allDay) {
       start.setHours(0);
@@ -260,7 +257,9 @@ const EventForm = ({ isSaving, initialValues, onSave }: EventFormProps) => {
       schedule: remaining.schedule
         ? {
             ...remaining.schedule,
-            end_date: remaining.schedule.end_date?.toDate()
+            end_date: remaining.schedule.end_date
+              ? parseISO(remaining.schedule.end_date)
+              : undefined
           }
         : undefined
     };
@@ -268,9 +267,9 @@ const EventForm = ({ isSaving, initialValues, onSave }: EventFormProps) => {
     onSave(finalPayload);
   };
 
-  const validateEndDate = (_: unknown, value: Dayjs) => {
-    const startDate: Dayjs = form.getFieldValue('startDate');
-    if (value && startDate && value.isBefore(startDate, 'day')) {
+  const validateEndDate = (_: unknown, value: string) => {
+    const startDate = form.getFieldValue('startDate');
+    if (value && startDate && new Date(value) < new Date(startDate)) {
       return Promise.reject('End date cannot be before the start date');
     }
 
@@ -278,19 +277,19 @@ const EventForm = ({ isSaving, initialValues, onSave }: EventFormProps) => {
   };
 
   const validateEndTime = (_: unknown, value: string) => {
-    const startDate: Dayjs = form.getFieldValue('startDate');
+    const startDate: string = form.getFieldValue('startDate');
     const startTime: string = form.getFieldValue('startTime');
-    const endDate: Dayjs = form.getFieldValue('endDate');
+    const endDate: string = form.getFieldValue('endDate');
 
     if (
       startDate &&
       endDate &&
       startTime &&
       value &&
-      isSameDate(startDate.toDate(), endDate.toDate()) &&
+      startDate == endDate &&
       !isEndTimeAfterStart(startTime, value)
     ) {
-      return Promise.reject('End time cannot be after the start time');
+      return Promise.reject('End time must be after the start time');
     }
 
     return Promise.resolve();
@@ -381,8 +380,12 @@ const EventForm = ({ isSaving, initialValues, onSave }: EventFormProps) => {
               labelCol={{ flex: 0 }}
               wrapperCol={{ flex: 1 }}
             >
-              <DatePickerExtended
-                onChange={(value) => form.setFieldsValue({ endDate: value })}
+              <DatePicker
+                onChange={(e) =>
+                  form.setFieldsValue({
+                    endDate: e.target.value
+                  })
+                }
               />
             </Form.Item>
 
@@ -398,7 +401,7 @@ const EventForm = ({ isSaving, initialValues, onSave }: EventFormProps) => {
                 labelCol={{ flex: 0 }}
                 wrapperCol={{ flex: 1 }}
               >
-                <TimeSelect />
+                <TimePicker />
               </Form.Item>
             )}
           </div>
@@ -413,7 +416,7 @@ const EventForm = ({ isSaving, initialValues, onSave }: EventFormProps) => {
               labelCol={{ flex: 0 }}
               wrapperCol={{ flex: 1 }}
             >
-              <DatePickerExtended />
+              <DatePicker />
             </Form.Item>
 
             {!allDay && (
@@ -431,7 +434,7 @@ const EventForm = ({ isSaving, initialValues, onSave }: EventFormProps) => {
                 labelCol={{ flex: 0 }}
                 wrapperCol={{ flex: 1 }}
               >
-                <TimeSelect />
+                <TimePicker />
               </Form.Item>
             )}
           </div>
@@ -566,7 +569,7 @@ const EventForm = ({ isSaving, initialValues, onSave }: EventFormProps) => {
               label="Repeat Until"
               name={['schedule', 'end_date']}
             >
-              <DatePickerExtended />
+              <DatePicker />
             </Form.Item>
           </>
         )}
