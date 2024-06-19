@@ -8,7 +8,7 @@ import {
   Spin,
   Tooltip
 } from 'antd';
-import { Dayjs } from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 import useApi, { buildQueryKey } from '../../hooks/useApi.ts';
 import { useQuery } from '@tanstack/react-query';
 import styles from './Calendar.module.scss';
@@ -22,10 +22,15 @@ import classNames from 'classnames';
 import 'dayjs/plugin/localeData';
 import useDateQueryParam from '../../hooks/useDateQueryParam.ts';
 import { isSameDay } from 'date-fns';
+import useQueryCache from '../../hooks/useQueryCache.ts';
 
 const Calendar = () => {
   const navigate = useNavigate();
   const date = useDateQueryParam();
+  const [calendarDate, setCalendarDate] = useQueryCache<Dayjs>({
+    cacheKey: 'cache.calendarMonth',
+    initialValue: dayjs()
+  });
 
   const {
     eventsApi: { getAll },
@@ -118,15 +123,10 @@ const Calendar = () => {
 
   return (
     <CalendarControl
+      value={calendarDate}
       cellRender={cellRenderer}
       onSelect={navigateToDay}
-      headerRender={({
-        value,
-        onChange
-      }: {
-        value: Dayjs;
-        onChange: (day: Dayjs) => void;
-      }) => {
+      headerRender={({ value }: { value: Dayjs }) => {
         const start = 0;
         const end = 12;
         const monthOptions = [];
@@ -164,7 +164,10 @@ const Calendar = () => {
           <div style={{ padding: 8 }}>
             <Row gutter={8}>
               <Col>
-                <Button size="small" onClick={() => onChange(previousMonth)}>
+                <Button
+                  size="small"
+                  onClick={() => setCalendarDate(previousMonth)}
+                >
                   Previous
                 </Button>
               </Col>
@@ -176,7 +179,7 @@ const Calendar = () => {
                   value={year}
                   onChange={(newYear) => {
                     const now = value.clone().year(newYear);
-                    onChange(now);
+                    setCalendarDate(now);
                   }}
                 >
                   {options}
@@ -189,14 +192,14 @@ const Calendar = () => {
                   value={month}
                   onChange={(newMonth) => {
                     const now = value.clone().month(newMonth);
-                    onChange(now);
+                    setCalendarDate(now);
                   }}
                 >
                   {monthOptions}
                 </Select>
               </Col>
               <Col>
-                <Button size="small" onClick={() => onChange(nextMonth)}>
+                <Button size="small" onClick={() => setCalendarDate(nextMonth)}>
                   Next
                 </Button>
               </Col>
