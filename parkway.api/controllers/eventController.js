@@ -3,7 +3,6 @@ const Event = require('../models/eventModel');
 const EventRegistration = require('../models/eventRegistrationModel');
 const EventSchedule = require('../models/eventScheduleModel');
 const Profile = require('../models/profileModel');
-const { requireClaim } = require("../middleware/auth");
 const { addMonths, addWeeks, set, endOfDay, differenceInDays, addDays, addYears, startOfMonth, eachDayOfInterval,
     getDay
 } = require("date-fns");
@@ -92,7 +91,7 @@ const createEvents = async (event, eventSchedule) => {
     }
 };
 
-const addEvent = async (req, res) => {
+const addEvent = async (req, res, next) => {
     try {
         const { schedule, ...body } = req.body;
         const event = new Event(body);
@@ -128,12 +127,12 @@ const addEvent = async (req, res) => {
         return res.status(201).json(event);
 
     } catch (error) {
-        console.log(error);
-        return res.status(500).json(error);
+        next(error)
+        console.log({method: error.method, message: error.message});
     }
 }
 
-const getAllEvents = async (req, res) => {
+const getAllEvents = async (req, res, next) => {
     try {
         const events = await Event.find({}).sort({start: 'desc'});
 
@@ -141,12 +140,12 @@ const getAllEvents = async (req, res) => {
 
         res.status(200).json(events);
     } catch (error) {
-        console.log(error)
-        return res.status(500).json(error)
+        next(error)
+        console.log({method: error.method, message: error.message});
     }
 }
 
-const getEventById = async (req, res) => {
+const getEventById = async (req, res, next) => {
     try {
         const {id} = req.params;
         if (!id) { throw new Error("Please provide an event Id.")}
@@ -160,12 +159,12 @@ const getEventById = async (req, res) => {
         res.status(200).json(event)
     
     } catch (error) {
-        console.log(error)
-        return res.status(500).json(error)
+        next(error)
+        console.log({method: error.method, message: error.message});
     }
 }
 
-const updateEventById = async (req, res) => {
+const updateEventById = async (req, res, next) => {
     try{
         const {id} = req.params;
 
@@ -224,15 +223,13 @@ const updateEventById = async (req, res) => {
 
         return res.status(200).json(updatedEvent);
     } catch (error) {
-        console.log(error)
-        return res.status(500).json(error)
+        next(error)
+        console.log({method: error.method, message: error.message});
     }
 }
 
-const approveEventById = async (req, res) => {
+const approveEventById = async (req, res, next) => {
     try {
-        if (!requireClaim(req, res, 'calendarManagement')) { throw new Error("Unauthorized.") }
-    
         const {id} = req.params;
         if(!id) { throw new Error("Please provide an event Id.") }
         if (!mongoose.Types.ObjectId.isValid(id)) { throw new Error("Invalid ID.") }
@@ -252,17 +249,14 @@ const approveEventById = async (req, res) => {
         }
     
         res.status(200).json(updatedEvent);
-    
     } catch (error) {
-        console.log(error)
-        return res.status(500).json(error)
+        next(error)
+        console.log({method: error.method, message: error.message});
     }
 }
 
-const rejectEventById = async (req, res) => {
-    try{
-        if (!requireClaim(req, res, 'calendarManagement')) { throw new Error("Unauthorized.") }
-
+const rejectEventById = async (req, res, next) => {
+    try {
         const {id} = req.params;
         if (!id) { throw new Error("Please provide an event Id.") }
         if (!mongoose.Types.ObjectId.isValid(id)) { throw new Error("Invalid ID.") }
@@ -283,12 +277,12 @@ const rejectEventById = async (req, res) => {
 
         res.status(200).json(updatedEvent);
     } catch (error) {
-        console.log(error)
-        return res.status(500).json(error)
+        next(error)
+        console.log({method: error.method, message: error.message});
     }
 }
 
-const deleteEventById = async (req, res) => {
+const deleteEventById = async (req, res, next) => {
     try{
         const {id} = req.params;
         if (!id) { throw new Error("Please provide an event Id.") }
@@ -300,12 +294,12 @@ const deleteEventById = async (req, res) => {
 
         res.status(200).json(deletedEvent);
     }catch(error){
-        console.log(error)
-        return res.status(500).json(error)
+        next(error)
+        console.log({method: error.method, message: error.message});
     }
 }
 
-const deleteEventBySchedule = async (req, res) => {
+const deleteEventBySchedule = async (req, res, next) => {
     try{
         const {id, updateSeries} = req.params;
         if (!id) { throw new Error("Please provide an event Id.") }
@@ -327,12 +321,12 @@ const deleteEventBySchedule = async (req, res) => {
 
         res.status(200).json(event);
     }catch(error){
-        console.log(error)
-        return res.status(500).json(error)
+        next(error)
+        console.log({method: error.method, message: error.message});
     }
 }
 
-const addEventMessageById = async (req, res) => {
+const addEventMessageById = async (req, res, next) => {
     try {
         const {id} = req.params;
         if (!id) { throw new Error("Please provide an event Id.") }
@@ -355,8 +349,8 @@ const addEventMessageById = async (req, res) => {
         res.status(201).json(updatedEvent);
     
     } catch (error) {
-        console.log(error)
-        return res.status(500).json(error)
+        next(error)
+        console.log({method: error.method, message: error.message});
     }
 }
 
