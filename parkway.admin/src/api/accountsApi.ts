@@ -1,7 +1,7 @@
 import { AxiosInstance } from 'axios';
 import { BaseApiType, buildBaseApi } from './baseApi.ts';
 import { Account } from '../types';
-import { TypedResponse } from '../hooks/useApi.ts';
+import { TypedResponse } from '../hooks/useApi.tsx';
 
 export type UpdateAccountCustodianPayload = Pick<Account, '_id'> & {
   custodian: string;

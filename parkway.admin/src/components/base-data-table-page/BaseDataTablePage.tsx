@@ -1,7 +1,7 @@
 import { Alert, Button, Empty, Spin, Table } from 'antd';
 import styles from './BaseDataTablePage.module.css';
 import { Link, To } from 'react-router-dom';
-import useApi, { buildQueryKey, TypedResponse } from '../../hooks/useApi.ts';
+import useApi, { buildQueryKey, TypedResponse } from '../../hooks/useApi.tsx';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { BaseEntity } from '../../types';
 import useColumns, {

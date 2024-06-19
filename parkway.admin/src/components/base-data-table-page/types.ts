@@ -1,4 +1,4 @@
-import { BaseApiTypes, QueryType } from '../../hooks/useApi.ts';
+import { BaseApiTypes, QueryType } from '../../hooks/useApi.tsx';
 import { To } from 'react-router-dom';
 
 export interface SharedBasePageProps {

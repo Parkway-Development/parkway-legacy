@@ -1,4 +1,4 @@
-import { GenericResponse } from './useApi.ts';
+import { GenericResponse } from './useApi.tsx';
 import { BaseEntity } from '../types';
 import { Link, To } from 'react-router-dom';
 import { ColumnType } from 'antd/lib/table';

@@ -8,12 +8,11 @@ import {
   Spin,
   Tooltip
 } from 'antd';
-import { Dayjs } from 'dayjs';
-import useApi, { buildQueryKey } from '../../hooks/useApi.ts';
+import dayjs, { Dayjs } from 'dayjs';
+import useApi, { buildQueryKey } from '../../hooks/useApi.tsx';
 import { useQuery } from '@tanstack/react-query';
 import styles from './Calendar.module.scss';
 import { Event } from '../../types';
-import { isSameDate } from '../../utilities';
 import { useNavigate } from 'react-router-dom';
 import { SyntheticEvent } from 'react';
 import { SelectInfo } from 'antd/lib/calendar/generateCalendar';
@@ -21,11 +20,17 @@ import CalendarTooltip from './CalendarTooltip.tsx';
 import DayViewCalendar from './DayViewCalendar.tsx';
 import classNames from 'classnames';
 import 'dayjs/plugin/localeData';
+import useDateQueryParam from '../../hooks/useDateQueryParam.ts';
+import { endOfDay, isWithinInterval, startOfDay } from 'date-fns';
+import useQueryCache from '../../hooks/useQueryCache.ts';
 
 const Calendar = () => {
   const navigate = useNavigate();
-  const searchParams = new URLSearchParams(window.location.search);
-  const date = searchParams.get('date');
+  const date = useDateQueryParam();
+  const [calendarDate, setCalendarDate] = useQueryCache<Dayjs>({
+    cacheKey: 'cache.calendarMonth',
+    initialValue: dayjs()
+  });
 
   const {
     eventsApi: { getAll },
@@ -61,14 +66,17 @@ const Calendar = () => {
   };
 
   if (date) {
-    const searchDate = new Date(date.replace(/-/g, '/'));
-    const items = data?.data?.filter((x) => isSameDate(x.start, searchDate));
+    const items = data?.data?.filter((x) =>
+      isWithinInterval(date, {
+        start: startOfDay(x.start),
+        end: endOfDay(x.end)
+      })
+    );
 
     return (
       <DayViewCalendar
         events={items ?? []}
-        date={searchDate}
-        dateParam={date}
+        date={date}
         onClickEvent={navigateToItem}
       />
     );
@@ -81,7 +89,13 @@ const Calendar = () => {
   };
 
   const cellRenderer = (date: Dayjs) => {
-    const items = data?.data?.filter((x) => isSameDate(x.start, date.toDate()));
+    const day = date.startOf('day').toDate();
+    const items = data?.data?.filter((x) =>
+      isWithinInterval(day, {
+        start: startOfDay(x.start),
+        end: endOfDay(x.end)
+      })
+    );
 
     if (!items.length) return undefined;
 
@@ -120,15 +134,10 @@ const Calendar = () => {
 
   return (
     <CalendarControl
+      value={calendarDate}
       cellRender={cellRenderer}
       onSelect={navigateToDay}
-      headerRender={({
-        value,
-        onChange
-      }: {
-        value: Dayjs;
-        onChange: (day: Dayjs) => void;
-      }) => {
+      headerRender={({ value }: { value: Dayjs }) => {
         const start = 0;
         const end = 12;
         const monthOptions = [];
@@ -166,7 +175,10 @@ const Calendar = () => {
           <div style={{ padding: 8 }}>
             <Row gutter={8}>
               <Col>
-                <Button size="small" onClick={() => onChange(previousMonth)}>
+                <Button
+                  size="small"
+                  onClick={() => setCalendarDate(previousMonth)}
+                >
                   Previous
                 </Button>
               </Col>
@@ -178,7 +190,7 @@ const Calendar = () => {
                   value={year}
                   onChange={(newYear) => {
                     const now = value.clone().year(newYear);
-                    onChange(now);
+                    setCalendarDate(now);
                   }}
                 >
                   {options}
@@ -191,14 +203,14 @@ const Calendar = () => {
                   value={month}
                   onChange={(newMonth) => {
                     const now = value.clone().month(newMonth);
-                    onChange(now);
+                    setCalendarDate(now);
                   }}
                 >
                   {monthOptions}
                 </Select>
               </Col>
               <Col>
-                <Button size="small" onClick={() => onChange(nextMonth)}>
+                <Button size="small" onClick={() => setCalendarDate(nextMonth)}>
                   Next
                 </Button>
               </Col>

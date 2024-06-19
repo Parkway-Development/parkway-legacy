@@ -2,10 +2,14 @@ import { Breadcrumb, Form, Input } from 'antd';
 import { Link } from 'react-router-dom';
 import { Asset } from '../../types';
 import { AddBaseApiFormProps, BaseFormFooter } from '../base-data-table-page';
-import { transformDateToDayjs } from '../../utilities';
-import DatePickerExtended from '../date-picker-extended';
+import { getDateString, isDateString } from '../../utilities';
+import DatePicker from '../date-picker';
+import { parseISO } from 'date-fns';
 
-type AssetWithoutId = Omit<Asset, '_id'>;
+type AssetWithoutId = Omit<Asset, '_id'> & {
+  purchaseDate?: Date | string;
+  inServiceDate: Date | string;
+};
 type AssetFields = Omit<AssetWithoutId, 'notes'> & {
   notes: string;
 };
@@ -23,14 +27,20 @@ const AssetForm = ({
   const [form] = Form.useForm<AssetFields>();
   const initialValues = {
     ...initialValuesProp,
-    purchaseDate: transformDateToDayjs(initialValuesProp?.purchaseDate),
-    inServiceDate: transformDateToDayjs(initialValuesProp?.inServiceDate),
+    purchaseDate: getDateString(initialValuesProp?.purchaseDate),
+    inServiceDate: getDateString(initialValuesProp?.inServiceDate),
     notes: initialValuesProp?.notes?.length ? initialValuesProp.notes[0] : ''
   };
 
   const handleSave = (values: AssetFields) => {
     const payload: AssetWithoutId = {
       ...values,
+      purchaseDate: isDateString(values.purchaseDate)
+        ? parseISO(values.purchaseDate as string)
+        : undefined,
+      inServiceDate: isDateString(values.inServiceDate)
+        ? parseISO(values.inServiceDate as string)
+        : values.inServiceDate,
       notes: [values.notes]
     };
 
@@ -83,7 +93,7 @@ const AssetForm = ({
         </Form.Item>
 
         <Form.Item<AssetFields> label="Purchase Date" name="purchaseDate">
-          <DatePickerExtended />
+          <DatePicker />
         </Form.Item>
 
         <Form.Item<AssetFields>
@@ -99,7 +109,7 @@ const AssetForm = ({
           name="inServiceDate"
           rules={[{ required: true, message: 'Required' }]}
         >
-          <DatePickerExtended />
+          <DatePicker />
         </Form.Item>
 
         <Form.Item<AssetFields>

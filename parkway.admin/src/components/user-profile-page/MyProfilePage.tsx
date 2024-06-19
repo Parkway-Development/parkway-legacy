@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import useApi, { buildQueryKey } from '../../hooks/useApi.ts';
+import useApi, { buildQueryKey } from '../../hooks/useApi.tsx';
 import { Alert, notification, Spin } from 'antd';
 import { UserProfileForm, UserProfileFormFields } from '../directory-page';
 import { useAuth } from '../../hooks/useAuth.tsx';

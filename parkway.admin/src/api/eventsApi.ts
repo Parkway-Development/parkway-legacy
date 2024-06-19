@@ -1,7 +1,7 @@
 import { AxiosInstance } from 'axios';
 import { BaseApiType, buildBaseApi } from './baseApi.ts';
 import { Event, EventMessage } from '../types';
-import { GenericResponse, TypedResponse } from '../hooks/useApi.ts';
+import { GenericResponse, TypedResponse } from '../hooks/useApi.tsx';
 import { EventRegistration } from '../types/EventRegistration.ts';
 
 export type ApproveEventPayload = Pick<

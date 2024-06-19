@@ -2,7 +2,7 @@ import { cleanup, render } from '@testing-library/react';
 import { afterEach, Mock, vi } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ApiType, TypedResponse } from '../hooks/useApi.ts';
+import { ApiType, TypedResponse } from '../hooks/useApi.tsx';
 import {
   AccountsApiType,
   AssetsApiType,

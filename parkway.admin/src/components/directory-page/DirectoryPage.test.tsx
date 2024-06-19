@@ -7,7 +7,7 @@ import {
   render,
   screen
 } from '../../test/utils';
-import useApi from '../../hooks/useApi';
+import useApi from '../../hooks/useApi.tsx';
 import { UserProfile } from '../../types';
 
 vi.mock('../../hooks/useApi');

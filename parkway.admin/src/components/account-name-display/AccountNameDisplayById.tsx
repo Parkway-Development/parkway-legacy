@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import useApi, { buildQueryKey } from '../../hooks/useApi.ts';
+import useApi, { buildQueryKey } from '../../hooks/useApi.tsx';
 import { Skeleton } from 'antd';
 import { WarningOutlined } from '@ant-design/icons';
 

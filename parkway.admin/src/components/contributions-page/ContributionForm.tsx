@@ -3,13 +3,16 @@ import { Link } from 'react-router-dom';
 import { Contribution, ContributionAccount } from '../../types';
 import { AddBaseApiFormProps, BaseFormFooter } from '../base-data-table-page';
 import UserProfileSelect from '../user-profile-select';
-import { transformDateToDayjs } from '../../utilities';
+import { getDateString } from '../../utilities';
 import AccountsInput from './AccountsInput.tsx';
 import { useState } from 'react';
 import MoneyDisplay from '../money-display';
-import DatePickerExtended from '../date-picker-extended';
+import DatePicker from '../date-picker';
+import { parseISO } from 'date-fns';
 
-type ContributionWithoutId = Omit<Contribution, '_id'>;
+type ContributionWithoutId = Omit<Contribution, '_id'> & {
+  transactionDate: Date | string;
+};
 
 type ContributionFormProps = AddBaseApiFormProps<Contribution> & {
   initialValues?: ContributionWithoutId;
@@ -32,7 +35,7 @@ const ContributionForm = ({
   const initialValues = initialValuesProp
     ? {
         ...initialValuesProp,
-        transactionDate: transformDateToDayjs(initialValuesProp.transactionDate)
+        transactionDate: getDateString(initialValuesProp.transactionDate)
       }
     : {
         fees: 0,
@@ -63,6 +66,7 @@ const ContributionForm = ({
 
     const finalPayload = {
       ...values,
+      transactionDate: parseISO(values.transactionDate as string),
       net: netAmount
     };
 
@@ -121,7 +125,7 @@ const ContributionForm = ({
           name="transactionDate"
           rules={[{ required: true, message: 'Transaction date is required.' }]}
         >
-          <DatePickerExtended />
+          <DatePicker />
         </Form.Item>
 
         <Form.Item<ContributionWithoutId> label="Deposit Id" name="depositId">

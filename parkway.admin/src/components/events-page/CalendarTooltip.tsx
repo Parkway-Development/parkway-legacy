@@ -1,14 +1,15 @@
 import { Event } from '../../types';
-import { isSameDate, transformToTime } from '../../utilities';
+import { transformToTime } from '../../utilities';
 import DateDisplay from '../date-display';
 import styles from './CalendarTooltip.module.css';
+import { isSameDay } from 'date-fns';
 
 interface CalendarTooltipProps {
   event: Event;
 }
 
 const CalendarTooltip = ({ event }: CalendarTooltipProps) => {
-  const timeFormat = isSameDate(event.start, event.end) ? (
+  const timeFormat = isSameDay(event.start, event.end) ? (
     <p>
       {transformToTime(event.start)} - {transformToTime(event.end)}
     </p>

@@ -1,6 +1,6 @@
 import { Button, notification, Popconfirm } from 'antd';
 import { CloseOutlined } from '@ant-design/icons';
-import useApi, { GenericResponse } from '../../hooks/useApi.ts';
+import useApi, { GenericResponse } from '../../hooks/useApi.tsx';
 import { useMutation } from '@tanstack/react-query';
 
 interface DeleteButtonProps {
