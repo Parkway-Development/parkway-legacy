@@ -7,6 +7,7 @@ import CalendarTooltip from './CalendarTooltip.tsx';
 import { useQuery } from '@tanstack/react-query';
 import useApi, { buildQueryKey } from '../../hooks/useApi.tsx';
 import { getDateString } from '../../utilities';
+import { endOfDay, isAfter, isBefore } from 'date-fns';
 
 interface DayViewCalendarProps {
   events: Event[];
@@ -35,16 +36,20 @@ const DayViewCalendar = ({
   });
 
   let content: ReactNode;
+  const dateEnd = endOfDay(date);
 
   if (!events.length) {
     content = <Empty />;
   } else {
     const earliestHour = events.reduce((prev, currentValue) => {
+      if (isBefore(currentValue.start, date)) return 0;
+
       const itemHours = currentValue.start.getHours();
       return itemHours < prev ? itemHours : prev;
     }, 24);
 
     const latestHour = events.reduce((prev, currentValue) => {
+      if (isAfter(currentValue.end, dateEnd)) return 23;
       const itemHours = currentValue.end.getHours();
       return itemHours > prev ? itemHours : prev;
     }, 0);
@@ -67,16 +72,30 @@ const DayViewCalendar = ({
     const eventPositions: EventGridPosition[] = [];
 
     events.forEach((event) => {
-      const startEvent = new Date(event.start);
-      const endEvent = new Date(event.end);
+      let startEvent = new Date(event.start);
+      let endEvent = new Date(event.end);
 
       if (event.allDay) {
+        startEvent = new Date(date);
         startEvent.setHours(0);
         startEvent.setMinutes(0);
         startEvent.setSeconds(0);
         endEvent.setHours(24);
         endEvent.setMinutes(0);
         endEvent.setSeconds(0);
+      } else {
+        if (isBefore(startEvent, date)) {
+          startEvent = new Date(date);
+          startEvent.setHours(0);
+          startEvent.setMinutes(0);
+          startEvent.setSeconds(0);
+        }
+        if (isAfter(endEvent, dateEnd)) {
+          endEvent = new Date(date);
+          endEvent.setHours(24);
+          endEvent.setMinutes(0);
+          endEvent.setSeconds(0);
+        }
       }
 
       const gridRow =

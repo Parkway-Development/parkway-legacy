@@ -21,7 +21,7 @@ import DayViewCalendar from './DayViewCalendar.tsx';
 import classNames from 'classnames';
 import 'dayjs/plugin/localeData';
 import useDateQueryParam from '../../hooks/useDateQueryParam.ts';
-import { isSameDay } from 'date-fns';
+import { endOfDay, isWithinInterval, startOfDay } from 'date-fns';
 import useQueryCache from '../../hooks/useQueryCache.ts';
 
 const Calendar = () => {
@@ -66,7 +66,12 @@ const Calendar = () => {
   };
 
   if (date) {
-    const items = data?.data?.filter((x) => isSameDay(x.start, date));
+    const items = data?.data?.filter((x) =>
+      isWithinInterval(date, {
+        start: startOfDay(x.start),
+        end: endOfDay(x.end)
+      })
+    );
 
     return (
       <DayViewCalendar
@@ -84,7 +89,13 @@ const Calendar = () => {
   };
 
   const cellRenderer = (date: Dayjs) => {
-    const items = data?.data?.filter((x) => isSameDay(x.start, date.toDate()));
+    const day = date.startOf('day').toDate();
+    const items = data?.data?.filter((x) =>
+      isWithinInterval(day, {
+        start: startOfDay(x.start),
+        end: endOfDay(x.end)
+      })
+    );
 
     if (!items.length) return undefined;
 
