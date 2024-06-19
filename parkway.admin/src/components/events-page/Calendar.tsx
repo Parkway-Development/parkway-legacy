@@ -9,7 +9,7 @@ import {
   Tooltip
 } from 'antd';
 import dayjs, { Dayjs } from 'dayjs';
-import useApi, { buildQueryKey } from '../../hooks/useApi.ts';
+import useApi, { buildQueryKey } from '../../hooks/useApi.tsx';
 import { useQuery } from '@tanstack/react-query';
 import styles from './Calendar.module.scss';
 import { Event } from '../../types';

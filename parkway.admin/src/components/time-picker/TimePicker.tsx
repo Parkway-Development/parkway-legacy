@@ -21,7 +21,6 @@ export const isEndTimeAfterStart = (startTime: string, endTime: string) => {
 type TimeSelectProps = Omit<InputProps, 'type'>;
 
 const TimePicker = (props: TimeSelectProps) => {
-  console.log('time props', props);
   return <Input type="time" {...props} />;
 };
 

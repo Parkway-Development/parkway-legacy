@@ -78,6 +78,7 @@ import ForgotPasswordPage from './components/forgot-password-page';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import SpecOpsPage from './components/spec-ops-page';
 import TeamDashboardPage from './components/team-dashboard';
+import { ApiProvider } from './hooks/useApi.tsx';
 
 const MAX_RETRIES = 6;
 const HTTP_STATUS_TO_NOT_RETRY = [400, 401, 403, 404];
@@ -103,112 +104,123 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <BrowserRouter>
       <AuthProvider>
-        <QueryClientProvider client={queryClient}>
-          <Routes>
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/signup" element={<SignupPage />} />
-            <Route path="/forgot" element={<ForgotPasswordPage />} />
-            <Route path="/reset/:resetToken" element={<ResetPasswordPage />} />
-            <Route
-              path="/"
-              element={
-                <ProtectedRoute>
-                  <App />
-                </ProtectedRoute>
-              }
-            >
-              <Route path="profiles/me" element={<MyProfilePage />} />
+        <ApiProvider>
+          <QueryClientProvider client={queryClient}>
+            <Routes>
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/signup" element={<SignupPage />} />
+              <Route path="/forgot" element={<ForgotPasswordPage />} />
               <Route
-                path="profiles"
-                element={<ClaimRoute claim="userManagement" />}
-              >
-                <Route path="add" element={<AddUserProfilePage />} />
-                <Route path=":id" element={<UserProfilePage />} />
-                <Route path=":id/edit" element={<EditUserProfilePage />} />
-                <Route index element={<DirectoryPage />} />
-              </Route>
+                path="/reset/:resetToken"
+                element={<ResetPasswordPage />}
+              />
               <Route
-                path="accounts"
-                element={<ClaimRoute claim="accounting" />}
-              >
-                <Route path="assets">
-                  <Route path="add" element={<AddAssetPage />} />
-                  <Route path=":id" element={<AssetPage />} />
-                  <Route path=":id/edit" element={<EditAssetPage />} />
-                  <Route index element={<AssetsPage />} />
-                </Route>
-                <Route path="contributions">
-                  <Route path="add" element={<AddContributionPage />} />
-                  <Route path=":id" element={<ContributionPage />} />
-                  <Route path=":id/edit" element={<EditContributionPage />} />
-                  <Route index element={<ContributionsPage />} />
-                </Route>
-                <Route path="vendors">
-                  <Route path="add" element={<AddVendorPage />} />
-                  <Route path=":id" element={<VendorPage />} />
-                  <Route path=":id/edit" element={<EditVendorPage />} />
-                  <Route index element={<VendorsPage />} />
-                </Route>
-                <Route path="add" element={<AddAccountPage />} />
-                <Route path=":id" element={<AccountPage />} />
-                <Route path=":id/edit" element={<EditAccountPage />} />
-                <Route index element={<AccountsPage />} />
-              </Route>
-              <Route
-                path="events"
+                path="/"
                 element={
-                  <ClaimRoute claim="calendarManagement" allowTeamLeads />
+                  <ProtectedRoute>
+                    <App />
+                  </ProtectedRoute>
                 }
               >
-                <Route path="categories">
-                  <Route path="add" element={<AddEventCategoryPage />} />
-                  <Route path=":id" element={<EventCategoryPage />} />
-                  <Route path=":id/edit" element={<EditEventCategoryPage />} />
-                  <Route index element={<EventCategoriesPage />} />
+                <Route path="profiles/me" element={<MyProfilePage />} />
+                <Route
+                  path="profiles"
+                  element={<ClaimRoute claim="userManagement" />}
+                >
+                  <Route path="add" element={<AddUserProfilePage />} />
+                  <Route path=":id" element={<UserProfilePage />} />
+                  <Route path=":id/edit" element={<EditUserProfilePage />} />
+                  <Route index element={<DirectoryPage />} />
                 </Route>
-                <Route path="add" element={<AddEventPage />} />
-                <Route path=":id" element={<EventPage />} />
-                <Route path=":id/edit" element={<EditEventPage />} />
-                <Route index element={<EventsPage />} />
-              </Route>
-              <Route path="specops" element={<ClaimRoute claim="isspecops" />}>
-                <Route index element={<SpecOpsPage />} />
-              </Route>
-              <Route path="songs">
-                <Route path="add" element={<AddSongPage />} />
-                <Route path=":id" element={<SongPage />} />
-                <Route path=":id/edit" element={<EditSongPage />} />
-                <Route index element={<SongsPage />} />
-              </Route>
-              <Route
-                path="platform"
-                element={<ClaimRoute claim="systemSettings" />}
-              >
-                <Route path="enums">
-                  <Route path="add" element={<AddEnumPage />} />
-                  <Route path=":id" element={<EnumPage />} />
-                  <Route path=":id/edit" element={<EditEnumPage />} />
-                  <Route index element={<EnumsPage />} />
+                <Route
+                  path="accounts"
+                  element={<ClaimRoute claim="accounting" />}
+                >
+                  <Route path="assets">
+                    <Route path="add" element={<AddAssetPage />} />
+                    <Route path=":id" element={<AssetPage />} />
+                    <Route path=":id/edit" element={<EditAssetPage />} />
+                    <Route index element={<AssetsPage />} />
+                  </Route>
+                  <Route path="contributions">
+                    <Route path="add" element={<AddContributionPage />} />
+                    <Route path=":id" element={<ContributionPage />} />
+                    <Route path=":id/edit" element={<EditContributionPage />} />
+                    <Route index element={<ContributionsPage />} />
+                  </Route>
+                  <Route path="vendors">
+                    <Route path="add" element={<AddVendorPage />} />
+                    <Route path=":id" element={<VendorPage />} />
+                    <Route path=":id/edit" element={<EditVendorPage />} />
+                    <Route index element={<VendorsPage />} />
+                  </Route>
+                  <Route path="add" element={<AddAccountPage />} />
+                  <Route path=":id" element={<AccountPage />} />
+                  <Route path=":id/edit" element={<EditAccountPage />} />
+                  <Route index element={<AccountsPage />} />
                 </Route>
+                <Route
+                  path="events"
+                  element={
+                    <ClaimRoute claim="calendarManagement" allowTeamLeads />
+                  }
+                >
+                  <Route path="categories">
+                    <Route path="add" element={<AddEventCategoryPage />} />
+                    <Route path=":id" element={<EventCategoryPage />} />
+                    <Route
+                      path=":id/edit"
+                      element={<EditEventCategoryPage />}
+                    />
+                    <Route index element={<EventCategoriesPage />} />
+                  </Route>
+                  <Route path="add" element={<AddEventPage />} />
+                  <Route path=":id" element={<EventPage />} />
+                  <Route path=":id/edit" element={<EditEventPage />} />
+                  <Route index element={<EventsPage />} />
+                </Route>
+                <Route
+                  path="specops"
+                  element={<ClaimRoute claim="isspecops" />}
+                >
+                  <Route index element={<SpecOpsPage />} />
+                </Route>
+                <Route path="songs">
+                  <Route path="add" element={<AddSongPage />} />
+                  <Route path=":id" element={<SongPage />} />
+                  <Route path=":id/edit" element={<EditSongPage />} />
+                  <Route index element={<SongsPage />} />
+                </Route>
+                <Route
+                  path="platform"
+                  element={<ClaimRoute claim="systemSettings" />}
+                >
+                  <Route path="enums">
+                    <Route path="add" element={<AddEnumPage />} />
+                    <Route path=":id" element={<EnumPage />} />
+                    <Route path=":id/edit" element={<EditEnumPage />} />
+                    <Route index element={<EnumsPage />} />
+                  </Route>
+                </Route>
+                <Route path="team">
+                  <Route path=":id" element={<TeamDashboardPage />} />
+                </Route>
+                <Route
+                  path="teams"
+                  element={<ClaimRoute claim="teamManagement" />}
+                >
+                  <Route path="add" element={<AddTeamPage />} />
+                  <Route path=":id" element={<TeamPage />} />
+                  <Route path=":id/edit" element={<EditTeamPage />} />
+                  <Route index element={<TeamsPage />} />
+                </Route>
+                <Route index element={<HomePage />} />
+                <Route path="*" element={<NotFoundPage />} />
               </Route>
-              <Route path="team">
-                <Route path=":id" element={<TeamDashboardPage />} />
-              </Route>
-              <Route
-                path="teams"
-                element={<ClaimRoute claim="teamManagement" />}
-              >
-                <Route path="add" element={<AddTeamPage />} />
-                <Route path=":id" element={<TeamPage />} />
-                <Route path=":id/edit" element={<EditTeamPage />} />
-                <Route index element={<TeamsPage />} />
-              </Route>
-              <Route index element={<HomePage />} />
-              <Route path="*" element={<NotFoundPage />} />
-            </Route>
-          </Routes>
-          <ReactQueryDevtools initialIsOpen={false} />
-        </QueryClientProvider>
+            </Routes>
+            <ReactQueryDevtools initialIsOpen={false} />
+          </QueryClientProvider>
+        </ApiProvider>
       </AuthProvider>
     </BrowserRouter>
   </StrictMode>

@@ -1,4 +1,4 @@
-import { TypedResponse } from '../hooks/useApi.ts';
+import { TypedResponse } from '../hooks/useApi.tsx';
 import { AxiosInstance } from 'axios';
 
 export interface GeneralApiType {

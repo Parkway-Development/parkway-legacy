@@ -26,6 +26,7 @@ import {
 } from '../api';
 import { QueryClient } from '@tanstack/react-query';
 import { addDateConversionInterceptor } from '../utilities';
+import { createContext, ReactNode, useContext } from 'react';
 
 export type GenericResponse = Promise<AxiosResponse<unknown, unknown>>;
 export type TypedResponse<T> = Promise<Omit<AxiosResponse<T>, 'config'>>;
@@ -47,6 +48,8 @@ export type ApiType = BaseApiTypes & {
   formatError: (error: Error | null) => string;
   generalApi: GeneralApiType;
 };
+
+const ApiContext = createContext<ApiType | undefined>(undefined);
 
 export type QueryType =
   | 'accounts'
@@ -91,7 +94,7 @@ const createInstance = (token: string | undefined) => {
   return instance;
 };
 
-const useApi: () => ApiType = () => {
+export const ApiProvider = ({ children }: { children: ReactNode }) => {
   const { token, logout } = useAuth();
 
   const formatError = (error: Error | null) => {
@@ -115,7 +118,7 @@ const useApi: () => ApiType = () => {
 
   const instance = createInstance(token);
 
-  return {
+  const value = {
     accountsApi: buildAccountsApi(instance),
     assetsApi: buildAssetsApi(instance),
     contributionsApi: buildContributionsApi(instance),
@@ -129,6 +132,18 @@ const useApi: () => ApiType = () => {
     vendorsApi: buildVendorsApi(instance),
     formatError
   };
+
+  return <ApiContext.Provider value={value}>{children}</ApiContext.Provider>;
+};
+
+const useApi = () => {
+  const context = useContext(ApiContext);
+
+  if (!context) {
+    throw new Error('useApi must be used within an ApiProvider');
+  }
+
+  return context;
 };
 
 export default useApi;

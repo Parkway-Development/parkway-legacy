@@ -2,7 +2,7 @@ import { Account } from '../../types';
 import { useState } from 'react';
 import { Alert, Button } from 'antd';
 import AccountSelect from '../account-select';
-import useApi, { buildQueryKey } from '../../hooks/useApi.ts';
+import useApi, { buildQueryKey } from '../../hooks/useApi.tsx';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import styles from './AccountParent.module.css';
 import { Link } from 'react-router-dom';

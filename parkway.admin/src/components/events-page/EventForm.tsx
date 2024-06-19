@@ -7,7 +7,7 @@ import { getDateString, getTimeString, isDateString } from '../../utilities';
 import { useCallback, useMemo, useState } from 'react';
 import styles from './EventForm.module.css';
 import DeleteButton from '../delete-button';
-import useApi from '../../hooks/useApi.ts';
+import useApi from '../../hooks/useApi.tsx';
 import EventCategorySelect from '../event-category-select';
 import TeamSelect from '../team-select';
 import { useAuth } from '../../hooks/useAuth.tsx';

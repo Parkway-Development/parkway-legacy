@@ -1,5 +1,5 @@
 import { BaseEntity } from '../types';
-import { GenericResponse, TypedResponse } from '../hooks/useApi.ts';
+import { GenericResponse, TypedResponse } from '../hooks/useApi.tsx';
 import { AxiosInstance } from 'axios';
 
 export interface GenericMessageResponse {

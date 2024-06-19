@@ -1,6 +1,6 @@
 import { Alert, Button, Spin } from 'antd';
 import { useQuery } from '@tanstack/react-query';
-import useApi, { buildQueryKey } from '../../hooks/useApi.ts';
+import useApi, { buildQueryKey } from '../../hooks/useApi.tsx';
 import { BaseEntity } from '../../types';
 import { BaseApiType, IsBaseEntityApi } from '../../api';
 import { useNavigate, useParams } from 'react-router-dom';

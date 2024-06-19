@@ -2,7 +2,7 @@ import styles from './EventStatus.module.css';
 import { Button } from 'antd';
 import { Event } from '../../types';
 import { useEffect, useState } from 'react';
-import useApi, { invalidateQueries } from '../../hooks/useApi.ts';
+import useApi, { invalidateQueries } from '../../hooks/useApi.tsx';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { ApproveEventPayload, RejectEventPayload } from '../../api';
 

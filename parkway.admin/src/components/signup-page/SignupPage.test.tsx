@@ -8,7 +8,7 @@ import {
   screen,
   userEvent
 } from '../../test/utils';
-import useApi from '../../hooks/useApi';
+import useApi from '../../hooks/useApi.tsx';
 
 vi.mock('../../hooks/useAuth', () => ({
   useAuth: () => ({

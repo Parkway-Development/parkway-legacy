@@ -1,4 +1,4 @@
-import useApi, { buildQueryKey } from '../../hooks/useApi.ts';
+import useApi, { buildQueryKey } from '../../hooks/useApi.tsx';
 import { useQuery } from '@tanstack/react-query';
 import { Alert, Spin } from 'antd';
 import { useParams } from 'react-router-dom';

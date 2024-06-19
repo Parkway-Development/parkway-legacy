@@ -3,7 +3,7 @@ import { ReactNode, useState } from 'react';
 import TextArea from 'antd/lib/input/TextArea';
 import { Alert, Button } from 'antd';
 import styles from './EventMessages.module.css';
-import useApi, { buildQueryKey } from '../../hooks/useApi.ts';
+import useApi, { buildQueryKey } from '../../hooks/useApi.tsx';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../../hooks/useAuth.tsx';
 import { AddEventMessagePayload } from '../../api';

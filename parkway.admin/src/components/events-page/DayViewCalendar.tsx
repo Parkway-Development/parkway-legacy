@@ -5,7 +5,7 @@ import styles from './DayViewCalendar.module.css';
 import { Link } from 'react-router-dom';
 import CalendarTooltip from './CalendarTooltip.tsx';
 import { useQuery } from '@tanstack/react-query';
-import useApi, { buildQueryKey } from '../../hooks/useApi.ts';
+import useApi, { buildQueryKey } from '../../hooks/useApi.tsx';
 import { getDateString } from '../../utilities';
 
 interface DayViewCalendarProps {

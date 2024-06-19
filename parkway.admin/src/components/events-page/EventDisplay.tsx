@@ -19,7 +19,7 @@ import { EventSchedule } from '../../types/EventSchedule.ts';
 import { monthWeekOptions, weekDayOptions } from './EventForm.tsx';
 import RegisterUserModal from './RegisterUserModal.tsx';
 import { EventRegistration } from '../../types/EventRegistration.ts';
-import useApi, { buildQueryKey } from '../../hooks/useApi.ts';
+import useApi, { buildQueryKey } from '../../hooks/useApi.tsx';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
