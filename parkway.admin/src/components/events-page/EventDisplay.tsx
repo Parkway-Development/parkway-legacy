@@ -112,10 +112,12 @@ const EventDisplay = (event: Event) => {
 };
 
 interface EventScheduleSummaryProps {
-  schedule: EventSchedule | undefined;
+  schedule: (EventSchedule & { end_date?: Date | string }) | undefined;
 }
 
-const EventScheduleSummary = ({ schedule }: EventScheduleSummaryProps) => {
+export const EventScheduleSummary = ({
+  schedule
+}: EventScheduleSummaryProps) => {
   if (!schedule) return <span>No</span>;
 
   const { interval, frequency, week_days, month_weeks, end_date } = schedule;
@@ -123,6 +125,8 @@ const EventScheduleSummary = ({ schedule }: EventScheduleSummaryProps) => {
   let result;
 
   if (frequency === 'custom') {
+    if (!month_weeks || !week_days) return 'Incomplete schedule configuration.';
+
     const weeks = month_weeks
       ?.map((week) => monthWeekOptions.find((o) => o.value === week)?.label)
       .filter((x) => x !== undefined)

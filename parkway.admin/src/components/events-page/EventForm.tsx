@@ -3,7 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import UserProfileSelect from '../user-profile-select';
 import { Event, RegistrationSlot } from '../../types';
 import { AddBaseApiFormProps, BaseFormFooter } from '../base-data-table-page';
-import { getDateString, getTimeString } from '../../utilities';
+import { getDateString, getTimeString, isDateString } from '../../utilities';
 import { useCallback, useMemo, useState } from 'react';
 import styles from './EventForm.module.css';
 import DeleteButton from '../delete-button';
@@ -24,6 +24,7 @@ import { EventSchedule } from '../../types/EventSchedule.ts';
 import DatePicker from '../date-picker';
 import useDateQueryParam from '../../hooks/useDateQueryParam.ts';
 import { parseISO } from 'date-fns';
+import { EventScheduleSummary } from './EventDisplay.tsx';
 
 type EventWithoutId = Omit<Event, '_id'>;
 
@@ -33,8 +34,8 @@ type EventFormFields = Omit<EventWithoutId, 'start' | 'end' | 'schedule'> & {
   endDate: string;
   endTime: string;
   updateSeries?: 'this' | 'future' | 'all';
-  schedule: Omit<EventSchedule, 'end_date'> & {
-    end_date: string;
+  schedule: EventSchedule & {
+    end_date?: Date | string;
   };
 };
 
@@ -141,6 +142,7 @@ const EventForm = ({ isSaving, initialValues, onSave }: EventFormProps) => {
   const endDate = Form.useWatch('endDate', form);
   const startTime = Form.useWatch('startTime', form);
   const endTime = Form.useWatch('endTime', form);
+  const schedule = Form.useWatch('schedule', form);
 
   const handleCancel = () =>
     id ? navigate(`/events/${id}`) : navigate(`/events`);
@@ -257,8 +259,8 @@ const EventForm = ({ isSaving, initialValues, onSave }: EventFormProps) => {
       schedule: remaining.schedule
         ? {
             ...remaining.schedule,
-            end_date: remaining.schedule.end_date
-              ? parseISO(remaining.schedule.end_date)
+            end_date: isDateString(remaining.schedule.end_date)
+              ? parseISO(remaining.schedule.end_date as string)
               : undefined
           }
         : undefined
@@ -571,6 +573,11 @@ const EventForm = ({ isSaving, initialValues, onSave }: EventFormProps) => {
             >
               <DatePicker />
             </Form.Item>
+            {frequency && (
+              <Form.Item label="Repeat Summary">
+                <EventScheduleSummary schedule={schedule} />
+              </Form.Item>
+            )}
           </>
         )}
 

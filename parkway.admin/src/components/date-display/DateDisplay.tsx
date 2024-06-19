@@ -1,17 +1,24 @@
+import { isDateString } from '../../utilities';
+import { parseISO } from 'date-fns';
+
 const DateDisplay = ({
   date,
   displayTime = false
 }: {
-  date: Date | undefined;
+  date: Date | string | undefined;
   displayTime?: boolean;
 }) => {
   if (!date) return undefined;
 
+  const finalDate: Date = isDateString(date)
+    ? parseISO(date as string)
+    : (date as Date);
+
   if (displayTime) {
-    return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+    return `${finalDate.toLocaleDateString()} ${finalDate.toLocaleTimeString()}`;
   }
 
-  return date.toLocaleDateString();
+  return finalDate.toLocaleDateString();
 };
 
 export default DateDisplay;
