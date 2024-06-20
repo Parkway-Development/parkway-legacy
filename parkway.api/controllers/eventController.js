@@ -1,4 +1,3 @@
-const mongoose = require('mongoose');
 const Event = require('../models/eventModel');
 const EventRegistration = require('../models/eventRegistrationModel');
 const EventSchedule = require('../models/eventScheduleModel');
@@ -6,7 +5,7 @@ const Profile = require('../models/profileModel');
 const { addMonths, addWeeks, set, endOfDay, differenceInDays, addDays, addYears, startOfMonth, eachDayOfInterval,
     getDay
 } = require("date-fns");
-const AppError = require("../applicationErrors");
+const { buildAction } = require("../helpers/controllerHelper");
 
 const createEvents = async (event, eventSchedule) => {
     const today = new Date();
@@ -91,15 +90,19 @@ const createEvents = async (event, eventSchedule) => {
     }
 };
 
-const addEvent = async (req, res, next) => {
-    try {
-        const { schedule, ...body } = req.body;
+const addEvent = buildAction({
+    handler: async (req, res) => {
+        const {schedule, ...body} = req.body;
         const event = new Event(body);
-        if (!event) { throw new Error("Please provide an event.") }
+        if (!event) {
+            throw new Error("Please provide an event.")
+        }
 
         let validationError = event.validateSync();
-    
-        if (validationError) { throw new Error(validationError.message) }
+
+        if (validationError) {
+            throw new Error(validationError.message)
+        }
 
         let eventSchedule;
 
@@ -114,62 +117,54 @@ const addEvent = async (req, res, next) => {
                 return res.status(400).json({message: validationError.message});
             }
 
-            const { _id } = await eventSchedule.save();
+            const {_id} = await eventSchedule.save();
             event.schedule = _id;
         }
-    
+
         await event.save();
 
         if (eventSchedule) {
             await createEvents(event, eventSchedule);
         }
 
-        return res.status(201).json(event);
-
-    } catch (error) {
-        next(error)
-        console.log({method: error.method, message: error.message});
+        res.status(201).json(event);
     }
-}
+});
 
-const getAllEvents = async (req, res, next) => {
-    try {
+const getAllEvents = buildAction({
+    handler: async (req, res) => {
         const events = await Event.find({}).sort({start: 'desc'});
 
-        if (!events) { throw new Error("No events were returned.") }
+        if (!events) {
+            throw new Error("No events were returned.")
+        }
 
         res.status(200).json(events);
-    } catch (error) {
-        next(error)
-        console.log({method: error.method, message: error.message});
     }
-}
+});
 
-const getEventById = async (req, res, next) => {
-    try {
+const getEventById = buildAction({
+    requiredParams: ['id'],
+    validateIdParam: true,
+    handler: async (req, res) => {
         const {id} = req.params;
-        if (!id) { throw new Error("Please provide an event Id.")}
-        if (!mongoose.Types.ObjectId.isValid(id)) {throw new Error("Invalid ID.")}
 
         const event = await Event.findById(id)
             .populate('schedule');
-    
-        if (!event) { throw new Error("No event was found with that Id.") }
-    
-        res.status(200).json(event)
-    
-    } catch (error) {
-        next(error)
-        console.log({method: error.method, message: error.message});
+
+        if (!event) {
+            throw new Error("No event was found with that Id.")
+        }
+
+        res.status(200).json(event);
     }
-}
+});
 
-const updateEventById = async (req, res, next) => {
-    try{
-        const {id} = req.params;
-
-        if (!id) { throw new Error("Please provide an event Id.") }
-        if (!mongoose.Types.ObjectId.isValid(id)) { throw new Error("Invalid ID.") }
+const updateEventById = buildAction({
+    requiredParams: ['id'],
+    validateIdParam: true,
+    handler: async (req, res) => {
+        const { id } = req.params;
 
         // Include only fields that we want to update
         const update = {
@@ -186,7 +181,7 @@ const updateEventById = async (req, res, next) => {
             registrationSlots: req.body.registrationSlots
         };
 
-        const { updateSeries, schedule } = req.body;
+        const {updateSeries, schedule} = req.body;
 
         const shouldUpdateSchedule = schedule && ['future', 'all'].includes(updateSeries);
 
@@ -201,17 +196,22 @@ const updateEventById = async (req, res, next) => {
 
         const updatedEvent = await Event.findByIdAndUpdate(id, update, {new: true});
 
-        if (!updatedEvent) { throw new Error("No such event found.") }
+        if (!updatedEvent) {
+            throw new Error("No such event found.")
+        }
 
         if (shouldUpdateSchedule) {
             // Remove future events
-            await Event.deleteMany({ schedule: updatedEvent.schedule, start: { $gt: updatedEvent.start } });
+            await Event.deleteMany({schedule: updatedEvent.schedule, start: {$gt: updatedEvent.start}});
 
             // Update all previous events with the event data based on the update, but leave start/end dates alone
             // for historical events
             if (updateSeries === 'all') {
                 const {start, end, allDay, ...otherEventsUpdate} = update;
-                await Event.updateMany({schedule: updatedEvent.schedule, start: {$lt: updatedEvent.start}}, otherEventsUpdate, {new: true});
+                await Event.updateMany({
+                    schedule: updatedEvent.schedule,
+                    start: {$lt: updatedEvent.start}
+                }, otherEventsUpdate, {new: true});
             }
 
             // Update the schedule entity
@@ -221,45 +221,42 @@ const updateEventById = async (req, res, next) => {
             await createEvents(updatedEvent, updatedSchedule);
         }
 
-        return res.status(200).json(updatedEvent);
-    } catch (error) {
-        next(error)
-        console.log({method: error.method, message: error.message});
+        res.status(200).json(updatedEvent);
     }
-}
+});
 
-const approveEventById = async (req, res, next) => {
-    try {
-        const {id} = req.params;
-        if(!id) { throw new Error("Please provide an event Id.") }
-        if (!mongoose.Types.ObjectId.isValid(id)) { throw new Error("Invalid ID.") }
-    
+const approveEventById = buildAction({
+    requiredParams: ['id'],
+    requiredBodyProps: ['approvedBy', 'approvedDate'],
+    validateIdParam: true,
+    handler: async (req, res) => {
+        const { id } = req.params;
         const update = {
             approvedBy: req.body.approvedBy,
             approvedDate: req.body.approvedDate,
             status: 'Active'
         };
-    
+
         const updatedEvent = await Event.findByIdAndUpdate(id, update, {new: true});
-    
-        if (!updatedEvent) { throw new Error("No such event found.") }
+
+        if (!updatedEvent) {
+            throw new Error("No such event found.")
+        }
 
         if (updatedEvent.schedule) {
-            await Event.updateMany({ schedule: updatedEvent.schedule }, update, { new: true });
+            await Event.updateMany({schedule: updatedEvent.schedule}, update, {new: true});
         }
-    
-        res.status(200).json(updatedEvent);
-    } catch (error) {
-        next(error)
-        console.log({method: error.method, message: error.message});
-    }
-}
 
-const rejectEventById = async (req, res, next) => {
-    try {
+        res.status(200).json(updatedEvent);
+    }
+});
+
+const rejectEventById = buildAction({
+    requiredParams: ['id'],
+    requiredBodyProps: ['rejectedBy', 'rejectedDate'],
+    validateIdParam: true,
+    handler: async (req, res) => {
         const {id} = req.params;
-        if (!id) { throw new Error("Please provide an event Id.") }
-        if (!mongoose.Types.ObjectId.isValid(id)) { throw new Error("Invalid ID.") }
 
         const update = {
             rejectedBy: req.body.rejectedBy,
@@ -269,118 +266,115 @@ const rejectEventById = async (req, res, next) => {
 
         const updatedEvent = await Event.findByIdAndUpdate(id, update, {new: true});
 
-        if (!updatedEvent) { throw new Error("No such event found.") }
+        if (!updatedEvent) {
+            throw new Error("No such event found.")
+        }
 
         if (updatedEvent.schedule) {
-            await Event.updateMany({ schedule: updatedEvent.schedule }, update, { new: true });
+            await Event.updateMany({schedule: updatedEvent.schedule}, update, {new: true});
         }
 
         res.status(200).json(updatedEvent);
-    } catch (error) {
-        next(error)
-        console.log({method: error.method, message: error.message});
     }
-}
+});
 
-const deleteEventById = async (req, res, next) => {
-    try{
-        const {id} = req.params;
-        if (!id) { throw new Error("Please provide an event Id.") }
-        if (!mongoose.Types.ObjectId.isValid(id)) { throw new Error("Invalid ID.") }
-
+const deleteEventById = buildAction({
+    requiredParams: ['id'],
+    validateIdParam: true,
+    handler: async (req, res) => {
+        const { id } = req.params;
         const deletedEvent = await Event.findByIdAndDelete(id);
 
-        if (!deletedEvent) { throw new Error("No such event found.") }
+        if (!deletedEvent) {
+            throw new Error("No such event found.")
+        }
 
         res.status(200).json(deletedEvent);
-    }catch(error){
-        next(error)
-        console.log({method: error.method, message: error.message});
     }
-}
+});
 
-const deleteEventBySchedule = async (req, res, next) => {
-    try{
-        const {id, updateSeries} = req.params;
-        if (!id) { throw new Error("Please provide an event Id.") }
-        if (!updateSeries) { throw new Error("Please provide an update type.") }
-        if (!mongoose.Types.ObjectId.isValid(id)) { throw new Error("Invalid ID.") }
+const deleteEventBySchedule = buildAction({
+    requiredParams: ['id', 'updateSeries'],
+    validateIdParam: true,
+    handler: async (req, res) => {
+        const { id, updateSeries } = req.params;
 
         const event = await Event.findById(id);
 
-        if (!event) { throw new Error("No such event found.") }
-        if (!event.schedule) { throw new Error("Event does not have an associated schedule.") }
+        if (!event) {
+            throw new Error("No such event found.")
+        }
+
+        if (!event.schedule) {
+            throw new Error("Event does not have an associated schedule.")
+        }
 
         if (updateSeries === 'all') {
-            await Event.deleteMany({ schedule: event.schedule });
+            await Event.deleteMany({schedule: event.schedule});
         } else if (updateSeries === 'future') {
-            await Event.deleteMany({ schedule: event.schedule, start: { $gte: event.start } });
+            await Event.deleteMany({schedule: event.schedule, start: {$gte: event.start}});
         } else {
             throw new Error('Invalid update series value');
         }
 
         res.status(200).json(event);
-    }catch(error){
-        next(error)
-        console.log({method: error.method, message: error.message});
     }
-}
+});
 
-const addEventMessageById = async (req, res, next) => {
-    try {
+const addEventMessageById = buildAction({
+    requiredParams: ['id'],
+    requiredBodyProps: ['profile', 'messageDate', 'message'],
+    validateIdParam: true,
+    handler: async (req, res) => {
         const {id} = req.params;
-        if (!id) { throw new Error("Please provide an event Id.") }
-        if (!mongoose.Types.ObjectId.isValid(id)) { throw new Error("Invalid ID.") }
-    
-        const { profile, messageDate, message } = req.body;
-    
-        if (!profile || !messageDate || !message) { throw new Error("Invalid request body.") }
-    
+        const {profile, messageDate, message} = req.body;
+
         const newMessage = {
             profile,
             messageDate,
             message
         };
-    
-        const updatedEvent = await Event.findByIdAndUpdate({_id: id},{$addToSet: {messages: newMessage}},{new: true})
-    
-        if(!updatedEvent){ throw new Error("No such event found.") }
-    
+
+        const updatedEvent = await Event.findByIdAndUpdate({_id: id}, {$addToSet: {messages: newMessage}}, {new: true})
+
+        if (!updatedEvent) {
+            throw new Error("No such event found.");
+        }
+
         res.status(201).json(updatedEvent);
-    
-    } catch (error) {
-        next(error)
-        console.log({method: error.method, message: error.message});
     }
-}
+});
 
-const registerForEvent = async (req, res, next) => {
-    try {
-        const {id} = req.params;
-        if (!id) { throw new AppError.MissingId('registerForEvent'); }
-        if (!mongoose.Types.ObjectId.isValid(id)) { throw new AppError.InvalidId('registerForEvent') ;}
-
+const registerForEvent = buildAction({
+    requiredParams: ['id'],
+    requiredBodyProps: ['profile', 'slots'],
+    validateIdParam: true,
+    handler: async (req, res) => {
+        const { id } = req.params;
         const { profile, slots } = req.body;
-        if (!profile || !slots || !slots.length ) { throw new AppError.MissingRequiredParameter('registerForEvent','Profile and Slots are required.'); }
 
         const event = await Event.findById(id);
-        if (!event) { res.status(404).json({ message: 'No event found for that id' }); }
+        if (!event) {
+            res.status(404).json({message: 'No event found for that id'});
+        }
 
         // Validate slots
         slots.forEach(slot => {
             const registrationSlot = event.registrationSlots.find(s => s.slotId === slot);
 
             if (!registrationSlot || registrationSlot.deleted) {
-                return res.status(404).json({ message: 'No registration slot found for that id' });
+                return res.status(404).json({message: 'No registration slot found for that id'});
             } else if (!registrationSlot.available) {
-                return res.status(400).json({ message: 'Registration slot is no longer accepting registrations' });
+                return res.status(400).json({message: 'Registration slot is no longer accepting registrations'});
             }
         });
 
         const userProfile = await Profile.findById(profile);
-        if (!userProfile) { return res.status(404).json({ message: 'No profile found for that id' }); }
+        if (!userProfile) {
+            return res.status(404).json({message: 'No profile found for that id'});
+        }
 
-        let registration = await EventRegistration.findOneAndUpdate({ event: event.id, profile },
+        let registration = await EventRegistration.findOneAndUpdate({event: event.id, profile},
             {
                 registrationSlots: slots
             },
@@ -404,27 +398,20 @@ const registerForEvent = async (req, res, next) => {
             await registration.save();
         }
 
-        return res.status(201).json(registration);
-    } catch (error) {
-        next(error)
-        console.log({method: error.method, message: error.message});
+        res.status(201).json(registration);
     }
-}
+});
 
-const getEventRegistrations = async (req, res, next) => {
-    try {
-        const {id} = req.params;
-        if (!id) { throw new AppError.MissingId('getEventRegistrations'); }
-        if (!mongoose.Types.ObjectId.isValid(id)) { throw new AppError.InvalidId('getEventRegistrations') ;}
+const getEventRegistrations = buildAction({
+    requiredParams: ['id'],
+    validateIdParam: true,
+    handler: async (req, res) => {
+        const { id } = req.params;
+        const events = await EventRegistration.find({event: id}).sort({created: 'asc'});
 
-        const events = await EventRegistration.find({ event: id }).sort({created: 'asc'});
-
-        return res.status(200).json(events ?? []);
-    } catch (error) {
-        next(error)
-        console.log({method: error.method, message: error.message});
+        res.status(200).json(events ?? []);
     }
-};
+});
 
 module.exports = {
     addEvent, 
