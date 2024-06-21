@@ -63,11 +63,13 @@ deposits_sunday = generate_deposits(num_deposits, min_amount_sunday, max_amount_
 # Generate Wednesday deposits
 deposits_wednesday = generate_deposits(num_deposits, min_amount_wednesday, max_amount_wednesday, profile_id, start_date_wednesday, 2)
 
+script_dir = os.path.dirname(__file__)
+
 # Save Sunday deposits to folders
 for deposit in deposits_sunday:
     deposit_date = deposit["depositDate"]
     folder_name = datetime.strptime(deposit_date, "%Y-%m-%d").strftime("%Y-%m")
-    folder_path = os.path.join("..", folder_name)
+    folder_path = os.path.join(os.path.dirname(script_dir), folder_name)
     
     # Create the folder if it does not exist
     os.makedirs(folder_path, exist_ok=True)
@@ -84,7 +86,7 @@ for deposit in deposits_sunday:
 for deposit in deposits_wednesday:
     deposit_date = deposit["depositDate"]
     folder_name = datetime.strptime(deposit_date, "%Y-%m-%d").strftime("%Y-%m")
-    folder_path = os.path.join("..", folder_name)
+    folder_path = os.path.join(os.path.dirname(script_dir), folder_name)
     
     # Create the folder if it does not exist
     os.makedirs(folder_path, exist_ok=True)

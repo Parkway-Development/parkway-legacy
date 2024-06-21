@@ -8,6 +8,7 @@ from bson import ObjectId
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+script_dir = os.path.dirname(__file__)
 
 def load_json(filename):
     try:
@@ -106,11 +107,11 @@ def process_deposits(profiles_file, accounts_file):
         return
 
     # Locate all deposit files matching the new pattern
-    deposit_files = glob.glob("../**/**-dep-*.json", recursive=True)
+    deposit_files = glob.glob(os.path.join(script_dir, "..", "**", "*-dep-*.json"), recursive=True)
     logging.info(f"Found {len(deposit_files)} deposit files")
 
     # Delete old contribution files
-    delete_old_contribution_files("..")
+    delete_old_contribution_files(os.path.join(script_dir, ".."))
 
     for deposit_file in deposit_files:
         deposit = load_json(deposit_file)
@@ -131,7 +132,8 @@ def process_deposits(profiles_file, accounts_file):
 
         transaction_date_obj = datetime.strptime(transaction_date, "%Y-%m-%d")
         year_month = transaction_date_obj.strftime("%Y-%m")
-        output_dir = os.path.join("..", year_month)
+
+        output_dir = os.path.join(script_dir, "..", year_month)
 
         os.makedirs(output_dir, exist_ok=True)
 
@@ -163,7 +165,7 @@ def process_deposits(profiles_file, accounts_file):
             logging.info(f"Saved contributions to {output_filename}")
 
 if __name__ == "__main__":
-    profiles_file = "../profiles.json"
-    accounts_file = "../accounts.json"
+    profiles_file = os.path.join(script_dir, "..", "profiles.json")
+    accounts_file = os.path.join(script_dir, "..", "accounts.json")
 
     process_deposits(profiles_file, accounts_file)

@@ -1,500 +1,66 @@
 [
     {
-        "contributorProfileId": "6658d0cf42bbb2f1cc289e6c",
-        "gross": 1703,
+        "contributorProfileId": "6675d752005d0d41854f92c1",
+        "gross": 1673,
         "fees": 0,
-        "net": 1703,
+        "net": 1673,
         "accounts": [
+            {
+                "accountId": "664cf870838bac98668cf40c",
+                "amount": 1673
+            }
+        ],
+        "deposit_id": "6675e44141fbe06e4ac7a032",
+        "transactionDate": "2024-06-02",
+        "type": "check",
+        "notes": [
+            "Generated contribution"
+        ],
+        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
+    },
+    {
+        "contributorProfileId": "6675d752005d0d41854f9471",
+        "gross": 1957,
+        "fees": 0,
+        "net": 1957,
+        "accounts": [
+            {
+                "accountId": "664cf862838bac98668cf401",
+                "amount": 1503
+            },
+            {
+                "accountId": "664cf888838bac98668cf422",
+                "amount": 454
+            }
+        ],
+        "deposit_id": "6675e44141fbe06e4ac7a032",
+        "transactionDate": "2024-06-02",
+        "type": "check",
+        "notes": [
+            "Generated contribution"
+        ],
+        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
+    },
+    {
+        "contributorProfileId": "6675d752005d0d41854f952b",
+        "gross": 3722,
+        "fees": 0,
+        "net": 3722,
+        "accounts": [
+            {
+                "accountId": "664cf849838bac98668cf3e0",
+                "amount": 3145
+            },
             {
                 "accountId": "664cf890838bac98668cf42d",
-                "amount": 1703
-            }
-        ],
-        "deposit_id": "666b317b41fcca94eac1ead9",
-        "transactionDate": "2024-06-02",
-        "type": "cash",
-        "notes": [
-            "Generated contribution"
-        ],
-        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
-    },
-    {
-        "contributorProfileId": "6658d0cf42bbb2f1cc289bef",
-        "gross": 3729,
-        "fees": 0,
-        "net": 3729,
-        "accounts": [
-            {
-                "accountId": "664cf870838bac98668cf40c",
-                "amount": 696
-            },
-            {
-                "accountId": "664cf752cce7eed146633881",
-                "amount": 1569
-            },
-            {
-                "accountId": "664cf8b5838bac98668cf438",
-                "amount": 1406
-            },
-            {
-                "accountId": "664cf870838bac98668cf40c",
-                "amount": 58
-            }
-        ],
-        "deposit_id": "666b317b41fcca94eac1ead9",
-        "transactionDate": "2024-06-02",
-        "type": "cash",
-        "notes": [
-            "Generated contribution"
-        ],
-        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
-    },
-    {
-        "contributorProfileId": "6658d0cf42bbb2f1cc289d8f",
-        "gross": 2973,
-        "fees": 0,
-        "net": 2973,
-        "accounts": [
-            {
-                "accountId": "664cf870838bac98668cf40c",
-                "amount": 1961
-            },
-            {
-                "accountId": "664cf849838bac98668cf3e0",
-                "amount": 879
-            },
-            {
-                "accountId": "664cf853838bac98668cf3eb",
-                "amount": 133
-            }
-        ],
-        "deposit_id": "666b317b41fcca94eac1ead9",
-        "transactionDate": "2024-06-02",
-        "type": "check",
-        "notes": [
-            "Generated contribution"
-        ],
-        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
-    },
-    {
-        "contributorProfileId": "6658d0cf42bbb2f1cc289ca2",
-        "gross": 1918,
-        "fees": 0,
-        "net": 1918,
-        "accounts": [
-            {
-                "accountId": "664cf8b5838bac98668cf438",
-                "amount": 1416
-            },
-            {
-                "accountId": "664cf752cce7eed146633881",
-                "amount": 500
-            },
-            {
-                "accountId": "664cf8b5838bac98668cf438",
-                "amount": 2
-            }
-        ],
-        "deposit_id": "666b317b41fcca94eac1ead9",
-        "transactionDate": "2024-06-02",
-        "type": "check",
-        "notes": [
-            "Generated contribution"
-        ],
-        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
-    },
-    {
-        "contributorProfileId": "6658d0cf42bbb2f1cc289db0",
-        "gross": 4778,
-        "fees": 0,
-        "net": 4778,
-        "accounts": [
-            {
-                "accountId": "664cf859838bac98668cf3f6",
-                "amount": 4778
-            }
-        ],
-        "deposit_id": "666b317b41fcca94eac1ead9",
-        "transactionDate": "2024-06-02",
-        "type": "cash",
-        "notes": [
-            "Generated contribution"
-        ],
-        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
-    },
-    {
-        "contributorProfileId": "6658d0cf42bbb2f1cc289c3e",
-        "gross": 4178,
-        "fees": 0,
-        "net": 4178,
-        "accounts": [
-            {
-                "accountId": "664cf862838bac98668cf401",
-                "amount": 4178
-            }
-        ],
-        "deposit_id": "666b317b41fcca94eac1ead9",
-        "transactionDate": "2024-06-02",
-        "type": "cash",
-        "notes": [
-            "Generated contribution"
-        ],
-        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
-    },
-    {
-        "contributorProfileId": "6658d0cf42bbb2f1cc289fc6",
-        "gross": 4990,
-        "fees": 0,
-        "net": 4990,
-        "accounts": [
-            {
-                "accountId": "664cf870838bac98668cf40c",
-                "amount": 1702
-            },
-            {
-                "accountId": "664cf878838bac98668cf417",
-                "amount": 2240
-            },
-            {
-                "accountId": "664cf878838bac98668cf417",
-                "amount": 915
-            },
-            {
-                "accountId": "664cf8b5838bac98668cf438",
-                "amount": 133
-            }
-        ],
-        "deposit_id": "666b317b41fcca94eac1ead9",
-        "transactionDate": "2024-06-02",
-        "type": "check",
-        "notes": [
-            "Generated contribution"
-        ],
-        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
-    },
-    {
-        "contributorProfileId": "6658d0cf42bbb2f1cc289f68",
-        "gross": 4939,
-        "fees": 0,
-        "net": 4939,
-        "accounts": [
-            {
-                "accountId": "664cf862838bac98668cf401",
-                "amount": 2218
-            },
-            {
-                "accountId": "664cf870838bac98668cf40c",
-                "amount": 1363
-            },
-            {
-                "accountId": "664cf830838bac98668cf3d5",
-                "amount": 506
-            },
-            {
-                "accountId": "664cf849838bac98668cf3e0",
-                "amount": 507
-            },
-            {
-                "accountId": "664cf830838bac98668cf3d5",
-                "amount": 345
-            }
-        ],
-        "deposit_id": "666b317b41fcca94eac1ead9",
-        "transactionDate": "2024-06-02",
-        "type": "cash",
-        "notes": [
-            "Generated contribution"
-        ],
-        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
-    },
-    {
-        "contributorProfileId": "6658d0cf42bbb2f1cc289f06",
-        "gross": 1197,
-        "fees": 0,
-        "net": 1197,
-        "accounts": [
-            {
-                "accountId": "664cf888838bac98668cf422",
-                "amount": 1197
-            }
-        ],
-        "deposit_id": "666b317b41fcca94eac1ead9",
-        "transactionDate": "2024-06-02",
-        "type": "cash",
-        "notes": [
-            "Generated contribution"
-        ],
-        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
-    },
-    {
-        "contributorProfileId": "6658d0cf42bbb2f1cc289f7c",
-        "gross": 3235,
-        "fees": 0,
-        "net": 3235,
-        "accounts": [
-            {
-                "accountId": "664cf988838bac98668cf44e",
-                "amount": 910
-            },
-            {
-                "accountId": "664cf888838bac98668cf422",
-                "amount": 957
-            },
-            {
-                "accountId": "664cfd7e8f28a61f59decfeb",
-                "amount": 560
+                "amount": 569
             },
             {
                 "accountId": "664cee912f4c2fc061ce5c98",
-                "amount": 699
-            },
-            {
-                "accountId": "664cf752cce7eed146633881",
-                "amount": 109
-            }
-        ],
-        "deposit_id": "666b317b41fcca94eac1ead9",
-        "transactionDate": "2024-06-02",
-        "type": "cash",
-        "notes": [
-            "Generated contribution"
-        ],
-        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
-    },
-    {
-        "contributorProfileId": "6658d0cf42bbb2f1cc289d08",
-        "gross": 1505,
-        "fees": 0,
-        "net": 1505,
-        "accounts": [
-            {
-                "accountId": "664cf988838bac98668cf44e",
-                "amount": 1505
-            }
-        ],
-        "deposit_id": "666b317b41fcca94eac1ead9",
-        "transactionDate": "2024-06-02",
-        "type": "check",
-        "notes": [
-            "Generated contribution"
-        ],
-        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
-    },
-    {
-        "contributorProfileId": "6658d0cf42bbb2f1cc28a004",
-        "gross": 579,
-        "fees": 0,
-        "net": 579,
-        "accounts": [
-            {
-                "accountId": "664cf870838bac98668cf40c",
-                "amount": 524
-            },
-            {
-                "accountId": "664cf9d8838bac98668cf464",
-                "amount": 55
-            }
-        ],
-        "deposit_id": "666b317b41fcca94eac1ead9",
-        "transactionDate": "2024-06-02",
-        "type": "cash",
-        "notes": [
-            "Generated contribution"
-        ],
-        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
-    },
-    {
-        "contributorProfileId": "6658d0cf42bbb2f1cc289d9d",
-        "gross": 3657,
-        "fees": 0,
-        "net": 3657,
-        "accounts": [
-            {
-                "accountId": "664cf752cce7eed146633881",
-                "amount": 3657
-            }
-        ],
-        "deposit_id": "666b317b41fcca94eac1ead9",
-        "transactionDate": "2024-06-02",
-        "type": "check",
-        "notes": [
-            "Generated contribution"
-        ],
-        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
-    },
-    {
-        "contributorProfileId": "6658d0cf42bbb2f1cc289ffd",
-        "gross": 4211,
-        "fees": 0,
-        "net": 4211,
-        "accounts": [
-            {
-                "accountId": "664cf830838bac98668cf3d5",
-                "amount": 1625
-            },
-            {
-                "accountId": "664cf830838bac98668cf3d5",
-                "amount": 954
-            },
-            {
-                "accountId": "664cf849838bac98668cf3e0",
-                "amount": 983
-            },
-            {
-                "accountId": "664cf849838bac98668cf3e0",
-                "amount": 554
-            },
-            {
-                "accountId": "664cf830838bac98668cf3d5",
-                "amount": 95
-            }
-        ],
-        "deposit_id": "666b317b41fcca94eac1ead9",
-        "transactionDate": "2024-06-02",
-        "type": "cash",
-        "notes": [
-            "Generated contribution"
-        ],
-        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
-    },
-    {
-        "contributorProfileId": "6658d0cf42bbb2f1cc289c89",
-        "gross": 1770,
-        "fees": 0,
-        "net": 1770,
-        "accounts": [
-            {
-                "accountId": "664cfd7e8f28a61f59decfeb",
-                "amount": 1770
-            }
-        ],
-        "deposit_id": "666b317b41fcca94eac1ead9",
-        "transactionDate": "2024-06-02",
-        "type": "check",
-        "notes": [
-            "Generated contribution"
-        ],
-        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
-    },
-    {
-        "contributorProfileId": "6658d0cf42bbb2f1cc28a12b",
-        "gross": 2145,
-        "fees": 0,
-        "net": 2145,
-        "accounts": [
-            {
-                "accountId": "664cf853838bac98668cf3eb",
-                "amount": 2145
-            }
-        ],
-        "deposit_id": "666b317b41fcca94eac1ead9",
-        "transactionDate": "2024-06-02",
-        "type": "cash",
-        "notes": [
-            "Generated contribution"
-        ],
-        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
-    },
-    {
-        "contributorProfileId": "6658d0cf42bbb2f1cc28a132",
-        "gross": 703,
-        "fees": 0,
-        "net": 703,
-        "accounts": [
-            {
-                "accountId": "664cf9af838bac98668cf459",
-                "amount": 703
-            }
-        ],
-        "deposit_id": "666b317b41fcca94eac1ead9",
-        "transactionDate": "2024-06-02",
-        "type": "cash",
-        "notes": [
-            "Generated contribution"
-        ],
-        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
-    },
-    {
-        "contributorProfileId": "6658d0cf42bbb2f1cc289ca5",
-        "gross": 892,
-        "fees": 0,
-        "net": 892,
-        "accounts": [
-            {
-                "accountId": "664cf9d8838bac98668cf464",
-                "amount": 892
-            }
-        ],
-        "deposit_id": "666b317b41fcca94eac1ead9",
-        "transactionDate": "2024-06-02",
-        "type": "cash",
-        "notes": [
-            "Generated contribution"
-        ],
-        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
-    },
-    {
-        "contributorProfileId": "6658d0cf42bbb2f1cc289cac",
-        "gross": 3710,
-        "fees": 0,
-        "net": 3710,
-        "accounts": [
-            {
-                "accountId": "664cf849838bac98668cf3e0",
-                "amount": 3710
-            }
-        ],
-        "deposit_id": "666b317b41fcca94eac1ead9",
-        "transactionDate": "2024-06-02",
-        "type": "check",
-        "notes": [
-            "Generated contribution"
-        ],
-        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
-    },
-    {
-        "contributorProfileId": "6658d0cf42bbb2f1cc28a001",
-        "gross": 2393,
-        "fees": 0,
-        "net": 2393,
-        "accounts": [
-            {
-                "accountId": "664cfb448f28a61f59decfce",
-                "amount": 2385
-            },
-            {
-                "accountId": "664cf95a838bac98668cf443",
                 "amount": 8
             }
         ],
-        "deposit_id": "666b317b41fcca94eac1ead9",
-        "transactionDate": "2024-06-02",
-        "type": "check",
-        "notes": [
-            "Generated contribution"
-        ],
-        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
-    },
-    {
-        "contributorProfileId": "6658d0cf42bbb2f1cc289ce9",
-        "gross": 1300,
-        "fees": 0,
-        "net": 1300,
-        "accounts": [
-            {
-                "accountId": "664cf890838bac98668cf42d",
-                "amount": 735
-            },
-            {
-                "accountId": "664cf752cce7eed146633881",
-                "amount": 501
-            },
-            {
-                "accountId": "664cf95a838bac98668cf443",
-                "amount": 64
-            }
-        ],
-        "deposit_id": "666b317b41fcca94eac1ead9",
+        "deposit_id": "6675e44141fbe06e4ac7a032",
         "transactionDate": "2024-06-02",
         "type": "cash",
         "notes": [
@@ -503,208 +69,25 @@
         "responsiblePartyProfileId": "6658aac2692d5194441b6897"
     },
     {
-        "contributorProfileId": "6658d0cf42bbb2f1cc289f0a",
-        "gross": 4740,
+        "contributorProfileId": "6675d752005d0d41854f9449",
+        "gross": 1349,
         "fees": 0,
-        "net": 4740,
+        "net": 1349,
         "accounts": [
             {
-                "accountId": "664cee912f4c2fc061ce5c98",
-                "amount": 4740
-            }
-        ],
-        "deposit_id": "666b317b41fcca94eac1ead9",
-        "transactionDate": "2024-06-02",
-        "type": "cash",
-        "notes": [
-            "Generated contribution"
-        ],
-        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
-    },
-    {
-        "contributorProfileId": "6658d0cf42bbb2f1cc28a060",
-        "gross": 1080,
-        "fees": 0,
-        "net": 1080,
-        "accounts": [
-            {
-                "accountId": "664cee912f4c2fc061ce5c98",
-                "amount": 1080
-            }
-        ],
-        "deposit_id": "666b317b41fcca94eac1ead9",
-        "transactionDate": "2024-06-02",
-        "type": "check",
-        "notes": [
-            "Generated contribution"
-        ],
-        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
-    },
-    {
-        "contributorProfileId": "6658d0cf42bbb2f1cc289eec",
-        "gross": 2338,
-        "fees": 0,
-        "net": 2338,
-        "accounts": [
-            {
-                "accountId": "664cf888838bac98668cf422",
-                "amount": 1389
+                "accountId": "664cf859838bac98668cf3f6",
+                "amount": 727
             },
             {
-                "accountId": "664cfb448f28a61f59decfce",
-                "amount": 621
+                "accountId": "664cf9d8838bac98668cf464",
+                "amount": 581
             },
-            {
-                "accountId": "664cf890838bac98668cf42d",
-                "amount": 328
-            }
-        ],
-        "deposit_id": "666b317b41fcca94eac1ead9",
-        "transactionDate": "2024-06-02",
-        "type": "cash",
-        "notes": [
-            "Generated contribution"
-        ],
-        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
-    },
-    {
-        "contributorProfileId": "6658d0cf42bbb2f1cc28a0eb",
-        "gross": 2002,
-        "fees": 0,
-        "net": 2002,
-        "accounts": [
-            {
-                "accountId": "664cf878838bac98668cf417",
-                "amount": 2002
-            }
-        ],
-        "deposit_id": "666b317b41fcca94eac1ead9",
-        "transactionDate": "2024-06-02",
-        "type": "check",
-        "notes": [
-            "Generated contribution"
-        ],
-        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
-    },
-    {
-        "contributorProfileId": "6658d0cf42bbb2f1cc289e8b",
-        "gross": 2867,
-        "fees": 0,
-        "net": 2867,
-        "accounts": [
-            {
-                "accountId": "664cf988838bac98668cf44e",
-                "amount": 2867
-            }
-        ],
-        "deposit_id": "666b317b41fcca94eac1ead9",
-        "transactionDate": "2024-06-02",
-        "type": "cash",
-        "notes": [
-            "Generated contribution"
-        ],
-        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
-    },
-    {
-        "contributorProfileId": "6658d0cf42bbb2f1cc289f30",
-        "gross": 4896,
-        "fees": 0,
-        "net": 4896,
-        "accounts": [
-            {
-                "accountId": "664cf870838bac98668cf40c",
-                "amount": 4896
-            }
-        ],
-        "deposit_id": "666b317b41fcca94eac1ead9",
-        "transactionDate": "2024-06-02",
-        "type": "cash",
-        "notes": [
-            "Generated contribution"
-        ],
-        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
-    },
-    {
-        "contributorProfileId": "6658d0cf42bbb2f1cc289e4c",
-        "gross": 1141,
-        "fees": 0,
-        "net": 1141,
-        "accounts": [
-            {
-                "accountId": "664cf988838bac98668cf44e",
-                "amount": 1141
-            }
-        ],
-        "deposit_id": "666b317b41fcca94eac1ead9",
-        "transactionDate": "2024-06-02",
-        "type": "check",
-        "notes": [
-            "Generated contribution"
-        ],
-        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
-    },
-    {
-        "contributorProfileId": "6658d0cf42bbb2f1cc289d8d",
-        "gross": 4296,
-        "fees": 0,
-        "net": 4296,
-        "accounts": [
-            {
-                "accountId": "664cf830838bac98668cf3d5",
-                "amount": 1530
-            },
-            {
-                "accountId": "664cf830838bac98668cf3d5",
-                "amount": 753
-            },
-            {
-                "accountId": "664cf849838bac98668cf3e0",
-                "amount": 1565
-            },
-            {
-                "accountId": "664cf849838bac98668cf3e0",
-                "amount": 448
-            }
-        ],
-        "deposit_id": "666b317b41fcca94eac1ead9",
-        "transactionDate": "2024-06-02",
-        "type": "cash",
-        "notes": [
-            "Generated contribution"
-        ],
-        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
-    },
-    {
-        "contributorProfileId": "6658d0cf42bbb2f1cc28a0b4",
-        "gross": 2418,
-        "fees": 0,
-        "net": 2418,
-        "accounts": [
-            {
-                "accountId": "664cf862838bac98668cf401",
-                "amount": 2418
-            }
-        ],
-        "deposit_id": "666b317b41fcca94eac1ead9",
-        "transactionDate": "2024-06-02",
-        "type": "cash",
-        "notes": [
-            "Generated contribution"
-        ],
-        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
-    },
-    {
-        "contributorProfileId": "6658d0cf42bbb2f1cc289f90",
-        "gross": 4166,
-        "fees": 0,
-        "net": 4166,
-        "accounts": [
             {
                 "accountId": "664cf853838bac98668cf3eb",
-                "amount": 4166
+                "amount": 41
             }
         ],
-        "deposit_id": "666b317b41fcca94eac1ead9",
+        "deposit_id": "6675e44141fbe06e4ac7a032",
         "transactionDate": "2024-06-02",
         "type": "check",
         "notes": [
@@ -713,235 +96,29 @@
         "responsiblePartyProfileId": "6658aac2692d5194441b6897"
     },
     {
-        "contributorProfileId": "6658d0cf42bbb2f1cc28a0b2",
-        "gross": 1236,
+        "contributorProfileId": "6675d752005d0d41854f9523",
+        "gross": 4025,
         "fees": 0,
-        "net": 1236,
+        "net": 4025,
         "accounts": [
             {
-                "accountId": "664cf95a838bac98668cf443",
-                "amount": 1236
-            }
-        ],
-        "deposit_id": "666b317b41fcca94eac1ead9",
-        "transactionDate": "2024-06-02",
-        "type": "cash",
-        "notes": [
-            "Generated contribution"
-        ],
-        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
-    },
-    {
-        "contributorProfileId": "6658d0cf42bbb2f1cc289f1b",
-        "gross": 2519,
-        "fees": 0,
-        "net": 2519,
-        "accounts": [
-            {
-                "accountId": "664cf870838bac98668cf40c",
-                "amount": 1899
-            },
-            {
-                "accountId": "664cfd7e8f28a61f59decfeb",
-                "amount": 505
-            },
-            {
-                "accountId": "664cf890838bac98668cf42d",
-                "amount": 115
-            }
-        ],
-        "deposit_id": "666b317b41fcca94eac1ead9",
-        "transactionDate": "2024-06-02",
-        "type": "cash",
-        "notes": [
-            "Generated contribution"
-        ],
-        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
-    },
-    {
-        "contributorProfileId": "6658d0cf42bbb2f1cc28a059",
-        "gross": 4182,
-        "fees": 0,
-        "net": 4182,
-        "accounts": [
-            {
-                "accountId": "664cf870838bac98668cf40c",
-                "amount": 4182
-            }
-        ],
-        "deposit_id": "666b317b41fcca94eac1ead9",
-        "transactionDate": "2024-06-02",
-        "type": "check",
-        "notes": [
-            "Generated contribution"
-        ],
-        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
-    },
-    {
-        "contributorProfileId": "6658d0cf42bbb2f1cc28a116",
-        "gross": 1217,
-        "fees": 0,
-        "net": 1217,
-        "accounts": [
-            {
-                "accountId": "664cf888838bac98668cf422",
-                "amount": 1217
-            }
-        ],
-        "deposit_id": "666b317b41fcca94eac1ead9",
-        "transactionDate": "2024-06-02",
-        "type": "check",
-        "notes": [
-            "Generated contribution"
-        ],
-        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
-    },
-    {
-        "contributorProfileId": "6658d0cf42bbb2f1cc289c08",
-        "gross": 1299,
-        "fees": 0,
-        "net": 1299,
-        "accounts": [
-            {
-                "accountId": "664cf988838bac98668cf44e",
-                "amount": 1299
-            }
-        ],
-        "deposit_id": "666b317b41fcca94eac1ead9",
-        "transactionDate": "2024-06-02",
-        "type": "cash",
-        "notes": [
-            "Generated contribution"
-        ],
-        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
-    },
-    {
-        "contributorProfileId": "6658d0cf42bbb2f1cc28a146",
-        "gross": 3084,
-        "fees": 0,
-        "net": 3084,
-        "accounts": [
-            {
-                "accountId": "664cf9af838bac98668cf459",
-                "amount": 3019
-            },
-            {
-                "accountId": "664cf9af838bac98668cf459",
-                "amount": 65
-            }
-        ],
-        "deposit_id": "666b317b41fcca94eac1ead9",
-        "transactionDate": "2024-06-02",
-        "type": "check",
-        "notes": [
-            "Generated contribution"
-        ],
-        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
-    },
-    {
-        "contributorProfileId": "6658d0cf42bbb2f1cc289ca9",
-        "gross": 722,
-        "fees": 0,
-        "net": 722,
-        "accounts": [
-            {
-                "accountId": "664cf849838bac98668cf3e0",
-                "amount": 531
-            },
-            {
-                "accountId": "664cf95a838bac98668cf443",
-                "amount": 191
-            }
-        ],
-        "deposit_id": "666b317b41fcca94eac1ead9",
-        "transactionDate": "2024-06-02",
-        "type": "check",
-        "notes": [
-            "Generated contribution"
-        ],
-        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
-    },
-    {
-        "contributorProfileId": "6658d0cf42bbb2f1cc28a11b",
-        "gross": 2366,
-        "fees": 0,
-        "net": 2366,
-        "accounts": [
-            {
-                "accountId": "664cee912f4c2fc061ce5c98",
-                "amount": 1190
+                "accountId": "664cf859838bac98668cf3f6",
+                "amount": 2071
             },
             {
                 "accountId": "664cf878838bac98668cf417",
-                "amount": 1111
+                "amount": 989
             },
             {
-                "accountId": "664cf9af838bac98668cf459",
-                "amount": 65
-            }
-        ],
-        "deposit_id": "666b317b41fcca94eac1ead9",
-        "transactionDate": "2024-06-02",
-        "type": "cash",
-        "notes": [
-            "Generated contribution"
-        ],
-        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
-    },
-    {
-        "contributorProfileId": "6658d0cf42bbb2f1cc289e2b",
-        "gross": 3157,
-        "fees": 0,
-        "net": 3157,
-        "accounts": [
-            {
-                "accountId": "664cf862838bac98668cf401",
-                "amount": 3157
-            }
-        ],
-        "deposit_id": "666b317b41fcca94eac1ead9",
-        "transactionDate": "2024-06-02",
-        "type": "cash",
-        "notes": [
-            "Generated contribution"
-        ],
-        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
-    },
-    {
-        "contributorProfileId": "6658d0cf42bbb2f1cc289dec",
-        "gross": 3752,
-        "fees": 0,
-        "net": 3752,
-        "accounts": [
-            {
-                "accountId": "664cf890838bac98668cf42d",
-                "amount": 3719
+                "accountId": "664cf870838bac98668cf40c",
+                "amount": 853
             },
             {
-                "accountId": "664cfb448f28a61f59decfce",
-                "amount": 33
+                "accountId": "664cf988838bac98668cf44e",
+                "amount": 112
             }
         ],
-        "deposit_id": "666b317b41fcca94eac1ead9",
-        "transactionDate": "2024-06-02",
-        "type": "cash",
-        "notes": [
-            "Generated contribution"
-        ],
-        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
-    },
-    {
-        "contributorProfileId": "6658d0cf42bbb2f1cc289c6c",
-        "gross": 622,
-        "fees": 0,
-        "net": 622,
-        "accounts": [
-            {
-                "accountId": "664cf9af838bac98668cf459",
-                "amount": 622
-            }
-        ],
-        "deposit_id": "666b317b41fcca94eac1ead9",
+        "deposit_id": "6675e44141fbe06e4ac7a032",
         "transactionDate": "2024-06-02",
         "type": "check",
         "notes": [
@@ -950,17 +127,17 @@
         "responsiblePartyProfileId": "6658aac2692d5194441b6897"
     },
     {
-        "contributorProfileId": "6658d0cf42bbb2f1cc28a128",
+        "contributorProfileId": "6675d752005d0d41854f9369",
         "gross": 1309,
         "fees": 0,
         "net": 1309,
         "accounts": [
             {
-                "accountId": "664cf988838bac98668cf44e",
+                "accountId": "664cf752cce7eed146633881",
                 "amount": 1309
             }
         ],
-        "deposit_id": "666b317b41fcca94eac1ead9",
+        "deposit_id": "6675e44141fbe06e4ac7a032",
         "transactionDate": "2024-06-02",
         "type": "cash",
         "notes": [
@@ -969,293 +146,17 @@
         "responsiblePartyProfileId": "6658aac2692d5194441b6897"
     },
     {
-        "contributorProfileId": "6658d0cf42bbb2f1cc289c51",
-        "gross": 3931,
+        "contributorProfileId": "6675d752005d0d41854f92e5",
+        "gross": 3761,
         "fees": 0,
-        "net": 3931,
-        "accounts": [
-            {
-                "accountId": "664cf988838bac98668cf44e",
-                "amount": 3931
-            }
-        ],
-        "deposit_id": "666b317b41fcca94eac1ead9",
-        "transactionDate": "2024-06-02",
-        "type": "cash",
-        "notes": [
-            "Generated contribution"
-        ],
-        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
-    },
-    {
-        "contributorProfileId": "6658d0cf42bbb2f1cc289ce1",
-        "gross": 738,
-        "fees": 0,
-        "net": 738,
-        "accounts": [
-            {
-                "accountId": "664cf870838bac98668cf40c",
-                "amount": 628
-            },
-            {
-                "accountId": "664cf752cce7eed146633881",
-                "amount": 110
-            }
-        ],
-        "deposit_id": "666b317b41fcca94eac1ead9",
-        "transactionDate": "2024-06-02",
-        "type": "check",
-        "notes": [
-            "Generated contribution"
-        ],
-        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
-    },
-    {
-        "contributorProfileId": "6658d0cf42bbb2f1cc28a153",
-        "gross": 3463,
-        "fees": 0,
-        "net": 3463,
-        "accounts": [
-            {
-                "accountId": "664cf853838bac98668cf3eb",
-                "amount": 980
-            },
-            {
-                "accountId": "664cf890838bac98668cf42d",
-                "amount": 1220
-            },
-            {
-                "accountId": "664cf988838bac98668cf44e",
-                "amount": 740
-            },
-            {
-                "accountId": "664cf862838bac98668cf401",
-                "amount": 516
-            },
-            {
-                "accountId": "664cf888838bac98668cf422",
-                "amount": 7
-            }
-        ],
-        "deposit_id": "666b317b41fcca94eac1ead9",
-        "transactionDate": "2024-06-02",
-        "type": "check",
-        "notes": [
-            "Generated contribution"
-        ],
-        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
-    },
-    {
-        "contributorProfileId": "6658d0cf42bbb2f1cc289d49",
-        "gross": 2443,
-        "fees": 0,
-        "net": 2443,
-        "accounts": [
-            {
-                "accountId": "664cf862838bac98668cf401",
-                "amount": 1147
-            },
-            {
-                "accountId": "664cf890838bac98668cf42d",
-                "amount": 1060
-            },
-            {
-                "accountId": "664cf988838bac98668cf44e",
-                "amount": 236
-            }
-        ],
-        "deposit_id": "666b317b41fcca94eac1ead9",
-        "transactionDate": "2024-06-02",
-        "type": "check",
-        "notes": [
-            "Generated contribution"
-        ],
-        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
-    },
-    {
-        "contributorProfileId": "6658d0cf42bbb2f1cc289f56",
-        "gross": 2212,
-        "fees": 0,
-        "net": 2212,
-        "accounts": [
-            {
-                "accountId": "664cf849838bac98668cf3e0",
-                "amount": 1893
-            },
-            {
-                "accountId": "664cf752cce7eed146633881",
-                "amount": 319
-            }
-        ],
-        "deposit_id": "666b317b41fcca94eac1ead9",
-        "transactionDate": "2024-06-02",
-        "type": "cash",
-        "notes": [
-            "Generated contribution"
-        ],
-        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
-    },
-    {
-        "contributorProfileId": "6658d0cf42bbb2f1cc28a164",
-        "gross": 3844,
-        "fees": 0,
-        "net": 3844,
-        "accounts": [
-            {
-                "accountId": "664cfb448f28a61f59decfce",
-                "amount": 2652
-            },
-            {
-                "accountId": "664cf888838bac98668cf422",
-                "amount": 1167
-            },
-            {
-                "accountId": "664cf870838bac98668cf40c",
-                "amount": 25
-            }
-        ],
-        "deposit_id": "666b317b41fcca94eac1ead9",
-        "transactionDate": "2024-06-02",
-        "type": "check",
-        "notes": [
-            "Generated contribution"
-        ],
-        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
-    },
-    {
-        "contributorProfileId": "6658d0cf42bbb2f1cc28a001",
-        "gross": 1032,
-        "fees": 0,
-        "net": 1032,
-        "accounts": [
-            {
-                "accountId": "664cf862838bac98668cf401",
-                "amount": 1032
-            }
-        ],
-        "deposit_id": "666b317b41fcca94eac1ead9",
-        "transactionDate": "2024-06-02",
-        "type": "check",
-        "notes": [
-            "Generated contribution"
-        ],
-        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
-    },
-    {
-        "contributorProfileId": "6658d0cf42bbb2f1cc28a104",
-        "gross": 4388,
-        "fees": 0,
-        "net": 4388,
-        "accounts": [
-            {
-                "accountId": "664cf849838bac98668cf3e0",
-                "amount": 4388
-            }
-        ],
-        "deposit_id": "666b317b41fcca94eac1ead9",
-        "transactionDate": "2024-06-02",
-        "type": "cash",
-        "notes": [
-            "Generated contribution"
-        ],
-        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
-    },
-    {
-        "contributorProfileId": "6658d0cf42bbb2f1cc289d50",
-        "gross": 4830,
-        "fees": 0,
-        "net": 4830,
-        "accounts": [
-            {
-                "accountId": "664cf95a838bac98668cf443",
-                "amount": 4825
-            },
-            {
-                "accountId": "664cf752cce7eed146633881",
-                "amount": 5
-            }
-        ],
-        "deposit_id": "666b317b41fcca94eac1ead9",
-        "transactionDate": "2024-06-02",
-        "type": "check",
-        "notes": [
-            "Generated contribution"
-        ],
-        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
-    },
-    {
-        "contributorProfileId": "6658d0cf42bbb2f1cc289f58",
-        "gross": 4616,
-        "fees": 0,
-        "net": 4616,
-        "accounts": [
-            {
-                "accountId": "664cf988838bac98668cf44e",
-                "amount": 4616
-            }
-        ],
-        "deposit_id": "666b317b41fcca94eac1ead9",
-        "transactionDate": "2024-06-02",
-        "type": "cash",
-        "notes": [
-            "Generated contribution"
-        ],
-        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
-    },
-    {
-        "contributorProfileId": "6658d0cf42bbb2f1cc289f3e",
-        "gross": 1935,
-        "fees": 0,
-        "net": 1935,
-        "accounts": [
-            {
-                "accountId": "664cfb448f28a61f59decfce",
-                "amount": 1935
-            }
-        ],
-        "deposit_id": "666b317b41fcca94eac1ead9",
-        "transactionDate": "2024-06-02",
-        "type": "cash",
-        "notes": [
-            "Generated contribution"
-        ],
-        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
-    },
-    {
-        "contributorProfileId": "6658d0cf42bbb2f1cc289ce5",
-        "gross": 1623,
-        "fees": 0,
-        "net": 1623,
-        "accounts": [
-            {
-                "accountId": "664cf853838bac98668cf3eb",
-                "amount": 1623
-            }
-        ],
-        "deposit_id": "666b317b41fcca94eac1ead9",
-        "transactionDate": "2024-06-02",
-        "type": "check",
-        "notes": [
-            "Generated contribution"
-        ],
-        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
-    },
-    {
-        "contributorProfileId": "6658d0cf42bbb2f1cc28a11c",
-        "gross": 664,
-        "fees": 0,
-        "net": 664,
+        "net": 3761,
         "accounts": [
             {
                 "accountId": "664cf878838bac98668cf417",
-                "amount": 525
-            },
-            {
-                "accountId": "664cf8b5838bac98668cf438",
-                "amount": 139
+                "amount": 3761
             }
         ],
-        "deposit_id": "666b317b41fcca94eac1ead9",
+        "deposit_id": "6675e44141fbe06e4ac7a032",
         "transactionDate": "2024-06-02",
         "type": "check",
         "notes": [
@@ -1264,17 +165,17 @@
         "responsiblePartyProfileId": "6658aac2692d5194441b6897"
     },
     {
-        "contributorProfileId": "6658d0cf42bbb2f1cc28a0d2",
-        "gross": 3569,
+        "contributorProfileId": "6675d752005d0d41854f9413",
+        "gross": 943,
         "fees": 0,
-        "net": 3569,
+        "net": 943,
         "accounts": [
             {
-                "accountId": "664cf853838bac98668cf3eb",
-                "amount": 3569
+                "accountId": "664cf888838bac98668cf422",
+                "amount": 943
             }
         ],
-        "deposit_id": "666b317b41fcca94eac1ead9",
+        "deposit_id": "6675e44141fbe06e4ac7a032",
         "transactionDate": "2024-06-02",
         "type": "cash",
         "notes": [
@@ -1283,17 +184,17 @@
         "responsiblePartyProfileId": "6658aac2692d5194441b6897"
     },
     {
-        "contributorProfileId": "6658d0cf42bbb2f1cc28a14c",
-        "gross": 4130,
+        "contributorProfileId": "6675d752005d0d41854f945d",
+        "gross": 1296,
         "fees": 0,
-        "net": 4130,
+        "net": 1296,
         "accounts": [
             {
-                "accountId": "664cf859838bac98668cf3f6",
-                "amount": 4130
+                "accountId": "664cfd7e8f28a61f59decfeb",
+                "amount": 1296
             }
         ],
-        "deposit_id": "666b317b41fcca94eac1ead9",
+        "deposit_id": "6675e44141fbe06e4ac7a032",
         "transactionDate": "2024-06-02",
         "type": "check",
         "notes": [
@@ -1302,44 +203,44 @@
         "responsiblePartyProfileId": "6658aac2692d5194441b6897"
     },
     {
-        "contributorProfileId": "6658aac2692d5194441b6897",
-        "gross": 1842,
+        "contributorProfileId": "6675d752005d0d41854f956d",
+        "gross": 3492,
         "fees": 0,
-        "net": 1842,
+        "net": 3492,
         "accounts": [
             {
-                "accountId": "664cf8b5838bac98668cf438",
-                "amount": 1285
-            },
-            {
-                "accountId": "664cf830838bac98668cf3d5",
-                "amount": 543
-            },
-            {
-                "accountId": "664cf859838bac98668cf3f6",
-                "amount": 14
+                "accountId": "664cf849838bac98668cf3e0",
+                "amount": 3492
             }
         ],
-        "deposit_id": "666b317b41fcca94eac1ead9",
+        "deposit_id": "6675e44141fbe06e4ac7a032",
         "transactionDate": "2024-06-02",
-        "type": "cash",
+        "type": "check",
         "notes": [
             "Generated contribution"
         ],
         "responsiblePartyProfileId": "6658aac2692d5194441b6897"
     },
     {
-        "contributorProfileId": "6658d0cf42bbb2f1cc289eb8",
-        "gross": 749,
+        "contributorProfileId": "6675d752005d0d41854f9519",
+        "gross": 4744,
         "fees": 0,
-        "net": 749,
+        "net": 4744,
         "accounts": [
             {
                 "accountId": "664cf752cce7eed146633881",
-                "amount": 749
+                "amount": 3569
+            },
+            {
+                "accountId": "664cf849838bac98668cf3e0",
+                "amount": 1049
+            },
+            {
+                "accountId": "664cf862838bac98668cf401",
+                "amount": 126
             }
         ],
-        "deposit_id": "666b317b41fcca94eac1ead9",
+        "deposit_id": "6675e44141fbe06e4ac7a032",
         "transactionDate": "2024-06-02",
         "type": "cash",
         "notes": [
@@ -1348,19 +249,1463 @@
         "responsiblePartyProfileId": "6658aac2692d5194441b6897"
     },
     {
-        "contributorProfileId": "6658d0cf42bbb2f1cc289fea",
-        "gross": 3388,
+        "contributorProfileId": "6675d752005d0d41854f961b",
+        "gross": 4661,
         "fees": 0,
-        "net": 3388,
+        "net": 4661,
+        "accounts": [
+            {
+                "accountId": "664cfd7e8f28a61f59decfeb",
+                "amount": 3631
+            },
+            {
+                "accountId": "664cf853838bac98668cf3eb",
+                "amount": 961
+            },
+            {
+                "accountId": "664cf870838bac98668cf40c",
+                "amount": 69
+            }
+        ],
+        "deposit_id": "6675e44141fbe06e4ac7a032",
+        "transactionDate": "2024-06-02",
+        "type": "cash",
+        "notes": [
+            "Generated contribution"
+        ],
+        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
+    },
+    {
+        "contributorProfileId": "6675d752005d0d41854f93c5",
+        "gross": 3879,
+        "fees": 0,
+        "net": 3879,
+        "accounts": [
+            {
+                "accountId": "664cf878838bac98668cf417",
+                "amount": 3879
+            }
+        ],
+        "deposit_id": "6675e44141fbe06e4ac7a032",
+        "transactionDate": "2024-06-02",
+        "type": "cash",
+        "notes": [
+            "Generated contribution"
+        ],
+        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
+    },
+    {
+        "contributorProfileId": "6675d752005d0d41854f95e1",
+        "gross": 4106,
+        "fees": 0,
+        "net": 4106,
+        "accounts": [
+            {
+                "accountId": "664cf9af838bac98668cf459",
+                "amount": 4106
+            }
+        ],
+        "deposit_id": "6675e44141fbe06e4ac7a032",
+        "transactionDate": "2024-06-02",
+        "type": "cash",
+        "notes": [
+            "Generated contribution"
+        ],
+        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
+    },
+    {
+        "contributorProfileId": "6675d752005d0d41854f9591",
+        "gross": 3571,
+        "fees": 0,
+        "net": 3571,
+        "accounts": [
+            {
+                "accountId": "664cf878838bac98668cf417",
+                "amount": 3571
+            }
+        ],
+        "deposit_id": "6675e44141fbe06e4ac7a032",
+        "transactionDate": "2024-06-02",
+        "type": "cash",
+        "notes": [
+            "Generated contribution"
+        ],
+        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
+    },
+    {
+        "contributorProfileId": "6675d752005d0d41854f934d",
+        "gross": 1139,
+        "fees": 0,
+        "net": 1139,
+        "accounts": [
+            {
+                "accountId": "664cf853838bac98668cf3eb",
+                "amount": 1123
+            },
+            {
+                "accountId": "664cf9af838bac98668cf459",
+                "amount": 16
+            }
+        ],
+        "deposit_id": "6675e44141fbe06e4ac7a032",
+        "transactionDate": "2024-06-02",
+        "type": "check",
+        "notes": [
+            "Generated contribution"
+        ],
+        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
+    },
+    {
+        "contributorProfileId": "6675d752005d0d41854f941b",
+        "gross": 4356,
+        "fees": 0,
+        "net": 4356,
+        "accounts": [
+            {
+                "accountId": "664cf988838bac98668cf44e",
+                "amount": 4356
+            }
+        ],
+        "deposit_id": "6675e44141fbe06e4ac7a032",
+        "transactionDate": "2024-06-02",
+        "type": "cash",
+        "notes": [
+            "Generated contribution"
+        ],
+        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
+    },
+    {
+        "contributorProfileId": "6675d752005d0d41854f92dd",
+        "gross": 2186,
+        "fees": 0,
+        "net": 2186,
+        "accounts": [
+            {
+                "accountId": "664cf8b5838bac98668cf438",
+                "amount": 2186
+            }
+        ],
+        "deposit_id": "6675e44141fbe06e4ac7a032",
+        "transactionDate": "2024-06-02",
+        "type": "cash",
+        "notes": [
+            "Generated contribution"
+        ],
+        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
+    },
+    {
+        "contributorProfileId": "6675d752005d0d41854f95ff",
+        "gross": 1763,
+        "fees": 0,
+        "net": 1763,
+        "accounts": [
+            {
+                "accountId": "664cf9d8838bac98668cf464",
+                "amount": 1640
+            },
+            {
+                "accountId": "664cfd7e8f28a61f59decfeb",
+                "amount": 123
+            }
+        ],
+        "deposit_id": "6675e44141fbe06e4ac7a032",
+        "transactionDate": "2024-06-02",
+        "type": "cash",
+        "notes": [
+            "Generated contribution"
+        ],
+        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
+    },
+    {
+        "contributorProfileId": "6675d752005d0d41854f93df",
+        "gross": 1793,
+        "fees": 0,
+        "net": 1793,
+        "accounts": [
+            {
+                "accountId": "664cf830838bac98668cf3d5",
+                "amount": 1793
+            }
+        ],
+        "deposit_id": "6675e44141fbe06e4ac7a032",
+        "transactionDate": "2024-06-02",
+        "type": "check",
+        "notes": [
+            "Generated contribution"
+        ],
+        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
+    },
+    {
+        "contributorProfileId": "6675d752005d0d41854f941b",
+        "gross": 3843,
+        "fees": 0,
+        "net": 3843,
+        "accounts": [
+            {
+                "accountId": "664cf853838bac98668cf3eb",
+                "amount": 1029
+            },
+            {
+                "accountId": "664cf888838bac98668cf422",
+                "amount": 1651
+            },
+            {
+                "accountId": "664cf9af838bac98668cf459",
+                "amount": 741
+            },
+            {
+                "accountId": "664cf888838bac98668cf422",
+                "amount": 422
+            }
+        ],
+        "deposit_id": "6675e44141fbe06e4ac7a032",
+        "transactionDate": "2024-06-02",
+        "type": "cash",
+        "notes": [
+            "Generated contribution"
+        ],
+        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
+    },
+    {
+        "contributorProfileId": "6675d752005d0d41854f9301",
+        "gross": 3067,
+        "fees": 0,
+        "net": 3067,
+        "accounts": [
+            {
+                "accountId": "664cfd7e8f28a61f59decfeb",
+                "amount": 1557
+            },
+            {
+                "accountId": "664cfb448f28a61f59decfce",
+                "amount": 1039
+            },
+            {
+                "accountId": "664cf849838bac98668cf3e0",
+                "amount": 471
+            }
+        ],
+        "deposit_id": "6675e44141fbe06e4ac7a032",
+        "transactionDate": "2024-06-02",
+        "type": "check",
+        "notes": [
+            "Generated contribution"
+        ],
+        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
+    },
+    {
+        "contributorProfileId": "6675d752005d0d41854f92ef",
+        "gross": 4903,
+        "fees": 0,
+        "net": 4903,
         "accounts": [
             {
                 "accountId": "664cf859838bac98668cf3f6",
-                "amount": 3388
+                "amount": 3224
+            },
+            {
+                "accountId": "664cf859838bac98668cf3f6",
+                "amount": 557
+            },
+            {
+                "accountId": "664cf752cce7eed146633881",
+                "amount": 979
+            },
+            {
+                "accountId": "664cfd7e8f28a61f59decfeb",
+                "amount": 143
             }
         ],
-        "deposit_id": "666b317b41fcca94eac1ead9",
+        "deposit_id": "6675e44141fbe06e4ac7a032",
+        "transactionDate": "2024-06-02",
+        "type": "cash",
+        "notes": [
+            "Generated contribution"
+        ],
+        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
+    },
+    {
+        "contributorProfileId": "6675d752005d0d41854f9363",
+        "gross": 755,
+        "fees": 0,
+        "net": 755,
+        "accounts": [
+            {
+                "accountId": "664cf988838bac98668cf44e",
+                "amount": 755
+            }
+        ],
+        "deposit_id": "6675e44141fbe06e4ac7a032",
         "transactionDate": "2024-06-02",
         "type": "check",
+        "notes": [
+            "Generated contribution"
+        ],
+        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
+    },
+    {
+        "contributorProfileId": "6675d752005d0d41854f9557",
+        "gross": 1449,
+        "fees": 0,
+        "net": 1449,
+        "accounts": [
+            {
+                "accountId": "664cf853838bac98668cf3eb",
+                "amount": 1374
+            },
+            {
+                "accountId": "664cf8b5838bac98668cf438",
+                "amount": 75
+            }
+        ],
+        "deposit_id": "6675e44141fbe06e4ac7a032",
+        "transactionDate": "2024-06-02",
+        "type": "check",
+        "notes": [
+            "Generated contribution"
+        ],
+        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
+    },
+    {
+        "contributorProfileId": "6675d752005d0d41854f9571",
+        "gross": 4996,
+        "fees": 0,
+        "net": 4996,
+        "accounts": [
+            {
+                "accountId": "664cee912f4c2fc061ce5c98",
+                "amount": 877
+            },
+            {
+                "accountId": "664cf862838bac98668cf401",
+                "amount": 1324
+            },
+            {
+                "accountId": "664cee912f4c2fc061ce5c98",
+                "amount": 1782
+            },
+            {
+                "accountId": "664cf95a838bac98668cf443",
+                "amount": 726
+            },
+            {
+                "accountId": "664cf859838bac98668cf3f6",
+                "amount": 287
+            }
+        ],
+        "deposit_id": "6675e44141fbe06e4ac7a032",
+        "transactionDate": "2024-06-02",
+        "type": "cash",
+        "notes": [
+            "Generated contribution"
+        ],
+        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
+    },
+    {
+        "contributorProfileId": "6675d752005d0d41854f92b1",
+        "gross": 4429,
+        "fees": 0,
+        "net": 4429,
+        "accounts": [
+            {
+                "accountId": "664cf988838bac98668cf44e",
+                "amount": 958
+            },
+            {
+                "accountId": "664cf890838bac98668cf42d",
+                "amount": 2146
+            },
+            {
+                "accountId": "664cf95a838bac98668cf443",
+                "amount": 1180
+            },
+            {
+                "accountId": "664cf9af838bac98668cf459",
+                "amount": 145
+            }
+        ],
+        "deposit_id": "6675e44141fbe06e4ac7a032",
+        "transactionDate": "2024-06-02",
+        "type": "check",
+        "notes": [
+            "Generated contribution"
+        ],
+        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
+    },
+    {
+        "contributorProfileId": "6675d752005d0d41854f9343",
+        "gross": 4243,
+        "fees": 0,
+        "net": 4243,
+        "accounts": [
+            {
+                "accountId": "664cf888838bac98668cf422",
+                "amount": 1370
+            },
+            {
+                "accountId": "664cf849838bac98668cf3e0",
+                "amount": 808
+            },
+            {
+                "accountId": "664cfb448f28a61f59decfce",
+                "amount": 1219
+            },
+            {
+                "accountId": "664cf95a838bac98668cf443",
+                "amount": 545
+            },
+            {
+                "accountId": "664cf853838bac98668cf3eb",
+                "amount": 301
+            }
+        ],
+        "deposit_id": "6675e44141fbe06e4ac7a032",
+        "transactionDate": "2024-06-02",
+        "type": "check",
+        "notes": [
+            "Generated contribution"
+        ],
+        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
+    },
+    {
+        "contributorProfileId": "6675d752005d0d41854f943f",
+        "gross": 4631,
+        "fees": 0,
+        "net": 4631,
+        "accounts": [
+            {
+                "accountId": "664cee912f4c2fc061ce5c98",
+                "amount": 4418
+            },
+            {
+                "accountId": "664cf752cce7eed146633881",
+                "amount": 213
+            }
+        ],
+        "deposit_id": "6675e44141fbe06e4ac7a032",
+        "transactionDate": "2024-06-02",
+        "type": "cash",
+        "notes": [
+            "Generated contribution"
+        ],
+        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
+    },
+    {
+        "contributorProfileId": "6675d752005d0d41854f934d",
+        "gross": 4673,
+        "fees": 0,
+        "net": 4673,
+        "accounts": [
+            {
+                "accountId": "664cf853838bac98668cf3eb",
+                "amount": 4475
+            },
+            {
+                "accountId": "664cf830838bac98668cf3d5",
+                "amount": 198
+            }
+        ],
+        "deposit_id": "6675e44141fbe06e4ac7a032",
+        "transactionDate": "2024-06-02",
+        "type": "check",
+        "notes": [
+            "Generated contribution"
+        ],
+        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
+    },
+    {
+        "contributorProfileId": "6675d752005d0d41854f964f",
+        "gross": 4635,
+        "fees": 0,
+        "net": 4635,
+        "accounts": [
+            {
+                "accountId": "664cf878838bac98668cf417",
+                "amount": 1911
+            },
+            {
+                "accountId": "664cfd7e8f28a61f59decfeb",
+                "amount": 1950
+            },
+            {
+                "accountId": "664cf890838bac98668cf42d",
+                "amount": 671
+            },
+            {
+                "accountId": "664cfd7e8f28a61f59decfeb",
+                "amount": 103
+            }
+        ],
+        "deposit_id": "6675e44141fbe06e4ac7a032",
+        "transactionDate": "2024-06-02",
+        "type": "cash",
+        "notes": [
+            "Generated contribution"
+        ],
+        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
+    },
+    {
+        "contributorProfileId": "6675d752005d0d41854f95d3",
+        "gross": 4284,
+        "fees": 0,
+        "net": 4284,
+        "accounts": [
+            {
+                "accountId": "664cf878838bac98668cf417",
+                "amount": 3030
+            },
+            {
+                "accountId": "664cf862838bac98668cf401",
+                "amount": 704
+            },
+            {
+                "accountId": "664cf849838bac98668cf3e0",
+                "amount": 544
+            },
+            {
+                "accountId": "664cf862838bac98668cf401",
+                "amount": 6
+            }
+        ],
+        "deposit_id": "6675e44141fbe06e4ac7a032",
+        "transactionDate": "2024-06-02",
+        "type": "cash",
+        "notes": [
+            "Generated contribution"
+        ],
+        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
+    },
+    {
+        "contributorProfileId": "6675d752005d0d41854f965f",
+        "gross": 1874,
+        "fees": 0,
+        "net": 1874,
+        "accounts": [
+            {
+                "accountId": "664cee912f4c2fc061ce5c98",
+                "amount": 1874
+            }
+        ],
+        "deposit_id": "6675e44141fbe06e4ac7a032",
+        "transactionDate": "2024-06-02",
+        "type": "check",
+        "notes": [
+            "Generated contribution"
+        ],
+        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
+    },
+    {
+        "contributorProfileId": "6675d752005d0d41854f964d",
+        "gross": 1279,
+        "fees": 0,
+        "net": 1279,
+        "accounts": [
+            {
+                "accountId": "664cf853838bac98668cf3eb",
+                "amount": 881
+            },
+            {
+                "accountId": "664cf870838bac98668cf40c",
+                "amount": 398
+            }
+        ],
+        "deposit_id": "6675e44141fbe06e4ac7a032",
+        "transactionDate": "2024-06-02",
+        "type": "check",
+        "notes": [
+            "Generated contribution"
+        ],
+        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
+    },
+    {
+        "contributorProfileId": "6675d752005d0d41854f95e5",
+        "gross": 4938,
+        "fees": 0,
+        "net": 4938,
+        "accounts": [
+            {
+                "accountId": "664cf95a838bac98668cf443",
+                "amount": 4938
+            }
+        ],
+        "deposit_id": "6675e44141fbe06e4ac7a032",
+        "transactionDate": "2024-06-02",
+        "type": "check",
+        "notes": [
+            "Generated contribution"
+        ],
+        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
+    },
+    {
+        "contributorProfileId": "6675d752005d0d41854f94cf",
+        "gross": 2173,
+        "fees": 0,
+        "net": 2173,
+        "accounts": [
+            {
+                "accountId": "664cf859838bac98668cf3f6",
+                "amount": 1473
+            },
+            {
+                "accountId": "664cf9d8838bac98668cf464",
+                "amount": 646
+            },
+            {
+                "accountId": "664cf988838bac98668cf44e",
+                "amount": 54
+            }
+        ],
+        "deposit_id": "6675e44141fbe06e4ac7a032",
+        "transactionDate": "2024-06-02",
+        "type": "check",
+        "notes": [
+            "Generated contribution"
+        ],
+        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
+    },
+    {
+        "contributorProfileId": "6675d752005d0d41854f9601",
+        "gross": 3425,
+        "fees": 0,
+        "net": 3425,
+        "accounts": [
+            {
+                "accountId": "664cf752cce7eed146633881",
+                "amount": 3270
+            },
+            {
+                "accountId": "664cf8b5838bac98668cf438",
+                "amount": 155
+            }
+        ],
+        "deposit_id": "6675e44141fbe06e4ac7a032",
+        "transactionDate": "2024-06-02",
+        "type": "cash",
+        "notes": [
+            "Generated contribution"
+        ],
+        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
+    },
+    {
+        "contributorProfileId": "6675d752005d0d41854f9549",
+        "gross": 4637,
+        "fees": 0,
+        "net": 4637,
+        "accounts": [
+            {
+                "accountId": "664cf9d8838bac98668cf464",
+                "amount": 819
+            },
+            {
+                "accountId": "664cf752cce7eed146633881",
+                "amount": 1827
+            },
+            {
+                "accountId": "664cf853838bac98668cf3eb",
+                "amount": 1701
+            },
+            {
+                "accountId": "664cf95a838bac98668cf443",
+                "amount": 290
+            }
+        ],
+        "deposit_id": "6675e44141fbe06e4ac7a032",
+        "transactionDate": "2024-06-02",
+        "type": "check",
+        "notes": [
+            "Generated contribution"
+        ],
+        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
+    },
+    {
+        "contributorProfileId": "6675d752005d0d41854f9493",
+        "gross": 3175,
+        "fees": 0,
+        "net": 3175,
+        "accounts": [
+            {
+                "accountId": "664cf870838bac98668cf40c",
+                "amount": 2159
+            },
+            {
+                "accountId": "664cf9d8838bac98668cf464",
+                "amount": 670
+            },
+            {
+                "accountId": "664cf8b5838bac98668cf438",
+                "amount": 346
+            }
+        ],
+        "deposit_id": "6675e44141fbe06e4ac7a032",
+        "transactionDate": "2024-06-02",
+        "type": "check",
+        "notes": [
+            "Generated contribution"
+        ],
+        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
+    },
+    {
+        "contributorProfileId": "6675d752005d0d41854f92d1",
+        "gross": 4116,
+        "fees": 0,
+        "net": 4116,
+        "accounts": [
+            {
+                "accountId": "664cee912f4c2fc061ce5c98",
+                "amount": 4116
+            }
+        ],
+        "deposit_id": "6675e44141fbe06e4ac7a032",
+        "transactionDate": "2024-06-02",
+        "type": "check",
+        "notes": [
+            "Generated contribution"
+        ],
+        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
+    },
+    {
+        "contributorProfileId": "6675d752005d0d41854f95cf",
+        "gross": 4405,
+        "fees": 0,
+        "net": 4405,
+        "accounts": [
+            {
+                "accountId": "664cf878838bac98668cf417",
+                "amount": 1378
+            },
+            {
+                "accountId": "664cf9d8838bac98668cf464",
+                "amount": 1442
+            },
+            {
+                "accountId": "664cf870838bac98668cf40c",
+                "amount": 896
+            },
+            {
+                "accountId": "664cf888838bac98668cf422",
+                "amount": 573
+            },
+            {
+                "accountId": "664cf878838bac98668cf417",
+                "amount": 116
+            }
+        ],
+        "deposit_id": "6675e44141fbe06e4ac7a032",
+        "transactionDate": "2024-06-02",
+        "type": "cash",
+        "notes": [
+            "Generated contribution"
+        ],
+        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
+    },
+    {
+        "contributorProfileId": "6675d752005d0d41854f935d",
+        "gross": 1939,
+        "fees": 0,
+        "net": 1939,
+        "accounts": [
+            {
+                "accountId": "664cf878838bac98668cf417",
+                "amount": 1096
+            },
+            {
+                "accountId": "664cf890838bac98668cf42d",
+                "amount": 635
+            },
+            {
+                "accountId": "664cf853838bac98668cf3eb",
+                "amount": 208
+            }
+        ],
+        "deposit_id": "6675e44141fbe06e4ac7a032",
+        "transactionDate": "2024-06-02",
+        "type": "cash",
+        "notes": [
+            "Generated contribution"
+        ],
+        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
+    },
+    {
+        "contributorProfileId": "6675d752005d0d41854f9639",
+        "gross": 2161,
+        "fees": 0,
+        "net": 2161,
+        "accounts": [
+            {
+                "accountId": "664cee912f4c2fc061ce5c98",
+                "amount": 733
+            },
+            {
+                "accountId": "664cf8b5838bac98668cf438",
+                "amount": 1169
+            },
+            {
+                "accountId": "664cf988838bac98668cf44e",
+                "amount": 259
+            }
+        ],
+        "deposit_id": "6675e44141fbe06e4ac7a032",
+        "transactionDate": "2024-06-02",
+        "type": "cash",
+        "notes": [
+            "Generated contribution"
+        ],
+        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
+    },
+    {
+        "contributorProfileId": "6675d752005d0d41854f961b",
+        "gross": 1116,
+        "fees": 0,
+        "net": 1116,
+        "accounts": [
+            {
+                "accountId": "664cf870838bac98668cf40c",
+                "amount": 1098
+            },
+            {
+                "accountId": "664cf830838bac98668cf3d5",
+                "amount": 18
+            }
+        ],
+        "deposit_id": "6675e44141fbe06e4ac7a032",
+        "transactionDate": "2024-06-02",
+        "type": "cash",
+        "notes": [
+            "Generated contribution"
+        ],
+        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
+    },
+    {
+        "contributorProfileId": "6675d752005d0d41854f9631",
+        "gross": 2960,
+        "fees": 0,
+        "net": 2960,
+        "accounts": [
+            {
+                "accountId": "664cf870838bac98668cf40c",
+                "amount": 2960
+            }
+        ],
+        "deposit_id": "6675e44141fbe06e4ac7a032",
+        "transactionDate": "2024-06-02",
+        "type": "check",
+        "notes": [
+            "Generated contribution"
+        ],
+        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
+    },
+    {
+        "contributorProfileId": "6675d752005d0d41854f9633",
+        "gross": 3062,
+        "fees": 0,
+        "net": 3062,
+        "accounts": [
+            {
+                "accountId": "664cfd7e8f28a61f59decfeb",
+                "amount": 3062
+            }
+        ],
+        "deposit_id": "6675e44141fbe06e4ac7a032",
+        "transactionDate": "2024-06-02",
+        "type": "cash",
+        "notes": [
+            "Generated contribution"
+        ],
+        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
+    },
+    {
+        "contributorProfileId": "6675d752005d0d41854f93d3",
+        "gross": 969,
+        "fees": 0,
+        "net": 969,
+        "accounts": [
+            {
+                "accountId": "664cf888838bac98668cf422",
+                "amount": 969
+            }
+        ],
+        "deposit_id": "6675e44141fbe06e4ac7a032",
+        "transactionDate": "2024-06-02",
+        "type": "cash",
+        "notes": [
+            "Generated contribution"
+        ],
+        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
+    },
+    {
+        "contributorProfileId": "6675d752005d0d41854f966d",
+        "gross": 4572,
+        "fees": 0,
+        "net": 4572,
+        "accounts": [
+            {
+                "accountId": "664cf752cce7eed146633881",
+                "amount": 4572
+            }
+        ],
+        "deposit_id": "6675e44141fbe06e4ac7a032",
+        "transactionDate": "2024-06-02",
+        "type": "check",
+        "notes": [
+            "Generated contribution"
+        ],
+        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
+    },
+    {
+        "contributorProfileId": "6675d752005d0d41854f93c5",
+        "gross": 3353,
+        "fees": 0,
+        "net": 3353,
+        "accounts": [
+            {
+                "accountId": "664cf849838bac98668cf3e0",
+                "amount": 3353
+            }
+        ],
+        "deposit_id": "6675e44141fbe06e4ac7a032",
+        "transactionDate": "2024-06-02",
+        "type": "cash",
+        "notes": [
+            "Generated contribution"
+        ],
+        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
+    },
+    {
+        "contributorProfileId": "6675d752005d0d41854f960b",
+        "gross": 2648,
+        "fees": 0,
+        "net": 2648,
+        "accounts": [
+            {
+                "accountId": "664cfd7e8f28a61f59decfeb",
+                "amount": 2103
+            },
+            {
+                "accountId": "664cf752cce7eed146633881",
+                "amount": 510
+            },
+            {
+                "accountId": "664cf830838bac98668cf3d5",
+                "amount": 35
+            }
+        ],
+        "deposit_id": "6675e44141fbe06e4ac7a032",
+        "transactionDate": "2024-06-02",
+        "type": "check",
+        "notes": [
+            "Generated contribution"
+        ],
+        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
+    },
+    {
+        "contributorProfileId": "6675d752005d0d41854f92cf",
+        "gross": 4006,
+        "fees": 0,
+        "net": 4006,
+        "accounts": [
+            {
+                "accountId": "664cf853838bac98668cf3eb",
+                "amount": 4006
+            }
+        ],
+        "deposit_id": "6675e44141fbe06e4ac7a032",
+        "transactionDate": "2024-06-02",
+        "type": "cash",
+        "notes": [
+            "Generated contribution"
+        ],
+        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
+    },
+    {
+        "contributorProfileId": "6675d752005d0d41854f94cd",
+        "gross": 3279,
+        "fees": 0,
+        "net": 3279,
+        "accounts": [
+            {
+                "accountId": "664cf890838bac98668cf42d",
+                "amount": 1166
+            },
+            {
+                "accountId": "664cf890838bac98668cf42d",
+                "amount": 1574
+            },
+            {
+                "accountId": "664cf8b5838bac98668cf438",
+                "amount": 508
+            },
+            {
+                "accountId": "664cf95a838bac98668cf443",
+                "amount": 31
+            }
+        ],
+        "deposit_id": "6675e44141fbe06e4ac7a032",
+        "transactionDate": "2024-06-02",
+        "type": "cash",
+        "notes": [
+            "Generated contribution"
+        ],
+        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
+    },
+    {
+        "contributorProfileId": "6675d752005d0d41854f9387",
+        "gross": 2527,
+        "fees": 0,
+        "net": 2527,
+        "accounts": [
+            {
+                "accountId": "664cf752cce7eed146633881",
+                "amount": 2527
+            }
+        ],
+        "deposit_id": "6675e44141fbe06e4ac7a032",
+        "transactionDate": "2024-06-02",
+        "type": "cash",
+        "notes": [
+            "Generated contribution"
+        ],
+        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
+    },
+    {
+        "contributorProfileId": "6675d752005d0d41854f9421",
+        "gross": 4021,
+        "fees": 0,
+        "net": 4021,
+        "accounts": [
+            {
+                "accountId": "664cfb448f28a61f59decfce",
+                "amount": 4021
+            }
+        ],
+        "deposit_id": "6675e44141fbe06e4ac7a032",
+        "transactionDate": "2024-06-02",
+        "type": "check",
+        "notes": [
+            "Generated contribution"
+        ],
+        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
+    },
+    {
+        "contributorProfileId": "6675d752005d0d41854f9581",
+        "gross": 4335,
+        "fees": 0,
+        "net": 4335,
+        "accounts": [
+            {
+                "accountId": "664cf830838bac98668cf3d5",
+                "amount": 4335
+            }
+        ],
+        "deposit_id": "6675e44141fbe06e4ac7a032",
+        "transactionDate": "2024-06-02",
+        "type": "check",
+        "notes": [
+            "Generated contribution"
+        ],
+        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
+    },
+    {
+        "contributorProfileId": "6675d752005d0d41854f92e3",
+        "gross": 2995,
+        "fees": 0,
+        "net": 2995,
+        "accounts": [
+            {
+                "accountId": "664cf870838bac98668cf40c",
+                "amount": 1204
+            },
+            {
+                "accountId": "664cf849838bac98668cf3e0",
+                "amount": 1176
+            },
+            {
+                "accountId": "664cf878838bac98668cf417",
+                "amount": 565
+            },
+            {
+                "accountId": "664cf862838bac98668cf401",
+                "amount": 50
+            }
+        ],
+        "deposit_id": "6675e44141fbe06e4ac7a032",
+        "transactionDate": "2024-06-02",
+        "type": "check",
+        "notes": [
+            "Generated contribution"
+        ],
+        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
+    },
+    {
+        "contributorProfileId": "6675d752005d0d41854f93f5",
+        "gross": 1212,
+        "fees": 0,
+        "net": 1212,
+        "accounts": [
+            {
+                "accountId": "664cf988838bac98668cf44e",
+                "amount": 638
+            },
+            {
+                "accountId": "664cf9d8838bac98668cf464",
+                "amount": 538
+            },
+            {
+                "accountId": "664cf890838bac98668cf42d",
+                "amount": 36
+            }
+        ],
+        "deposit_id": "6675e44141fbe06e4ac7a032",
+        "transactionDate": "2024-06-02",
+        "type": "cash",
+        "notes": [
+            "Generated contribution"
+        ],
+        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
+    },
+    {
+        "contributorProfileId": "6675d752005d0d41854f967d",
+        "gross": 2288,
+        "fees": 0,
+        "net": 2288,
+        "accounts": [
+            {
+                "accountId": "664cfd7e8f28a61f59decfeb",
+                "amount": 2288
+            }
+        ],
+        "deposit_id": "6675e44141fbe06e4ac7a032",
+        "transactionDate": "2024-06-02",
+        "type": "check",
+        "notes": [
+            "Generated contribution"
+        ],
+        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
+    },
+    {
+        "contributorProfileId": "6675d752005d0d41854f946b",
+        "gross": 2135,
+        "fees": 0,
+        "net": 2135,
+        "accounts": [
+            {
+                "accountId": "664cf752cce7eed146633881",
+                "amount": 2135
+            }
+        ],
+        "deposit_id": "6675e44141fbe06e4ac7a032",
+        "transactionDate": "2024-06-02",
+        "type": "cash",
+        "notes": [
+            "Generated contribution"
+        ],
+        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
+    },
+    {
+        "contributorProfileId": "6675d752005d0d41854f93f5",
+        "gross": 1826,
+        "fees": 0,
+        "net": 1826,
+        "accounts": [
+            {
+                "accountId": "664cf888838bac98668cf422",
+                "amount": 1826
+            }
+        ],
+        "deposit_id": "6675e44141fbe06e4ac7a032",
+        "transactionDate": "2024-06-02",
+        "type": "cash",
+        "notes": [
+            "Generated contribution"
+        ],
+        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
+    },
+    {
+        "contributorProfileId": "6675d752005d0d41854f9453",
+        "gross": 3566,
+        "fees": 0,
+        "net": 3566,
+        "accounts": [
+            {
+                "accountId": "664cf853838bac98668cf3eb",
+                "amount": 1393
+            },
+            {
+                "accountId": "664cf878838bac98668cf417",
+                "amount": 990
+            },
+            {
+                "accountId": "664cf95a838bac98668cf443",
+                "amount": 854
+            },
+            {
+                "accountId": "664cf9af838bac98668cf459",
+                "amount": 329
+            }
+        ],
+        "deposit_id": "6675e44141fbe06e4ac7a032",
+        "transactionDate": "2024-06-02",
+        "type": "check",
+        "notes": [
+            "Generated contribution"
+        ],
+        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
+    },
+    {
+        "contributorProfileId": "6675d752005d0d41854f9369",
+        "gross": 2309,
+        "fees": 0,
+        "net": 2309,
+        "accounts": [
+            {
+                "accountId": "664cf853838bac98668cf3eb",
+                "amount": 1234
+            },
+            {
+                "accountId": "664cf853838bac98668cf3eb",
+                "amount": 1049
+            },
+            {
+                "accountId": "664cf752cce7eed146633881",
+                "amount": 26
+            }
+        ],
+        "deposit_id": "6675e44141fbe06e4ac7a032",
+        "transactionDate": "2024-06-02",
+        "type": "cash",
+        "notes": [
+            "Generated contribution"
+        ],
+        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
+    },
+    {
+        "contributorProfileId": "6675d752005d0d41854f93f1",
+        "gross": 4893,
+        "fees": 0,
+        "net": 4893,
+        "accounts": [
+            {
+                "accountId": "664cf878838bac98668cf417",
+                "amount": 4893
+            }
+        ],
+        "deposit_id": "6675e44141fbe06e4ac7a032",
+        "transactionDate": "2024-06-02",
+        "type": "check",
+        "notes": [
+            "Generated contribution"
+        ],
+        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
+    },
+    {
+        "contributorProfileId": "6675d752005d0d41854f9389",
+        "gross": 4888,
+        "fees": 0,
+        "net": 4888,
+        "accounts": [
+            {
+                "accountId": "664cfd7e8f28a61f59decfeb",
+                "amount": 4888
+            }
+        ],
+        "deposit_id": "6675e44141fbe06e4ac7a032",
+        "transactionDate": "2024-06-02",
+        "type": "check",
+        "notes": [
+            "Generated contribution"
+        ],
+        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
+    },
+    {
+        "contributorProfileId": "6675d752005d0d41854f955b",
+        "gross": 1503,
+        "fees": 0,
+        "net": 1503,
+        "accounts": [
+            {
+                "accountId": "664cf8b5838bac98668cf438",
+                "amount": 1029
+            },
+            {
+                "accountId": "664cf752cce7eed146633881",
+                "amount": 474
+            }
+        ],
+        "deposit_id": "6675e44141fbe06e4ac7a032",
+        "transactionDate": "2024-06-02",
+        "type": "check",
+        "notes": [
+            "Generated contribution"
+        ],
+        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
+    },
+    {
+        "contributorProfileId": "6675d752005d0d41854f95f1",
+        "gross": 1187,
+        "fees": 0,
+        "net": 1187,
+        "accounts": [
+            {
+                "accountId": "664cf890838bac98668cf42d",
+                "amount": 898
+            },
+            {
+                "accountId": "664cf9af838bac98668cf459",
+                "amount": 289
+            }
+        ],
+        "deposit_id": "6675e44141fbe06e4ac7a032",
+        "transactionDate": "2024-06-02",
+        "type": "cash",
+        "notes": [
+            "Generated contribution"
+        ],
+        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
+    },
+    {
+        "contributorProfileId": "6675d752005d0d41854f9599",
+        "gross": 4895,
+        "fees": 0,
+        "net": 4895,
+        "accounts": [
+            {
+                "accountId": "664cf752cce7eed146633881",
+                "amount": 767
+            },
+            {
+                "accountId": "664cee912f4c2fc061ce5c98",
+                "amount": 1115
+            },
+            {
+                "accountId": "664cfb448f28a61f59decfce",
+                "amount": 859
+            },
+            {
+                "accountId": "664cf862838bac98668cf401",
+                "amount": 902
+            },
+            {
+                "accountId": "664cf853838bac98668cf3eb",
+                "amount": 683
+            },
+            {
+                "accountId": "664cf853838bac98668cf3eb",
+                "amount": 516
+            },
+            {
+                "accountId": "664cf870838bac98668cf40c",
+                "amount": 53
+            }
+        ],
+        "deposit_id": "6675e44141fbe06e4ac7a032",
+        "transactionDate": "2024-06-02",
+        "type": "check",
+        "notes": [
+            "Generated contribution"
+        ],
+        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
+    },
+    {
+        "contributorProfileId": "6675d752005d0d41854f9503",
+        "gross": 4297,
+        "fees": 0,
+        "net": 4297,
+        "accounts": [
+            {
+                "accountId": "664cf870838bac98668cf40c",
+                "amount": 4297
+            }
+        ],
+        "deposit_id": "6675e44141fbe06e4ac7a032",
+        "transactionDate": "2024-06-02",
+        "type": "cash",
+        "notes": [
+            "Generated contribution"
+        ],
+        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
+    },
+    {
+        "contributorProfileId": "6675d752005d0d41854f95ff",
+        "gross": 704,
+        "fees": 0,
+        "net": 704,
+        "accounts": [
+            {
+                "accountId": "664cf9d8838bac98668cf464",
+                "amount": 704
+            }
+        ],
+        "deposit_id": "6675e44141fbe06e4ac7a032",
+        "transactionDate": "2024-06-02",
+        "type": "cash",
+        "notes": [
+            "Generated contribution"
+        ],
+        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
+    },
+    {
+        "contributorProfileId": "6675d752005d0d41854f94db",
+        "gross": 3191,
+        "fees": 0,
+        "net": 3191,
+        "accounts": [
+            {
+                "accountId": "664cf988838bac98668cf44e",
+                "amount": 3191
+            }
+        ],
+        "deposit_id": "6675e44141fbe06e4ac7a032",
+        "transactionDate": "2024-06-02",
+        "type": "cash",
+        "notes": [
+            "Generated contribution"
+        ],
+        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
+    },
+    {
+        "contributorProfileId": "6675d752005d0d41854f9323",
+        "gross": 2216,
+        "fees": 0,
+        "net": 2216,
+        "accounts": [
+            {
+                "accountId": "664cf870838bac98668cf40c",
+                "amount": 1533
+            },
+            {
+                "accountId": "664cf849838bac98668cf3e0",
+                "amount": 666
+            },
+            {
+                "accountId": "664cf9af838bac98668cf459",
+                "amount": 17
+            }
+        ],
+        "deposit_id": "6675e44141fbe06e4ac7a032",
+        "transactionDate": "2024-06-02",
+        "type": "cash",
+        "notes": [
+            "Generated contribution"
+        ],
+        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
+    },
+    {
+        "contributorProfileId": "6675d752005d0d41854f932d",
+        "gross": 1019,
+        "fees": 0,
+        "net": 1019,
+        "accounts": [
+            {
+                "accountId": "664cf9af838bac98668cf459",
+                "amount": 718
+            },
+            {
+                "accountId": "664cf9d8838bac98668cf464",
+                "amount": 301
+            }
+        ],
+        "deposit_id": "6675e44141fbe06e4ac7a032",
+        "transactionDate": "2024-06-02",
+        "type": "cash",
         "notes": [
             "Generated contribution"
         ],
@@ -1368,18 +1713,18 @@
     },
     {
         "contributorProfileId": null,
-        "gross": 304854,
+        "gross": 154582,
         "fees": 0,
-        "net": 304854,
+        "net": 154582,
         "accounts": [
             {
                 "accountId": "664cfb448f28a61f59decfce",
-                "amount": 304854
+                "amount": 154582
             }
         ],
-        "deposit_id": "666b317b41fcca94eac1ead9",
+        "deposit_id": "6675e44141fbe06e4ac7a032",
         "transactionDate": "2024-06-02",
-        "type": "check",
+        "type": "cash",
         "notes": [
             "Generated unassigned contribution"
         ],
