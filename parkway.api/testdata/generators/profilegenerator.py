@@ -19,26 +19,17 @@ gender_distribution = ['female'] * 254 + ['male'] * 246
 
 # Cities, ZIP codes, area codes, and coordinates within 75 miles of Corbin, KY
 nearby_cities = [
-    ("Corbin","KY", "40701", "606", 36.9487, -84.0963),
+    ("Corbin", "KY", "40701", "606", 36.9487, -84.0963),
     ("London", "KY", "40741", "606", 37.128977, -84.083264),
     ("Williamsburg", "KY", "40769", "606", 36.7434, -84.1594),
     ("Barbourville", "KY", "40906", "606", 36.8668, -83.8888),
-    ("Pineville", "KY", "40977", "606", 36.7620, -83.6941),
-    ("Somerset", "KY", "42501", "606", 37.0920, -84.6041),
     ("Mount Vernon", "KY", "40456", "606", 37.3529, -84.3405),
     ("Manchester", "KY", "40962", "606", 37.1523, -83.7610),
     ("Harlan", "KY", "40831", "606", 36.8434, -83.3187),
     ("Whitley City", "KY", "42653", "606", 36.7248, -84.4747),
-    ("Lexington", "KY", "40502", "859", 38.0293, -84.4906),
     ("Richmond", "KY", "40475", "859", 37.7479, -84.2947),
-    ("Danville", "KY", "40422", "859", 37.6456, -84.7722),
-    ("Harrogate", "TN", "37752", "423", 36.5820, -83.6569),
     ("Middlesboro", "KY", "40965", "606", 36.6087, -83.7163),
-    ("Winchester", "KY", "40391", "859", 37.9901, -84.1790),
-    ("Berea", "KY", "40403", "859", 37.5689, -84.2963),
-    ("Stanford", "KY", "40484", "606", 37.5304, -84.6613),
-    ("Nicholasville", "KY", "40356", "859", 37.8806, -84.5729),
-    ("Cynthiana", "KY", "41031", "859", 38.3901, -84.2941)
+    ("Berea", "KY", "40403", "859", 37.5689, -84.2963)
 ]
 
 # Radius of the Earth in miles
@@ -89,6 +80,7 @@ profiles = []
 
 for _ in range(500):
     gender = random.choice(gender_distribution)
+    testdata="true"
     first_name = fake.first_name_male() if gender == 'male' else fake.first_name_female()
     last_name = fake.last_name()
     middle_initial = fake.random_letter().upper()
@@ -107,7 +99,10 @@ for _ in range(500):
         "_id": {"$oid": str(address_id)},  # Generate a MongoDB ObjectId for the address
         "testData": True,  # Add testData property
         "location": "Point",
-        "coordinates": [coordinates[0], coordinates[1]],  # [latitude, longitude]
+        "coordinates": {
+            "lat": coordinates[0],
+            "long": coordinates[1]
+        },  # coordinates as a dictionary with lat and long
         "formattedAddress": f"{street}, {city}, {state} {zip_code}",
         "street": street,
         "city": city,

@@ -1,119 +1,72 @@
-import os
-from faker import Faker
-import random
-import json
-from datetime import datetime, timedelta
-from bson import ObjectId
+const mongoose = require('mongoose');
 
-# Initialize Faker
-fake = Faker()
-
-# Organization ID
-organization_id = ObjectId("6650f2ed692d5194441b687a")
-
-# Gender distribution based on current ratio in the US
-# Assuming approximately 50.8% female and 49.2% male
-gender_distribution = ['female'] * 254 + ['male'] * 246
-
-# Cities, ZIP codes, and area codes within 75 miles of Corbin, KY
-nearby_cities_zipcodes = [
-    ("Corbin", "40701", "606"),
-    ("London", "40741", "606"),
-    ("Williamsburg", "40769", "606"),
-    ("Barbourville", "40906", "606"),
-    ("Pineville", "40977", "606"),
-    ("Somerset", "42501", "606"),
-    ("Mount Vernon", "40456", "606"),
-    ("Manchester", "40962", "606"),
-    ("Harlan", "40831", "606"),
-    ("Whitley City", "42653", "606"),
-    ("Lexington", "40502", "859"),
-    ("Richmond", "40475", "859"),
-    ("Danville", "40422", "859"),
-    ("Harrogate", "37752", "423"),
-    ("Middlesboro", "40965", "606"),
-    ("Winchester", "40391", "859"),
-    ("Berea", "40403", "859"),
-    ("Stanford", "40484", "606"),
-    ("Nicholasville", "40356", "859"),
-    ("Cynthiana", "41031", "859")
-]
-
-# Age distribution for ages 18 to 90
-def generate_date_of_birth(min_age, max_age):
-    today = datetime.today()
-    start_date = today - timedelta(days=max_age*365)
-    end_date = today - timedelta(days=min_age*365)
-    return fake.date_between(start_date=start_date, end_date=end_date)
-
-def generate_phone_number(area_code):
-    # Generate a 7-digit number and combine it with the area code to make a 10-digit phone number
-    return f"{area_code}{random.randint(1000000, 9999999)}"
-
-addresses = []
-profiles = []
-
-for _ in range(500):
-    gender = random.choice(gender_distribution)
-    first_name = fake.first_name_male() if gender == 'male' else fake.first_name_female()
-    last_name = fake.last_name()
-    middle_initial = fake.random_letter().upper()
-    date_of_birth = generate_date_of_birth(18, 90)
-    age = (datetime.today().date() - date_of_birth).days // 365
-    email = f"{first_name.lower()}.{last_name.lower()}@example.com"
-    
-    city, zip_code, area_code = random.choice(nearby_cities_zipcodes)
-    mobile_phone = generate_phone_number(area_code)
-    home_phone = generate_phone_number(area_code) if age > 65 else ""
-    
-    address = {
-        "_id": str(ObjectId()),  # Generate a MongoDB ObjectId for the address
-        "location": "Point",
-        "coordinates": [fake.longitude(), fake.latitude()],
-        "formattedAddress": fake.address(),
-        "street": fake.street_address(),
-        "city": city,
-        "state": "KY",
-        "zipcode": zip_code,
-        "country": "US"
+const profileSchema = new mongoose.Schema({
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    },
+    organizationId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Organization',
+        required: true
+    },
+    firstName: {
+        required: true,
+        type: String
+    },
+    lastName: {
+        required: true,
+        type: String
+    },
+    middleInitial: {
+        type: String
+    },
+    nickname: {
+        type: String
+    },
+    dateOfBirth: {
+        type: Date
+    },
+    gender: {
+        type: String
+    },
+    email: {
+        type: String
+    },
+    mobilePhone: {
+        type: String
+    },
+    homePhone: {
+        type: String
+    },
+    address:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Address'
+    },
+    member:{
+        required: true,
+        default: false,
+        type: Boolean
+    },
+    teams: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Team',
+        required: false
+    }],
+    family: {
+        type:mongoose.Schema.Types.ObjectId,
+        ref: 'Family',
+        required: false
+    },
+    preferences: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Preferences',
+        required: false
     }
-    
-    addresses.append(address)
-    
-    profile = {
-        "_id": str(ObjectId()),  # Generate a MongoDB ObjectId
-        "testData": True,
-        "user": None,  # Empty user account
-        "organizationId": organization_id,
-        "firstName": first_name,
-        "lastName": last_name,
-        "middleInitial": middle_initial,
-        "dateOfBirth": datetime.combine(date_of_birth, datetime.min.time()).isoformat() + 'Z',
-        "gender": gender,
-        "email": email,
-        "mobilePhone": mobile_phone,
-        "homePhone": home_phone,
-        "address": address["_id"],  # Reference the address ObjectId
-        "member": random.random() < 0.5,  # 50% chance of being a member
-        "teams": [],
-        "preferences": None
-    }
-    
-    profiles.append(profile)
+}, {timestamps: true})
 
-# Get the directory of the script
-script_dir = os.path.dirname(os.path.abspath(__file__))
-parent_dir = os.path.dirname(script_dir)
-output_file_profiles = os.path.join(parent_dir, 'profiles.json')
-output_file_addresses = os.path.join(parent_dir, 'addresses.json')
+// profileSchema.index({ lastName: 1 }, { collation: { locale: 'en_US', strength: 2}} ) 
+// profileSchema.index({ firstName: 1 }, { collation: { locale: 'en_US', strength: 2}} ) 
 
-# Save profiles to a JSON file in the parent directory of the script
-with open(output_file_profiles, 'w') as f:
-    json.dump(profiles, f, indent=4)
 
-# Save addresses to a separate JSON file in the parent directory of the script
-with open(output_file_addresses, 'w') as f:
-    json.dump(addresses, f, indent=4)
-
-print(f"Generated {len(profiles)} profiles and saved to {output_file_profiles}.")
-print(f"Generated {len(addresses)} addresses and saved to {output_file_addresses}.")
+module.exports = mongoose.model('Profile', profileSchema, 'profiles')
