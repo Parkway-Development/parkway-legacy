@@ -6,6 +6,7 @@ const { addMonths, addWeeks, set, endOfDay, differenceInDays, addDays, addYears,
     getDay
 } = require("date-fns");
 const { buildAction } = require("../helpers/controllerHelper");
+const { hasClaim } = require("../middleware/auth");
 
 const createEvents = async (event, eventSchedule) => {
     const today = new Date();
@@ -93,6 +94,13 @@ const createEvents = async (event, eventSchedule) => {
 const addEvent = buildAction({
     handler: async (req, res) => {
         const {schedule, ...body} = req.body;
+
+        if (hasClaim(req, 'calendarManagement')) {
+            body.approvedBy = req.userId;
+            body.approvedDate = new Date();
+            body.status = 'Active';
+        }
+
         const event = new Event(body);
         if (!event) {
             throw new Error("Please provide an event.")
