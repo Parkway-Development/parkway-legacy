@@ -117,6 +117,10 @@ export const monthWeekOptions: NonNullable<
   {
     label: 'Fifth',
     value: 5
+  },
+  {
+    label: 'Last',
+    value: 99
   }
 ];
 
@@ -146,6 +150,8 @@ const EventForm = ({ isSaving, initialValues, onSave }: EventFormProps) => {
 
   const handleCancel = () =>
     id ? navigate(`/events/${id}`) : navigate(`/events`);
+
+  const handleDelete = () => navigate(`/events`);
 
   const eventDates = useMemo(
     () => ({
@@ -644,7 +650,7 @@ const EventForm = ({ isSaving, initialValues, onSave }: EventFormProps) => {
             <DeleteButton
               id={id}
               deleteFn={deleteFn}
-              onSuccess={handleCancel}
+              onSuccess={handleDelete}
               isIconButton={false}
             />
           )}
