@@ -223,92 +223,120 @@ const executeDeposit = async (req, res, next) => {
 }
 
 const processDeposit = async (req, res, next) => {
-    try {
-        if(!req.params.id){ throw new AppError.MissingId('processDeposit')}
-        if(!mongoose.Types.ObjectId.isValid(req.params.id)){ throw new AppError.InvalidId('processDeposit')}
+    const session = await mongoose.startSession();
+    session.startTransaction();
 
-        if(!req.body.approverProfileId) {throw new AppError.MissingId('processDeposit','No profile Id was provided.  The profile of the person approving the deposit is required.')}
-        if(!mongoose.Types.ObjectId.isValid(req.body.approverProfileId)){ throw new AppError.InvalidId('processDeposit','The approverProfileId is not a valid ObjectId.')}
-        if(await !UserValidation.profileExists(req.body.approverProfileId)){ throw new AppError.NotFound('processDeposit','The provided approverProfileId is not associated with a profile.')}
+    try {
+        if (!req.params.id) { throw new AppError.MissingId('processDeposit'); }
+        if (!mongoose.Types.ObjectId.isValid(req.params.id)) { throw new AppError.InvalidId('processDeposit'); }
+
+        if (!req.body.approverProfileId) {
+            throw new AppError.MissingId('processDeposit', 'No profile Id was provided. The profile of the person approving the deposit is required.');
+        }
+        if (!mongoose.Types.ObjectId.isValid(req.body.approverProfileId)) {
+            throw new AppError.InvalidId('processDeposit', 'The approverProfileId is not a valid ObjectId.');
+        }
+        if (await !UserValidation.profileExists(req.body.approverProfileId)) {
+            throw new AppError.NotFound('processDeposit', 'The provided approverProfileId is not associated with a profile.');
+        }
 
         let deposit = await Deposit.findById(req.params.id)
             .populate('contributions')
-            .populate('donations');
-        if(!deposit) {throw new AppError.NotFound('processDeposit')};
-        if(deposit.processedDate){throw new AppError.DepositAlreadyProcessed('processDeposit')}
+            .populate('donations')
+            .session(session);
+        if (!deposit) { throw new AppError.NotFound('processDeposit'); }
+        if (deposit.currentStatus === 'processed') { throw new AppError.DepositAlreadyProcessed('processDeposit'); }
 
-        const depositTotal = deposit.amount
+        const depositTotal = deposit.amount;
         let contributionTotal = 0;
         let donationTotal = 0;
 
-        if(deposit.contributions.length > 0){
+        if (deposit.contributions.length > 0) {
             for (let i = 0; i < deposit.contributions.length; i++) {
-                let contributionNet = deposit.contributions[i].net
-                contributionTotal += contributionNet
+                let contributionNet = deposit.contributions[i].net;
+                contributionTotal += contributionNet;
             }
         }
 
-        if(deposit.donations.length > 0){
+        if (deposit.donations.length > 0) {
             for (let i = 0; i < deposit.donations.length; i++) {
-                let donationNet = deposit.donations[i].net
-                donationTotal += donationNet
+                let donationNet = deposit.donations[i].net;
+                donationTotal += donationNet;
             }
         }
 
-        if(depositTotal !== contributionTotal + donationTotal) {throw new AppError.DepositUnbalanced('processDeposit')}
+        if (depositTotal !== contributionTotal + donationTotal) { throw new AppError.DepositUnbalanced('processDeposit'); }
 
         deposit.approverProfileId = req.body.approverProfileId;
         deposit.currentStatus = DepositStatus.PROCESSED;
         deposit.statusDate = new Date();
-        deposit.history.push({status: deposit.currentStatus, date: deposit.statusDate});
-        deposit = await deposit.save();
+        deposit.history.push({ status: deposit.currentStatus, date: deposit.statusDate, responsiblePartyProfileId: req.body.approverProfileId});
+        deposit = await deposit.save({ session });
 
-        for(let i = 0; i < deposit.contributions.length; i++){
+        for (let i = 0; i < deposit.contributions.length; i++) {
             deposit.contributions[i].depositId = deposit._id;
             deposit.contributions[i].processedDate = deposit.statusDate;
-            await deposit.contributions[i].save();
-            await createTransactionsForContributions(deposit.contributions, deposit.approverProfileId);
+            await deposit.contributions[i].save({ session });
+            // await createTransactionsForContributions(deposit.contributions, deposit.approverProfileId);
         }
 
-        for(let i = 0; i < deposit.donations.length; i++){
+        for (let i = 0; i < deposit.donations.length; i++) {
             deposit.donations[i].depositId = deposit._id;
             deposit.donations[i].processedDate = deposit.statusDate;
-            await deposit.donations[i].save();
-            await createTransactionsForDonations(deposit.donations, deposit.approverProfileId);
+            await deposit.donations[i].save({ session });
+            //await createTransactionsForDonations(deposit.donations, deposit.approverProfileId);
         }
+
+        await session.commitTransaction();
+        session.endSession();
 
         return res.status(200).json(deposit);
     } catch (error) {
-        next(error)
-        console.log({method: error.method, message: error.message});
-    }
-}
-
-const createTransactionsForContributions = async (contributions, responsiblePartyProfileId) => {
-    try {
-        for (let i = 0; i < contributions.length; i++) {
-            let contribution = contributions[i];
-            const transaction = await createTransaction(contribution.net, TransactionType.DEPOSIT, contribution.accountId, null, responsiblePartyProfileId);
-            if(!transaction){ throw new AppError.TransactionFailed('createTransactionsForContributions','The transaction for the contribution failed to create.')}
+        await session.abortTransaction();
+        
+        // Add the failure status to the history
+        try {
+            let deposit = await Deposit.findById(req.params.id).session(session);
+            if (deposit) {
+                deposit.history.push({ status: "failed", date: new Date(), notes: error.message, responsiblePartyProfileId: req.body.approverProfileId});
+                await deposit.save({ session });
+            }
+        } catch (historyError) {
+            console.error('Failed to update history with failure status', historyError);
+        } finally {
+            session.endSession();
         }
-    } catch (error) {
-        console.log({ method: 'createTransactionsForContributions', message: error.message });
-        throw error;
-    }
-}
 
-const createTransactionsForDonations = async (donations, responsiblePartyProfileId) => {
-    try {
-        for (let i = 0; i < donations.length; i++) {
-            let donation = donations[i];
-            const transaction = await createTransaction(donation.amount, TransactionType.DEPOSIT, donation.accountId, null, responsiblePartyProfileId);
-            if(!transaction){ throw new AppError.TransactionFailed('createTransactionsForDonations','The transaction for the contribution failed to create.')}
-        }
-    } catch (error) {
-        console.log({ method: 'createTransactionsForContributions', message: error.message });
-        throw error;
+        next(error);
+        console.log({ method: error.method, message: error.message });
     }
-}
+};
+
+// const createTransactionsForContributions = async (contributions, responsiblePartyProfileId) => {
+//     try {
+//         for (let i = 0; i < contributions.length; i++) {
+//             let contribution = contributions[i];
+//             const transaction = await createTransaction(contribution.net, TransactionType.DEPOSIT, contribution.accountId, null, responsiblePartyProfileId);
+//             if(!transaction){ throw new AppError.TransactionFailed('createTransactionsForContributions','The transaction for the contribution failed to create.')}
+//         }
+//     } catch (error) {
+//         console.log({ method: 'createTransactionsForContributions', message: error.message });
+//         throw error;
+//     }
+// }
+
+// const createTransactionsForDonations = async (donations, responsiblePartyProfileId) => {
+//     try {
+//         for (let i = 0; i < donations.length; i++) {
+//             let donation = donations[i];
+//             const transaction = await createTransaction(donation.amount, TransactionType.DEPOSIT, donation.accountId, null, responsiblePartyProfileId);
+//             if(!transaction){ throw new AppError.TransactionFailed('createTransactionsForDonations','The transaction for the contribution failed to create.')}
+//         }
+//     } catch (error) {
+//         console.log({ method: 'createTransactionsForContributions', message: error.message });
+//         throw error;
+//     }
+// }
 
 module.exports = {
     createDeposit,

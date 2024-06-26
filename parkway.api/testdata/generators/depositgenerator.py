@@ -42,10 +42,10 @@ def generate_deposits(num_deposits, min_amount, max_amount, profile_id, start_da
 
 # Parameters
 num_deposits = 52
-min_amount_sunday = 800000
-max_amount_sunday = 1500000
-min_amount_wednesday = 200000
-max_amount_wednesday = 500000
+min_amount_sunday = 500000
+max_amount_sunday = 1000000
+min_amount_wednesday = 50000
+max_amount_wednesday = 150000
 profile_id = "6658aac2692d5194441b6897"
 
 # Calculate the most recent past Sunday

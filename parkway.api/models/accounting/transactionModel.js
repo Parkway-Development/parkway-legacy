@@ -18,7 +18,8 @@ const accountDetailSchema = new mongoose.Schema({
 const transactionSchema = new mongoose.Schema({
     amount: {
         type: Number,
-        required: true
+        required: true,
+        min: 0
     },
     type: {
         type: String,

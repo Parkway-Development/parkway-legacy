@@ -1,7 +1,12 @@
 const DepositStatus = Object.freeze({
     UNDEPOSITED: 'undeposited',
     UNALLOCATED: 'unallocated',
-    PROCESSED: 'processed'
+    PROCESSED: 'processed',
+    REJECTED: 'rejected',
+    CANCELLED: 'cancelled',
+    RETURNED: 'returned',
+    PENDING: 'pending',
+    FAILED: 'failed'
 });
 
 const AccountType = Object.freeze({
@@ -50,7 +55,15 @@ const TransactionType = Object.freeze({
     DEPOSIT: 'deposit',
     WITHDRAWAL: 'withdrawal',
     ADJUSTMENT: 'adjustment',
-    REVERSAL: 'reversal'
+    REVERSAL: 'reversal',
+    PAYMENT: 'payment',
+    REFUND: 'refund',
+    FEE: 'fee',
+    INTEREST: 'interest',
+    DIVIDEND: 'dividend',
+    INVESTMENT: 'investment',
+    EXPENSE: 'expense'
+
 })
 
 const AccountTransactionType = Object.freeze({

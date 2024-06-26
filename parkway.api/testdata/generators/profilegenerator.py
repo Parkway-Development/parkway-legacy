@@ -80,7 +80,6 @@ profiles = []
 
 for _ in range(500):
     gender = random.choice(gender_distribution)
-    testdata="true"
     first_name = fake.first_name_male() if gender == 'male' else fake.first_name_female()
     last_name = fake.last_name()
     middle_initial = fake.random_letter().upper()
@@ -98,11 +97,10 @@ for _ in range(500):
     address = {
         "_id": {"$oid": str(address_id)},  # Generate a MongoDB ObjectId for the address
         "testData": True,  # Add testData property
-        "location": "Point",
-        "coordinates": {
-            "lat": coordinates[0],
-            "long": coordinates[1]
-        },  # coordinates as a dictionary with lat and long
+        "location": {
+            "type": "Point",
+            "coordinates": [coordinates[1], coordinates[0]]  # [longitude, latitude]
+        },
         "formattedAddress": f"{street}, {city}, {state} {zip_code}",
         "street": street,
         "city": city,

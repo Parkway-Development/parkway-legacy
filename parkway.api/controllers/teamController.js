@@ -83,26 +83,24 @@ const getTeamByName = async (req, res) => {
 const updateTeamById = async (req, res) => {
     try {
         const { id } = req.params;
+        const { name, description } = req.body;
+
         if(!id){ throw new Error('No ID provided.')}
         if(!mongoose.Types.ObjectId.isValid(id)){ throw new Error('Invalid ID provided.')}
 
-        const team = await Team.findById(id);
+        let team = await Team.findById(id);
         if (!team) { throw new Error('No team found.'); }
 
-        team.name = req.body.name;
-        team.description = req.body.description;
+        if(name) team.name = name;
+        if(description) team.description = description;
 
-        const { leader, members } = req.body;
+        const { leaderId, members } = req.body;
 
         // Check to clear the leader or change the leader
-        if (team.leader && leader !== team.leader) {
-            await removeLeader(req, res, team);
-        }
+        if (team.leaderId && leaderId !== team.leaderId) team.leaderId = undefined;
 
         // Add the new leader
-        if (leader && !team.leader) {
-            await addLeaderById(req, res, team, leader);
-        }
+        if (leaderId && !team.leaderId) team.leaderId = leaderId;
 
         // Check if changing members
         if (members) {
@@ -172,24 +170,6 @@ const addLeaderById = async (req, res, team, leaderId) => {
         if(!updatedProfile){ throw new Error('There was a problem updating the leaders profile.') }
 
         team.leader = leaderId;
-    } catch (error) {
-        console.log(error);
-        return res.status(500).json(error);
-    }
-}
-
-const removeLeader = async (req, res, team) => {
-    try {
-        const { leader } = team;
-        if (!leader) {
-            return;
-        }
-
-        const leaderId = team.leader;
-        team.leader = undefined;
-
-        const updatedProfile = await Profile.findByIdAndUpdate(leaderId, { $pull: { teams: team._id } }, { new: true } );
-        if (!updatedProfile) { throw new Error('There was a problem updating the leaders profile.') }
     } catch (error) {
         console.log(error);
         return res.status(500).json(error);

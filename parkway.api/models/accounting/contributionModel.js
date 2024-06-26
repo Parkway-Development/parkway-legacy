@@ -51,7 +51,7 @@ const contributionSchema = new mongoose.Schema({
     processedDate: {
         type: Date
     },
-    type: {
+    monetaryInstrument: {
         required: true,
         type: String,
         enum: Object.values(MonetaryInstrument),

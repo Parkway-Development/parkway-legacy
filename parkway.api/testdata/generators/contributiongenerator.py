@@ -6,9 +6,14 @@ import logging
 import glob
 from bson import ObjectId
 
+# Configuration
+RESPONSIBLE_PARTY_PROFILE_ID = "6658aac2692d5194441b6897"
+SCRIPT_DIR = os.path.dirname(__file__)
+PROFILES_FILE = os.path.join(SCRIPT_DIR, "..", "profiles.json")
+ACCOUNTS_FILE = os.path.join(SCRIPT_DIR, "..", "accounts.json")
+
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-script_dir = os.path.dirname(__file__)
 
 def load_json(filename):
     try:
@@ -27,45 +32,31 @@ def save_json(filename, data):
     except Exception as e:
         logging.error(f"Error saving JSON to {filename}: {e}")
 
-def generate_contribution(profile_ids, account_ids, net_amount, transaction_date, deposit_id):
+def generate_contribution(profile_ids, account_ids, net_amount, transaction_date, deposit_id, order):
     contribution = {
+        "order": order,
         "contributorProfileId": random.choice(profile_ids),
         "gross": net_amount,
         "fees": 0,
         "net": net_amount,
-        "accounts": [],
-        "deposit_id": deposit_id,
+        "accounts": [
+            {
+                "accountId": random.choice(account_ids),
+                "amount": net_amount
+            }
+        ],
+        "depositId": deposit_id,
         "transactionDate": transaction_date,
-        "type": random.choice(["cash", "check"]),
+        "monetaryInstrument": random.choice(["cash", "check"]),
         "notes": ["Generated contribution"],
-        "responsiblePartyProfileId": "6658aac2692d5194441b6897"
+        "responsiblePartyProfileId": RESPONSIBLE_PARTY_PROFILE_ID
     }
-
-    remaining_amount = net_amount
-    if random.random() > 0.5:  # 50% chance to split across multiple accounts
-        while remaining_amount > 500:
-            amount = random.randint(500, min(remaining_amount, 5000))
-            contribution["accounts"].append({
-                "accountId": random.choice(account_ids),
-                "amount": amount
-            })
-            remaining_amount -= amount
-        if remaining_amount > 0:
-            contribution["accounts"].append({
-                "accountId": random.choice(account_ids),
-                "amount": remaining_amount
-            })
-    else:
-        contribution["accounts"].append({
-            "accountId": random.choice(account_ids),
-            "amount": net_amount
-        })
 
     return contribution
 
-def generate_unassigned_contribution(general_fund_account_id, deposit_amount, transaction_date, deposit_id):
-    unassigned_amount = random.randint(500, int(deposit_amount * 0.25))
+def generate_unassigned_contribution(general_fund_account_id, unassigned_amount, transaction_date, deposit_id, order):
     return {
+        "order": order,
         "contributorProfileId": None,
         "gross": unassigned_amount,
         "fees": 0,
@@ -76,11 +67,11 @@ def generate_unassigned_contribution(general_fund_account_id, deposit_amount, tr
                 "amount": unassigned_amount
             }
         ],
-        "deposit_id": deposit_id,
+        "depositId": deposit_id,
         "transactionDate": transaction_date,
-        "type": random.choice(["cash", "check"]),
+        "monetaryInstrument": random.choice(["cash", "check"]),
         "notes": ["Generated unassigned contribution"],
-        "responsiblePartyProfileId": "6658aac2692d5194441b6897"  # Adding the responsiblePartyProfileId field
+        "responsiblePartyProfileId": RESPONSIBLE_PARTY_PROFILE_ID
     }
 
 def delete_old_contribution_files(base_dir):
@@ -107,11 +98,11 @@ def process_deposits(profiles_file, accounts_file):
         return
 
     # Locate all deposit files matching the new pattern
-    deposit_files = glob.glob(os.path.join(script_dir, "..", "**", "*-dep-*.json"), recursive=True)
+    deposit_files = glob.glob(os.path.join(SCRIPT_DIR, "..", "**", "*-dep-*.json"), recursive=True)
     logging.info(f"Found {len(deposit_files)} deposit files")
 
     # Delete old contribution files
-    delete_old_contribution_files(os.path.join(script_dir, ".."))
+    delete_old_contribution_files(os.path.join(SCRIPT_DIR, ".."))
 
     for deposit_file in deposit_files:
         deposit = load_json(deposit_file)
@@ -120,6 +111,7 @@ def process_deposits(profiles_file, accounts_file):
             continue
 
         logging.info(f"Processing {deposit_file}")
+        logging.info(f"Deposit Amount: {deposit['amount']}")
 
         contributions = []
         try:
@@ -133,39 +125,37 @@ def process_deposits(profiles_file, accounts_file):
         transaction_date_obj = datetime.strptime(transaction_date, "%Y-%m-%d")
         year_month = transaction_date_obj.strftime("%Y-%m")
 
-        output_dir = os.path.join(script_dir, "..", year_month)
+        output_dir = os.path.join(SCRIPT_DIR, "..", year_month)
 
         os.makedirs(output_dir, exist_ok=True)
 
-        if '-dep-wed.json' in deposit_file:
-            num_contributions = random.randint(25, 50)
-            day_of_week = 'wed'
-        elif '-dep-sun.json' in deposit_file:
-            num_contributions = random.randint(200, 300)
-            day_of_week = 'sun'
-        else:
-            num_contributions = random.randint(10, 20)  # Default case for other days if any
-            day_of_week = 'oth'
+        remaining_amount = deposit_amount
+        order = 1
+        contribution_amount = random.randint(1000, 3000)
 
-        logging.info(f"Generating {num_contributions} contributions")
+        while remaining_amount > 5000:
+            if remaining_amount - contribution_amount <= 5000:
+                break
+            logging.info(f"Creating contribution {order} with amount {contribution_amount}")
+            contributions.append(generate_contribution(profile_ids, account_ids, contribution_amount, transaction_date, deposit_id, order))
+            remaining_amount -= contribution_amount
+            contribution_amount += random.randint(1000, 3000)
+            order += 1
+            logging.info(f"Remaining amount: {remaining_amount}")
 
-        for _ in range(num_contributions):
-            net_amount = random.randint(500, 5000)
-            contributions.append(generate_contribution(profile_ids, account_ids, net_amount, transaction_date, deposit_id))
-
-        contributions.append(generate_unassigned_contribution(general_fund_account_id, deposit_amount, transaction_date, deposit_id))
+        # Generate the last unassigned contribution with the remaining amount
+        if remaining_amount > 0:
+            logging.info(f"Creating final unassigned contribution {order} with amount {remaining_amount}")
+            contributions.append(generate_unassigned_contribution(general_fund_account_id, remaining_amount, transaction_date, deposit_id, order))
 
         # Write contributions to files in chunks of 100
         for i in range(0, len(contributions), 100):
             chunk = contributions[i:i+100]
             chunk_number = (i // 100) + 1
-            contribution_filename = f"{transaction_date}-con-{day_of_week}-{chunk_number:03d}.json"
+            contribution_filename = f"{transaction_date}-con-{chunk_number:03d}.json"
             output_filename = os.path.join(output_dir, contribution_filename)
             save_json(output_filename, chunk)
             logging.info(f"Saved contributions to {output_filename}")
 
 if __name__ == "__main__":
-    profiles_file = os.path.join(script_dir, "..", "profiles.json")
-    accounts_file = os.path.join(script_dir, "..", "accounts.json")
-
-    process_deposits(profiles_file, accounts_file)
+    process_deposits(PROFILES_FILE, ACCOUNTS_FILE)

@@ -15,6 +15,9 @@ const depositHistorySchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Profile'
     },
+    notes: {
+        type: String
+    },
     _id: false
 });
 

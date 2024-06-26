@@ -6,14 +6,16 @@ const {
     getTeamById,
     getTeamByName,
     updateTeamById,
-    deleteTeamById
+    deleteTeamById  
 } = require('../controllers/teamController');
 const { addNotFoundHandler, configureBaseApiRoutes } = require("./baseApiRouter");
 
-configureBaseApiRoutes(router, addTeam, getAllTeams, getTeamById, updateTeamById, deleteTeamById);
-
 //add additional routes here
 router.get('/name/:name', getTeamByName);
+
+
+configureBaseApiRoutes(router, addTeam, getAllTeams, getTeamById, updateTeamById, deleteTeamById);
+
 
 addNotFoundHandler(router);
 module.exports = router;
