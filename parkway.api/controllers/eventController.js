@@ -8,6 +8,8 @@ const { addMonths, addWeeks, set, endOfDay, differenceInDays, addDays, addYears,
 const { buildAction } = require("../helpers/controllerHelper");
 const { hasClaim } = require("../middleware/auth");
 
+const LAST_MONTH_WEEK_OCCURRENCE = 99;
+
 const createEvents = async (event, eventSchedule) => {
     const today = new Date();
     const schedulingEnd = addMonths(today, 3);
@@ -30,17 +32,23 @@ const createEvents = async (event, eventSchedule) => {
 
             const allDays = eachDayOfInterval({
                 start: currentMonth,
-                end: nextMonth < lastDay ? nextMonth : lastDay
+                end: addDays(nextMonth, -1)
             });
 
             eventSchedule.week_days.forEach((dayNumber) => {
                 const matchingDays = allDays.filter(day => getDay(day) === dayNumber);
 
                 eventSchedule.month_weeks.forEach((weekNumber) => {
-                    if (matchingDays.length >= weekNumber) {
-                        const day = matchingDays[weekNumber - 1];
+                    const weekToCheck = weekNumber === LAST_MONTH_WEEK_OCCURRENCE
+                      ? matchingDays.length
+                      : weekNumber;
 
-                        if (day > eventSchedule.last_schedule_date) {
+                    if (matchingDays.length >= weekToCheck) {
+                        const day = matchingDays[weekToCheck - 1];
+
+                        if (day > eventSchedule.last_schedule_date &&
+                            day <= lastDay &&
+                            !validDates.includes(day)) {
                             validDates.push(day);
                         }
                     }
