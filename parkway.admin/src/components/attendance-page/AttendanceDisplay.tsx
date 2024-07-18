@@ -13,7 +13,7 @@ import DateDisplay from '../date-display';
 import styles from './AttendanceDisplay.module.scss';
 import NumberFormat from '../number-format';
 import AddEntryModal, { EditEntryModal } from './AddEntryModal.tsx';
-import useApi, { buildQueryKey } from '../../hooks/useApi.ts';
+import useApi, { buildQueryKey } from '../../hooks/useApi.tsx';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import DeleteButton from '../delete-button';
 import { useState } from 'react';

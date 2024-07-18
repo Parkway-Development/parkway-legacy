@@ -1,21 +1,22 @@
 import { Alert, Button, Form, InputNumber, Modal } from 'antd';
 import { useState } from 'react';
 import { BaseFormFooter } from '../base-data-table-page';
-import useApi, { buildQueryKey, TypedResponse } from '../../hooks/useApi.ts';
+import useApi, { buildQueryKey, TypedResponse } from '../../hooks/useApi.tsx';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import styles from './AddEntryModal.module.scss';
-import DatePickerExtended from '../date-picker-extended';
-import dayjs, { Dayjs } from 'dayjs';
+import dayjs from 'dayjs';
 import TextArea from 'antd/lib/input/TextArea';
 import { AttendanceEntry } from '../../types/AttendanceEntry.ts';
-import { transformDateToDayjs } from '../../utilities';
+import DatePicker from '../date-picker';
+import { getDateString } from '../../utilities';
+import { parseISO } from 'date-fns';
 
 interface AddEntryModalProps {
   attendanceId: string;
 }
 
 interface AddEntryModalFormFields {
-  date: Date;
+  date: string;
   count: number;
   notes?: string;
 }
@@ -26,7 +27,7 @@ type BaseModalFormProps<T> = {
   onClose: () => void;
   mutationFn: (payload: T) => TypedResponse<AttendanceEntry>;
   attendanceId: string;
-  initialValues?: Omit<AttendanceEntry, 'date'> & { date: Dayjs };
+  initialValues?: Omit<AttendanceEntry, 'date'> & { date: string };
 };
 
 const BaseModalForm = <T,>({
@@ -48,7 +49,8 @@ const BaseModalForm = <T,>({
     const payload = {
       _id: initialValues?._id,
       attendanceId,
-      ...values
+      ...values,
+      date: parseISO(values.date)
     } as T;
 
     mutate(payload, {
@@ -90,7 +92,7 @@ const BaseModalForm = <T,>({
           name="date"
           rules={[{ required: true, message: 'Required' }]}
         >
-          <DatePickerExtended />
+          <DatePicker />
         </Form.Item>
         <Form.Item<AddEntryModalFormFields>
           label="Count"
@@ -153,7 +155,7 @@ export const EditEntryModal = ({
 
   const initialValues = {
     ...attendanceEntry,
-    date: transformDateToDayjs(new Date(attendanceEntry.date))!
+    date: getDateString(attendanceEntry.date)!
   };
 
   return (
