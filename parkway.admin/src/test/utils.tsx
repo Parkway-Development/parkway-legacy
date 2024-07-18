@@ -6,6 +6,7 @@ import { ApiType, TypedResponse } from '../hooks/useApi.tsx';
 import {
   AccountsApiType,
   AssetsApiType,
+  AttendanceApiType,
   BaseApiType,
   ContributionsApiType,
   EnumsApiType,
@@ -20,6 +21,7 @@ import {
 import {
   Account,
   Asset,
+  Attendance,
   BaseEntity,
   Contribution,
   Enum,
@@ -75,6 +77,7 @@ const mockBaseApi = <T extends BaseEntity>(
 export type MockApiType = Partial<{
   accountsApi: Partial<AccountsApiType>;
   assetsApi: Partial<AssetsApiType>;
+  attendanceApi: Partial<AttendanceApiType>;
   contributionsApi: Partial<ContributionsApiType>;
   enumsApi: Partial<EnumsApiType>;
   eventCategoriesApi: Partial<EventCategoriesApiType>;
@@ -91,6 +94,7 @@ export const mockApi = (
   {
     accountsApi,
     assetsApi,
+    attendanceApi,
     contributionsApi,
     enumsApi,
     eventCategoriesApi,
@@ -122,6 +126,13 @@ export const mockApi = (
       addChildren: vi.fn()
     },
     assetsApi: mockBaseApi<Asset>(assetsApi),
+    attendanceApi: {
+      ...mockBaseApi<Attendance>(attendanceApi),
+      addEntry: vi.fn(),
+      getEntries: vi.fn(),
+      deleteEntry: vi.fn(),
+      updateEntry: vi.fn()
+    },
     contributionsApi: mockBaseApi<Contribution>(contributionsApi),
     enumsApi: mockBaseApi<Enum>(enumsApi),
     eventCategoriesApi: mockBaseApi<EventCategory>(eventCategoriesApi),

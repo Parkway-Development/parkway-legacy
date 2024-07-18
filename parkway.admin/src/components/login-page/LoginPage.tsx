@@ -1,7 +1,7 @@
 import styles from './LoginPage.module.css';
 import { Alert, Button, Card, Form, Image, Input } from 'antd';
 import { InternalLoginResponse, useAuth } from '../../hooks/useAuth.tsx';
-import { Link } from 'react-router-dom';
+import {Link, useNavigate} from 'react-router-dom';
 import useApi, { buildQueryKey } from '../../hooks/useApi.tsx';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { LoginFields } from '../../api';
@@ -10,11 +10,13 @@ import ProfileVerification from '../profile-verification';
 
 const LoginPage = () => {
   const { login } = useAuth();
+
   const {
     generalApi: { getOrganizationId },
     usersApi: { login: loginFn },
     formatError
   } = useApi();
+
   const {
     data,
     error: organizationIdError,
@@ -23,8 +25,10 @@ const LoginPage = () => {
     queryFn: getOrganizationId,
     queryKey: buildQueryKey('organizationId')
   });
+
   const { mutate, error, isPending } = useMutation({ mutationFn: loginFn });
   const [loginResponse, setLoginResponse] = useState<InternalLoginResponse>();
+  const navigate = useNavigate();
 
   const organizationId = data?.data;
 
@@ -38,7 +42,7 @@ const LoginPage = () => {
           const result = login(data);
 
           if (result.hasValidProfile) {
-            window.location.href = '/';
+            navigate('/');
           } else {
             setLoginResponse(result);
           }

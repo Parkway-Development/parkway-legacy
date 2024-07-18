@@ -3,8 +3,10 @@ import axios, { AxiosError, AxiosResponse } from 'axios';
 import {
   AccountsApiType,
   AssetsApiType,
+  AttendanceApiType,
   buildAccountsApi,
   buildAssetsApi,
+  buildAttendanceApi,
   buildContributionsApi,
   buildEnumsApi,
   buildEventCategoriesApi,
@@ -34,6 +36,7 @@ export type TypedResponse<T> = Promise<Omit<AxiosResponse<T>, 'config'>>;
 export interface BaseApiTypes {
   accountsApi: AccountsApiType;
   assetsApi: AssetsApiType;
+  attendanceApi: AttendanceApiType;
   contributionsApi: ContributionsApiType;
   enumsApi: EnumsApiType;
   eventCategoriesApi: EventCategoriesApiType;
@@ -54,6 +57,8 @@ const ApiContext = createContext<ApiType | undefined>(undefined);
 export type QueryType =
   | 'accounts'
   | 'assets'
+  | 'attendance'
+  | 'attendanceEntry'
   | 'contributions'
   | 'enums'
   | 'eventCategories'
@@ -61,6 +66,7 @@ export type QueryType =
   | 'eventRegistrations'
   | 'organizationId'
   | 'passwordSettings'
+  | 'limitedProfiles'
   | 'profiles'
   | 'songs'
   | 'teams'
@@ -121,6 +127,7 @@ export const ApiProvider = ({ children }: { children: ReactNode }) => {
   const value = {
     accountsApi: buildAccountsApi(instance),
     assetsApi: buildAssetsApi(instance),
+    attendanceApi: buildAttendanceApi(instance),
     contributionsApi: buildContributionsApi(instance),
     enumsApi: buildEnumsApi(instance),
     eventCategoriesApi: buildEventCategoriesApi(instance),

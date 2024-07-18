@@ -25,6 +25,7 @@ const healthRoutes = require('./routes/health');
 const developerRoutes = require('./routes/developer');
 const applicationClaimsRoutes = require('./routes/applicationClaims');
 const organizationRoutes = require('./routes/organizations');
+const attendanceRoutes = require('./routes/attedances');
 
 const donationRoutes = require('./routes/accounting/donations');
 const accountRoutes = require('./routes/accounting/accounts');
@@ -83,6 +84,7 @@ app.use('/health', healthRoutes);
 app.use('/developer', developerRoutes);
 app.use('/applicationclaims', applicationClaimsRoutes);
 app.use('/organizations', organizationRoutes);
+app.use('/attendance', attendanceRoutes);
 
 //Accounting routes
 app.use('/accounting/donations', donationRoutes);

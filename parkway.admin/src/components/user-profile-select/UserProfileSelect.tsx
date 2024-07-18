@@ -24,7 +24,7 @@ const UserProfileSelect = <T,>({
 
   const { isPending, data: response } = useQuery({
     queryFn: getAllLimitedProfile,
-    queryKey: buildQueryKey('profiles')
+    queryKey: buildQueryKey('limitedProfiles')
   });
 
   const handleOnChange = (

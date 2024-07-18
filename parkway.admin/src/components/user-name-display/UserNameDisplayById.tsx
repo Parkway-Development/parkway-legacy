@@ -14,7 +14,7 @@ export const UserNameDisplayById = ({ id }: UserNameDisplayByIdProps) => {
   } = useApi();
   const { isPending, data: response } = useQuery({
     queryFn: getAllLimitedProfile,
-    queryKey: buildQueryKey('profiles')
+    queryKey: buildQueryKey('limitedProfiles')
   });
 
   if (!id) return null;

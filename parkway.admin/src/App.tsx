@@ -95,6 +95,17 @@ function App() {
     });
   }
 
+  if (hasClaim('attendance')) {
+    items.push({
+      key: itemKey++,
+      label: (
+        <ResponsiveLink to="/attendance">
+          Attendance
+        </ResponsiveLink>
+      )
+    });
+  }
+
   const hasCalendarManagement = hasClaim('calendarManagement');
   const isTeamLeader = teamsLed.length > 0;
 

@@ -80,8 +80,8 @@ const getAllProfiles = async (req, res, next) => {
 
 const getAllLimitedProfiles = async (req, res, next) => {
     try {
-        const profiles = await Profile.find({})
-            .sort({lastname: 1, firstname: 1});
+        const profiles = await Profile.find({}, '_id firstName middleInitial lastName nickname')
+            .sort({ lastName: 'asc', firstName: 'asc' });
 
         if(!profiles){ return res.status(204).json({message: 'No profiles were returned.'}) }
 
