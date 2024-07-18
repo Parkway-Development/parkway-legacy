@@ -24,33 +24,54 @@ const authenticateToken = async (req, res, next) => {
     }
 };
 
-const requireClaim = (req, res, next, requiredClaim) => {
-    const authHeader = req.header('Authorization');
-    const token = authHeader && authHeader.split(' ')[1];
+const populateClaims = (req) => {
+    // Skip if already populated
+    if (req.claims) return;
 
-    if (!token) {
-        return next(new appError.AccessDenied('requireClaim'));
-    } else {
-        try {
-            const payload = jwt.verify(token, process.env.JWT_SECRET);
-            req.userId = payload._id;
+    try {
+        const authHeader = req.header('Authorization');
+        const token = authHeader && authHeader.split(' ')[1];
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        req.userId = decoded._id;
+        req.claims = decoded.claims;
+    } catch (err) {
+        console.error('Error populating claims: ', err);
+    }
+};
 
-            if (requiredClaim) {
-                const claimValue = payload.claims ? payload.claims[requiredClaim] : undefined;
+const hasClaim = (req, requiredClaim) => {
+    if (!requiredClaim) {
+        return false;
+    }
 
-                if (claimValue !== true && claimValue !== 'true') {
-                    return next(new appError.AccessDenied('requireClaim'));
+    populateClaims(req);
+    const claims = req.claims;
+
+    if (!claims) {
+        return false;
+    }
+
+    try {
+        const claimsToCheck = Array.isArray(requiredClaim) ? requiredClaim : [requiredClaim];
+        claimsToCheck.push('isspecops');
+
+        for (const claimToCheck of claimsToCheck) {
+            if (claimToCheck && claimToCheck.length > 0) {
+                const foundClaim = claims[claimToCheck];
+
+                if (foundClaim && (foundClaim === true || foundClaim === 'true')) {
+                    return true;
                 }
             }
-
-            next();
-        } catch (error) {
-            return res.status(401).send('Invalid token.');
         }
+
+        return true;
+    } catch (error) {
+        return false;
     }
 };
 
 module.exports = {
     authenticateToken,
-    requireClaim
+    hasClaim
 };

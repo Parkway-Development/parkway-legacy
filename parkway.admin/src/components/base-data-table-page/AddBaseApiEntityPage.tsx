@@ -1,6 +1,6 @@
 import { notification } from 'antd';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import useApi, { buildQueryKey } from '../../hooks/useApi.ts';
+import useApi, { buildQueryKey } from '../../hooks/useApi.tsx';
 import { BaseEntity } from '../../types';
 import { IsBaseEntityApi } from '../../api';
 import { ReactNode } from 'react';

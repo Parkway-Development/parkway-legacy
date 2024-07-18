@@ -13,7 +13,7 @@ import { useAuth } from './hooks/useAuth.tsx';
 import { SyntheticEvent, useCallback, useState } from 'react';
 import { LogoutOutlined, UserOutlined } from '@ant-design/icons';
 import useResponsive from './hooks/useResponsive.ts';
-import useApi, { buildQueryKey } from './hooks/useApi.ts';
+import useApi, { buildQueryKey } from './hooks/useApi.tsx';
 import { useQuery } from '@tanstack/react-query';
 import SplashScreen from './components/splash-screen';
 

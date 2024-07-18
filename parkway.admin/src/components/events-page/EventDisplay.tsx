@@ -19,7 +19,7 @@ import { EventSchedule } from '../../types/EventSchedule.ts';
 import { monthWeekOptions, weekDayOptions } from './EventForm.tsx';
 import RegisterUserModal from './RegisterUserModal.tsx';
 import { EventRegistration } from '../../types/EventRegistration.ts';
-import useApi, { buildQueryKey } from '../../hooks/useApi.ts';
+import useApi, { buildQueryKey } from '../../hooks/useApi.tsx';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
@@ -112,10 +112,12 @@ const EventDisplay = (event: Event) => {
 };
 
 interface EventScheduleSummaryProps {
-  schedule: EventSchedule | undefined;
+  schedule: (EventSchedule & { end_date?: Date | string }) | undefined;
 }
 
-const EventScheduleSummary = ({ schedule }: EventScheduleSummaryProps) => {
+export const EventScheduleSummary = ({
+  schedule
+}: EventScheduleSummaryProps) => {
   if (!schedule) return <span>No</span>;
 
   const { interval, frequency, week_days, month_weeks, end_date } = schedule;
@@ -123,6 +125,8 @@ const EventScheduleSummary = ({ schedule }: EventScheduleSummaryProps) => {
   let result;
 
   if (frequency === 'custom') {
+    if (!month_weeks || !week_days) return 'Incomplete schedule configuration.';
+
     const weeks = month_weeks
       ?.map((week) => monthWeekOptions.find((o) => o.value === week)?.label)
       .filter((x) => x !== undefined)
@@ -200,9 +204,7 @@ const RegistrationDisplay = ({ event }: { event: Event }) => {
     return (
       event.registrationSlots
         ?.filter((slot) => !slot.deleted)
-        .sort(
-          (a, b) => new Date(a.start).getDate() - new Date(b.start).getDate()
-        )
+        .sort((a, b) => (a.start < b.start ? -1 : 1))
         .map((slot) => {
           const count =
             data?.data.reduce(

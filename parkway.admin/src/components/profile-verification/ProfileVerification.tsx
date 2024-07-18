@@ -9,7 +9,7 @@ import {
   useState
 } from 'react';
 import { useMutation } from '@tanstack/react-query';
-import useApi from '../../hooks/useApi.ts';
+import useApi from '../../hooks/useApi.tsx';
 import { addProfileInitialValues } from '../directory-page';
 import { Address, UserProfile } from '../../types';
 import { CheckOutlined, CloseOutlined } from '@ant-design/icons';

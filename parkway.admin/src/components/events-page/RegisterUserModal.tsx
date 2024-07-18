@@ -4,7 +4,7 @@ import { useCallback, useRef, useState } from 'react';
 import { BaseFormFooter } from '../base-data-table-page';
 import UserProfileSelect from '../user-profile-select';
 import { RegisterForEventPayload } from '../../api';
-import useApi, { buildQueryKey } from '../../hooks/useApi.ts';
+import useApi, { buildQueryKey } from '../../hooks/useApi.tsx';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import styles from './RegisterUserModal.module.scss';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';

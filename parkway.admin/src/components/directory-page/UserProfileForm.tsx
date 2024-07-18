@@ -1,14 +1,17 @@
 import { Breadcrumb, Form, Input, Radio, Switch } from 'antd';
 import { UserProfile } from '../../types';
-import { transformDateToDayjs, trimStrings } from '../../utilities';
+import { getDateString, isDateString, trimStrings } from '../../utilities';
 import { AddBaseApiFormProps, BaseFormFooter } from '../base-data-table-page';
 import { Link } from 'react-router-dom';
-import DatePickerExtended from '../date-picker-extended';
+import DatePicker from '../date-picker';
+import { parseISO } from 'date-fns';
 
 export type UserProfileFormFields = Omit<
   UserProfile,
   '_id' | 'teams' | 'family'
->;
+> & {
+  dateOfBirth?: string | Date;
+};
 
 type UserProfileFormProps = AddBaseApiFormProps<UserProfile> & {
   initialValues?: UserProfileFormFields;
@@ -39,12 +42,16 @@ const UserProfileForm = ({
   const initial = initialValues
     ? {
         ...initialValues,
-        dateOfBirth: transformDateToDayjs(initialValues.dateOfBirth)
+        dateOfBirth: getDateString(initialValues.dateOfBirth)
       }
     : addProfileInitialValues;
 
   const handleSubmit = (values: UserProfileFormFields) => {
     let payload = trimStrings(values);
+
+    payload.dateOfBirth = isDateString(payload.dateOfBirth)
+      ? parseISO(payload.dateOfBirth as string)
+      : undefined;
 
     form.setFields([
       {
@@ -176,7 +183,7 @@ const UserProfileForm = ({
         </FormItem>
 
         <FormItem label="Date of Birth" name="dateOfBirth">
-          <DatePickerExtended />
+          <DatePicker />
         </FormItem>
 
         <FormItem label="Gender" name="gender">

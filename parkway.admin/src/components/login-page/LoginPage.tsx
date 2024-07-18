@@ -2,7 +2,7 @@ import styles from './LoginPage.module.css';
 import { Alert, Button, Card, Form, Image, Input } from 'antd';
 import { InternalLoginResponse, useAuth } from '../../hooks/useAuth.tsx';
 import {Link, useNavigate} from 'react-router-dom';
-import useApi, { buildQueryKey } from '../../hooks/useApi.ts';
+import useApi, { buildQueryKey } from '../../hooks/useApi.tsx';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { LoginFields } from '../../api';
 import { useState } from 'react';

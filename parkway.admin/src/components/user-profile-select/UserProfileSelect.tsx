@@ -1,4 +1,4 @@
-import useApi, { buildQueryKey } from '../../hooks/useApi.ts';
+import useApi, { buildQueryKey } from '../../hooks/useApi.tsx';
 import { useQuery } from '@tanstack/react-query';
 import { SelectProps } from 'antd';
 import { useEffect, useState } from 'react';

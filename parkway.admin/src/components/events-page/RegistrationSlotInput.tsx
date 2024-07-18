@@ -5,24 +5,23 @@ import DateDisplay from '../date-display';
 import BooleanDisplay from '../boolean-display/BooleanDisplay.tsx';
 import { Alert, Button, Checkbox, Form, Input, Modal } from 'antd';
 import { BaseFormFooter } from '../base-data-table-page';
-import { Dayjs } from 'dayjs';
-import TimeSelect, {
+import TimePicker, {
   getTimeSelectHours,
   getTimeSelectMinutes,
-  getTimeSelectValue,
   isEndTimeAfterStart
-} from '../time-select';
-import { isSameDate, transformDateToDayjs } from '../../utilities';
+} from '../time-picker';
+import { getDateString, getTimeString } from '../../utilities';
 import { EditOutlined } from '@ant-design/icons';
-import DatePickerExtended from '../date-picker-extended';
+import DatePicker from '../date-picker';
+import { parseISO } from 'date-fns';
 
 interface RegistrationSlotInputProps {
   onChange: (registrationSlots: RegistrationSlot[], isValid: boolean) => void;
   initialValue: RegistrationSlot[];
   eventDates: {
-    startDate?: Dayjs;
+    startDate?: string;
     startTime?: string;
-    endDate?: Dayjs;
+    endDate?: string;
     endTime?: string;
   };
 }
@@ -61,7 +60,7 @@ const RegistrationSlotInput = ({
 
   const rows = registrationSlots
     .filter((slot) => !slot.deleted)
-    .sort((a, b) => a.start.getDate() - b.start.getDate())
+    .sort((a, b) => (a.start < b.start ? -1 : 1))
     .map((input) => {
       return (
         <tr key={input.slotId}>
@@ -72,10 +71,10 @@ const RegistrationSlotInput = ({
               onClick={() => {
                 const registrationInput = {
                   ...input,
-                  startDate: transformDateToDayjs(input.start),
-                  startTime: getTimeSelectValue(new Date(input.start)),
-                  endDate: transformDateToDayjs(input.end),
-                  endTime: getTimeSelectValue(new Date(input.end))
+                  startDate: getDateString(input.start),
+                  startTime: getTimeString(input.start),
+                  endDate: getDateString(input.end),
+                  endTime: getTimeString(input.end)
                 };
 
                 setEditSlot(registrationInput);
@@ -141,9 +140,9 @@ const RegistrationSlotInput = ({
 };
 
 type RegistrationSlotFormFields = Omit<RegistrationSlot, 'start' | 'end'> & {
-  startDate?: Dayjs;
+  startDate?: string;
   startTime?: string;
-  endDate?: Dayjs;
+  endDate?: string;
   endTime?: string;
 };
 
@@ -178,8 +177,8 @@ const AddEditModal = ({
 
     remaining.slotId = slotId.current ?? crypto.randomUUID();
 
-    const start = startDate!.toDate();
-    const end = endDate!.toDate();
+    const start = parseISO(startDate!);
+    const end = parseISO(endDate!);
 
     start.setHours(getTimeSelectHours(startTime!));
     start.setMinutes(getTimeSelectMinutes(startTime!));
@@ -207,9 +206,9 @@ const AddEditModal = ({
     setIsModalOpen(false);
   };
 
-  const validateEndDate = (_: unknown, value: Dayjs) => {
-    const startDate: Dayjs = modalForm.getFieldValue('startDate');
-    if (value && startDate && value.isBefore(startDate, 'day')) {
+  const validateEndDate = (_: unknown, value: string) => {
+    const startDate: string = modalForm.getFieldValue('startDate');
+    if (value && startDate && new Date(value) < new Date(startDate)) {
       return Promise.reject('End date cannot be before the start date');
     }
 
@@ -217,19 +216,19 @@ const AddEditModal = ({
   };
 
   const validateEndTime = (_: unknown, value: string) => {
-    const startDate: Dayjs = modalForm.getFieldValue('startDate');
+    const startDate: string = modalForm.getFieldValue('startDate');
     const startTime: string = modalForm.getFieldValue('startTime');
-    const endDate: Dayjs = modalForm.getFieldValue('endDate');
+    const endDate: string = modalForm.getFieldValue('endDate');
 
     if (
       startDate &&
       endDate &&
       startTime &&
       value &&
-      isSameDate(startDate.toDate(), endDate.toDate()) &&
+      startDate == endDate &&
       !isEndTimeAfterStart(startTime, value)
     ) {
-      return Promise.reject('End time cannot be after the start time');
+      return Promise.reject('End time must be after the start time');
     }
 
     return Promise.resolve();
@@ -273,8 +272,12 @@ const AddEditModal = ({
             name="startDate"
             rules={[{ required: true, message: 'Start date is required.' }]}
           >
-            <DatePickerExtended
-              onChange={(value) => modalForm.setFieldsValue({ endDate: value })}
+            <DatePicker
+              onChange={(e) =>
+                modalForm.setFieldsValue({
+                  endDate: e.target.value
+                })
+              }
             />
           </Form.Item>
 
@@ -283,7 +286,7 @@ const AddEditModal = ({
             name="startTime"
             rules={[{ required: true, message: 'Start time is required.' }]}
           >
-            <TimeSelect />
+            <TimePicker />
           </Form.Item>
 
           <Form.Item<RegistrationSlotFormFields>
@@ -294,7 +297,7 @@ const AddEditModal = ({
               { validator: validateEndDate }
             ]}
           >
-            <DatePickerExtended />
+            <DatePicker />
           </Form.Item>
           <Form.Item<RegistrationSlotFormFields>
             label="End Time"
@@ -304,7 +307,7 @@ const AddEditModal = ({
               { validator: validateEndTime }
             ]}
           >
-            <TimeSelect />
+            <TimePicker />
           </Form.Item>
 
           <Form.Item<RegistrationSlotFormFields>

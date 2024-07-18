@@ -1,7 +1,7 @@
 import { Account } from '../../types';
 import { useState } from 'react';
 import { Alert, Button } from 'antd';
-import useApi, { buildQueryKey } from '../../hooks/useApi.ts';
+import useApi, { buildQueryKey } from '../../hooks/useApi.tsx';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import styles from './AccountCustodian.module.css';
 import UserProfileSelect from '../user-profile-select';

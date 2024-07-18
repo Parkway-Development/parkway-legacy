@@ -1,7 +1,7 @@
 import styles from './ResetPasswordPage.module.css';
 import { Alert, Button, Card, Form, Input } from 'antd';
 import { Link, useParams } from 'react-router-dom';
-import useApi, { buildQueryKey } from '../../hooks/useApi';
+import useApi, { buildQueryKey } from '../../hooks/useApi.tsx';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { PasswordSettings } from '../../api';
 import { ReactNode } from 'react';
