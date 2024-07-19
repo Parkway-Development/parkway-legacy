@@ -45,7 +45,7 @@ const ContributionForm = ({
 
   const handleProfileChange = (value: string | undefined) =>
     form.setFieldsValue({
-      profile: value
+      contributorProfileId: value
     });
 
   const handleAccountsChange = (
@@ -149,9 +149,8 @@ const ContributionForm = ({
         </Form.Item>
 
         <Form.Item<ContributionWithoutId>
-          label="User Profile"
-          name="profile"
-          rules={[{ required: true, message: 'User profile is required.' }]}
+          label="Contributor"
+          name="contributorProfileId"
         >
           <UserProfileSelect
             onChange={handleProfileChange}

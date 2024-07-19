@@ -1,14 +1,24 @@
 import { BaseEntity } from './BaseEntity.ts';
 
+export type ContributionType =
+  | 'cash'
+  | 'check'
+  | 'credit'
+  | 'debit'
+  | 'ach'
+  | 'wire'
+  | 'crypto';
+
 export type Contribution = BaseEntity & {
-  profile: string;
+  contributorProfileId: string;
   gross: number;
   fees: number;
   net: number;
   accounts: ContributionAccount[];
   transactionDate: Date;
   depositId?: string;
-  type: string;
+  type: ContributionType;
+  notes: string[];
 };
 
 export interface ContributionAccount {

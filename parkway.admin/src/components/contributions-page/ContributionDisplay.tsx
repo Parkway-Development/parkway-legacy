@@ -42,7 +42,7 @@ const ContributionDisplay = (contribution: Contribution) => {
     {
       key: 7,
       label: 'User Profile',
-      children: <UserNameDisplay user={contribution.profile} />
+      children: <UserNameDisplay user={contribution.contributorProfileId} />
     },
     {
       key: 8,

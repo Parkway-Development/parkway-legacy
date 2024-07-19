@@ -59,13 +59,13 @@ export const contributionColumns: OrderedColumnsType<Contribution> = [
     render: (value: Contribution['accounts']) => value?.length ?? 0
   },
   {
-    title: 'User Profile',
+    title: 'Contributor',
     width: 200,
-    dataIndex: 'profile',
-    render: (value: Contribution['profile']) => (
+    dataIndex: 'contributorProfileId',
+    render: (value: Contribution['contributorProfileId']) => (
       <UserNameDisplay user={value} />
     ),
-    key: 'profile',
+    key: 'contributorProfileId',
     displayOrder: 8
   }
 ];
