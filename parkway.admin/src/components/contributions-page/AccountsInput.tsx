@@ -104,11 +104,11 @@ const AccountsInput = ({
       {rows}
       <div className={styles.footerLabel}>
         <span>Current Total:</span>
-        <MoneyDisplay money={currentTotal} />
+        <MoneyDisplay pennies={currentTotal} />
       </div>
       <div className={styles.footerLabel}>
         <span>Remaining:</span>
-        <MoneyDisplay money={remaining} />
+        <MoneyDisplay pennies={remaining} />
       </div>
     </div>
   );

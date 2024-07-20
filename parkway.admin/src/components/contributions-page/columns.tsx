@@ -11,7 +11,7 @@ export const contributionColumns: OrderedColumnsType<Contribution> = [
     key: 'gross',
     align: 'right',
     displayOrder: 1,
-    render: (value: Contribution['gross']) => <MoneyDisplay money={value} />
+    render: (value: Contribution['gross']) => <MoneyDisplay pennies={value} />
   },
   {
     title: 'Fees',
@@ -19,7 +19,7 @@ export const contributionColumns: OrderedColumnsType<Contribution> = [
     key: 'fees',
     align: 'right',
     displayOrder: 2,
-    render: (value: Contribution['fees']) => <MoneyDisplay money={value} />
+    render: (value: Contribution['fees']) => <MoneyDisplay pennies={value} />
   },
   {
     title: 'Net',
@@ -27,7 +27,7 @@ export const contributionColumns: OrderedColumnsType<Contribution> = [
     key: 'net',
     align: 'right',
     displayOrder: 3,
-    render: (value: Contribution['net']) => <MoneyDisplay money={value} />
+    render: (value: Contribution['net']) => <MoneyDisplay pennies={value} />
   },
   {
     title: 'Transaction Date',

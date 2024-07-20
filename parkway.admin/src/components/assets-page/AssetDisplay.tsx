@@ -13,7 +13,7 @@ const AssetDisplay = (asset: Asset) => {
     {
       key: 2,
       label: 'Value',
-      children: <MoneyDisplay money={asset.value} />
+      children: <MoneyDisplay pennies={asset.value} />
     },
     {
       key: 3,

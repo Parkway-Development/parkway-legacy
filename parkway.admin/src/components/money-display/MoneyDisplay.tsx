@@ -4,10 +4,12 @@ const negativeAmountStyle: CSSProperties = {
   color: 'red'
 };
 
-const MoneyDisplay = ({ money }: { money: number | undefined }) => {
+const MoneyDisplay = ({ pennies }: { pennies: number | undefined }) => {
+  const money = pennies ? pennies / 100 : 0;
+
   return (
-    <span style={money && money < 0 ? negativeAmountStyle : undefined}>
-      {(money ?? 0).toLocaleString('en-US', {
+    <span style={pennies && pennies < 0 ? negativeAmountStyle : undefined}>
+      {money.toLocaleString('en-US', {
         style: 'currency',
         currency: 'USD'
       })}

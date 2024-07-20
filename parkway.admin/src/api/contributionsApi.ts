@@ -15,7 +15,7 @@ type AccountPayload = {
   amount: number;
 };
 
-type IndividualContributionPayload = {
+export type IndividualContributionPayload = {
   gross: number;
   fees: number;
   net: number;
@@ -28,7 +28,7 @@ type IndividualContributionPayload = {
   responsiblePartyProfileId: string;
 };
 
-type CreateContributionPayload = IndividualContributionPayload[];
+export type CreateContributionPayload = IndividualContributionPayload[];
 
 type CreateContributionResponse = {
   successfulContributions: Contribution[];

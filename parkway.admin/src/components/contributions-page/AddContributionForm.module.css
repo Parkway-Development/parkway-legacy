@@ -1,0 +1,7 @@
+.table {
+    :global(.ant-form-item) {
+        margin: 0;
+    }
+
+    margin-bottom: 1em;
+}

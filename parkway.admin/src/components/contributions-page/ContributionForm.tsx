@@ -84,7 +84,7 @@ const ContributionForm = ({
             title: <Link to="/accounts/contributions">Contributions</Link>
           },
           {
-            title: initialValues ? 'Edit Contribution' : 'Add Contribution'
+            title: initialValuesProp ? 'Edit Contribution' : 'Add Contribution'
           }
         ]}
       />
@@ -116,7 +116,7 @@ const ContributionForm = ({
 
         <Form.Item<ContributionWithoutId> label="Net Amount" name="net">
           <span>
-            {!isNaN(netAmount) ? <MoneyDisplay money={netAmount} /> : '$0.00'}
+            {!isNaN(netAmount) ? <MoneyDisplay pennies={netAmount} /> : '$0.00'}
           </span>
         </Form.Item>
 

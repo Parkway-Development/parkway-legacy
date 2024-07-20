@@ -1,5 +1,4 @@
 import {
-  AddBaseApiEntityPage,
   BaseApiDataTablePage,
   EditBaseApiEntityPage
 } from '../base-data-table-page';
@@ -9,6 +8,7 @@ import ContributionDisplay from './ContributionDisplay.tsx';
 import ContributionForm from './ContributionForm.tsx';
 import { contributionColumns } from './columns.tsx';
 import ContributionTitle from './ContributionTitle.tsx';
+import AddContributionForm from './AddContributionForm.tsx';
 
 const sharedProps: SharedBasePageProps = {
   queryKey: 'contributions',
@@ -31,9 +31,7 @@ const ContributionPage = () => (
   <BaseDisplayPage {...sharedProps} render={ContributionDisplay} />
 );
 
-const AddContributionPage = () => (
-  <AddBaseApiEntityPage {...sharedProps} addForm={ContributionForm} />
-);
+const AddContributionPage = () => <AddContributionForm />;
 
 const EditContributionPage = () => (
   <EditBaseApiEntityPage {...sharedProps} editForm={ContributionForm} />
