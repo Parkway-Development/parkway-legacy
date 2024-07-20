@@ -1,7 +1,7 @@
 import styles from './LoginPage.module.css';
-import { Alert, Button, Card, Form, Image, Input } from 'antd';
+import { Alert, Button, Card, Form, Image, Input, Spin } from 'antd';
 import { InternalLoginResponse, useAuth } from '../../hooks/useAuth.tsx';
-import {Link, useNavigate} from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import useApi, { buildQueryKey } from '../../hooks/useApi.tsx';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { LoginFields } from '../../api';
@@ -57,6 +57,58 @@ const LoginPage = () => {
 
   const disabled = isPending || isLoading || !organizationId;
 
+  let content: React.ReactNode;
+
+  if (disabled) {
+    content = (
+      <div className={styles.loading}>
+        <Spin />
+      </div>
+    );
+  } else {
+    content = (
+      <Form
+        name="basic"
+        labelCol={{ span: 6 }}
+        wrapperCol={{ span: 16 }}
+        onFinish={handleLogin}
+        autoComplete="off"
+        disabled={disabled}
+      >
+        <Form.Item<LoginFields>
+          label="Email"
+          name="email"
+          rules={[
+            { required: true, message: 'Required' },
+            { type: 'email', message: 'Invalid email' }
+          ]}
+          validateTrigger="onBlur"
+        >
+          <Input autoFocus />
+        </Form.Item>
+
+        <Form.Item<LoginFields>
+          label="Password"
+          name="password"
+          rules={[{ required: true, message: 'Required' }]}
+        >
+          <Input.Password />
+        </Form.Item>
+
+        <Form.Item wrapperCol={{ offset: 6, span: 16 }}>
+          <Button
+            type="primary"
+            htmlType="submit"
+            disabled={isPending}
+            loading={isPending}
+          >
+            Submit
+          </Button>
+        </Form.Item>
+      </Form>
+    );
+  }
+
   return (
     <div className="entryPage">
       <Card
@@ -80,45 +132,7 @@ const LoginPage = () => {
             message="Unable to load organization configuration."
           />
         ) : null}
-        <Form
-          name="basic"
-          labelCol={{ span: 6 }}
-          wrapperCol={{ span: 16 }}
-          onFinish={handleLogin}
-          autoComplete="off"
-          disabled={disabled}
-        >
-          <Form.Item<LoginFields>
-            label="Email"
-            name="email"
-            rules={[
-              { required: true, message: 'Required' },
-              { type: 'email', message: 'Invalid email' }
-            ]}
-            validateTrigger="onBlur"
-          >
-            <Input autoFocus />
-          </Form.Item>
-
-          <Form.Item<LoginFields>
-            label="Password"
-            name="password"
-            rules={[{ required: true, message: 'Required' }]}
-          >
-            <Input.Password />
-          </Form.Item>
-
-          <Form.Item wrapperCol={{ offset: 6, span: 16 }}>
-            <Button
-              type="primary"
-              htmlType="submit"
-              disabled={isPending}
-              loading={isPending}
-            >
-              Submit
-            </Button>
-          </Form.Item>
-        </Form>
+        {content}
         {error && (
           <Alert
             className={styles.error}
