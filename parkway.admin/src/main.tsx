@@ -84,7 +84,13 @@ import {
   AttendancePage,
   AttendancesPage,
   EditAttendancePage
-} from "./components/attendance-page";
+} from './components/attendance-page';
+import {
+  AddDepositPage,
+  DepositPage,
+  DepositsPage,
+  EditDepositPage
+} from './components/deposits-page';
 
 const MAX_RETRIES = 6;
 const HTTP_STATUS_TO_NOT_RETRY = [400, 401, 403, 404];
@@ -154,6 +160,12 @@ createRoot(document.getElementById('root')!).render(
                     <Route path=":id/edit" element={<EditContributionPage />} />
                     <Route index element={<ContributionsPage />} />
                   </Route>
+                  <Route path="deposits">
+                    <Route path="add" element={<AddDepositPage />} />
+                    <Route path=":id" element={<DepositPage />} />
+                    <Route path=":id/edit" element={<EditDepositPage />} />
+                    <Route index element={<DepositsPage />} />
+                  </Route>
                   <Route path="vendors">
                     <Route path="add" element={<AddVendorPage />} />
                     <Route path=":id" element={<VendorPage />} />
@@ -167,23 +179,25 @@ createRoot(document.getElementById('root')!).render(
                 </Route>
                 <Route
                   path="attendance"
-                element={<ClaimRoute claim="attendance" />}
-              >
-                <Route path="add" element={<AddAttendancePage />} />
-                <Route path=":id" element={<AttendancePage />} />
-                <Route path=":id/edit" element={<EditAttendancePage />} />
-                <Route index element={<AttendancesPage />} />
-              </Route>
-              <Route
-                path="events"
-                element={
-                  <ClaimRoute claim="calendarManagement" allowTeamLeads />
-                }
-              >
-                <Route path="categories">
-                  <Route path="add" element={<AddEventCategoryPage />} />
-                  <Route path=":id" element={<EventCategoryPage />} />
-                  <Route path=":id/edit" element={<EditEventCategoryPage />}
+                  element={<ClaimRoute claim="attendance" />}
+                >
+                  <Route path="add" element={<AddAttendancePage />} />
+                  <Route path=":id" element={<AttendancePage />} />
+                  <Route path=":id/edit" element={<EditAttendancePage />} />
+                  <Route index element={<AttendancesPage />} />
+                </Route>
+                <Route
+                  path="events"
+                  element={
+                    <ClaimRoute claim="calendarManagement" allowTeamLeads />
+                  }
+                >
+                  <Route path="categories">
+                    <Route path="add" element={<AddEventCategoryPage />} />
+                    <Route path=":id" element={<EventCategoryPage />} />
+                    <Route
+                      path=":id/edit"
+                      element={<EditEventCategoryPage />}
                     />
                     <Route index element={<EventCategoriesPage />} />
                   </Route>

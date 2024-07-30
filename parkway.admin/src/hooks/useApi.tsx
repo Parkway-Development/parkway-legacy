@@ -8,6 +8,7 @@ import {
   buildAssetsApi,
   buildAttendanceApi,
   buildContributionsApi,
+  buildDepositsApi,
   buildEnumsApi,
   buildEventCategoriesApi,
   buildEventsApi,
@@ -17,6 +18,7 @@ import {
   buildUsersApi,
   buildVendorsApi,
   ContributionsApiType,
+  DepositsApiType,
   EnumsApiType,
   EventCategoriesApiType,
   EventsApiType,
@@ -38,6 +40,7 @@ export interface BaseApiTypes {
   assetsApi: AssetsApiType;
   attendanceApi: AttendanceApiType;
   contributionsApi: ContributionsApiType;
+  depositsApi: DepositsApiType;
   enumsApi: EnumsApiType;
   eventCategoriesApi: EventCategoriesApiType;
   eventsApi: EventsApiType;
@@ -60,6 +63,7 @@ export type QueryType =
   | 'attendance'
   | 'attendanceEntry'
   | 'contributions'
+  | 'deposits'
   | 'enums'
   | 'eventCategories'
   | 'events'
@@ -129,6 +133,7 @@ export const ApiProvider = ({ children }: { children: ReactNode }) => {
     assetsApi: buildAssetsApi(instance),
     attendanceApi: buildAttendanceApi(instance),
     contributionsApi: buildContributionsApi(instance),
+    depositsApi: buildDepositsApi(instance),
     enumsApi: buildEnumsApi(instance),
     eventCategoriesApi: buildEventCategoriesApi(instance),
     eventsApi: buildEventsApi(instance),

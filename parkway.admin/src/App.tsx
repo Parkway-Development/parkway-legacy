@@ -86,6 +86,12 @@ function App() {
               Contributions
             </ResponsiveLink>
           )
+        },
+        {
+          key: itemKey++,
+          label: (
+            <ResponsiveLink to="/accounts/deposits">Deposits</ResponsiveLink>
+          )
         }
         /*{
           key: itemKey++,
@@ -98,11 +104,7 @@ function App() {
   if (hasClaim('attendance')) {
     items.push({
       key: itemKey++,
-      label: (
-        <ResponsiveLink to="/attendance">
-          Attendance
-        </ResponsiveLink>
-      )
+      label: <ResponsiveLink to="/attendance">Attendance</ResponsiveLink>
     });
   }
 
