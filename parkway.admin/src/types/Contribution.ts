@@ -17,11 +17,12 @@ export type Contribution = BaseEntity & {
   accounts: ContributionAccount[];
   transactionDate: Date;
   depositId?: string;
+  processedDate?: Date;
   type: ContributionType;
   notes: string[];
 };
 
 export interface ContributionAccount {
-  account: string;
+  accountId: string;
   amount: number;
 }

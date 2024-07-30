@@ -31,6 +31,7 @@ import {
 import { QueryClient } from '@tanstack/react-query';
 import { addDateConversionInterceptor } from '../utilities';
 import { createContext, ReactNode, useContext } from 'react';
+import { ApplicationError } from '../types/ApplicationError.ts';
 
 export type GenericResponse = Promise<AxiosResponse<unknown, unknown>>;
 export type TypedResponse<T> = Promise<Omit<AxiosResponse<T>, 'config'>>;
@@ -51,7 +52,7 @@ export interface BaseApiTypes {
 }
 
 export type ApiType = BaseApiTypes & {
-  formatError: (error: Error | null) => string;
+  formatError: (error: Error | ApplicationError | string | null) => string;
   generalApi: GeneralApiType;
 };
 
@@ -107,7 +108,7 @@ const createInstance = (token: string | undefined) => {
 export const ApiProvider = ({ children }: { children: ReactNode }) => {
   const { token, logout } = useAuth();
 
-  const formatError = (error: Error | null) => {
+  const formatError = (error: Error | ApplicationError | string | null) => {
     if (error instanceof AxiosError) {
       if (error.response?.status === 401 && token) {
         logout();
@@ -121,6 +122,10 @@ export const ApiProvider = ({ children }: { children: ReactNode }) => {
       if (typeof message === 'string') {
         return message;
       }
+    } else if (typeof error === 'string') {
+      return error;
+    } else if (error && error.message) {
+      return error.message;
     }
 
     return 'Unexpected error';

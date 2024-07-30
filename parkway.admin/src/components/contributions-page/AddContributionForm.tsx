@@ -1,67 +1,135 @@
-import { Breadcrumb, Button, Form, Input, Table } from 'antd';
-import { Link } from 'react-router-dom';
+import { Alert, Breadcrumb, Form, Input } from 'antd';
+import { Link, useNavigate } from 'react-router-dom';
 import { BaseFormFooter } from '../base-data-table-page';
 import UserProfileSelect from '../user-profile-select';
 import MoneyDisplay from '../money-display';
 import DatePicker from '../date-picker';
-import { IndividualContributionPayload } from '../../api';
+import {
+  CreateContributionPayload,
+  IndividualContributionPayload
+} from '../../api';
 import { getDateString } from '../../utilities';
-import { useState } from 'react';
-import styles from './AddContributionForm.module.css';
-import { CloseOutlined, PlusCircleOutlined } from '@ant-design/icons';
+import { ReactNode, useCallback, useState } from 'react';
+import AccountsInput from './AccountsInput.tsx';
+import { ContributionAccount, ContributionType } from '../../types';
+import { BaseSelect } from '../base-select';
+import useApi, { buildQueryKey } from '../../hooks/useApi.tsx';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-type AddContributionFormValues = {
-  transactionDate: string;
-  depositId?: string;
-  contributions: IndividualContributionPayload[];
-};
+type AddContributionFormValues = IndividualContributionPayload;
 
-const emptyContribution: IndividualContributionPayload = {
-  gross: 0,
-  fees: 0,
-  net: 0,
-  accounts: [],
-  transactionDate: '',
-  type: 'cash',
-  notes: [],
-  responsiblePartyProfileId: ''
-};
+const ContributionTypeOptions: { label: string; value: ContributionType }[] = [
+  {
+    value: 'cash',
+    label: 'Cash'
+  },
+  {
+    value: 'check',
+    label: 'Check'
+  },
+  {
+    value: 'credit',
+    label: 'Credit'
+  },
+  {
+    value: 'debit',
+    label: 'Debit'
+  },
+  {
+    value: 'ach',
+    label: 'ACH'
+  },
+  {
+    value: 'wire',
+    label: 'Wire'
+  },
+  {
+    value: 'crypto',
+    label: 'Crypto'
+  }
+];
 
 const AddContributionForm = () => {
+  const queryClient = useQueryClient();
+  const {
+    contributionsApi: { create },
+    formatError
+  } = useApi();
+
+  const { mutate, isPending, error, data } = useMutation({
+    mutationFn: create
+  });
+
+  let errorMessage: ReactNode;
+
+  if (error) {
+    errorMessage = formatError(error);
+  } else if (data?.data.failedContributions.length) {
+    errorMessage = formatError(data.data.failedContributions[0].errors[0]);
+  }
+
+  const navigate = useNavigate();
   const [form] = Form.useForm<AddContributionFormValues>();
+
+  const [isAccountBalanceValid, setIsAccountBalanceValid] =
+    useState<boolean>(false);
+
+  const gross = Form.useWatch('gross', form) ?? 0;
+  const fees = Form.useWatch('fees', form) ?? 0;
+  const type = Form.useWatch('type', form) ?? 0;
+  const net = gross - fees;
+
   const [initialValues] = useState<AddContributionFormValues>(() => ({
     transactionDate: getDateString(new Date())!,
-    contributions: [{ ...emptyContribution }]
+    accounts: [],
+    gross: 0,
+    net: 0,
+    fees: 0,
+    type: 'cash',
+    notes: [],
+    contributorProfileId: '',
+    responsiblePartyProfileId: ''
   }));
 
-  const handleProfileChange = (value: string | undefined, index: number) => {
-    const contributions = form.getFieldValue('contributions') || [];
+  const handleCancel = () => navigate(`/accounts/contributions`);
 
-    if (contributions[index]) {
-      contributions[index]['contributorProfileId'] = value;
-      form.setFieldsValue({ contributions });
-    }
+  const handleProfileChange = (value: string | undefined) => {
+    form.setFieldsValue({ contributorProfileId: value });
   };
 
-  const handleMoneyChange = (index: number) => {
-    const contributions = form.getFieldValue('contributions') || [];
-
-    if (contributions[index]) {
-      const gross = contributions[index]['gross'];
-      const fees = contributions[index]['fees'];
-      const net = gross - fees;
-      console.log('net', net);
-
-      if (!isNaN(net)) {
-        contributions[index]['net'] = net;
-        console.log('setting net', contributions);
-        form.setFieldsValue({ contributions: [...contributions] });
-      }
-    }
+  const handleResponsiblePartyChange = (value: string | undefined) => {
+    form.setFieldsValue({ responsiblePartyProfileId: value });
   };
+
+  const handleAccountsChange = useCallback(
+    (accounts: ContributionAccount[], isValid: boolean) => {
+      form.setFieldsValue({
+        accounts
+      });
+
+      setIsAccountBalanceValid(isValid);
+    },
+    [form]
+  );
 
   const handleSave = (values: AddContributionFormValues) => {
-    console.log('values', values);
+    const payload: CreateContributionPayload = [
+      {
+        ...values,
+        net: values.gross - values.fees
+      }
+    ];
+
+    mutate(payload, {
+      onSuccess: (data) => {
+        if (data.data.successfulContributions.length) {
+          queryClient.invalidateQueries({
+            queryKey: buildQueryKey('contributions')
+          });
+          handleCancel();
+        }
+      }
+    });
   };
 
   return (
@@ -101,166 +169,113 @@ const AddContributionForm = () => {
           label="Deposit Id"
           name="depositId"
         >
-          <Input />
+          <Input readOnly disabled />
         </Form.Item>
 
-        <Form.List name="contributions">
-          {/* eslint-disable-next-line @typescript-eslint/no-unused-vars */}
-          {(fields, { add, remove }) => (
-            <>
-              <Table
-                className={styles.table}
-                size="small"
-                dataSource={fields}
-                pagination={false}
-                rowKey="key"
-                columns={[
-                  {
-                    title: 'Contributor',
-                    dataIndex: 'contributorProfileId',
-                    key: 'contributorProfileId',
-                    render: (_, field, index) => (
-                      <Form.Item name={[field.name, 'contributorProfileId']}>
-                        <UserProfileSelect
-                          onChange={(value: string | undefined) =>
-                            handleProfileChange(value, index)
-                          }
-                        />
-                      </Form.Item>
-                    )
-                  },
-                  {
-                    title: 'Gross Amount',
-                    dataIndex: 'gross',
-                    key: 'gross',
-                    align: 'center',
-                    width: 120,
-                    render: (_, field, index) => (
-                      <Form.Item
-                        name={[field.name, 'gross']}
-                        rules={[
-                          {
-                            required: true,
-                            message: 'Gross amount is required.'
-                          }
-                        ]}
-                        wrapperCol={{ span: 24 }}
-                      >
-                        <Input
-                          type="number"
-                          style={{ textAlign: 'right' }}
-                          onChange={() => handleMoneyChange(index)}
-                        />
-                      </Form.Item>
-                    )
-                  },
-                  {
-                    title: 'Fees',
-                    dataIndex: 'fees',
-                    key: 'fees',
-                    align: 'center',
-                    width: 120,
-                    render: (_, field, index) => (
-                      <Form.Item
-                        name={[field.name, 'fees']}
-                        rules={[
-                          { required: true, message: 'Fee amount is required.' }
-                        ]}
-                        wrapperCol={{ span: 24 }}
-                      >
-                        <Input
-                          type="number"
-                          style={{ textAlign: 'right' }}
-                          onChange={() => handleMoneyChange(index)}
-                        />
-                      </Form.Item>
-                    )
-                  },
-                  {
-                    title: 'Net Amount',
-                    dataIndex: 'net',
-                    align: 'center',
-                    key: 'net',
-                    width: 120,
-                    render: (_, field, index) => {
-                      const netAmount = form.getFieldValue([
-                        'contributions',
-                        field.name,
-                        'net'
-                      ]);
-                      return (
-                        <Form.Item
-                          name={[field.name, 'net']}
-                          wrapperCol={{ span: 24 }}
-                          shouldUpdate={(
-                            prevValues: AddContributionFormValues,
-                            curValues: AddContributionFormValues
-                          ) =>
-                            prevValues.contributions?.[index]?.gross !==
-                            curValues.contributions?.[index]?.gross
-                          }
-                        >
-                          <span>
-                            {!isNaN(netAmount) ? (
-                              <MoneyDisplay pennies={netAmount} />
-                            ) : (
-                              '$0.00'
-                            )}
-                          </span>
-                        </Form.Item>
-                      );
-                    }
-                  },
-                  {
-                    title: 'Type',
-                    dataIndex: 'type',
-                    key: 'type',
-                    render: (_, field) => (
-                      <Form.Item
-                        name={[field.name, 'type']}
-                        rules={[
-                          { required: true, message: 'Type is required.' }
-                        ]}
-                      >
-                        <Input />
-                      </Form.Item>
-                    )
-                  },
-                  {
-                    title: 'Accounts',
-                    dataIndex: 'accounts',
-                    key: 'accounts',
-                    render: (_, field) => (
-                      <Form.Item name={[field.name, 'accounts']}>
-                        <Input />
-                      </Form.Item>
-                    )
-                  },
-                  {
-                    title: 'Remove',
-                    key: 'remove',
-                    render: (_, __, index) => (
-                      <Button
-                        onClick={() => remove(index)}
-                        disabled={fields.length <= 1}
-                      >
-                        <CloseOutlined />
-                      </Button>
-                    )
-                  }
-                ]}
-              />{' '}
-              <Button onClick={() => add({ ...emptyContribution })}>
-                <PlusCircleOutlined />
-              </Button>
-            </>
-          )}
-        </Form.List>
+        <Form.Item<AddContributionFormValues>
+          label="Responsible Party"
+          name="responsiblePartyProfileId"
+          rules={[
+            {
+              required: true,
+              whitespace: true,
+              message: 'Responsible party is required.'
+            }
+          ]}
+        >
+          <UserProfileSelect
+            onChange={(value: string | undefined) =>
+              handleResponsiblePartyChange(value)
+            }
+          />
+        </Form.Item>
+
+        <Form.Item<AddContributionFormValues>
+          label="Contributor"
+          name="contributorProfileId"
+          rules={[
+            {
+              required: true,
+              whitespace: true,
+              message: 'Contributor is required.'
+            }
+          ]}
+        >
+          <UserProfileSelect
+            onChange={(value: string | undefined) => handleProfileChange(value)}
+          />
+        </Form.Item>
+
+        <Form.Item<AddContributionFormValues>
+          name="gross"
+          label="Gross"
+          rules={[
+            {
+              required: true,
+              message: 'Gross amount is required.'
+            }
+          ]}
+        >
+          <Input type="number" />
+        </Form.Item>
+
+        <Form.Item<AddContributionFormValues>
+          name="fees"
+          label="Fees"
+          rules={[
+            {
+              required: true,
+              message: 'Fee amount is required.'
+            }
+          ]}
+        >
+          <Input type="number" />
+        </Form.Item>
+
+        <Form.Item<AddContributionFormValues> name="net" label="Net Amount">
+          <span>{!isNaN(net) ? <MoneyDisplay pennies={net} /> : '$0.00'}</span>
+        </Form.Item>
+
+        <Form.Item<AddContributionFormValues>
+          label="Type"
+          name="type"
+          rules={[{ required: true, message: 'Type is required.' }]}
+        >
+          <BaseSelect
+            value={type}
+            onChange={(value) => {
+              if (value) {
+                form.setFieldsValue({ type: value });
+              }
+            }}
+            options={ContributionTypeOptions}
+          />
+        </Form.Item>
+
+        <Form.Item<AddContributionFormValues> label="Accounts">
+          <AccountsInput
+            onChange={handleAccountsChange}
+            totalAmount={net}
+            initialValue={undefined}
+          />
+        </Form.Item>
+
+        <div style={{ display: 'none' }}>
+          <Form.Item<AddContributionFormValues> name="accounts"></Form.Item>
+        </div>
+
+        {errorMessage && (
+          <Alert
+            message={errorMessage}
+            type="error"
+            style={{ marginBottom: '1em' }}
+          />
+        )}
 
         <BaseFormFooter
-          isDisabled={false}
-          isLoading={false}
-          onCancel={() => {}}
+          isDisabled={net === 0 || !isAccountBalanceValid}
+          isLoading={isPending}
+          onCancel={handleCancel}
         />
       </Form>
     </>

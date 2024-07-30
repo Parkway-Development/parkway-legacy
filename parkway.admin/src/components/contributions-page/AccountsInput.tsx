@@ -7,14 +7,14 @@ import { CloseOutlined, PlusCircleOutlined } from '@ant-design/icons';
 import MoneyDisplay from '../money-display';
 
 interface ContributionAccountInput {
-  account: string | undefined;
+  accountId: string | undefined;
   amount: number;
 }
 
 interface AccountsInputProps {
   totalAmount: number;
   onChange: (accounts: ContributionAccount[], isValid: boolean) => void;
-  initialValue: ContributionAccount[] | undefined;
+  initialValue: ContributionAccountInput[] | undefined;
 }
 
 const AccountsInput = ({
@@ -23,7 +23,9 @@ const AccountsInput = ({
   initialValue
 }: AccountsInputProps) => {
   const [accounts, setAccounts] = useState<ContributionAccountInput[]>(() => {
-    return initialValue ?? [{ account: undefined, amount: 0 }];
+    return initialValue && initialValue.length
+      ? initialValue
+      : [{ accountId: undefined, amount: 0 }];
   });
 
   const currentTotal = accounts.reduce((p, account) => p + account.amount, 0);
@@ -34,8 +36,8 @@ const AccountsInput = ({
 
   useEffect(() => {
     const changeValues = accounts
-      .filter((account) => account.account !== undefined)
-      .map(({ account, amount }) => ({ account: account!, amount }));
+      .filter((account) => account.accountId !== undefined)
+      .map(({ accountId, amount }) => ({ accountId: accountId!, amount }));
 
     onChange(changeValues, totalAmount > 0 && remaining === 0);
   }, [accounts, remaining, onChange, totalAmount]);
@@ -44,7 +46,7 @@ const AccountsInput = ({
     (index: number, value: string | undefined) => {
       setAccounts((prev) =>
         prev.map((input, i) =>
-          i === index ? { ...input, account: value } : input
+          i === index ? { ...input, accountId: value } : input
         )
       );
     },
@@ -64,7 +66,7 @@ const AccountsInput = ({
   }, []);
 
   const handleAddRow = () => {
-    setAccounts((prev) => [...prev, { account: undefined, amount: 0 }]);
+    setAccounts((prev) => [...prev, { accountId: undefined, amount: 0 }]);
   };
 
   const handleDeleteRow = (rowIndex: number) => {
@@ -75,12 +77,11 @@ const AccountsInput = ({
     return (
       <div key={index} className={styles.accountRow}>
         <AccountSelect
-          value={input.account}
+          value={input.accountId}
           onChange={(value) => handleAccountChange(index, value)}
         />
         <Input
           type="number"
-          step={0.01}
           onChange={(e: SyntheticEvent<HTMLInputElement>) =>
             handleAmountChange(index, e.currentTarget.value)
           }
