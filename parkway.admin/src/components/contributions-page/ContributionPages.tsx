@@ -21,6 +21,7 @@ const ContributionsPage = () => (
     {...sharedProps}
     columns={contributionColumns}
     title="Contributions"
+    allowEdit={false}
     responsiveCardRenderer={(contribution) => (
       <ContributionTitle contribution={contribution} />
     )}

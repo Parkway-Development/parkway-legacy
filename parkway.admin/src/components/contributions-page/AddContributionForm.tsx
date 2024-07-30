@@ -11,7 +11,7 @@ import {
 import { getDateString } from '../../utilities';
 import { ReactNode, useCallback, useState } from 'react';
 import AccountsInput from './AccountsInput.tsx';
-import { ContributionAccount, ContributionType } from '../../types';
+import { ContributionAccount, ContributionType, Deposit } from '../../types';
 import { BaseSelect } from '../base-select';
 import useApi, { buildQueryKey } from '../../hooks/useApi.tsx';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -49,7 +49,17 @@ const ContributionTypeOptions: { label: string; value: ContributionType }[] = [
   }
 ];
 
-const AddContributionForm = () => {
+type AddContributionFormProps = {
+  isModalContext?: boolean;
+  deposit?: Deposit;
+  onCancel?: () => void;
+};
+
+const AddContributionForm = ({
+  isModalContext,
+  deposit,
+  onCancel
+}: AddContributionFormProps) => {
   const queryClient = useQueryClient();
   const {
     contributionsApi: { create },
@@ -88,10 +98,17 @@ const AddContributionForm = () => {
     type: 'cash',
     notes: [],
     contributorProfileId: '',
-    responsiblePartyProfileId: ''
+    depositId: deposit?._id,
+    responsiblePartyProfileId: deposit?.responsiblePartyProfileId ?? ''
   }));
 
-  const handleCancel = () => navigate(`/accounts/contributions`);
+  const handleCancel = () => {
+    if (onCancel) {
+      onCancel();
+    } else {
+      navigate(`/accounts/contributions`);
+    }
+  };
 
   const handleProfileChange = (value: string | undefined) => {
     form.setFieldsValue({ contributorProfileId: value });
@@ -134,24 +151,26 @@ const AddContributionForm = () => {
 
   return (
     <>
-      <Breadcrumb
-        items={[
-          {
-            title: <Link to="/accounts">Accounts</Link>
-          },
-          {
-            title: <Link to="/accounts/contributions">Contributions</Link>
-          },
-          {
-            title: 'Add Contribution'
-          }
-        ]}
-      />
+      {!isModalContext && (
+        <Breadcrumb
+          items={[
+            {
+              title: <Link to="/accounts">Accounts</Link>
+            },
+            {
+              title: <Link to="/accounts/contributions">Contributions</Link>
+            },
+            {
+              title: 'Add Contribution'
+            }
+          ]}
+        />
+      )}
       <Form<AddContributionFormValues>
         form={form}
         name="basic"
-        labelCol={{ span: 3 }}
-        wrapperCol={{ span: 12 }}
+        labelCol={{ span: 4 }}
+        wrapperCol={{ span: 18 }}
         onFinish={handleSave}
         autoComplete="off"
         disabled={false}
@@ -165,30 +184,35 @@ const AddContributionForm = () => {
           <DatePicker />
         </Form.Item>
 
-        <Form.Item<AddContributionFormValues>
-          label="Deposit Id"
-          name="depositId"
-        >
-          <Input readOnly disabled />
-        </Form.Item>
+        {!isModalContext && (
+          <>
+            <Form.Item<AddContributionFormValues>
+              label="Deposit Id"
+              name="depositId"
+            >
+              <Input readOnly disabled />
+            </Form.Item>
 
-        <Form.Item<AddContributionFormValues>
-          label="Responsible Party"
-          name="responsiblePartyProfileId"
-          rules={[
-            {
-              required: true,
-              whitespace: true,
-              message: 'Responsible party is required.'
-            }
-          ]}
-        >
-          <UserProfileSelect
-            onChange={(value: string | undefined) =>
-              handleResponsiblePartyChange(value)
-            }
-          />
-        </Form.Item>
+            <Form.Item<AddContributionFormValues>
+              label="Responsible Party"
+              name="responsiblePartyProfileId"
+              rules={[
+                {
+                  required: true,
+                  whitespace: true,
+                  message: 'Responsible party is required.'
+                }
+              ]}
+            >
+              <UserProfileSelect
+                initialValue={deposit?.responsiblePartyProfileId}
+                onChange={(value: string | undefined) =>
+                  handleResponsiblePartyChange(value)
+                }
+              />
+            </Form.Item>
+          </>
+        )}
 
         <Form.Item<AddContributionFormValues>
           label="Contributor"
@@ -262,6 +286,12 @@ const AddContributionForm = () => {
 
         <div style={{ display: 'none' }}>
           <Form.Item<AddContributionFormValues> name="accounts"></Form.Item>
+          {isModalContext && (
+            <>
+              <Form.Item<AddContributionFormValues> name="depositId"></Form.Item>
+              <Form.Item<AddContributionFormValues> name="responsiblePartyProfileId"></Form.Item>
+            </>
+          )}
         </div>
 
         {errorMessage && (

@@ -3,6 +3,7 @@ import { OrderedColumnsType } from '../../hooks/useColumns.tsx';
 import { UserNameDisplay } from '../user-name-display';
 import DateDisplay from '../date-display';
 import MoneyDisplay from '../money-display';
+import { Link } from 'react-router-dom';
 
 export const contributionColumns: OrderedColumnsType<Contribution> = [
   {
@@ -42,7 +43,10 @@ export const contributionColumns: OrderedColumnsType<Contribution> = [
     title: 'Deposit Id',
     dataIndex: 'depositId',
     key: 'depositId',
-    displayOrder: 5
+    displayOrder: 5,
+    render: (value: Contribution['depositId']) => (
+      <Link to={`/accounts/deposits/${value}`}>{value}</Link>
+    )
   },
   {
     title: 'Type',

@@ -3,6 +3,8 @@ import { Descriptions, DescriptionsProps } from 'antd';
 import MoneyDisplay from '../money-display';
 import DateDisplay from '../date-display';
 import { UserNameDisplay } from '../user-name-display';
+import AddContributionModal from './AddContributionModal.tsx';
+import styles from './DepositDisplay.module.css';
 
 const DepositDisplay = (deposit: Deposit) => {
   const items: DescriptionsProps['items'] = [
@@ -34,13 +36,18 @@ const DepositDisplay = (deposit: Deposit) => {
   ];
 
   return (
-    <Descriptions
-      size="small"
-      title={<DateDisplay date={deposit.created} />}
-      items={items}
-      bordered
-      column={1}
-    />
+    <>
+      <Descriptions
+        size="small"
+        title={<DateDisplay date={deposit.created} />}
+        items={items}
+        bordered
+        column={1}
+      />
+      <div className={styles.actionsContainer}>
+        <AddContributionModal deposit={deposit} />
+      </div>
+    </>
   );
 };
 
