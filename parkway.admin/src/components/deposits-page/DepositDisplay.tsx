@@ -110,6 +110,12 @@ const DepositDisplay = () => {
     return <Spin />;
   }
 
+  const totalContributions = contributions
+    ? contributions.reduce((sum, current) => sum + current.net, 0)
+    : 0;
+
+  const remaining = deposit.amount - totalContributions;
+
   const handleCancel = () => navigate('/accounts/deposits');
 
   const handleEdit = () => navigate('./edit');
@@ -132,11 +138,21 @@ const DepositDisplay = () => {
     },
     {
       key: 4,
+      label: 'Total Contributions',
+      children: <MoneyDisplay pennies={totalContributions} />
+    },
+    {
+      key: 5,
+      label: 'Remaining Amount',
+      children: <MoneyDisplay pennies={remaining} />
+    },
+    {
+      key: 6,
       label: 'Status',
       children: deposit.currentStatus
     },
     {
-      key: 5,
+      key: 7,
       label: 'Responsible Party',
       children: <UserNameDisplay user={deposit.responsiblePartyProfileId} />
     }
