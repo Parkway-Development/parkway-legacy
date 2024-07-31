@@ -11,7 +11,7 @@ const ContributionTitle = ({ contribution }: ContributionTitleProps) => {
     <>
       <DateDisplay date={contribution.transactionDate} />
       {' - '}
-      <UserNameDisplay user={contribution.profile} />
+      <UserNameDisplay user={contribution.contributorProfileId} />
     </>
   );
 };

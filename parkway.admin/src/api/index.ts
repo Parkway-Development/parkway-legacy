@@ -3,6 +3,7 @@ export * from './assetsApi.ts';
 export * from './attendanceApi.ts';
 export * from './baseApi.ts';
 export * from './contributionsApi.ts';
+export * from './depositsApi.ts';
 export * from './enumsApi.ts';
 export * from './eventCategoriesApi.ts';
 export * from './eventsApi.ts';

@@ -9,6 +9,7 @@ import {
   AttendanceApiType,
   BaseApiType,
   ContributionsApiType,
+  DepositsApiType,
   EnumsApiType,
   EventCategoriesApiType,
   EventsApiType,
@@ -24,6 +25,7 @@ import {
   Attendance,
   BaseEntity,
   Contribution,
+  Deposit,
   Enum,
   Event,
   EventCategory,
@@ -79,6 +81,7 @@ export type MockApiType = Partial<{
   assetsApi: Partial<AssetsApiType>;
   attendanceApi: Partial<AttendanceApiType>;
   contributionsApi: Partial<ContributionsApiType>;
+  depositsApi: Partial<DepositsApiType>;
   enumsApi: Partial<EnumsApiType>;
   eventCategoriesApi: Partial<EventCategoriesApiType>;
   eventsApi: Partial<EventsApiType>;
@@ -96,6 +99,7 @@ export const mockApi = (
     assetsApi,
     attendanceApi,
     contributionsApi,
+    depositsApi,
     enumsApi,
     eventCategoriesApi,
     eventsApi,
@@ -108,7 +112,10 @@ export const mockApi = (
   }: MockApiType = {}
 ) => {
   vi.mocked(useApiFn).mockReturnValue({
-    formatError: (error) => error?.message ?? 'unknown error',
+    formatError: (error) => {
+      if (typeof error === 'string') return error;
+      return error?.message ?? 'unknown error';
+    },
     usersApi: {
       ...mockBaseApi<UserProfile>(usersApi),
       joinProfileAndUser: vi.fn(),
@@ -133,7 +140,16 @@ export const mockApi = (
       deleteEntry: vi.fn(),
       updateEntry: vi.fn()
     },
-    contributionsApi: mockBaseApi<Contribution>(contributionsApi),
+    contributionsApi: {
+      //@ts-expect-error this is fine
+      ...mockBaseApi<Contribution>(contributionsApi),
+      create: vi.fn(),
+      getByDepositId: vi.fn()
+    },
+    depositsApi: {
+      ...mockBaseApi<Deposit>(depositsApi),
+      create: vi.fn()
+    },
     enumsApi: mockBaseApi<Enum>(enumsApi),
     eventCategoriesApi: mockBaseApi<EventCategory>(eventCategoriesApi),
     eventsApi: {

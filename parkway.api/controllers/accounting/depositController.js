@@ -19,7 +19,9 @@ const createDeposit = async (req, res, next) => {
         let deposit = new Deposit;
         deposit.amount = amount;
         deposit.currentStatus = DepositStatus.UNDEPOSITED;
+        deposit.created = new Date();
         deposit.statusDate = new Date();
+        deposit.responsiblePartyProfileId = responsiblePartyProfileId;
         deposit.history.push({status: deposit.currentStatus, date: deposit.statusDate, responsiblePartyProfileId: responsiblePartyProfileId});
 
         const validationError = deposit.validateSync();

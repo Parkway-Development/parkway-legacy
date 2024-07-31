@@ -164,12 +164,27 @@ const addContribution = async (data) => {
 
 //TODO: Add pagination
 const getAllContributions = async (req, res, next) => {
-
     try {
         const contributions = await Contribution.find({});
         
         if(contributions.length === 0) { return res.status(204).json({contributions: contributions, message: 'No contributions were returned.'})}
         
+        return res.status(200).json(contributions);
+    } catch (error) {
+        next(error)
+        console.log({method: error.method, message: error.message});
+    }
+}
+
+const getContributionsByDeposit = async (req, res, next) => {
+    try {
+        const depositId = req.params.id;
+        if (!depositId) { throw new AppError.MissingId('getContributionsByDeposit'); }
+
+        const contributions = await Contribution.find({ depositId });
+
+        if(contributions.length === 0) { return res.status(204).json({contributions: contributions, message: 'No contributions were returned.'})}
+
         return res.status(200).json(contributions);
     } catch (error) {
         next(error)
@@ -430,5 +445,6 @@ module.exports = {
     getContributionsByAccountId,
     getContributionsByDateRange,
     updateContribution,
-    deleteContribution
+    deleteContribution,
+    getContributionsByDeposit
 }

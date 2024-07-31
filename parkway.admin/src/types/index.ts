@@ -3,6 +3,7 @@ export * from './Asset.ts';
 export * from './Attendance.ts';
 export * from './BaseEntity.ts';
 export * from './Contribution.ts';
+export * from './Deposit.ts';
 export * from './Enum.ts';
 export * from './Event.ts';
 export * from './EventCategory.ts';

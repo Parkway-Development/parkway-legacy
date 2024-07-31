@@ -8,6 +8,7 @@ import {
   buildAssetsApi,
   buildAttendanceApi,
   buildContributionsApi,
+  buildDepositsApi,
   buildEnumsApi,
   buildEventCategoriesApi,
   buildEventsApi,
@@ -17,6 +18,7 @@ import {
   buildUsersApi,
   buildVendorsApi,
   ContributionsApiType,
+  DepositsApiType,
   EnumsApiType,
   EventCategoriesApiType,
   EventsApiType,
@@ -29,6 +31,7 @@ import {
 import { QueryClient } from '@tanstack/react-query';
 import { addDateConversionInterceptor } from '../utilities';
 import { createContext, ReactNode, useContext } from 'react';
+import { ApplicationError } from '../types/ApplicationError.ts';
 
 export type GenericResponse = Promise<AxiosResponse<unknown, unknown>>;
 export type TypedResponse<T> = Promise<Omit<AxiosResponse<T>, 'config'>>;
@@ -38,6 +41,7 @@ export interface BaseApiTypes {
   assetsApi: AssetsApiType;
   attendanceApi: AttendanceApiType;
   contributionsApi: ContributionsApiType;
+  depositsApi: DepositsApiType;
   enumsApi: EnumsApiType;
   eventCategoriesApi: EventCategoriesApiType;
   eventsApi: EventsApiType;
@@ -48,7 +52,7 @@ export interface BaseApiTypes {
 }
 
 export type ApiType = BaseApiTypes & {
-  formatError: (error: Error | null) => string;
+  formatError: (error: Error | ApplicationError | string | null) => string;
   generalApi: GeneralApiType;
 };
 
@@ -60,6 +64,7 @@ export type QueryType =
   | 'attendance'
   | 'attendanceEntry'
   | 'contributions'
+  | 'deposits'
   | 'enums'
   | 'eventCategories'
   | 'events'
@@ -103,7 +108,7 @@ const createInstance = (token: string | undefined) => {
 export const ApiProvider = ({ children }: { children: ReactNode }) => {
   const { token, logout } = useAuth();
 
-  const formatError = (error: Error | null) => {
+  const formatError = (error: Error | ApplicationError | string | null) => {
     if (error instanceof AxiosError) {
       if (error.response?.status === 401 && token) {
         logout();
@@ -117,6 +122,10 @@ export const ApiProvider = ({ children }: { children: ReactNode }) => {
       if (typeof message === 'string') {
         return message;
       }
+    } else if (typeof error === 'string') {
+      return error;
+    } else if (error && error.message) {
+      return error.message;
     }
 
     return 'Unexpected error';
@@ -129,6 +138,7 @@ export const ApiProvider = ({ children }: { children: ReactNode }) => {
     assetsApi: buildAssetsApi(instance),
     attendanceApi: buildAttendanceApi(instance),
     contributionsApi: buildContributionsApi(instance),
+    depositsApi: buildDepositsApi(instance),
     enumsApi: buildEnumsApi(instance),
     eventCategoriesApi: buildEventCategoriesApi(instance),
     eventsApi: buildEventsApi(instance),

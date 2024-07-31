@@ -3,6 +3,7 @@ import { OrderedColumnsType } from '../../hooks/useColumns.tsx';
 import { UserNameDisplay } from '../user-name-display';
 import DateDisplay from '../date-display';
 import MoneyDisplay from '../money-display';
+import { Link } from 'react-router-dom';
 
 export const contributionColumns: OrderedColumnsType<Contribution> = [
   {
@@ -11,7 +12,7 @@ export const contributionColumns: OrderedColumnsType<Contribution> = [
     key: 'gross',
     align: 'right',
     displayOrder: 1,
-    render: (value: Contribution['gross']) => <MoneyDisplay money={value} />
+    render: (value: Contribution['gross']) => <MoneyDisplay pennies={value} />
   },
   {
     title: 'Fees',
@@ -19,7 +20,7 @@ export const contributionColumns: OrderedColumnsType<Contribution> = [
     key: 'fees',
     align: 'right',
     displayOrder: 2,
-    render: (value: Contribution['fees']) => <MoneyDisplay money={value} />
+    render: (value: Contribution['fees']) => <MoneyDisplay pennies={value} />
   },
   {
     title: 'Net',
@@ -27,7 +28,7 @@ export const contributionColumns: OrderedColumnsType<Contribution> = [
     key: 'net',
     align: 'right',
     displayOrder: 3,
-    render: (value: Contribution['net']) => <MoneyDisplay money={value} />
+    render: (value: Contribution['net']) => <MoneyDisplay pennies={value} />
   },
   {
     title: 'Transaction Date',
@@ -42,7 +43,10 @@ export const contributionColumns: OrderedColumnsType<Contribution> = [
     title: 'Deposit Id',
     dataIndex: 'depositId',
     key: 'depositId',
-    displayOrder: 5
+    displayOrder: 5,
+    render: (value: Contribution['depositId']) => (
+      <Link to={`/accounts/deposits/${value}`}>{value}</Link>
+    )
   },
   {
     title: 'Type',
@@ -59,13 +63,13 @@ export const contributionColumns: OrderedColumnsType<Contribution> = [
     render: (value: Contribution['accounts']) => value?.length ?? 0
   },
   {
-    title: 'User Profile',
+    title: 'Contributor',
     width: 200,
-    dataIndex: 'profile',
-    render: (value: Contribution['profile']) => (
+    dataIndex: 'contributorProfileId',
+    render: (value: Contribution['contributorProfileId']) => (
       <UserNameDisplay user={value} />
     ),
-    key: 'profile',
+    key: 'contributorProfileId',
     displayOrder: 8
   }
 ];

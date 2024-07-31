@@ -12,17 +12,17 @@ const ContributionDisplay = (contribution: Contribution) => {
     {
       key: 1,
       label: 'Gross Amount',
-      children: <MoneyDisplay money={contribution.gross} />
+      children: <MoneyDisplay pennies={contribution.gross} />
     },
     {
       key: 2,
       label: 'Fees',
-      children: <MoneyDisplay money={contribution.fees} />
+      children: <MoneyDisplay pennies={contribution.fees} />
     },
     {
       key: 3,
       label: 'Net Amount',
-      children: <MoneyDisplay money={contribution.net} />
+      children: <MoneyDisplay pennies={contribution.net} />
     },
     {
       key: 4,
@@ -42,7 +42,7 @@ const ContributionDisplay = (contribution: Contribution) => {
     {
       key: 7,
       label: 'User Profile',
-      children: <UserNameDisplay user={contribution.profile} />
+      children: <UserNameDisplay user={contribution.contributorProfileId} />
     },
     {
       key: 8,
@@ -56,13 +56,13 @@ const ContributionDisplay = (contribution: Contribution) => {
             </tr>
           </thead>
           <tbody>
-            {contribution.accounts?.map(({ account, amount }, index) => (
+            {contribution.accounts?.map(({ accountId, amount }, index) => (
               <tr key={index}>
                 <td>
-                  <AccountNameDisplayById id={account} />:
+                  <AccountNameDisplayById id={accountId} />:
                 </td>
                 <td>
-                  <MoneyDisplay money={amount} />
+                  <MoneyDisplay pennies={amount} />
                 </td>
               </tr>
             ))}
@@ -70,7 +70,7 @@ const ContributionDisplay = (contribution: Contribution) => {
           <tfoot>
             <tr>
               <td colSpan={2}>
-                <MoneyDisplay money={contribution.net} />
+                <MoneyDisplay pennies={contribution.net} />
               </td>
             </tr>
           </tfoot>

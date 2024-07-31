@@ -30,7 +30,7 @@ export const BaseFormFooter = ({
         >
           {submitText}
         </Button>
-        <Button disabled={isDisabled} onClick={onCancel}>
+        <Button disabled={isLoading} onClick={onCancel}>
           {cancelText}
         </Button>
         {children}

@@ -22,7 +22,7 @@ export const assetColumns: OrderedColumnsType<Asset> = [
     align: 'right',
     key: 'value',
     displayOrder: 3,
-    render: (value: Asset['value']) => <MoneyDisplay money={value} />
+    render: (value: Asset['value']) => <MoneyDisplay pennies={value} />
   },
   {
     title: 'Purchase Date',
