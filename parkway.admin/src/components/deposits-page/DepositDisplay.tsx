@@ -167,6 +167,7 @@ const DepositDisplay = () => {
         <AddContributionModal deposit={deposit} />
       </div>
       <Table
+        rowKey="_id"
         size="small"
         columns={contributionColumns}
         dataSource={contributions}

@@ -56,10 +56,10 @@ const ContributionDisplay = (contribution: Contribution) => {
             </tr>
           </thead>
           <tbody>
-            {contribution.accounts?.map(({ account, amount }, index) => (
+            {contribution.accounts?.map(({ accountId, amount }, index) => (
               <tr key={index}>
                 <td>
-                  <AccountNameDisplayById id={account} />:
+                  <AccountNameDisplayById id={accountId} />:
                 </td>
                 <td>
                   <MoneyDisplay pennies={amount} />

@@ -112,7 +112,10 @@ export const mockApi = (
   }: MockApiType = {}
 ) => {
   vi.mocked(useApiFn).mockReturnValue({
-    formatError: (error) => error?.message ?? 'unknown error',
+    formatError: (error) => {
+      if (typeof error === 'string') return error;
+      return error?.message ?? 'unknown error';
+    },
     usersApi: {
       ...mockBaseApi<UserProfile>(usersApi),
       joinProfileAndUser: vi.fn(),

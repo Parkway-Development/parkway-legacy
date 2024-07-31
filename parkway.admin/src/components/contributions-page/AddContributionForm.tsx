@@ -1,4 +1,4 @@
-import { Alert, Breadcrumb, Form, Input } from 'antd';
+import { Alert, Breadcrumb, Form, Input, InputRef } from 'antd';
 import { Link, useNavigate } from 'react-router-dom';
 import { BaseFormFooter } from '../base-data-table-page';
 import UserProfileSelect from '../user-profile-select';
@@ -9,14 +9,19 @@ import {
   IndividualContributionPayload
 } from '../../api';
 import { getDateString } from '../../utilities';
-import { ReactNode, useCallback, useState } from 'react';
+import { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import AccountsInput from './AccountsInput.tsx';
 import { ContributionAccount, ContributionType, Deposit } from '../../types';
 import { BaseSelect } from '../base-select';
 import useApi, { buildQueryKey } from '../../hooks/useApi.tsx';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-type AddContributionFormValues = IndividualContributionPayload;
+type AddContributionFormValues = Omit<
+  IndividualContributionPayload,
+  'gross'
+> & {
+  gross: number | undefined;
+};
 
 const ContributionTypeOptions: { label: string; value: ContributionType }[] = [
   {
@@ -60,6 +65,8 @@ const AddContributionForm = ({
   deposit,
   onCancel
 }: AddContributionFormProps) => {
+  const [accountKey, setAccountKey] = useState<number>(0);
+  const grossInputRef = useRef<InputRef>(null);
   const queryClient = useQueryClient();
   const {
     contributionsApi: { create },
@@ -84,6 +91,12 @@ const AddContributionForm = ({
   const [isAccountBalanceValid, setIsAccountBalanceValid] =
     useState<boolean>(false);
 
+  useEffect(() => {
+    if (grossInputRef.current) {
+      grossInputRef.current.focus();
+    }
+  }, [accountKey]);
+
   const gross = Form.useWatch('gross', form) ?? 0;
   const fees = Form.useWatch('fees', form) ?? 0;
   const type = Form.useWatch('type', form) ?? 0;
@@ -92,7 +105,7 @@ const AddContributionForm = ({
   const [initialValues] = useState<AddContributionFormValues>(() => ({
     transactionDate: getDateString(new Date())!,
     accounts: [],
-    gross: 0,
+    gross: undefined,
     net: 0,
     fees: 0,
     type: 'cash',
@@ -130,10 +143,13 @@ const AddContributionForm = ({
   );
 
   const handleSave = (values: AddContributionFormValues) => {
+    const gross = values.gross ?? 0;
+
     const payload: CreateContributionPayload = [
       {
         ...values,
-        net: values.gross - values.fees
+        gross,
+        net: gross - values.fees
       }
     ];
 
@@ -141,9 +157,15 @@ const AddContributionForm = ({
       onSuccess: (data) => {
         if (data.data.successfulContributions.length) {
           queryClient.invalidateQueries({
-            queryKey: buildQueryKey('contributions')
+            queryKey: buildQueryKey(
+              'contributions',
+              deposit ? `depositId_${deposit._id}` : undefined
+            )
           });
-          handleCancel();
+
+          form.resetFields();
+          setAccountKey((prev) => prev + 1);
+          setIsAccountBalanceValid(false);
         }
       }
     });
@@ -215,22 +237,6 @@ const AddContributionForm = ({
         )}
 
         <Form.Item<AddContributionFormValues>
-          label="Contributor"
-          name="contributorProfileId"
-          rules={[
-            {
-              required: true,
-              whitespace: true,
-              message: 'Contributor is required.'
-            }
-          ]}
-        >
-          <UserProfileSelect
-            onChange={(value: string | undefined) => handleProfileChange(value)}
-          />
-        </Form.Item>
-
-        <Form.Item<AddContributionFormValues>
           name="gross"
           label="Gross"
           rules={[
@@ -240,7 +246,7 @@ const AddContributionForm = ({
             }
           ]}
         >
-          <Input type="number" />
+          <Input type="number" ref={grossInputRef} />
         </Form.Item>
 
         <Form.Item<AddContributionFormValues>
@@ -261,6 +267,22 @@ const AddContributionForm = ({
         </Form.Item>
 
         <Form.Item<AddContributionFormValues>
+          label="Contributor"
+          name="contributorProfileId"
+          rules={[
+            {
+              required: true,
+              whitespace: true,
+              message: 'Contributor is required.'
+            }
+          ]}
+        >
+          <UserProfileSelect
+            onChange={(value: string | undefined) => handleProfileChange(value)}
+          />
+        </Form.Item>
+
+        <Form.Item<AddContributionFormValues>
           label="Type"
           name="type"
           rules={[{ required: true, message: 'Type is required.' }]}
@@ -278,6 +300,7 @@ const AddContributionForm = ({
 
         <Form.Item<AddContributionFormValues> label="Accounts">
           <AccountsInput
+            key={accountKey}
             onChange={handleAccountsChange}
             totalAmount={net}
             initialValue={undefined}
@@ -285,11 +308,17 @@ const AddContributionForm = ({
         </Form.Item>
 
         <div style={{ display: 'none' }}>
-          <Form.Item<AddContributionFormValues> name="accounts"></Form.Item>
+          <Form.Item name="accounts">
+            <Input />
+          </Form.Item>
           {isModalContext && (
             <>
-              <Form.Item<AddContributionFormValues> name="depositId"></Form.Item>
-              <Form.Item<AddContributionFormValues> name="responsiblePartyProfileId"></Form.Item>
+              <Form.Item name="depositId">
+                <Input />
+              </Form.Item>
+              <Form.Item name="responsiblePartyProfileId">
+                <Input />
+              </Form.Item>
             </>
           )}
         </div>
