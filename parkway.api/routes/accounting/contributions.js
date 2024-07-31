@@ -8,7 +8,8 @@ const{
     getContributionsByProfileId,
     getContributionsByAccountId,
     updateContribution,
-    deleteContribution
+    deleteContribution,
+    getContributionsByDeposit
 } = require('../../controllers/accounting/contributionController');
 
 const { addNotFoundHandler, configureBaseApiRoutes } = require('../baseApiRouter');
@@ -18,6 +19,7 @@ configureBaseApiRoutes(router, createContributions, getAllContributions, getCont
 router.get('/type/:type', getContributionsByType)
 router.get('/profile/:id', getContributionsByProfileId)
 router.get('/account/:id', getContributionsByAccountId)
+router.get('/deposit/:id', getContributionsByDeposit)
 
 addNotFoundHandler(router);
 module.exports = router;

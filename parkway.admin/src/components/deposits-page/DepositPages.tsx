@@ -4,7 +4,6 @@ import {
   EditBaseApiEntityPage
 } from '../base-data-table-page';
 import { depositColumns } from './columns.tsx';
-import { BaseDisplayPage } from '../base-display-page/BaseDisplayPage.tsx';
 import { SharedBasePageProps } from '../base-data-table-page/types.ts';
 import DepositDisplay from './DepositDisplay.tsx';
 import DepositForm from './DepositForm.tsx';
@@ -24,9 +23,7 @@ const DepositsPage = () => (
   />
 );
 
-const DepositPage = () => (
-  <BaseDisplayPage {...sharedProps} render={DepositDisplay} />
-);
+const DepositPage = () => <DepositDisplay />;
 
 const AddDepositPage = () => (
   <AddBaseApiEntityPage {...sharedProps} addForm={DepositForm} />

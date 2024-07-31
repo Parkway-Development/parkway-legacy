@@ -140,7 +140,8 @@ export const mockApi = (
     contributionsApi: {
       //@ts-expect-error this is fine
       ...mockBaseApi<Contribution>(contributionsApi),
-      create: vi.fn()
+      create: vi.fn(),
+      getByDepositId: vi.fn()
     },
     depositsApi: {
       ...mockBaseApi<Deposit>(depositsApi),

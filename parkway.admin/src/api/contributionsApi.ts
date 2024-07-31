@@ -8,6 +8,7 @@ export type ContributionsApiType = Omit<BaseApiType<Contribution>, 'create'> & {
   create: (
     payload: CreateContributionPayload
   ) => TypedResponse<CreateContributionResponse>;
+  getByDepositId: (depositId: string) => TypedResponse<Contribution[]>;
 };
 
 type AccountPayload = {
@@ -44,6 +45,8 @@ export const buildContributionsApi = (
   const basePath = '/accounting/contributions';
   return {
     ...buildBaseApi<Contribution>(instance, basePath),
-    create: (payload) => instance.post(basePath, payload)
+    create: (payload) => instance.post(basePath, payload),
+    getByDepositId: (depositId) =>
+      instance.get(`${basePath}/deposit/${depositId}`)
   };
 };
