@@ -148,7 +148,8 @@ export const mockApi = (
     },
     depositsApi: {
       ...mockBaseApi<Deposit>(depositsApi),
-      create: vi.fn()
+      create: vi.fn(),
+      getDepositsByDateRange: vi.fn()
     },
     enumsApi: mockBaseApi<Enum>(enumsApi),
     eventCategoriesApi: mockBaseApi<EventCategory>(eventCategoriesApi),

@@ -33,11 +33,6 @@ const depositSchema = new mongoose.Schema({
         ref: 'Profile',
         required: true
     },
-    created: {
-        type: Date,
-        required: true,
-        default: Date.now
-    },
     statusDate: {
         type: Date,
         required: true

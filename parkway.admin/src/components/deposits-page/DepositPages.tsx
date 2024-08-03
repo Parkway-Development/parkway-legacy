@@ -20,7 +20,9 @@ const DepositsPage = () => (
   <BaseApiDataTablePage
     {...sharedProps}
     columns={depositColumns}
-    responsiveCardRenderer={(deposit) => <DateDisplay date={deposit.created} />}
+    responsiveCardRenderer={(deposit) => (
+      <DateDisplay date={deposit.createdAt} />
+    )}
   />
 );
 

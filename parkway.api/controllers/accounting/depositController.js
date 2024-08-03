@@ -131,7 +131,7 @@ const getDepositsByDateRange = async (req, res, next) => {
         let deposits;
         if(populate){
             deposits = await Deposit.find({
-                date: {
+                createdAt: {
                     $gte: new Date(startDate).toISOString(),
                     $lte: new Date(endDate).toISOString()
                 }
@@ -141,7 +141,7 @@ const getDepositsByDateRange = async (req, res, next) => {
             .populate('history.responsiblePartyProfileId');
         } else{
             deposits = await Deposit.find({
-                date: {
+                createdAt: {
                     $gte: new Date(startDate).toISOString(),
                     $lte: new Date(endDate).toISOString()
                 }
