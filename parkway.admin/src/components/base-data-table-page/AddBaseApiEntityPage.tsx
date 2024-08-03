@@ -16,13 +16,15 @@ export interface AddBaseApiFormProps<T extends BaseEntity> {
 
 type AddBaseApiEntityPageProps<T extends BaseEntity> = SharedBasePageProps & {
   addForm: (props: AddBaseApiFormProps<T>) => ReactNode;
+  onAddRedirectUrl?: (newEntity: T) => string;
 };
 
 const AddBaseApiEntityPage = <T extends BaseEntity>({
   queryKey: queryKeyProp,
   baseApiType,
   addForm: AddForm,
-  mainPage
+  mainPage,
+  onAddRedirectUrl
 }: AddBaseApiEntityPageProps<T>) => {
   const queryClient = useQueryClient();
   const { formatError, ...apiResult } = useApi();
@@ -49,6 +51,16 @@ const AddBaseApiEntityPage = <T extends BaseEntity>({
     mutate(trimmedPayload, {
       onSuccess: ({ data }: { data: T }) => {
         queryClient.setQueryData(buildQueryKey(queryKeyProp, data._id), data);
+
+        if (onAddRedirectUrl) {
+          const url = onAddRedirectUrl(data);
+
+          if (url) {
+            navigate(url);
+            return;
+          }
+        }
+
         navigate(mainPage);
       },
       onError: (error: Error | null) =>

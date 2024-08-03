@@ -8,6 +8,7 @@ import { SharedBasePageProps } from '../base-data-table-page/types.ts';
 import DepositDisplay from './DepositDisplay.tsx';
 import DepositForm from './DepositForm.tsx';
 import DateDisplay from '../date-display';
+import { Deposit } from '../../types';
 
 const sharedProps: SharedBasePageProps = {
   queryKey: 'deposits',
@@ -26,7 +27,11 @@ const DepositsPage = () => (
 const DepositPage = () => <DepositDisplay />;
 
 const AddDepositPage = () => (
-  <AddBaseApiEntityPage {...sharedProps} addForm={DepositForm} />
+  <AddBaseApiEntityPage
+    {...sharedProps}
+    addForm={DepositForm}
+    onAddRedirectUrl={(data: Deposit) => `/accounts/deposits/${data._id}`}
+  />
 );
 
 const EditDepositPage = () => (
