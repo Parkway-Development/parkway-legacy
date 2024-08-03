@@ -2,7 +2,7 @@ import { Breadcrumb, Form, Input } from 'antd';
 import { Link } from 'react-router-dom';
 import { Deposit } from '../../types';
 import { AddBaseApiFormProps, BaseFormFooter } from '../base-data-table-page';
-import UserProfileSelect from '../user-profile-select';
+import { useAuth } from '../../hooks/useAuth.tsx';
 
 type DepositWithoutId = Omit<Deposit, '_id'> & {
   statusDate: Date | string;
@@ -18,12 +18,17 @@ const DepositForm = ({
   onSave,
   onCancel
 }: DepositFormProps) => {
+  const { user } = useAuth();
   const [form] = Form.useForm<DepositWithoutId>();
 
-  const handleResponsiblePartyChange = (value: string | undefined) =>
-    form.setFieldsValue({
-      responsiblePartyProfileId: value
-    });
+  const handleSave = (values: DepositWithoutId) => {
+    const payload = {
+      ...values,
+      responsiblePartyProfileId: user?.profileId ?? ''
+    };
+
+    onSave(payload);
+  };
 
   return (
     <>
@@ -45,7 +50,7 @@ const DepositForm = ({
         name="basic"
         labelCol={{ span: 3 }}
         wrapperCol={{ span: 12 }}
-        onFinish={onSave}
+        onFinish={handleSave}
         autoComplete="off"
         disabled={isSaving}
         initialValues={initialValues}
@@ -56,17 +61,6 @@ const DepositForm = ({
           rules={[{ required: true, whitespace: true, message: 'Required' }]}
         >
           <Input autoFocus type="number" />
-        </Form.Item>
-
-        <Form.Item<DepositWithoutId>
-          label="Responsible Party"
-          name="responsiblePartyProfileId"
-          rules={[{ required: true, message: 'Required' }]}
-        >
-          <UserProfileSelect
-            onChange={handleResponsiblePartyChange}
-            initialValue={initialValues?.responsiblePartyProfileId}
-          />
         </Form.Item>
 
         <BaseFormFooter
