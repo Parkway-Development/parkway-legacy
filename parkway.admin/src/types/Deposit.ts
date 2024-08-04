@@ -10,7 +10,7 @@ export type Deposit = BaseEntity & {
   amount: number;
   currentStatus: DepositStatus;
   responsiblePartyProfileId: string;
-  created: Date;
+  createdAt: Date;
   statusDate: Date;
   history?: DepositHistory[];
   contributions: string[];

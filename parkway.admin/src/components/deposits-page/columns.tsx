@@ -8,10 +8,10 @@ import { Link } from 'react-router-dom';
 export const depositColumns: OrderedColumnsType<Deposit> = [
   {
     title: 'Created Date',
-    dataIndex: 'created',
-    key: 'created',
+    dataIndex: 'createdAt',
+    key: 'createdAt',
     displayOrder: 1,
-    render: (value: Deposit['created'], deposit) => (
+    render: (value: Deposit['createdAt'], deposit) => (
       <Link to={`/accounts/deposits/${deposit._id}`}>
         <DateDisplay date={value} />
       </Link>

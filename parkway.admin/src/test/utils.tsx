@@ -138,7 +138,8 @@ export const mockApi = (
       addEntry: vi.fn(),
       getEntries: vi.fn(),
       deleteEntry: vi.fn(),
-      updateEntry: vi.fn()
+      updateEntry: vi.fn(),
+      getAttendanceEntriesByDateRange: vi.fn()
     },
     contributionsApi: {
       //@ts-expect-error this is fine
@@ -148,7 +149,8 @@ export const mockApi = (
     },
     depositsApi: {
       ...mockBaseApi<Deposit>(depositsApi),
-      create: vi.fn()
+      create: vi.fn(),
+      getDepositsByDateRange: vi.fn()
     },
     enumsApi: mockBaseApi<Enum>(enumsApi),
     eventCategoriesApi: mockBaseApi<EventCategory>(eventCategoriesApi),

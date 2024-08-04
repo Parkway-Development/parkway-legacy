@@ -5,6 +5,9 @@ import { TypedResponse } from '../hooks/useApi.tsx';
 
 export type DepositsApiType = Omit<BaseApiType<Deposit>, 'create'> & {
   create: (payload: CreateDepositPayload) => TypedResponse<Deposit>;
+  getDepositsByDateRange: (
+    input: GetDepositsByDateRangeInput
+  ) => TypedResponse<Deposit[]>;
 };
 
 export type CreateDepositPayload = Pick<
@@ -12,10 +15,19 @@ export type CreateDepositPayload = Pick<
   'amount' | 'responsiblePartyProfileId'
 >;
 
+export type GetDepositsByDateRangeInput = {
+  startDate: Date;
+  endDate: Date;
+};
+
 export const buildDepositsApi = (instance: AxiosInstance): DepositsApiType => {
   const basePath = '/accounting/deposits';
   return {
     ...buildBaseApi<Deposit>(instance, basePath),
-    create: (payload) => instance.post(basePath, payload)
+    create: (payload) => instance.post(basePath, payload),
+    getDepositsByDateRange: (input) =>
+      instance.get(`${basePath}/bydaterange`, {
+        params: input
+      })
   };
 };

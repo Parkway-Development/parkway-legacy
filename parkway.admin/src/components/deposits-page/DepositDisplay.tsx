@@ -124,7 +124,7 @@ const DepositDisplay = () => {
     {
       key: 1,
       label: 'Created Date',
-      children: <DateDisplay date={deposit.created} />
+      children: <DateDisplay date={deposit.createdAt} />
     },
     {
       key: 2,
@@ -174,7 +174,7 @@ const DepositDisplay = () => {
       </div>
       <Descriptions
         size="small"
-        title={<DateDisplay date={deposit.created} />}
+        title={<DateDisplay date={deposit.createdAt} />}
         items={items}
         bordered
         column={1}

@@ -8,10 +8,13 @@ const {
     deleteAttendance,
     addAttendanceEntry,
     getAttendanceEntries,
+    getAttendanceEntriesByDateRange,
     deleteAttendanceEntry,
     updateAttendanceEntry
 } = require('../controllers/attendanceController')
 const { addNotFoundHandler, configureBaseApiRoutes } = require("./baseApiRouter");
+
+router.get('/bydaterange', getAttendanceEntriesByDateRange);
 
 configureBaseApiRoutes(router, addAttendance, getAllAttendances, getAttendanceById, updateAttendance, deleteAttendance);
 
