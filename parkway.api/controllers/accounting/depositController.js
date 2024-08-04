@@ -126,7 +126,7 @@ const getDepositsByDateRange = async (req, res, next) => {
     try {
         const { startDate, endDate, populate } = req.query;
         if(!startDate || !endDate){ throw new AppError.MissingDateRange('getDepositsByDateRange')}
-        if(!ValidationHelper.checkDateOrder(startDate, endDate)){ throw new AppError.InvalidDateRange('getContributionsByDateRange')}
+        if(!ValidationHelper.checkDateOrder(startDate, endDate)){ throw new AppError.InvalidDateRange('getDepositsByDateRange')}
 
         let deposits;
         if(populate){
@@ -135,7 +135,7 @@ const getDepositsByDateRange = async (req, res, next) => {
                     $gte: new Date(startDate).toISOString(),
                     $lte: new Date(endDate).toISOString()
                 }
-            }).sort({ date: 1})
+            }).sort({ createdAt: 1})
             .populate('contributions')
             .populate('donations')
             .populate('history.responsiblePartyProfileId');
@@ -145,7 +145,7 @@ const getDepositsByDateRange = async (req, res, next) => {
                     $gte: new Date(startDate).toISOString(),
                     $lte: new Date(endDate).toISOString()
                 }
-            }).sort({ date: 1});
+            }).sort({ createdAt: 1});
         }
 
         if(deposits.length === 0){ return res.status(204).json('No deposits found for that date range.')}

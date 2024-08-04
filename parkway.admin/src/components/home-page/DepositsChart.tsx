@@ -16,6 +16,7 @@ import { GetDepositsByDateRangeInput } from '../../api';
 import { addWeeks } from 'date-fns';
 import { formatPennies } from '../money-display/MoneyDisplay.tsx';
 import ChartWrapper from './ChartWrapper.tsx';
+import { getFillColor } from '../../utilities/charts.ts';
 
 const DepositsChart = () => {
   const [getDepositsInput] = useState<GetDepositsByDateRangeInput>(() => {
@@ -54,7 +55,12 @@ const DepositsChart = () => {
   }
 
   return (
-    <ChartWrapper title="Deposits" loading={isLoading} error={error}>
+    <ChartWrapper
+      title="Deposits"
+      loading={isLoading}
+      error={error}
+      data={chartData}
+    >
       <ResponsiveContainer>
         <BarChart data={chartData}>
           <CartesianGrid />
@@ -62,7 +68,7 @@ const DepositsChart = () => {
           <YAxis tickFormatter={(value) => `$${value / 100}`} />
           <Tooltip formatter={(value: number) => formatPennies(value)} />
           <Legend />
-          <Bar dataKey="amount" name="Amount" fill="#8884d8" />
+          <Bar dataKey="amount" name="Amount" fill={getFillColor(0)} />
         </BarChart>
       </ResponsiveContainer>
     </ChartWrapper>

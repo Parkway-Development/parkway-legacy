@@ -2,6 +2,8 @@ const mongoose = require('mongoose');
 const Attendance = require('../models/attendanceModel');
 const AttendanceEntry = require('../models/attendanceEntryModel');
 const appError = require("../applicationErrors");
+const AppError = require("../applicationErrors");
+const ValidationHelper = require("../helpers/validationHelper");
 
 const addAttendance = async (req, res, next) => {
     try {
@@ -63,6 +65,39 @@ const getAttendanceEntries = async (req, res, next) => {
         console.log({ method: error.method, message: error.message });
     }
 };
+
+const getAttendanceEntriesByDateRange = async (req, res, next) => {
+    try {
+        const { startDate, endDate, populate } = req.query;
+        if(!startDate || !endDate){ throw new AppError.MissingDateRange('getAttendanceEntriesByDateRange')}
+        if(!ValidationHelper.checkDateOrder(startDate, endDate)){ throw new AppError.InvalidDateRange('getAttendanceEntriesByDateRange')}
+
+        let entries;
+        if(populate){
+            entries = await AttendanceEntry.find({
+                date: {
+                    $gte: new Date(startDate).toISOString(),
+                    $lte: new Date(endDate).toISOString()
+                }
+            }).sort({ date: 1})
+                .populate('attendance');
+        } else{
+            entries = await AttendanceEntry.find({
+                date: {
+                    $gte: new Date(startDate).toISOString(),
+                    $lte: new Date(endDate).toISOString()
+                }
+            }).sort({ date: 1});
+        }
+
+        if(entries.length === 0){ return res.status(204).json('No entries found for that date range.')}
+
+        return res.status(200).json(entries);
+    } catch (error) {
+        next(error)
+        console.log({method: error.method, message: error.message});
+    }
+}
 
 const deleteAttendanceEntry = async (req, res, next) => {
     try {
@@ -173,6 +208,7 @@ module.exports = {
     addAttendance,
     getAllAttendances,
     getAttendanceById,
+    getAttendanceEntriesByDateRange,
     updateAttendance,
     deleteAttendance,
     addAttendanceEntry,

@@ -12,6 +12,11 @@ export type UpdateEntryPayload = Omit<AttendanceEntry, 'attendance'> & {
   attendanceId: string;
 };
 
+export type GetAttendanceEntriesByDateRangeInput = {
+  startDate: Date;
+  endDate: Date;
+};
+
 export type AttendanceApiType = BaseApiType<Attendance> & {
   addEntry: (
     addEntryPayload: AddEntryPayload
@@ -24,6 +29,9 @@ export type AttendanceApiType = BaseApiType<Attendance> & {
   updateEntry: (
     updateEntryPayload: UpdateEntryPayload
   ) => TypedResponse<AttendanceEntry>;
+  getAttendanceEntriesByDateRange: (
+    input: GetAttendanceEntriesByDateRangeInput
+  ) => TypedResponse<AttendanceEntry[]>;
 };
 
 const basePath = '/attendance';
@@ -39,5 +47,9 @@ export const buildAttendanceApi = (
   deleteEntry: ({ attendanceId, attendanceEntryId }) =>
     instance.delete(`${basePath}/${attendanceId}/entries/${attendanceEntryId}`),
   updateEntry: ({ attendanceId, _id: id, ...payload }: UpdateEntryPayload) =>
-    instance.patch(`${basePath}/${attendanceId}/entries/${id}`, payload)
+    instance.patch(`${basePath}/${attendanceId}/entries/${id}`, payload),
+  getAttendanceEntriesByDateRange: (input) =>
+    instance.get(`${basePath}/bydaterange`, {
+      params: input
+    })
 });

@@ -1,6 +1,6 @@
 import useApi from '../../hooks/useApi.tsx';
 import { ReactNode } from 'react';
-import { Alert, Spin } from 'antd';
+import { Alert, Empty, Spin } from 'antd';
 import styles from './ChartWrapper.module.css';
 
 type ChartWRapperProps = {
@@ -8,13 +8,15 @@ type ChartWRapperProps = {
   loading: boolean;
   error: Error | null;
   children: React.ReactNode;
+  data: unknown[] | undefined;
 };
 
 const ChartWrapper = ({
   title,
   loading,
   error,
-  children
+  children,
+  data
 }: ChartWRapperProps) => {
   const { formatError } = useApi();
 
@@ -24,6 +26,8 @@ const ChartWrapper = ({
     content = <Alert type="error" message={formatError(error)} />;
   } else if (loading) {
     content = <Spin />;
+  } else if (!data || !data.length) {
+    content = <Empty />;
   } else {
     content = children;
   }
