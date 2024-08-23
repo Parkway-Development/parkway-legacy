@@ -1,3 +1,4 @@
+/*
 import { useAuth } from '../../hooks/useAuth.tsx';
 import {
   Bar,
@@ -15,10 +16,13 @@ import { useMemo, useState } from 'react';
 import { GetAttendanceEntriesByDateRangeInput } from '../../api';
 import { addWeeks, isBefore } from 'date-fns';
 import ChartWrapper from './ChartWrapper.tsx';
-import { Attendance } from '../../types';
+import { AttendanceCategory } from '../../types';
 import { getFillColor } from '../../utilities/charts.ts';
+ */
 
 const AttendanceChart = () => {
+  return null;
+  /*
   const [getAttendanceEntriesByDateRangeInput] =
     useState<GetAttendanceEntriesByDateRangeInput>(() => {
       const now = new Date();
@@ -66,7 +70,7 @@ const AttendanceChart = () => {
 
   const { chartData, attendancesToDisplay } = useMemo(() => {
     let chartData = undefined;
-    let attendancesToDisplay: Attendance[] = [];
+    let attendancesToDisplay: AttendanceCategory[] = [];
 
     if (
       attendances.data?.data &&
@@ -134,6 +138,7 @@ const AttendanceChart = () => {
       </ResponsiveContainer>
     </ChartWrapper>
   );
+   */
 };
 
 export default AttendanceChart;

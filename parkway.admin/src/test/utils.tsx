@@ -7,6 +7,7 @@ import {
   AccountsApiType,
   AssetsApiType,
   AttendanceApiType,
+  AttendanceCategoryApiType,
   BaseApiType,
   ContributionsApiType,
   DepositsApiType,
@@ -22,7 +23,7 @@ import {
 import {
   Account,
   Asset,
-  Attendance,
+  AttendanceCategory,
   BaseEntity,
   Contribution,
   Deposit,
@@ -80,6 +81,7 @@ export type MockApiType = Partial<{
   accountsApi: Partial<AccountsApiType>;
   assetsApi: Partial<AssetsApiType>;
   attendanceApi: Partial<AttendanceApiType>;
+  attendanceCategoryApi: Partial<AttendanceCategoryApiType>;
   contributionsApi: Partial<ContributionsApiType>;
   depositsApi: Partial<DepositsApiType>;
   enumsApi: Partial<EnumsApiType>;
@@ -98,6 +100,7 @@ export const mockApi = (
     accountsApi,
     assetsApi,
     attendanceApi,
+    attendanceCategoryApi,
     contributionsApi,
     depositsApi,
     enumsApi,
@@ -134,12 +137,15 @@ export const mockApi = (
     },
     assetsApi: mockBaseApi<Asset>(assetsApi),
     attendanceApi: {
-      ...mockBaseApi<Attendance>(attendanceApi),
       addEntry: vi.fn(),
       getEntries: vi.fn(),
       deleteEntry: vi.fn(),
       updateEntry: vi.fn(),
-      getAttendanceEntriesByDateRange: vi.fn()
+      getAttendanceEntriesByDateRange: vi.fn(),
+      ...attendanceApi
+    },
+    attendanceCategoryApi: {
+      ...mockBaseApi<AttendanceCategory>(attendanceCategoryApi)
     },
     contributionsApi: {
       //@ts-expect-error this is fine

@@ -104,7 +104,17 @@ function App() {
   if (hasClaim('attendance')) {
     items.push({
       key: itemKey++,
-      label: <ResponsiveLink to="/attendance">Attendance</ResponsiveLink>
+      label: <ResponsiveLink to="/attendance">Attendance</ResponsiveLink>,
+      children: [
+        {
+          key: itemKey++,
+          label: (
+            <ResponsiveLink to="/attendance-categories">
+              Categories
+            </ResponsiveLink>
+          )
+        }
+      ]
     });
   }
 
@@ -131,15 +141,15 @@ function App() {
   }
 
   /*
-  if (hasClaim('systemSettings')) {
-    items.push({
-      key: itemKey++,
-      label: (
-        <ResponsiveLink to="/platform/enums">Platform Enums</ResponsiveLink>
-      )
-    });
-  }
-   */
+if (hasClaim('systemSettings')) {
+  items.push({
+    key: itemKey++,
+    label: (
+      <ResponsiveLink to="/platform/enums">Platform Enums</ResponsiveLink>
+    )
+  });
+}
+ */
 
   if (hasClaim('userManagement')) {
     items.push({

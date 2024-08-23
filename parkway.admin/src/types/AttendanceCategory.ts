@@ -1,6 +1,6 @@
 import { BaseEntity } from './BaseEntity.ts';
 
-export type Attendance = BaseEntity & {
+export type AttendanceCategory = BaseEntity & {
   name: string;
   description?: string;
 };

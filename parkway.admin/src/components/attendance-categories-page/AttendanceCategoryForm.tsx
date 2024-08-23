@@ -1,35 +1,39 @@
 import { Breadcrumb, Form, Input } from 'antd';
 import { Link } from 'react-router-dom';
-import { Attendance } from '../../types';
+import { AttendanceCategory } from '../../types';
 import { AddBaseApiFormProps, BaseFormFooter } from '../base-data-table-page';
 
-type AttendanceWithoutId = Omit<Attendance, '_id'>;
+type AttendanceCategoryWithoutId = Omit<AttendanceCategory, '_id'>;
 
-type AttendanceFormProps = AddBaseApiFormProps<Attendance> & {
-  initialValues?: AttendanceWithoutId;
+type AttendanceFormProps = AddBaseApiFormProps<AttendanceCategory> & {
+  initialValues?: AttendanceCategoryWithoutId;
 };
 
-const AttendanceForm = ({
+const AttendanceCategoryForm = ({
   isSaving,
   initialValues: initialValuesProp,
   onSave,
   onCancel
 }: AttendanceFormProps) => {
-  const [form] = Form.useForm<AttendanceWithoutId>();
+  const [form] = Form.useForm<AttendanceCategoryWithoutId>();
 
   return (
     <>
       <Breadcrumb
         items={[
           {
-            title: <Link to="/attendance">Attendance</Link>
+            title: (
+              <Link to="/attendance-categories">Attendance Categories</Link>
+            )
           },
           {
-            title: initialValuesProp ? 'Edit Attendance' : 'Add Attendance'
+            title: initialValuesProp
+              ? 'Edit Attendance Category'
+              : 'Add Attendance Category'
           }
         ]}
       />
-      <Form<AttendanceWithoutId>
+      <Form<AttendanceCategoryWithoutId>
         form={form}
         name="basic"
         labelCol={{ span: 3 }}
@@ -39,7 +43,7 @@ const AttendanceForm = ({
         disabled={isSaving}
         initialValues={initialValuesProp}
       >
-        <Form.Item<AttendanceWithoutId>
+        <Form.Item<AttendanceCategoryWithoutId>
           label="Name"
           name="name"
           rules={[{ required: true, whitespace: true, message: 'Required' }]}
@@ -47,7 +51,7 @@ const AttendanceForm = ({
           <Input autoFocus autoComplete="off" />
         </Form.Item>
 
-        <Form.Item<AttendanceWithoutId>
+        <Form.Item<AttendanceCategoryWithoutId>
           label="Description"
           name="description"
         >
@@ -64,4 +68,4 @@ const AttendanceForm = ({
   );
 };
 
-export default AttendanceForm;
+export default AttendanceCategoryForm;

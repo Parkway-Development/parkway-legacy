@@ -1,14 +1,35 @@
 const mongoose = require('mongoose');
 
 const attendanceSchema = new mongoose.Schema({
-    name: {
+    event: {
         required: true,
-        type: String
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Event'
     },
-    description: {
-        required: false,
-        type: String
-    }
+    createdBy: {
+        required: true,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Profile'
+    },
+    created: {
+        required: true,
+        type: Date
+    },
+    total: {
+        required: true,
+        type: Number
+    },
+    categories: [{
+        category: {
+            required: true,
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'AttendanceCategory'
+        },
+        count: {
+            required: true,
+            type: Number
+        }
+    }]
 });
 
 module.exports = mongoose.model('Attendance', attendanceSchema, 'attendances')
