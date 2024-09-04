@@ -3,18 +3,16 @@ const router = express.Router();
 const {
     addAttendanceEntry,
     getAttendanceEntries,
+    getAttendanceEntryById,
     getAttendanceEntriesByDateRange,
     deleteAttendanceEntry,
     updateAttendanceEntry
 } = require('../controllers/attendanceController')
-const { addNotFoundHandler } = require("./baseApiRouter");
+const { addNotFoundHandler, configureBaseApiRoutes} = require("./baseApiRouter");
+
+configureBaseApiRoutes(router, addAttendanceEntry, getAttendanceEntries, getAttendanceEntryById, updateAttendanceEntry, deleteAttendanceEntry);
 
 router.get('/bydaterange', getAttendanceEntriesByDateRange);
-
-router.post('/:id/addEntry', addAttendanceEntry);
-router.get('/:id/entries', getAttendanceEntries);
-router.delete('/:attendanceId/entries/:id', deleteAttendanceEntry);
-router.patch('/:attendanceId/entries/:id', updateAttendanceEntry);
 
 addNotFoundHandler(router);
 module.exports = router;
