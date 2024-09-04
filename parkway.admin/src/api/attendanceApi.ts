@@ -1,5 +1,5 @@
 import { AxiosInstance } from 'axios';
-import { AttendanceEntry } from '../types/AttendanceEntry.ts';
+import { AttendanceEntry } from '../types/Attendance.ts';
 import { GenericResponse, TypedResponse } from '../hooks/useApi.ts';
 
 export type AddEntryPayload = Omit<AttendanceEntry, '_id' | 'attendance'> & {

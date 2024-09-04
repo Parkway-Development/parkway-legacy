@@ -6,7 +6,7 @@ const {
     getAttendanceCategoryById,
     updateAttendanceCategory,
     deleteAttendanceCategory
-} = require('../controllers/attendanceController')
+} = require('../controllers/attendanceCategoryController')
 const { addNotFoundHandler, configureBaseApiRoutes } = require("./baseApiRouter");
 
 configureBaseApiRoutes(router, addAttendanceCategory, getAllAttendanceCategories, getAttendanceCategoryById, updateAttendanceCategory, deleteAttendanceCategory);

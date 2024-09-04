@@ -11,7 +11,7 @@ import AttendanceCategoryDisplay from './AttendanceCategoryDisplay.tsx';
 
 const sharedProps: SharedBasePageProps = {
   queryKey: 'attendanceCategory',
-  baseApiType: 'attendanceApi',
+  baseApiType: 'attendanceCategoryApi',
   mainPage: '/attendance-categories'
 };
 
