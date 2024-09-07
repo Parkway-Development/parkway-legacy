@@ -139,7 +139,8 @@ export const mockApi = (
     assetsApi: mockBaseApi<Asset>(assetsApi),
     attendanceApi: {
       ...mockBaseApi<Attendance>(attendanceApi),
-      getAttendanceEntriesByDateRange: vi.fn()
+      getAttendanceEntriesByDateRange: vi.fn(),
+      getByEventId: vi.fn()
     },
     attendanceCategoryApi: {
       ...mockBaseApi<AttendanceCategory>(attendanceCategoryApi)

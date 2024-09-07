@@ -83,6 +83,21 @@ const getAttendanceEntriesByDateRange = buildAction({
    }
 });
 
+const getAttendanceEntriesByEventId = buildAction({
+    validateIdParam: true,
+    requiredParams: ['id'],
+    handler: async (req, res) => {
+        const { id } = req.params;
+        const entries = await Attendance.find({
+            event: id
+        }).populate('event');
+
+        if(entries.length === 0) { return res.status(204).json('No entries found for that event id.'); }
+
+        return res.status(200).json(entries[0]);
+    }
+});
+
 const deleteAttendanceEntry = buildAction({
     validateIdParam: true,
     requiredParams: ['id'],
@@ -128,6 +143,7 @@ const updateAttendanceEntry = buildAction({
 
 module.exports = {
     getAttendanceEntriesByDateRange,
+    getAttendanceEntriesByEventId,
     addAttendanceEntry,
     getAttendanceEntries,
     getAttendanceEntryById,
