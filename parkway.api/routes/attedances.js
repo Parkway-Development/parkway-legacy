@@ -10,9 +10,9 @@ const {
 } = require('../controllers/attendanceController')
 const { addNotFoundHandler, configureBaseApiRoutes} = require("./baseApiRouter");
 
-configureBaseApiRoutes(router, addAttendanceEntry, getAttendanceEntries, getAttendanceEntryById, updateAttendanceEntry, deleteAttendanceEntry);
-
 router.get('/bydaterange', getAttendanceEntriesByDateRange);
+
+configureBaseApiRoutes(router, addAttendanceEntry, getAttendanceEntries, getAttendanceEntryById, updateAttendanceEntry, deleteAttendanceEntry);
 
 addNotFoundHandler(router);
 module.exports = router;

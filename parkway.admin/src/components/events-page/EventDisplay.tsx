@@ -1,6 +1,7 @@
 import { Event, RegistrationSlot } from '../../types';
 import {
   Alert,
+  Button,
   Descriptions,
   DescriptionsProps,
   Spin,
@@ -22,6 +23,7 @@ import { EventRegistration } from '../../types/EventRegistration.ts';
 import useApi, { buildQueryKey } from '../../hooks/useApi.tsx';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
+import { Link } from 'react-router-dom';
 
 const EventDisplay = (event: Event) => {
   const items: DescriptionsProps['items'] = [
@@ -106,6 +108,9 @@ const EventDisplay = (event: Event) => {
   return (
     <>
       <h3 className={styles.title}>{event.name}</h3>
+      <Link to={`/attendance/add/${event._id}`}>
+        <Button className={styles.attendanceButton}>Add Attendance</Button>
+      </Link>
       <Tabs items={tabItems} />
     </>
   );
