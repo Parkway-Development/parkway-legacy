@@ -16,6 +16,7 @@ import { SharedBasePageProps } from './types.ts';
 type BaseDataTablePageProps<T extends BaseEntity> =
   BaseDataTableListProps<T> & {
     title?: string;
+    subtitle?: string;
     addLink?: To;
     addLinkTitle?: string;
   };
@@ -32,6 +33,7 @@ type BaseDataTableListProps<T extends BaseEntity> = Pick<
 
 export const BaseDataTablePage = <T extends BaseEntity>({
   title,
+  subtitle,
   addLink,
   addLinkTitle,
   ...listProps
@@ -39,6 +41,7 @@ export const BaseDataTablePage = <T extends BaseEntity>({
   return (
     <>
       {title && <h2>{title}</h2>}
+      {subtitle && <p>{subtitle}</p>}
       {addLink && (
         <nav className={styles.nav}>
           <Link to={addLink}>
@@ -118,9 +121,14 @@ const BaseDataTableList = <T extends BaseEntity>({
 type BaseApiDataTablePageProps<T extends BaseEntity> = SharedBasePageProps &
   Pick<
     BaseDataTablePageProps<T>,
-    'title' | 'addLinkTitle' | 'responsiveCardRenderer' | 'skipPagination'
+    | 'title'
+    | 'subtitle'
+    | 'addLinkTitle'
+    | 'responsiveCardRenderer'
+    | 'skipPagination'
   > & {
     columns: OrderedColumnsType<T>;
+    allowAdd?: boolean;
     allowDelete?: boolean;
     allowEdit?: boolean;
   };
@@ -129,6 +137,7 @@ export const BaseApiDataTablePage = <T extends BaseEntity>({
   queryKey: queryKeyProp,
   columns: columnsProp,
   baseApiType,
+  allowAdd = true,
   allowEdit = true,
   allowDelete = true,
   ...props
@@ -163,7 +172,7 @@ export const BaseApiDataTablePage = <T extends BaseEntity>({
 
   return (
     <BaseDataTablePage<T>
-      addLink={`./add`}
+      addLink={allowAdd ? `./add` : undefined}
       queryFn={getAll}
       queryKey={queryKey}
       columns={columns}
