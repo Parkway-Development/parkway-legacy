@@ -19,7 +19,11 @@ const addAttendanceEntry = buildAction({
         if (!eventModel) { throw new Error("No event was found with that Id.") }
 
         if (categories && categories.length) {
-            const categoriesTotal = categories.reduce((acc, category) => acc + category.count, 0);
+            const categoriesTotal = categories.reduce((acc, category) => {
+                const count = Number(category.count);
+                if (Number.isSafeInteger(count)) return acc + count;
+                return acc;
+            }, 0);
             if (total !== categoriesTotal) { throw new Error("Category counts do not match the total"); }
         }
 
@@ -102,7 +106,11 @@ const updateAttendanceEntry = buildAction({
         const { total, categories } = req.body;
 
         if (categories && categories.length) {
-            const categoriesTotal = categories.reduce((acc, category) => acc + category.count, 0);
+            const categoriesTotal = categories.reduce((acc, category) => {
+                const count = Number(category.count);
+                if (Number.isSafeInteger(count)) return acc + count;
+                return acc;
+            }, 0);
             if (total !== categoriesTotal) { throw new Error("Category counts do not match the total"); }
         }
 

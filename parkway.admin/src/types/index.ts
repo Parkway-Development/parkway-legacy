@@ -1,5 +1,6 @@
 export * from './Account.ts';
 export * from './Asset.ts';
+export * from './Attendance.ts';
 export * from './AttendanceCategory.ts';
 export * from './BaseEntity.ts';
 export * from './Contribution.ts';

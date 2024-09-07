@@ -187,7 +187,7 @@ createRoot(document.getElementById('root')!).render(
                   path="attendance"
                   element={<ClaimRoute claim="attendance" />}
                 >
-                  <Route path="add" element={<AddAttendancePage />} />
+                  <Route path="add/:eventId" element={<AddAttendancePage />} />
                   <Route path=":id" element={<AttendancePage />} />
                   <Route path=":id/edit" element={<EditAttendancePage />} />
                   <Route index element={<AttendancesPage />} />

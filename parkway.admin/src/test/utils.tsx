@@ -23,6 +23,7 @@ import {
 import {
   Account,
   Asset,
+  Attendance,
   AttendanceCategory,
   BaseEntity,
   Contribution,
@@ -137,12 +138,8 @@ export const mockApi = (
     },
     assetsApi: mockBaseApi<Asset>(assetsApi),
     attendanceApi: {
-      addEntry: vi.fn(),
-      getEntries: vi.fn(),
-      deleteEntry: vi.fn(),
-      updateEntry: vi.fn(),
-      getAttendanceEntriesByDateRange: vi.fn(),
-      ...attendanceApi
+      ...mockBaseApi<Attendance>(attendanceApi),
+      getAttendanceEntriesByDateRange: vi.fn()
     },
     attendanceCategoryApi: {
       ...mockBaseApi<AttendanceCategory>(attendanceCategoryApi)

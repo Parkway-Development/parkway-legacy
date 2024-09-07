@@ -1,4 +1,5 @@
 import { BaseEntity } from './BaseEntity.ts';
+import { Event } from './Event.ts';
 import { UserProfile } from './UserProfile.ts';
 
 export type Attendance = BaseEntity & {
