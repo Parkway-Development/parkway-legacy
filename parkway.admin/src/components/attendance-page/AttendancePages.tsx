@@ -6,8 +6,13 @@ import {
 import { BaseDisplayPage } from '../base-display-page/BaseDisplayPage.tsx';
 import { SharedBasePageProps } from '../base-data-table-page/types.ts';
 import AttendanceForm from './AttendanceForm.tsx';
-import { attendanceColumns } from './columns.tsx';
+import { buildAttendanceColumns } from './columns.tsx';
 import AttendanceDisplay from './AttendanceDisplay.tsx';
+import useApi, { buildQueryKey } from '../../hooks/useApi.tsx';
+import { useQuery } from '@tanstack/react-query';
+import { Spin } from 'antd';
+import { AttendanceCategory } from '../../types';
+import DateDisplay from '../date-display';
 
 const sharedProps: SharedBasePageProps = {
   queryKey: 'attendance',
@@ -15,16 +20,31 @@ const sharedProps: SharedBasePageProps = {
   mainPage: '/attendance'
 };
 
-const AttendancesPage = () => (
-  <BaseApiDataTablePage
-    {...sharedProps}
-    columns={attendanceColumns}
-    title="Attendance"
-    subtitle="New attendance values can be added from event details pages"
-    responsiveCardRenderer={(item) => item.name}
-    allowAdd={false}
-  />
-);
+const AttendancesPage = () => {
+  const {
+    attendanceCategoryApi: { getAll }
+  } = useApi();
+
+  const { data, isLoading } = useQuery({
+    queryKey: buildQueryKey('attendanceCategory'),
+    queryFn: getAll
+  });
+
+  if (isLoading) return <Spin />;
+
+  const categories: AttendanceCategory[] = data?.data ?? [];
+
+  return (
+    <BaseApiDataTablePage
+      {...sharedProps}
+      columns={buildAttendanceColumns(categories)}
+      title="Attendance"
+      subtitle="New attendance values can be added from event details pages"
+      responsiveCardRenderer={(item) => <DateDisplay date={item.date} />}
+      allowAdd={false}
+    />
+  );
+};
 
 const AttendancePage = () => (
   <BaseDisplayPage {...sharedProps} render={AttendanceDisplay} />
