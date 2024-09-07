@@ -2,7 +2,7 @@ import { AttendanceCategory } from '../../types';
 import { Descriptions, DescriptionsProps } from 'antd';
 import styles from './AttendanceDisplay.module.scss';
 
-const AttendanceDisplay = (attendanceCategory: AttendanceCategory) => {
+const AttendanceCategoryDisplay = (attendanceCategory: AttendanceCategory) => {
   const items: DescriptionsProps['items'] = [
     {
       key: 1,
@@ -25,4 +25,4 @@ const AttendanceDisplay = (attendanceCategory: AttendanceCategory) => {
   );
 };
 
-export default AttendanceDisplay;
+export default AttendanceCategoryDisplay;

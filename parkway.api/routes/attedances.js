@@ -1,27 +1,20 @@
 const express = require('express');
 const router = express.Router();
 const {
-    addAttendance,
-    getAllAttendances,
-    getAttendanceById,
-    updateAttendance,
-    deleteAttendance,
     addAttendanceEntry,
     getAttendanceEntries,
+    getAttendanceEntryById,
     getAttendanceEntriesByDateRange,
+    getAttendanceEntriesByEventId,
     deleteAttendanceEntry,
     updateAttendanceEntry
 } = require('../controllers/attendanceController')
-const { addNotFoundHandler, configureBaseApiRoutes } = require("./baseApiRouter");
+const { addNotFoundHandler, configureBaseApiRoutes} = require("./baseApiRouter");
 
 router.get('/bydaterange', getAttendanceEntriesByDateRange);
+router.get('/byeventid/:id', getAttendanceEntriesByEventId);
 
-configureBaseApiRoutes(router, addAttendance, getAllAttendances, getAttendanceById, updateAttendance, deleteAttendance);
-
-router.post('/:id/addEntry', addAttendanceEntry);
-router.get('/:id/entries', getAttendanceEntries);
-router.delete('/:attendanceId/entries/:id', deleteAttendanceEntry);
-router.patch('/:attendanceId/entries/:id', updateAttendanceEntry);
+configureBaseApiRoutes(router, addAttendanceEntry, getAttendanceEntries, getAttendanceEntryById, updateAttendanceEntry, deleteAttendanceEntry);
 
 addNotFoundHandler(router);
 module.exports = router;

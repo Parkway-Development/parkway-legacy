@@ -1,6 +1,7 @@
 export * from './accountsApi.ts';
 export * from './assetsApi.ts';
 export * from './attendanceApi.ts';
+export * from './attendanceCategoryApi.ts';
 export * from './baseApi.ts';
 export * from './contributionsApi.ts';
 export * from './depositsApi.ts';

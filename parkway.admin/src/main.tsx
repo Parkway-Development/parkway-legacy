@@ -80,17 +80,23 @@ import SpecOpsPage from './components/spec-ops-page';
 import TeamDashboardPage from './components/team-dashboard';
 import { ApiProvider } from './hooks/useApi.tsx';
 import {
-  AddAttendancePage,
-  AttendancePage,
-  AttendancesPage,
-  EditAttendancePage
-} from './components/attendance-page';
+  AddAttendanceCategoryPage,
+  AttendanceCategoriesPage,
+  AttendancesCategoriesPage,
+  EditAttendanceCategoryPage
+} from './components/attendance-categories-page';
 import {
   AddDepositPage,
   DepositPage,
   DepositsPage,
   EditDepositPage
 } from './components/deposits-page';
+import {
+  AddAttendancePage,
+  AttendancePage,
+  AttendancesPage,
+  EditAttendancePage
+} from './components/attendance-page';
 
 const MAX_RETRIES = 6;
 const HTTP_STATUS_TO_NOT_RETRY = [400, 401, 403, 404];
@@ -181,10 +187,22 @@ createRoot(document.getElementById('root')!).render(
                   path="attendance"
                   element={<ClaimRoute claim="attendance" />}
                 >
-                  <Route path="add" element={<AddAttendancePage />} />
+                  <Route path="add/:eventId" element={<AddAttendancePage />} />
                   <Route path=":id" element={<AttendancePage />} />
                   <Route path=":id/edit" element={<EditAttendancePage />} />
                   <Route index element={<AttendancesPage />} />
+                </Route>
+                <Route
+                  path="attendance-categories"
+                  element={<ClaimRoute claim="attendance" />}
+                >
+                  <Route path="add" element={<AddAttendanceCategoryPage />} />
+                  <Route path=":id" element={<AttendanceCategoriesPage />} />
+                  <Route
+                    path=":id/edit"
+                    element={<EditAttendanceCategoryPage />}
+                  />
+                  <Route index element={<AttendancesCategoriesPage />} />
                 </Route>
                 <Route
                   path="events"

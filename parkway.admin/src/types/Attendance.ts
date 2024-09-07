@@ -1,6 +1,17 @@
 import { BaseEntity } from './BaseEntity.ts';
+import { Event } from './Event.ts';
+import { UserProfile } from './UserProfile.ts';
 
 export type Attendance = BaseEntity & {
-  name: string;
-  description?: string;
+  event: Event | string;
+  date: Date;
+  createdBy: UserProfile | string;
+  created: Date;
+  total: number;
+  categories: AttendanceDetail[];
+};
+
+type AttendanceDetail = {
+  category: string;
+  count: number;
 };

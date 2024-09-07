@@ -22,6 +22,7 @@ import { EventRegistration } from '../../types/EventRegistration.ts';
 import useApi, { buildQueryKey } from '../../hooks/useApi.tsx';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
+import AttendanceSection from './AttendanceSection.tsx';
 
 const EventDisplay = (event: Event) => {
   const items: DescriptionsProps['items'] = [
@@ -106,6 +107,7 @@ const EventDisplay = (event: Event) => {
   return (
     <>
       <h3 className={styles.title}>{event.name}</h3>
+      <AttendanceSection eventId={event._id} />
       <Tabs items={tabItems} />
     </>
   );

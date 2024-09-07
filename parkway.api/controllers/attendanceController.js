@@ -1,43 +1,37 @@
 const mongoose = require('mongoose');
 const Attendance = require('../models/attendanceModel');
-const AttendanceEntry = require('../models/attendanceEntryModel');
+const Event = require('../models/eventModel');
 const appError = require("../applicationErrors");
-const AppError = require("../applicationErrors");
 const ValidationHelper = require("../helpers/validationHelper");
+const { buildAction } = require("../helpers/controllerHelper");
 
-const addAttendance = async (req, res, next) => {
-    try {
-        const attendance = new Attendance(req.body);
-        if (!attendance) { throw new Error("Attendance could not be created.") }
+const addAttendanceEntry = buildAction({
+    requiredBodyProps: ['event', 'createdBy', 'total', 'date'],
+    handler: async (req, res) => {
+        const { event, createdBy, total, categories } = req.body;
 
-        const validationError = attendance.validateSync();
+        if (!mongoose.Types.ObjectId.isValid(event)) throw new appError.InvalidId('addAttendanceEntry', 'The event Id is not valid');
+        if (!mongoose.Types.ObjectId.isValid(createdBy)) throw new appError.InvalidId('addAttendanceEntry', 'The created by profile Id is not valid');
+        if (!ValidationHelper.validateProfileId(createdBy)) throw new appError.ProfileDoesNotExist('addAttendanceEntry', 'The created by profile does not exist');
 
-        if (validationError) { throw new Error(validationError.message) }
+        const eventModel = await Event.findById(event);
 
-        await attendance.save();
-        return res.status(201).json(attendance);
-    } catch (error) {
-        next(error);
-        console.log({ method: error.method, message: error.message });
-    }
-};
+        if (!eventModel) { throw new Error("No event was found with that Id.") }
 
-const addAttendanceEntry = async (req, res, next) => {
-    try {
-        const {id} = req.params;
-        if(!id) { throw new appError.MissingId('addAttendanceEntry') }
-        if(!mongoose.Types.ObjectId.isValid(id)) { throw new appError.InvalidId('addAttendanceEntry') }
+        if (categories && categories.length) {
+            const categoriesTotal = categories.reduce((acc, category) => {
+                const count = Number(category.count);
+                if (Number.isSafeInteger(count)) return acc + count;
+                return acc;
+            }, 0);
+            if (total !== categoriesTotal) { throw new Error("Category counts do not match the total"); }
+        }
 
-        const attendance = await Attendance.findById(id);
-
-        if (!attendance) { throw new Error("No attendance was found with that Id.") }
-
-        const attendanceEntry = new AttendanceEntry({
-            ...req.body,
-            attendance
+        const attendanceEntry = new Attendance({
+            ...req.body
         });
 
-        if (!attendanceEntry) { throw new Error("Attendance entry could not be created.") }
+        if (!attendanceEntry) { throw new Error("Attendance could not be created.") }
 
         const validationError = attendanceEntry.validateSync();
 
@@ -45,174 +39,114 @@ const addAttendanceEntry = async (req, res, next) => {
 
         await attendanceEntry.save();
         return res.status(201).json(attendanceEntry);
-    } catch (error) {
-        next(error);
-        console.log({ method: error.method, message: error.message });
     }
-};
+});
 
-const getAttendanceEntries = async (req, res, next) => {
-    try {
+const getAttendanceEntries = buildAction({
+    handler: async (req, res) => {
+        const entries = await Attendance.find({}).sort({ date: 'desc' }).populate('event');
+
+        return res.status(200).json(entries ?? []);
+    }
+});
+
+const getAttendanceEntryById = buildAction({
+    requiredParams: ['id'],
+    validateIdParam: true,
+    handler: async (req, res) => {
         const {id} = req.params;
-        if(!id) { throw new appError.MissingId('getAttendanceEntries') }
-        if(!mongoose.Types.ObjectId.isValid(id)) { throw new appError.InvalidId('getAttendanceEntries') }
 
-        const entries = await AttendanceEntry.find({ attendance: id }).sort({ date: 'desc' });
+        const attendance = await Attendance.findById(id).populate('event');
 
-        return res.status(201).json(entries ?? []);
-    } catch (error) {
-        next(error);
-        console.log({ method: error.method, message: error.message });
+        if (!attendance) { throw new Error("No attendance was found with that Id.") }
+
+        return res.status(200).json(attendance ?? []);
     }
-};
+});
 
-const getAttendanceEntriesByDateRange = async (req, res, next) => {
-    try {
-        const { startDate, endDate, populate } = req.query;
-        if(!startDate || !endDate){ throw new AppError.MissingDateRange('getAttendanceEntriesByDateRange')}
-        if(!ValidationHelper.checkDateOrder(startDate, endDate)){ throw new AppError.InvalidDateRange('getAttendanceEntriesByDateRange')}
+const getAttendanceEntriesByDateRange = buildAction({
+   handler: async (req, res) => {
+       const { startDate, endDate } = req.query;
+       if(!startDate || !endDate){ throw new appError.MissingDateRange('getAttendanceEntriesByDateRange')}
+       if(!ValidationHelper.checkDateOrder(startDate, endDate)){ throw new appError.InvalidDateRange('getAttendanceEntriesByDateRange')}
 
-        let entries;
-        if(populate){
-            entries = await AttendanceEntry.find({
-                date: {
-                    $gte: new Date(startDate).toISOString(),
-                    $lte: new Date(endDate).toISOString()
-                }
-            }).sort({ date: 1})
-                .populate('attendance');
-        } else{
-            entries = await AttendanceEntry.find({
-                date: {
-                    $gte: new Date(startDate).toISOString(),
-                    $lte: new Date(endDate).toISOString()
-                }
-            }).sort({ date: 1});
+       const entries = await Attendance.find({
+               date: {
+                   $gte: new Date(startDate).toISOString(),
+                   $lte: new Date(endDate).toISOString()
+               }
+           }).sort({ date: 1 }).populate('event');
+
+       if(entries.length === 0) { return res.status(204).json('No entries found for that date range.'); }
+
+       return res.status(200).json(entries);
+   }
+});
+
+const getAttendanceEntriesByEventId = buildAction({
+    validateIdParam: true,
+    requiredParams: ['id'],
+    handler: async (req, res) => {
+        const { id } = req.params;
+        const entries = await Attendance.find({
+            event: id
+        }).populate('event');
+
+        if(entries.length === 0) { return res.status(204).json('No entries found for that event id.'); }
+
+        return res.status(200).json(entries[0]);
+    }
+});
+
+const deleteAttendanceEntry = buildAction({
+    validateIdParam: true,
+    requiredParams: ['id'],
+    handler: async (req, res) => {
+       const {id} = req.params;
+
+       const entry = await Attendance.findByIdAndDelete(id);
+
+       if (!entry) { throw new Error("Attendance could not be deleted.") }
+
+       return res.status(201).json(entry);
+   }
+});
+
+const updateAttendanceEntry = buildAction({
+    requiredBodyProps: ['event', 'createdBy', 'total', 'date'],
+    validateIdParam: true,
+    requiredParams: ['id'],
+    handler: async (req, res) => {
+        const { id, } = req.params;
+        const { total, categories } = req.body;
+
+        if (categories && categories.length) {
+            const categoriesTotal = categories.reduce((acc, category) => {
+                const count = Number(category.count);
+                if (Number.isSafeInteger(count)) return acc + count;
+                return acc;
+            }, 0);
+            if (total !== categoriesTotal) { throw new Error("Category counts do not match the total"); }
         }
 
-        if(entries.length === 0){ return res.status(204).json('No entries found for that date range.')}
-
-        return res.status(200).json(entries);
-    } catch (error) {
-        next(error)
-        console.log({method: error.method, message: error.message});
-    }
-}
-
-const deleteAttendanceEntry = async (req, res, next) => {
-    try {
-        const {id} = req.params;
-        if(!id) { throw new appError.MissingId('deleteAttendanceEntry') }
-        if(!mongoose.Types.ObjectId.isValid(id)) { throw new appError.InvalidId('deleteAttendanceEntry') }
-
-        const entry = await AttendanceEntry.findByIdAndDelete(id);
-
-        if (!entry) { throw new Error("Attendance entry could not be created.") }
-
-        return res.status(201).json(entry);
-    } catch (error) {
-        next(error);
-        console.log({ method: error.method, message: error.message });
-    }
-};
-
-const updateAttendanceEntry = async (req, res, next) => {
-    try {
-        const { id, attendanceId } = req.params;
-        if(!id) { throw new appError.MissingId('updateAttendanceEntry') }
-        if(!attendanceId) { throw new appError.MissingRequiredParameter('updateAttendanceEntry', 'Attendance is required') }
-        if(!mongoose.Types.ObjectId.isValid(id)) { throw new appError.InvalidId('updateAttendanceEntry') }
-
         const update = {
-            ...req.body,
-            attendance: attendanceId
+            ...req.body
         };
 
-        const updatedAttendance = await AttendanceEntry.findByIdAndUpdate(id, update, {new: true});
+        const updatedAttendance = await Attendance.findByIdAndUpdate(id, update, { new: true });
 
         if (!updatedAttendance) { throw new Error("Attendance entry could not be found to update.") }
 
         return res.status(201).json(updatedAttendance);
-    } catch (error) {
-        next(error);
-        console.log({ method: error.method, message: error.message });
     }
-};
-
-const getAllAttendances = async (req, res, next) => {
-    try{
-        const attendances = await Attendance.find({}).sort({name: 'asc'});
-
-        if (!attendances) { throw new Error("No attendances were returned.") }
-    
-        res.status(200).json(attendances);
-    } catch (error) {
-        next(error);
-        console.log({ method: error.method, message: error.message });
-    }
-}
-
-const getAttendanceById = async (req, res, next) => {
-    try {
-        const {id} = req.params;
-        if(!id) { throw new appError.MissingId('getAttendanceById') }
-        if(!mongoose.Types.ObjectId.isValid(id)) { throw new appError.InvalidId('getAttendanceById') }
-
-        const attendance = await Attendance.findById(id);
-    
-        if (!attendance) { throw new Error("No attendance was found with that Id.") }
-    
-        res.status(200).json(attendance);
-    } catch (error) {
-        next(error);
-        console.log({ method: error.method, message: error.message });
-    }
-}
-
-const updateAttendance = async (req, res, next) => {
-    try {
-        const {id} = req.params;
-        if(!id) { throw new appError.MissingId('updateEventCategory') }
-        if(!mongoose.Types.ObjectId.isValid(id)) { throw new appError.InvalidId('updateEventCategory') }
-
-        const updatedAttendance = await Attendance.findByIdAndUpdate(id, req.body, {new: true});
-    
-        if (!updatedAttendance) {
-            return res.status(404).json({message: "No such event category found."})
-        }
-        res.status(200).json(updatedAttendance)
-    } catch (error) {
-        next(error);
-        console.log({ method: error.method, message: error.message });
-    }
-}
-
-const deleteAttendance = async (req, res, next) => {
-    try {
-        const {id} = req.params;
-        if(!id) { throw new appError.MissingId('deleteEventCategory') }
-        if(!mongoose.Types.ObjectId.isValid(id)) { throw new appError.InvalidId('deleteEventCategory') }
-    
-        const deletedAttendance = await Attendance.findByIdAndDelete(id);
-    
-        if (!deletedAttendance) { throw new Error("No attendance was found with that Id.") }
-
-        res.status(200).json(deletedAttendance);
-    } catch (error) {
-        next(error);
-        console.log({ method: error.method, message: error.message });
-    }
-}
+});
 
 module.exports = {
-    addAttendance,
-    getAllAttendances,
-    getAttendanceById,
     getAttendanceEntriesByDateRange,
-    updateAttendance,
-    deleteAttendance,
+    getAttendanceEntriesByEventId,
     addAttendanceEntry,
     getAttendanceEntries,
+    getAttendanceEntryById,
     deleteAttendanceEntry,
     updateAttendanceEntry
 };
