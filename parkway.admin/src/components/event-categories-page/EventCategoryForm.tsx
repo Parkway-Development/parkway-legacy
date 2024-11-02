@@ -2,9 +2,9 @@ import { Breadcrumb, ColorPicker, Form, Input } from 'antd';
 import { Link } from 'react-router-dom';
 import { EventCategory } from '../../types';
 import { AddBaseApiFormProps, BaseFormFooter } from '../base-data-table-page';
-import { Color } from 'antd/lib/color-picker';
 import styles from './EventCategoryForm.module.css';
 import EventCategoryDisplay from '../event-category-display';
+import { ColorPickerProps } from 'antd/es/color-picker/interface';
 
 type EventCategoryWithoutId = Omit<EventCategory, '_id'>;
 
@@ -30,15 +30,15 @@ const EventCategoryForm = ({
         fontColor: '#000000'
       };
 
-  const handleBackgroundColorChange = (_: Color, hex: string) => {
+  const handleBackgroundColorChange: ColorPickerProps['onChange'] = (value) => {
     form.setFieldsValue({
-      backgroundColor: hex
+      backgroundColor: value.toHexString()
     });
   };
 
-  const handleFontColorChange = (_: Color, hex: string) => {
+  const handleFontColorChange: ColorPickerProps['onChange'] = (value) => {
     form.setFieldsValue({
-      fontColor: hex
+      fontColor: value.toHexString()
     });
   };
 
