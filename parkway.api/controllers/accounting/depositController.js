@@ -263,7 +263,6 @@ const processDeposit = async (req, res, next) => {
         deposit.currentStatus = DepositStatus.PROCESSED;
         deposit.statusDate = new Date();
         deposit.history.push({status: deposit.currentStatus, date: deposit.statusDate});
-        deposit = await deposit.save();
 
         for(let i = 0; i < deposit.contributions.length; i++){
             deposit.contributions[i].depositId = deposit._id;
@@ -279,6 +278,7 @@ const processDeposit = async (req, res, next) => {
             await createTransactionsForDonations(deposit.donations, deposit.approverProfileId);
         }
 
+        deposit = await deposit.save();
         return res.status(200).json(deposit);
     } catch (error) {
         next(error)

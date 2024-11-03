@@ -12,11 +12,12 @@ import { UserNameDisplay } from '../user-name-display';
 import AddContributionModal from './AddContributionModal.tsx';
 import styles from './DepositDisplay.module.css';
 import useApi, { buildQueryKey } from '../../hooks/useApi.tsx';
-import { useQueries } from '@tanstack/react-query';
+import { useMutation, useQueries, useQueryClient } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 import DeleteButton from '../delete-button';
 import { OrderedColumnsType } from '../../hooks/useColumns.tsx';
-import { Contribution } from '../../types';
+import { Contribution, DepositStatus } from '../../types';
+import { useAuth } from '../../hooks/useAuth.tsx';
 
 export const contributionColumns: OrderedColumnsType<Contribution> = [
   {
@@ -62,12 +63,14 @@ export const contributionColumns: OrderedColumnsType<Contribution> = [
 ];
 
 const DepositDisplay = () => {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
   const params = useParams();
   const navigate = useNavigate();
   const id = params.id;
   const {
     contributionsApi: { getByDepositId },
-    depositsApi: { getById, delete: deleteFn },
+    depositsApi: { getById, delete: deleteFn, execute, process },
     formatError
   } = useApi();
 
@@ -85,6 +88,24 @@ const DepositDisplay = () => {
       }
     ]
   });
+
+  const {
+    mutate: executeDeposit,
+    isPending: executeLoading,
+    error: executeError
+  } = useMutation({
+    mutationFn: execute
+  });
+
+  const {
+    mutate: processDeposit,
+    isPending: processLoading,
+    error: processError
+  } = useMutation({
+    mutationFn: process
+  });
+
+  const actionsError = executeError || processError;
 
   const error = [depositQuery, contributionQuery].reduce(
     (p: Error | null, c) => (p ? p : c.error),
@@ -119,6 +140,34 @@ const DepositDisplay = () => {
   const handleCancel = () => navigate('/accounts/deposits');
 
   const handleEdit = () => navigate('./edit');
+
+  const handleExecute = () => {
+    executeDeposit(
+      {
+        _id: id!,
+        responsiblePartyProfileId: user?.profileId ?? ''
+      },
+      {
+        onSuccess: (response) => {
+          queryClient.setQueryData(buildQueryKey('deposits', id), response);
+        }
+      }
+    );
+  };
+
+  const handleProcess = () => {
+    processDeposit(
+      {
+        _id: id!,
+        approverProfileId: user?.profileId ?? ''
+      },
+      {
+        onSuccess: (response) => {
+          queryClient.setQueryData(buildQueryKey('deposits', id), response);
+        }
+      }
+    );
+  };
 
   const items: DescriptionsProps['items'] = [
     {
@@ -179,7 +228,35 @@ const DepositDisplay = () => {
         bordered
         column={1}
       />
+      {actionsError && (
+        <Alert
+          className={styles.actionsError}
+          type="error"
+          message={formatError(actionsError)}
+          closable
+        />
+      )}
       <div className={styles.actionsContainer}>
+        {deposit.currentStatus === DepositStatus.Undeposited && (
+          <Button
+            onClick={handleExecute}
+            type="primary"
+            disabled={executeLoading}
+            loading={executeLoading}
+          >
+            Execute Deposit
+          </Button>
+        )}
+        {deposit.currentStatus === DepositStatus.Unallocated && (
+          <Button
+            onClick={handleProcess}
+            type="primary"
+            disabled={processLoading || remaining !== 0}
+            loading={processLoading}
+          >
+            Process Deposit
+          </Button>
+        )}
         <AddContributionModal deposit={deposit} />
       </div>
       <Table
