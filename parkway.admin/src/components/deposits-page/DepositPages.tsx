@@ -8,7 +8,7 @@ import { SharedBasePageProps } from '../base-data-table-page/types.ts';
 import DepositDisplay from './DepositDisplay.tsx';
 import DepositForm from './DepositForm.tsx';
 import DateDisplay from '../date-display';
-import { Deposit } from '../../types';
+import { Deposit, DepositStatus } from '../../types';
 
 const sharedProps: SharedBasePageProps = {
   queryKey: 'deposits',
@@ -20,6 +20,7 @@ const DepositsPage = () => (
   <BaseApiDataTablePage
     {...sharedProps}
     columns={depositColumns}
+    allowEdit={(item) => item.currentStatus !== DepositStatus.Processed}
     responsiveCardRenderer={(deposit) => (
       <DateDisplay date={deposit.createdAt} />
     )}

@@ -130,7 +130,7 @@ type BaseApiDataTablePageProps<T extends BaseEntity> = SharedBasePageProps &
     columns: OrderedColumnsType<T>;
     allowAdd?: boolean;
     allowDelete?: boolean;
-    allowEdit?: boolean;
+    allowEdit?: boolean | ((item: T) => boolean);
   };
 
 export const BaseApiDataTablePage = <T extends BaseEntity>({
@@ -167,6 +167,7 @@ export const BaseApiDataTablePage = <T extends BaseEntity>({
     columns: columnsProp,
     columnType: `${queryKeyProp}Page`,
     deleteAction: allowDelete ? deleteAction : undefined,
+    allowEdit,
     editLink: allowEdit ? ({ _id }) => `./${_id}/edit` : undefined
   });
 

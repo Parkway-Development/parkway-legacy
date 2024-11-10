@@ -1,8 +1,9 @@
 import { Breadcrumb, Form, Input } from 'antd';
-import { Link } from 'react-router-dom';
-import { Deposit } from '../../types';
+import { Link, useParams } from 'react-router-dom';
+import { Deposit, DepositStatus } from '../../types';
 import { AddBaseApiFormProps, BaseFormFooter } from '../base-data-table-page';
 import { useAuth } from '../../hooks/useAuth.tsx';
+import { ReactNode } from 'react';
 
 type DepositWithoutId = Omit<Deposit, '_id'> & {
   statusDate: Date | string;
@@ -19,6 +20,8 @@ const DepositForm = ({
   onCancel
 }: DepositFormProps) => {
   const { user } = useAuth();
+  const params = useParams();
+  const id = params.id;
   const [form] = Form.useForm<DepositWithoutId>();
 
   const handleSave = (values: DepositWithoutId) => {
@@ -30,21 +33,17 @@ const DepositForm = ({
     onSave(payload);
   };
 
-  return (
-    <>
-      <Breadcrumb
-        items={[
-          {
-            title: <Link to="/accounts">Accounts</Link>
-          },
-          {
-            title: <Link to="/accounts/deposits">Deposits</Link>
-          },
-          {
-            title: initialValues ? 'Edit Deposit' : 'Add Deposit'
-          }
-        ]}
-      />
+  let content: ReactNode;
+
+  if (initialValues?.currentStatus === DepositStatus.Processed) {
+    content = (
+      <p>
+        This deposit has already been processed and cannot be edited.
+        <Link to={`/accounts/deposits/${id}`}>View Deposit</Link>
+      </p>
+    );
+  } else {
+    content = (
       <Form<DepositWithoutId>
         form={form}
         name="basic"
@@ -69,6 +68,25 @@ const DepositForm = ({
           onCancel={onCancel}
         />
       </Form>
+    );
+  }
+
+  return (
+    <>
+      <Breadcrumb
+        items={[
+          {
+            title: <Link to="/accounts">Accounts</Link>
+          },
+          {
+            title: <Link to="/accounts/deposits">Deposits</Link>
+          },
+          {
+            title: initialValues ? 'Edit Deposit' : 'Add Deposit'
+          }
+        ]}
+      />
+      {content}
     </>
   );
 };

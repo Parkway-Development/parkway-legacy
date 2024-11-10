@@ -213,7 +213,12 @@ const DepositDisplay = () => {
         <Button onClick={handleCancel} type="primary">
           Close
         </Button>
-        <Button onClick={handleEdit}>Edit</Button>
+        <Button
+          onClick={handleEdit}
+          disabled={deposit.currentStatus === DepositStatus.Processed}
+        >
+          Edit
+        </Button>
         <DeleteButton
           id={id}
           deleteFn={deleteFn}

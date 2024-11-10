@@ -37,6 +37,7 @@ interface UseColumnOptions<T extends BaseEntity> {
   columnType: string;
   deleteAction?: DeleteAction;
   editLink?: (value: T) => To;
+  allowEdit?: boolean | ((item: T) => boolean);
 }
 
 type BuildActionsColumnOptions<T extends BaseEntity> = Omit<
@@ -50,13 +51,17 @@ type BuildActionsColumnOptions<T extends BaseEntity> = Omit<
 const buildActionsColumn = <T extends BaseEntity>({
   deleteAction,
   editLink,
+  allowEdit = true,
   onColumnConfigClick,
   contextHolder
 }: BuildActionsColumnOptions<T>): OrderedColumnType<T> | undefined => {
   const buildNodes = (value: T) => {
     const nodes: ReactNode[] = [];
 
-    if (editLink) {
+    const canEdit =
+      typeof allowEdit === 'function' ? allowEdit(value) : allowEdit;
+
+    if (canEdit && editLink) {
       nodes.push(
         <Link to={editLink(value)} key="edit">
           <EditOutlined />
