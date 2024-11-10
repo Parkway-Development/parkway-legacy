@@ -44,30 +44,20 @@ const DepositForm = ({
     );
   } else {
     content = (
-      <Form<DepositWithoutId>
-        form={form}
-        name="basic"
-        labelCol={{ span: 3 }}
-        wrapperCol={{ span: 12 }}
-        onFinish={handleSave}
-        autoComplete="off"
-        disabled={isSaving}
-        initialValues={initialValues}
-      >
+      <>
         <Form.Item<DepositWithoutId>
           label="Amount"
           name="amount"
-          rules={[{ required: true, whitespace: true, message: 'Required' }]}
+          rules={[{ required: true, message: 'Required' }]}
         >
           <Input autoFocus type="number" />
         </Form.Item>
-
         <BaseFormFooter
           isDisabled={isSaving}
           isLoading={isSaving}
           onCancel={onCancel}
         />
-      </Form>
+      </>
     );
   }
 
@@ -86,7 +76,19 @@ const DepositForm = ({
           }
         ]}
       />
-      {content}
+      <Form<DepositWithoutId>
+        form={form}
+        name="basic"
+        labelCol={{ span: 3 }}
+        wrapperCol={{ span: 12 }}
+        validateTrigger="onSubmit"
+        onFinish={handleSave}
+        autoComplete="off"
+        disabled={isSaving}
+        initialValues={initialValues}
+      >
+        {content}
+      </Form>
     </>
   );
 };
