@@ -9,6 +9,7 @@ import DepositDisplay from './DepositDisplay.tsx';
 import DepositForm from './DepositForm.tsx';
 import DateDisplay from '../date-display';
 import { Deposit, DepositStatus } from '../../types';
+import { useParams } from 'react-router-dom';
 
 const sharedProps: SharedBasePageProps = {
   queryKey: 'deposits',
@@ -37,8 +38,16 @@ const AddDepositPage = () => (
   />
 );
 
-const EditDepositPage = () => (
-  <EditBaseApiEntityPage {...sharedProps} editForm={DepositForm} />
-);
+const EditDepositPage = () => {
+  const params = useParams();
+  const id = params.id;
+  return (
+    <EditBaseApiEntityPage
+      {...sharedProps}
+      editForm={DepositForm}
+      mainPage={`/accounts/deposits/${id}`}
+    />
+  );
+};
 
 export { AddDepositPage, EditDepositPage, DepositsPage, DepositPage };
