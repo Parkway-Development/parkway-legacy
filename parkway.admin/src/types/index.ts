@@ -8,6 +8,7 @@ export * from './Deposit.ts';
 export * from './Enum.ts';
 export * from './Event.ts';
 export * from './EventCategory.ts';
+export * from './Location.ts';
 export * from './Song.ts';
 export * from './Team.ts';
 export * from './UserProfile.ts';

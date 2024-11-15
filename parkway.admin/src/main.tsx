@@ -97,6 +97,12 @@ import {
   AttendancesPage,
   EditAttendancePage
 } from './components/attendance-page';
+import {
+  AddLocationPage,
+  EditLocationPage,
+  LocationPage,
+  LocationsPage
+} from './components/locations-page';
 
 const MAX_RETRIES = 6;
 const HTTP_STATUS_TO_NOT_RETRY = [400, 401, 403, 404];
@@ -229,6 +235,12 @@ createRoot(document.getElementById('root')!).render(
                   element={<ClaimRoute claim="isspecops" />}
                 >
                   <Route index element={<SpecOpsPage />} />
+                </Route>
+                <Route path="locations">
+                  <Route path="add" element={<AddLocationPage />} />
+                  <Route path=":id" element={<LocationPage />} />
+                  <Route path=":id/edit" element={<EditLocationPage />} />
+                  <Route index element={<LocationsPage />} />
                 </Route>
                 <Route path="songs">
                   <Route path="add" element={<AddSongPage />} />

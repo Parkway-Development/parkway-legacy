@@ -151,6 +151,14 @@ if (hasClaim('systemSettings')) {
 }
  */
 
+  // TODO This could be a separate role or exposed if user has other roles like this
+  if (hasCalendarManagement) {
+    items.push({
+      key: itemKey++,
+      label: <ResponsiveLink to="/locations">Locations</ResponsiveLink>
+    });
+  }
+
   if (hasClaim('userManagement')) {
     items.push({
       key: itemKey++,

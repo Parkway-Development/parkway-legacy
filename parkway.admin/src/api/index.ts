@@ -9,6 +9,7 @@ export * from './enumsApi.ts';
 export * from './eventCategoriesApi.ts';
 export * from './eventsApi.ts';
 export * from './generalApi.ts';
+export * from './locationApi.ts';
 export * from './songsApi.ts';
 export * from './teamsApi.ts';
 export * from './userApi.ts';

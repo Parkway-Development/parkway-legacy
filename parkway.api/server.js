@@ -27,6 +27,7 @@ const applicationClaimsRoutes = require('./routes/applicationClaims');
 const organizationRoutes = require('./routes/organizations');
 const attendanceRoutes = require('./routes/attedances');
 const attendanceCategoriesRoutes = require('./routes/attedanceCategories');
+const locationRoutes = require('./routes/locations');
 
 const donationRoutes = require('./routes/accounting/donations');
 const accountRoutes = require('./routes/accounting/accounts');
@@ -87,6 +88,7 @@ app.use('/applicationclaims', applicationClaimsRoutes);
 app.use('/organizations', organizationRoutes);
 app.use('/attendance-categories', attendanceCategoriesRoutes);
 app.use('/attendance', attendanceRoutes);
+app.use('/locations', locationRoutes);
 
 //Accounting routes
 app.use('/accounting/donations', donationRoutes);

@@ -15,6 +15,7 @@ import {
   buildEventCategoriesApi,
   buildEventsApi,
   buildGeneralApi,
+  buildLocationApi,
   buildSongsApi,
   buildTeamsApi,
   buildUsersApi,
@@ -25,6 +26,7 @@ import {
   EventCategoriesApiType,
   EventsApiType,
   GeneralApiType,
+  LocationApiType,
   SongsApiType,
   TeamsApiType,
   UsersApiType,
@@ -48,6 +50,7 @@ export interface BaseApiTypes {
   enumsApi: EnumsApiType;
   eventCategoriesApi: EventCategoriesApiType;
   eventsApi: EventsApiType;
+  locationsApi: LocationApiType;
   songsApi: SongsApiType;
   teamsApi: TeamsApiType;
   usersApi: UsersApiType;
@@ -75,6 +78,7 @@ export type QueryType =
   | 'organizationId'
   | 'passwordSettings'
   | 'limitedProfiles'
+  | 'locations'
   | 'profiles'
   | 'songs'
   | 'teams'
@@ -147,6 +151,7 @@ export const ApiProvider = ({ children }: { children: ReactNode }) => {
     eventCategoriesApi: buildEventCategoriesApi(instance),
     eventsApi: buildEventsApi(instance),
     generalApi: buildGeneralApi(instance),
+    locationsApi: buildLocationApi(instance),
     songsApi: buildSongsApi(instance),
     teamsApi: buildTeamsApi(instance),
     usersApi: buildUsersApi(instance),
