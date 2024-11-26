@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
-const { ApprovedCountries } = require('./constants');
-const { SubscriptionType } = require('./constants');
+const { validatePostalCode } = require('../helpers/validationHelper'); // Corrected function name
+const { ApprovedCountries, SubscriptionType } = require('./constants'); // Consolidated import
 
 const appSettingsSchema = new mongoose.Schema({
     name: {
@@ -15,25 +15,31 @@ const appSettingsSchema = new mongoose.Schema({
 });
 
 const addressSchema = new mongoose.Schema({
-    streetAddress1: {
+    addressLine: {
         type: String,
         required: true
     },
-    streetAddress2: {
+    addressLine2: {
         type: String
     },
     city: {
         type: String,
         required: true
     },
-    state: {
+    subdivision: {
         type: String,
         required: true
     },
-    zip: {
+    postalCode: {
         type: String,
         required: true,
-        match: [/^\d{5}(-\d{4})?$/, 'Please fill a valid zip code']
+        validate: {
+            validator: function (postalCode) {
+                const countryCode = this.country;
+                return validatePostalCode(postalCode, countryCode); // Corrected function call
+            },
+            message: 'Invalid postal code'
+        }
     },
     country: {
         type: String,
@@ -65,4 +71,4 @@ module.exports = {
     appSettingsSchema,
     addressSchema,
     subscriptionSchema
-}
+};

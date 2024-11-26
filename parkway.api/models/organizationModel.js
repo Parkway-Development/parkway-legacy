@@ -1,6 +1,9 @@
 const mongoose = require('mongoose');
-const { addressSchema, appSettingsSchema, subscriptionSchema } = require('./sharedModels');
-const {SubscriptionType} = require('./constants');
+const Address = require('./sharedModels').addressSchema;
+//const AppSettings = require('./sharedModels').appSettingsSchema;
+
+//const Subscription = require('./sharedModels').subscriptionSchema;
+const SubscriptionType = require('./constants').SubscriptionType;
 
 
 const organizationSchema = new mongoose.Schema({
@@ -13,10 +16,7 @@ const organizationSchema = new mongoose.Schema({
         required: true,
         unique: true
     },
-    address: {
-        type: addressSchema,
-        required: true
-    },
+    //address: Address,
     phone: {
         type: String,
         required: true,
@@ -35,15 +35,8 @@ const organizationSchema = new mongoose.Schema({
         ref: 'Profile',
         required: true
     },
-    appSettings: {
-        type: [appSettingsSchema],
-        default: []
-    },
-    subscription: {
-        type: subscriptionSchema,
-        required: true,
-        default: {subscriptionType: SubscriptionType.TRIAL}
-    },
+    //appSettings: [AppSettings],
+    //subscription: Subscription,
     allowedOrigins: [{
         type: String
     }]

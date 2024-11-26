@@ -85,6 +85,11 @@ class ValidationHelper {
         const account = await Account.findOne({ name: accountName, type: accountType });
         return !!account;
     }
+
+    static validatePostalCode = (postalCode, country) => {
+        const countryCode = country || 'any'; // 'any' checks against all supported country formats
+        return validator.isPostalCode(postalCode, countryCode); 
+      };
 }
 
 
@@ -97,6 +102,7 @@ module.exports = {
     validateAccountId: ValidationHelper.validateAccountId,
     validateProfileIds: ValidationHelper.validateProfileIds,
     validateProfileId: ValidationHelper.validateProfileId,
-    checkDuplicateAccount: ValidationHelper.checkDuplicateAccount
+    checkDuplicateAccount: ValidationHelper.checkDuplicateAccount,
+    validatePostalCode: ValidationHelper.validatePostalCode
 };
 

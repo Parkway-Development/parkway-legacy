@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { addressSchema } = require('./sharedModels');
+const { Address } = require('./sharedModels').addressSchema;
 
 const profileSchema = new mongoose.Schema({
     user: {
@@ -40,9 +40,7 @@ const profileSchema = new mongoose.Schema({
     homePhone: {
         type: String
     },
-    address:{
-        type: addressSchema
-    },
+//    address: Address,
     member:{
         required: true,
         default: false,
@@ -64,9 +62,5 @@ const profileSchema = new mongoose.Schema({
         required: false
     }
 }, {timestamps: true})
-
-// profileSchema.index({ lastName: 1 }, { collation: { locale: 'en_US', strength: 2}} ) 
-// profileSchema.index({ firstName: 1 }, { collation: { locale: 'en_US', strength: 2}} ) 
-
 
 module.exports = mongoose.model('Profile', profileSchema, 'profiles')

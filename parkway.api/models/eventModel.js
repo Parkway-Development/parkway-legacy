@@ -6,11 +6,9 @@ const eventSchema = new mongoose.Schema({
         type: String
     },
     description: {
-        required: false,
         type: String
     },
     organizer: {
-        required: false,
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Profile'
     },
@@ -27,12 +25,11 @@ const eventSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
-    location: {
-        required: false,
-        type: String
+    venue: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Venue'
     },
     category: {
-        required: false,
         type: mongoose.Schema.Types.ObjectId,
         ref: 'EventCategory'
     },
@@ -47,21 +44,17 @@ const eventSchema = new mongoose.Schema({
         ref: 'Team'
     }],
     approvedBy: {
-        required: false,
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Profile'
     },
     approvedDate: {
-        required: false,
         type: Date
     },
     rejectedBy: {
-        required: false,
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Profile'
     },
     rejectedDate: {
-        required: false,
         type: Date
     },
     messages: [{
@@ -80,7 +73,6 @@ const eventSchema = new mongoose.Schema({
         }
     }],
     schedule: {
-        required: false,
         type: mongoose.Schema.Types.ObjectId,
         ref: 'EventSchedule'
     },
